@@ -235,7 +235,7 @@ class Molecule():
         self.basis      = basis
         self.method     = method
         self.restricted = restricted
-        self.Enuc = self.geometry.nuclear_repulsion_energy()
+        self.Enuc       = self.geometry.nuclear_repulsion_energy()
 
         #Psi4 objects
         self.wfn        = psi4.core.Wavefunction.build(self.geometry, self.basis)
@@ -258,12 +258,15 @@ class Molecule():
         self.A              = self.form_A()
         self.H              = self.form_H()
 
-        self.D = None
-        self.energy = None
-        self.energies = None
-
-        # Run some iterations to initialize
-        self.scf()
+        #From SCF
+        self.C              = None
+        self.Cocc           = None
+        self.D              = None
+        self.energy         = None
+        self.frag_energy    = None
+        self.energetics     = None
+        self.eigs           = None
+        self.vks            = None
 
     def initialize(self):
         """
@@ -377,7 +380,7 @@ class Molecule():
             SCF_E += 2.0 * self.jk.J()[0].vector_dot(D)
             SCF_E += ks_e
             SCF_E += self.Enuc
-            SCF_E += 1.0 * vp.vector_dot(D)
+            SCF_E += 2.0 * vp.vector_dot(D)
 
             #print('SCF Iter%3d: % 18.14f   % 11.7f   % 1.5E   %1.5E'
             #       % (SCF_ITER, SCF_E, ks_e, (SCF_E - Eold), dRMS))
@@ -393,35 +396,29 @@ class Molecule():
             #Diagonalize Fock matrix
             C, Cocc, D, eigs = build_orbitals(F, self.A, self.ndocc)
 
+            #Testing
+            Vks = self.mints.ao_potential()
+            Vks.axpy(2.0, self.jk.J()[0])
+            Vks.axpy(1.0, Vxc)
+            #Testing
+
+
             if SCF_ITER == maxiter:
                 raise Exception("Maximum number of SCF cycles exceeded.")
 
-            if print_energies is True:
-                print(F'\n')        
-                print('Energy Contributions: ')
-                print('\n')
-                print(F'Core:                  {2.0 * self.H.vector_dot(D)}')
-                print(F'Hartree:              {2.0 * self.jk.J()[0].vector_dot(D)}')
-                print(F'Exchange Correlation:  {ks_e}')
-                print(F'Partition Energy:      {1.0 * vp.vector_dot(D)}')
-                print(F'Nuclear Repulsion:     {self.Enuc}')
-                print(F'Total Energy           {SCF_E}')
-                print(F'\n')
+        energetics = {"Core": 2.0 * self.H.vector_dot(D), "Hartree": 2.0 * self.jk.J()[0].vector_dot(D), "Exchange-Correlation":ks_e, "Nuclear": self.Enuc, "Total": SCF_E }
 
-            energies = {   self.geometry.name() : [2.0 * self.H.vector_dot(D), 2.0 * self.jk.J()[0].vector_dot(D), ks_e, self.Enuc, SCF_E]   }
-            ks_index = ["Core", "Hartree", "Exchange Correlation", "Nuclear Repulsion", "Total Energy"]
-            #energies = {"Core": [Core], "Hartree":[(Hartree_a + Hartree_b) * 0.5], "Exchange Correlation": [ks_e], "Nuclear Repulsion": [self.Enuc], "Total Energy": [SCF_E]} 
-            pandas = pd.DataFrame(data = energies, index=ks_index)
+        self.C              = C
+        self.Cocc           = Cocc
+        self.D              = D
+        self.energy         = SCF_E
+        self.frag_energy    = SCF_E - 2.0 * vp.vector_dot(D) 
+        self.energetics     = energetics
+        self.eigs           = eigs
+        self.vks            = Vks
 
-        #print('\nFinal SCF energy: %.8f hartree' % SCF_E)
-        #print(F'Core                 : {2.0 * self.H.vector_dot(D)}')
-        #print(F'Hartree              : {2.0 * self.jk.J()[0].vector_dot(D)}')
-        #print(F'Exchange Correlation : {ks_e}')
-        #print(F'Nuclear Repulsion    : {self.Enuc}')
+        return
 
-        self.D = D
-        self.energy = SCF_E
-        self.energies = pandas
 
 
 class U_Molecule():
@@ -462,18 +459,19 @@ class U_Molecule():
         self.S              = self.mints.ao_overlap()
         self.A              = self.form_A()
         self.H              = self.form_H()
-        # One should give maxiter and convergence criteria when initial
-        self.Da = None
-        self.Db = None
-        self.Ca = None
-        self.Cb = None
-        self.epsilon_a = None
-        self.epsilon_b = None
-        self.energy = None
-        self.energies = None
 
-        # Run some iterations to initialize
-        self.scf()
+        #From SCF calculation
+        self.Da             = None
+        self.Db             = None
+        self.energy         = None
+        self.frag_energy    = None
+        self.energetics     = None
+        self.eig_a          = None
+        self.eig_b          = None
+        self.vks_a          = None
+        self.vks_b          = None
+        self.Fa             = None
+        self.Fb             = None
 
     def initialize(self):
         """
@@ -485,7 +483,6 @@ class U_Molecule():
 
         #External Potential
         self.Vpot.initialize()
-
 
     def form_H(self):
         """
@@ -569,6 +566,8 @@ class U_Molecule():
         Returns
         -------
         """
+
+
         if vp_add == False:
             vp_a = psi4.core.Matrix(self.nbf,self.nbf)
             vp_b = psi4.core.Matrix(self.nbf,self.nbf)
@@ -600,6 +599,7 @@ class U_Molecule():
             #Bring core matrix
             F_a = self.H.clone()
             F_b = self.H.clone()
+ 
 
             #Exchange correlation energy/matrix
             self.Vpot.set_D([D_a,D_b])
@@ -609,13 +609,25 @@ class U_Molecule():
             Vxc_a = psi4.core.Matrix.from_array(Vxc_a)
             Vxc_b = psi4.core.Matrix.from_array(Vxc_b)
 
-            #add components to matrix
             F_a.axpy(1.0, self.jk.J()[0])
-            F_b.axpy(1.0, self.jk.J()[1])
+            F_a.axpy(1.0, self.jk.J()[1]) 
+            F_b.axpy(1.0, self.jk.J()[0])
+            F_b.axpy(1.0, self.jk.J()[1])                 
             F_a.axpy(1.0, Vxc_a)
             F_b.axpy(1.0, Vxc_b)
             F_a.axpy(1.0, vp_a)
             F_b.axpy(1.0, vp_b)
+
+            Vks_a = self.mints.ao_potential()
+            Vks_a.axpy(0.5, self.jk.J()[0])
+            Vks_a.axpy(0.5, self.jk.J()[1])
+            Vks_a.axpy(1.0, Vxc_a)
+
+            Vks_b = self.mints.ao_potential()
+            Vks_b.axpy(0.5, self.jk.J()[0])
+            Vks_b.axpy(0.5, self.jk.J()[1])
+            Vks_b.axpy(1.0, Vxc_b)
+            
 
             #DIIS
             diisa_e = psi4.core.triplet(F_a, D_a, self.S, False, False, False)
@@ -634,23 +646,13 @@ class U_Molecule():
             Core = 1.0 * self.H.vector_dot(D_a) + 1.0 * self.H.vector_dot(D_b)
             Hartree_a = 1.0 * self.jk.J()[0].vector_dot(D_a) + self.jk.J()[1].vector_dot(D_a)
             Hartree_b = 1.0 * self.jk.J()[0].vector_dot(D_b) + self.jk.J()[1].vector_dot(D_b)
-            Partition = 1.0 * vp_a.vector_dot(D_a) + vp_a.vector_dot(D_b)
+            Partition = 1.0 * vp_a.vector_dot(D_a) + vp_b.vector_dot(D_b)
             Exchange_Correlation = ks_e
 
             SCF_E = Core
             SCF_E += (Hartree_a + Hartree_b) * 0.5
             SCF_E += Partition
-            SCF_E += Exchange_Correlation
-
-            # SCF_E  = 1.0 * self.H.vector_dot(D_a)
-            # SCF_E  = 1.0 * self.H.vector_dot(D_b)
-
-            # SCF_E += 1.0 * self.jk.J()[0].vector_dot(D_a)
-            # SCF_E += 1.0 * self.jk.J()[1].vector_dot(D_b)
-
-            # SCF_E += 1.0 * vp_a.vector_dot(D_a)
-            # SCF_E += 1.0 * vp_a.vector_dot(D_b)
-            
+            SCF_E += Exchange_Correlation            
             SCF_E += self.Enuc
 
             #print('SCF Iter%3d: % 18.14f   % 11.7f   % 1.5E   %1.5E'
@@ -676,12 +678,6 @@ class U_Molecule():
                 # raise Exception("Maximum number of SCF cycles exceeded.")
                 print("Maximum number of SCF cycles exceeded.")
 
-        #print('\nFinal SCF energy: %.8f hartree' % SCF_E)
-        #print(F'Core                 : {2.0 * self.H.vector_dot(D)}')
-        #print(F'Hartree              : {2.0 * self.jk.J()[0].vector_dot(D)}')
-        #print(F'Exchange Correlation : {ks_e}')
-        #print(F'Nuclear Repulsion    : {self.Enuc}')
-
         if print_energies is True:
             print(F'\n')        
             print('Energy Contributions: ')
@@ -694,18 +690,21 @@ class U_Molecule():
             print(F'Total Energy           {SCF_E}')
             print(F'\n')
 
-        energies = {   self.geometry.name() : [Core, (Hartree_a + Hartree_b) * 0.5, ks_e, self.Enuc, SCF_E]   }
-        ks_index = ["Core", "Hartree", "Exchange Correlation", "Nuclear Repulsion", "Total Energy"]
-        #energies = {"Core": [Core], "Hartree":[(Hartree_a + Hartree_b) * 0.5], "Exchange Correlation": [ks_e], "Nuclear Repulsion": [self.Enuc], "Total Energy": [SCF_E]} 
+        energetics = {"Core":Core, "Hartree":(Hartree_a+Hartree_b)*0.5, "Exchange_Correlation":ks_e, "Nuclear":self.Enuc, "Total Energy":SCF_E}
 
-        self.Da = D_a
-        self.Db = D_b
-        self.Ca = C_a
-        self.Cb = C_b
-        self.epsilon_a = eigs_a
-        self.epsilon_b = eigs_b
-        self.energy = SCF_E
+        self.Da             = D_a
+        self.Db             = D_b
+        self.energy         = SCF_E
+        self.frag_energy    = SCF_E - Partition
+        self.energetics     = energetics
+        self.eig_a          = eigs_a
+        self.eig_b          = eigs_b
+        self.vks_a          = Vks_a
+        self.vks_b          = Vks_b
+        self.Fa             = F_a
+        self.Fb             = F_b
 
+        return
 
 class U_Embedding:
     def __init__(self, fragments, molecule):
@@ -717,7 +716,6 @@ class U_Embedding:
         #from mehtods
         self.fragments_Da = None
         self.fragments_Db = None
-        self.get_density_sum()
 
     def get_energies(self):
         total = []
@@ -894,6 +892,7 @@ class U_Embedding:
 
         """
         _,_,_,w = self.molecule.Vpot.get_np_xyzw()
+        print("+++++++++++++++++++++++++++++++HERE++++++++++++++++++++++++++++")
         if guess is None:
             vp_a = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.Da.np))
             vp_b = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.Db.np))
@@ -902,7 +901,25 @@ class U_Embedding:
         #else:
         #    vp_guess
 
-        S, D_mnQ, S_pmn, Spq = fouroverlap(self.molecule.wfn, self.molecule.geometry, self.molecule.basis, self.molecule.mints)
+        for scf_step in range(maxiter+1):
+
+            total_density_a = np.zeros_like(self.molecule.Da.np)
+            total_density_b = np.zeros_like(self.molecule.Db.np)
+            total_energies = 0.0
+            density_convergence = 0.0
+
+            for i in range(self.nfragments):
+
+                self.fragments[i].scf(vp_add=True, vp_matrix=vp)
+
+                total_density_a += self.fragments[i].Da.np 
+                total_density_b += self.fragments[i].Db.np 
+
+                total_energies  += self.fragments[i].frag_energy
+
+            #if np.isclose( total_densities.sum(),self.molecule.D.sum(), atol=1e-5) :
+            if np.isclose(total_energies, self.molecule.energy, atol):
+                break
 
         ## Tracking rho and changing beta
         old_rho_conv = np.inf
@@ -945,20 +962,7 @@ class U_Embedding:
             vp_total.axpy(1.0, vp_a)
             vp_total.axpy(1.0, vp_b)
 
-            vp =  [ vp_a , vp_b ]
-
-            # Calculation w/ vp
-            for i in range(self.nfragments):
-                self.fragments[i].scf(vp_add=True, vp_matrix=vp, maxiter=1400)
-                Ef += self.fragments[i].energy
-            Ef = Ef*0.5
-            Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
-            #if np.isclose( total_densities.sum(),self.molecule.D.sum(), atol=1e-5) :
-            # if np.isclose(total_energies, self.molecule.energy, atol):
-            #     break
-            if beta < 1e-7:
-                break
-        return vp_a,vp_b,vp_total,rho_convergence,Ep_convergence
+        return vp_a, vp_b, vp_total
 
 class Embedding:
     def __init__(self, fragments, molecule):
@@ -1013,10 +1017,10 @@ class Embedding:
 
             for i in range(self.nfragments):
 
-                density, energy, _ = self.fragments[i].scf(vp_add=True, vp_matrix=vp)
+                self.fragments[i].scf(vp_add=True, vp_matrix=vp)
                 
-                total_densities += density
-                total_energies  += energy
+                total_densities += self.fragments[i].D.np 
+                total_energies  += self.fragments[i].frag_energy
 
             #if np.isclose( total_densities.sum(),self.molecule.D.sum(), atol=1e-5) :
             if np.isclose(total_energies, self.molecule.energy, atol):

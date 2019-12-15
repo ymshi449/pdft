@@ -2,15 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9296cb7c-98b5-4bb1-989c-3916221b2426" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/pdft.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/pdft.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../.travis.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/test_psi4_energy.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.travis.yml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/CODE_OF_CONDUCT.md" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/LICENSE" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/MANIFEST.in" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/appveyor.yml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/devtools/README.md" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/devtools/conda-envs/test_env.yaml" beforeDir="false" />
@@ -107,6 +107,7 @@
       <change beforePath="$PROJECT_DIR$/pdft/tests/test_psi4_energy.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/setup.cfg" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/versioneer.py" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -116,14 +117,14 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.6141942">
+    <splitter split-orientation="horizontal" split-proportion="0.6104589">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/pdft.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="620">
-                  <caret line="922" column="27" lean-forward="true" selection-start-line="922" selection-start-column="27" selection-end-line="922" selection-end-column="27" />
+                <state relative-caret-position="630">
+                  <caret line="447" column="91" lean-forward="true" selection-start-line="447" selection-start-column="91" selection-end-line="447" selection-end-column="91" />
                   <folding>
                     <element signature="e#18#29#0" expanded="true" />
                   </folding>
@@ -136,18 +137,6 @@
               <provider selected="true" editor-type-id="jupyter-editor" />
             </entry>
           </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/tests/H2P_tester.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="960">
-                  <caret line="57" column="16" selection-start-line="57" selection-start-column="16" selection-end-line="57" selection-end-column="16" />
-                  <folding>
-                    <element signature="e#0#11#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
         </leaf>
       </split-first>
       <split-second>
@@ -155,8 +144,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/tests/H2P_tester.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="447">
-                  <caret line="53" column="41" lean-forward="true" selection-start-line="53" selection-start-column="41" selection-end-line="53" selection-end-column="41" />
+                <state relative-caret-position="400">
+                  <caret line="38" column="17" lean-forward="true" selection-start-line="38" selection-start-column="17" selection-end-line="38" selection-end-column="17" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
                   </folding>
@@ -193,7 +182,6 @@
       <find>fouroverlap</find>
       <find>four</find>
       <find>density</find>
-      <find>Vpot</find>
       <find>grid</find>
       <find>lD</find>
       <find>cube</find>
@@ -209,6 +197,8 @@
       <find>maximum number</find>
       <find>* 0.5</find>
       <find>SCF</find>
+      <find>HEAD</find>
+      <find>Vpot</find>
     </findStrings>
     <replaceStrings>
       <replace>i.Cb</replace>
@@ -229,7 +219,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="270" />
     <option name="y" value="204" />
     <option name="width" value="1440" />
@@ -368,12 +358,12 @@
       <workItem from="1572964773491" duration="4230000" />
       <workItem from="1574804501488" duration="1484000" />
       <workItem from="1574875012550" duration="52000" />
-      <workItem from="1576440577220" duration="941000" />
+      <workItem from="1576440577220" duration="3626000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="48499000" />
+    <option name="totallyTimeSpent" value="51184000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="-2" width="1920" height="1082" extended-state="7" />
@@ -393,8 +383,8 @@
       <window_info anchor="bottom" id="Version Control" order="8" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" weight="0.32948583" />
-      <window_info anchor="bottom" x="1920" y="55" width="1920" height="1025" id="Terminal" maximized="true" order="11" type="WINDOWED" visible="true" weight="0.32843652" />
-      <window_info active="true" anchor="bottom" x="1920" y="55" width="1920" height="1025" id="Python Console" order="12" type="WINDOWED" visible="true" weight="0.32948583" />
+      <window_info active="true" anchor="bottom" x="1920" y="55" width="1920" height="1025" id="Terminal" maximized="true" order="11" type="WINDOWED" visible="true" weight="0.32843652" />
+      <window_info anchor="bottom" x="1920" y="55" width="1920" height="1025" id="Python Console" order="12" type="WINDOWED" visible="true" weight="0.32948583" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -417,9 +407,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pdft_examples.ipynb">
-      <provider selected="true" editor-type-id="jupyter-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/Large_tester.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="760">
@@ -427,22 +414,32 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/H2P_tester.py">
+    <entry file="file://$PROJECT_DIR$/pdft_examples.ipynb">
+      <provider selected="true" editor-type-id="jupyter-editor" />
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/_pydev_imps/_pydev_execfile.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="960">
-          <caret line="57" column="16" selection-start-line="57" selection-start-column="16" selection-end-line="57" selection-end-column="16" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="340">
+          <caret line="17" selection-start-line="17" selection-end-line="17" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pdft.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="620">
-          <caret line="922" column="27" lean-forward="true" selection-start-line="922" selection-start-column="27" selection-end-line="922" selection-end-column="27" />
+        <state relative-caret-position="630">
+          <caret line="447" column="91" lean-forward="true" selection-start-line="447" selection-start-column="91" selection-end-line="447" selection-end-column="91" />
           <folding>
             <element signature="e#18#29#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/H2P_tester.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="400">
+          <caret line="38" column="17" lean-forward="true" selection-start-line="38" selection-start-column="17" selection-end-line="38" selection-end-column="17" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
           </folding>
         </state>
       </provider>
