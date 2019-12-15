@@ -4,6 +4,8 @@ from cubeprop import Cube
 import matplotlib.pyplot as plt
 
 Monomer_1 =  psi4.geometry("""
+nocom
+noreorient
 @H  -1 0 0
 @H  0 0 0
 H  1 0 0
@@ -12,6 +14,8 @@ symmetry c1
 """)
 
 Monomer_2 =  psi4.geometry("""
+nocom
+noreorient
 H  -1 0 0
 @H  0 0 0
 @H  1 0 0
@@ -19,6 +23,8 @@ units bohr
 symmetry c1
 """)
 Full_Molec =  psi4.geometry("""
+nocom
+noreorient
 1 2
 H  -1 0 0
 @H  0 0 0
@@ -45,13 +51,13 @@ mol = pdft.U_Molecule(Full_Molec, "CC-PVDZ", "SVWN")
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
-vp,vpa,vpb,rho_conv, ep_conv = pdfter.find_vp_response(maxiter=49, beta=0.1, atol=1e-5)
+vp,vpa,vpb,rho_conv, ep_conv = pdfter.find_vp(maxiter=49, beta=1, atol=1e-5)
 #%%
 # pdfter.get_energies()
 #%%
 # vp_plot = Cube(mol.wfn)
 #%%
-# vp_plot.plot_matrix(vp, 2,60)
+# vp_plot.plot_matrix(vp,2,60)
 # plt.plot(rho_conv)
 # plt.xlabel(r"iteration")
 # plt.ylabel(r"$\int |\rho_{whole} - \sum_{fragment} \rho|$")

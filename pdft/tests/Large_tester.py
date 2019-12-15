@@ -4,6 +4,8 @@ from cubeprop import Cube
 import matplotlib.pyplot as plt
 
 Full_Molec = psi4.geometry("""
+nocom
+noreorient
 C    0.0000000    0.1929272   -1.9035340
 O    0.0000000    1.1595219   -1.1616236
 O    0.0000000   -1.0680669   -1.5349870
@@ -19,6 +21,8 @@ symmetry c1
 """)
 
 Monomer_1 = psi4.geometry("""
+nocom
+noreorient
 @C    0.0000000    0.1929272   -1.9035340
 @O    0.0000000    1.1595219   -1.1616236
 @O    0.0000000   -1.0680669   -1.5349870
@@ -34,6 +38,8 @@ symmetry c1
 """)
 
 Monomer_2 = psi4.geometry("""
+nocom
+noreorient
 C    0.0000000    0.1929272   -1.9035340
 O    0.0000000    1.1595219   -1.1616236
 O    0.0000000   -1.0680669   -1.5349870
