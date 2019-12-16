@@ -67,14 +67,14 @@ psi4.set_options({'cubeprop_tasks' : ['density'],
 # energy_3, wfn_3 = psi4.energy("SVWN/cc-pVDZ", molecule=mol_geometry, return_wfn=True)
 
 #Make fragment calculations:
-f1  = pdft.U_Molecule(Monomer_2,  "6-311G", "SVWN")
-f2  = pdft.U_Molecule(Monomer_1,  "6-311G", "SVWN")
-mol = pdft.U_Molecule(Full_Molec, "6-311G", "SVWN")
+f1  = pdft.U_Molecule(Monomer_2,  "CC-PVDZ", "SVWN")
+f2  = pdft.U_Molecule(Monomer_1,  "CC-PVDZ", "SVWN")
+mol = pdft.U_Molecule(Full_Molec, "CC-PVDZ", "SVWN")
 
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
-vp,vpa,vpb,rho_conv,ep_conv = pdfter.find_vp(maxiter=140, beta=1, atol=1e-5)
+vp,vpa,vpb,rho_conv,ep_conv = pdfter.find_vp(maxiter=140, beta=4, atol=1e-5)
 #%%
 # pdfter.get_energies()
 #%%
