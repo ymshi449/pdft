@@ -74,7 +74,7 @@ mol = pdft.U_Molecule(Full_Molec, "CC-PVDZ", "SVWN")
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
-vp,vpa,vpb,rho_conv,ep_conv = pdfter.find_vp(maxiter=140, beta=4, atol=1e-5)
+vp,vpa,vpb,rho_conv, ep_conv = pdfter.find_vp(maxiter=140, beta=4, atol=1e-5)
 #%%
 # pdfter.get_energies()
 #%%
@@ -85,9 +85,9 @@ plt.plot(rho_conv)
 plt.xlabel(r"iteration")
 plt.ylabel(r"$\int |\rho_{whole} - \sum_{fragment} \rho|$")
 plt.title(r"Large Molecule (48 electrons) w/ density difference method ")
-plt.show()
+plt.savefig("rho")
 plt.plot(ep_conv)
 plt.xlabel(r"iteration")
 plt.ylabel(r"Ep")
 plt.title(r"Large w/ density difference method ")
-plt.show()
+plt.savefig("Ep")
