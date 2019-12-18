@@ -781,8 +781,6 @@ class U_Embedding:
 
         """
         # Initialize
-        total_density_a = np.zeros_like(self.molecule.H.np)
-        total_density_b = np.zeros_like(self.molecule.H.np)
         Ef = 0.0
         # Run the first iteration
         self.molecule.scf(maxiter=1000, print_energies=True)
@@ -845,20 +843,21 @@ class U_Embedding:
             # vp = [vp_a, vp_b]
             vp = [vp_total, vp_total] # Use total_vp instead of spin vp for calculation.
 
-            total_density_a = np.zeros_like(self.molecule.Da.np)
-            total_density_b = np.zeros_like(self.molecule.Db.np)
             Ef = 0.0
 
             for i in range(self.nfragments):
                 self.fragments[i].scf(vp_matrix=vp, maxiter=1000)
-                total_density_a += self.fragments[i].Da.np
-                total_density_b += self.fragments[i].Db.np
                 Ef += self.fragments[i].frag_energy
             Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
-            if np.isclose(old_rho_conv, 0, atol=1e-5):
+            if np.isclose(Ep_convergence[-2], Ep_convergence[-1], atol=atol):
+                print("Break because Ep does not update")
                 break
-
-        return vp_total, vp_a, vp_b,  rho_convergence, Ep_convergence
+            elif beta < 1e-10:
+                print("Break because even small step length can not improve.")
+                break
+            elif scf_step == maxiter:
+                # raise Exception("Maximum number of SCF cycles exceeded for vp.")
+                print("Maximum number of SCF cycles exceeded for vp.")
 
 class Embedding:
     def __init__(self, fragments, molecule):
