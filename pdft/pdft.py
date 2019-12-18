@@ -1,18 +1,19 @@
 """
 pdft.py
 """
-
+import os
+os.environ["OMP_NUM_THREADS"] = "4" # export OMP_NUM_THREADS=4
+os.environ["OPENBLAS_NUM_THREADS"] = "5" # export OPENBLAS_NUM_THREADS=4
+os.environ["MKL_NUM_THREADS"] = "6" # export MKL_NUM_THREADS=6
+os.environ["VECLIB_MAXIMUM_THREADS"] = "7" # export VECLIB_MAXIMUM_THREADS=4
+os.environ["NUMEXPR_NUM_THREADS"] = "8" # export NUMEXPR_NUM_THREADS=6
 
 import psi4
 import qcelemental as qc
 import numpy as np
-import os
+import matplotlib.pyplot as plt
 
-psi4.set_num_threads(7)
-os.environ["MKL_NUM_THREADS"] = "7"
-os.environ["NUMEXPR_NUM_THREADS"] = "7"
-os.environ["OMP_NUM_THREADS"] = "7"
-os.environ["OPENBLAS_NUM_THREADS"] = "7"
+psi4.set_num_threads(5)
 
 
 def build_orbitals(diag, A, ndocc):
@@ -752,14 +753,14 @@ class U_Embedding:
         self.fragments_Db = None
 
     def get_density_sum(self):
-        sum_a = self.fragments[0].Da.np.copy()
-        sum_b = self.fragments[0].Db.np.copy()
+        sum_a = self.fragments[0].Da.np.copy() # * 0.50
+        sum_b = self.fragments[0].Db.np.copy() # * 0.50
 
         for i in range(1,len(self.fragments)):
-            sum_a +=  self.fragments[i].Da.np
+            sum_a +=  self.fragments[i].Da.np # * 0.50
 
         for i in range(1,len(self.fragments)):
-            sum_b +=  self.fragments[i].Db.np
+            sum_b +=  self.fragments[i].Db.np # * 0.50
         self.fragments_Da = sum_a
         self.fragments_Db = sum_b
 
@@ -841,7 +842,8 @@ class U_Embedding:
             vp_b.np[:] += delta_vp_b
 
             vp_total.np[:] += delta_vp_a + delta_vp_b
-            vp = [vp_a, vp_b]
+            # vp = [vp_a, vp_b]
+            vp = [vp_total, vp_total] # Use total_vp instead of spin vp for calculation.
 
             total_density_a = np.zeros_like(self.molecule.Da.np)
             total_density_b = np.zeros_like(self.molecule.Db.np)
@@ -927,3 +929,26 @@ class Embedding:
             vp.axpy(1.0, delta_vp)
 
         return vp
+
+def plot1d_x(data, Vpot, title=None, figure = None):
+    """
+    Plot on x direction
+    :param data: Any f(r) on grid
+    """
+    x, y, z, w = Vpot.get_np_xyzw()
+    # filter to get points on z axis
+    mask = np.isclose(abs(y), 0, atol=1E-11)
+    mask2 = np.isclose(abs(z), 0, atol=1E-11)
+    order = np.argsort(x[mask & mask2])
+    if figure is None:
+        f1 = plt.figure(num=None, figsize=(16, 12), dpi=160)
+        plt.plot(x[mask & mask2][order], data[mask & mask2][order], figure=f1)
+    else:
+        plt.plot(x[mask & mask2][order], data[mask & mask2][order], figure=figure)
+    plt.axvline(x=1)
+    plt.axvline(x=-1)
+    plt.xlabel("x-axis")
+    if title is not None:
+        plt.ylabel(title)
+        plt.title(title + " plot on the X axis")
+    plt.show()

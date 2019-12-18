@@ -92,6 +92,7 @@
       <change beforePath="$PROJECT_DIR$/docs/getting_started.rst" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/index.rst" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/make.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pdft.py" beforeDir="false" afterPath="$PROJECT_DIR$/pdft.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pdft/.pdft.py.swp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/pdft/__init__.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/pdft/_version.py" beforeDir="false" />
@@ -104,6 +105,9 @@
       <change beforePath="$PROJECT_DIR$/pdft/tests/test_psi4_energy.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/setup.cfg" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Ep.png" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Ep.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Large_tester.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Large_tester.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/rho.png" beforeDir="false" afterPath="$PROJECT_DIR$/tests/rho.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/versioneer.py" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -113,17 +117,14 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.5538954">
+    <splitter split-orientation="horizontal" split-proportion="0.5298826">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/pdft.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="551">
-                  <caret line="801" column="50" lean-forward="true" selection-start-line="801" selection-start-column="50" selection-end-line="801" selection-end-column="50" />
-                  <folding>
-                    <element signature="e#18#29#0" expanded="true" />
-                  </folding>
+                <state relative-caret-position="327">
+                  <caret line="932" selection-start-line="932" selection-end-line="953" selection-end-column="14" />
                 </state>
               </provider>
             </entry>
@@ -131,12 +132,12 @@
         </leaf>
       </split-first>
       <split-second>
-        <leaf>
-          <file pinned="false" current-in-tab="true">
+        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+          <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/tests/Large_tester.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="220">
-                  <caret line="11" column="7" selection-start-line="11" selection-start-column="7" selection-end-line="11" selection-end-column="7" />
+                <state relative-caret-position="1360">
+                  <caret line="70" column="65" selection-start-line="70" selection-start-column="65" selection-end-line="70" selection-end-column="65" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
                   </folding>
@@ -144,11 +145,11 @@
               </provider>
             </entry>
           </file>
-          <file pinned="false" current-in-tab="false">
+          <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/tests/H2P_tester.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="687">
-                  <caret line="66" column="17" lean-forward="true" selection-start-line="66" selection-start-column="17" selection-end-line="66" selection-end-column="17" />
+                <state relative-caret-position="547">
+                  <caret line="63" lean-forward="true" selection-start-line="63" selection-end-line="63" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
                   </folding>
@@ -194,9 +195,10 @@
       <find>HEAD</find>
       <find>Vpot</find>
       <find>convergan</find>
-      <find>* 0.50</find>
       <find>vp_add</find>
       <find>Delta_D</find>
+      <find>* 0.50</find>
+      <find>plot</find>
     </findStrings>
     <replaceStrings>
       <replace>i.Cb</replace>
@@ -211,9 +213,9 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/tests/H2P_tester.py" />
-        <option value="$PROJECT_DIR$/pdft.py" />
         <option value="$PROJECT_DIR$/tests/Large_tester.py" />
+        <option value="$PROJECT_DIR$/pdft.py" />
+        <option value="$PROJECT_DIR$/tests/H2P_tester.py" />
       </list>
     </option>
   </component>
@@ -358,14 +360,17 @@
       <workItem from="1574804501488" duration="1484000" />
       <workItem from="1574875012550" duration="52000" />
       <workItem from="1576440577220" duration="3626000" />
+      <workItem from="1576674932047" duration="6561000" />
+      <workItem from="1576681810956" duration="1660000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="69480000" />
+    <option name="totallyTimeSpent" value="77701000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="-2" width="1920" height="1082" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.20864461" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -382,11 +387,11 @@
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" weight="0.32948583" />
       <window_info anchor="bottom" x="1920" y="55" width="1920" height="1025" id="Terminal" maximized="true" order="11" type="WINDOWED" visible="true" weight="0.32843652" />
-      <window_info active="true" anchor="bottom" x="1920" y="55" width="1920" height="1025" id="Python Console" order="12" type="WINDOWED" visible="true" weight="0.32948583" />
+      <window_info anchor="bottom" x="1920" y="57" width="1920" height="1023" id="Python Console" order="12" type="WINDOWED" visible="true" weight="0.32948583" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" x="56" y="116" width="1803" height="935" id="SciView" order="3" type="WINDOWED" weight="0.2145144" />
+      <window_info anchor="right" x="1960" y="246" width="1833" height="935" id="SciView" order="3" type="WINDOWED" weight="0.2145144" />
       <window_info anchor="right" x="0" y="0" width="430" height="882" id="Documentation" order="4" side_tool="true" weight="0.32977587" />
       <window_info anchor="right" id="Database" order="5" />
     </layout>
@@ -415,20 +420,11 @@
     <entry file="file://$PROJECT_DIR$/pdft_examples.ipynb">
       <provider selected="true" editor-type-id="jupyter-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/pdft/pdft.py">
+    <entry file="file://$PROJECT_DIR$/pdft/pdft.py" />
+    <entry file="file://$PROJECT_DIR$/tests/Large_tester.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="87">
-          <caret line="732" column="14" lean-forward="true" selection-start-line="732" selection-start-column="14" selection-end-line="732" selection-end-column="14" />
-          <folding>
-            <element signature="e#18#29#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/H2P_tester.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="687">
-          <caret line="66" column="17" lean-forward="true" selection-start-line="66" selection-start-column="17" selection-end-line="66" selection-end-column="17" />
+        <state relative-caret-position="1360">
+          <caret line="70" column="65" selection-start-line="70" selection-start-column="65" selection-end-line="70" selection-end-column="65" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
@@ -437,18 +433,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pdft.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="551">
-          <caret line="801" column="50" lean-forward="true" selection-start-line="801" selection-start-column="50" selection-end-line="801" selection-end-column="50" />
-          <folding>
-            <element signature="e#18#29#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="327">
+          <caret line="932" selection-start-line="932" selection-end-line="953" selection-end-column="14" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/Large_tester.py">
+    <entry file="file://$PROJECT_DIR$/tests/H2P_tester.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="11" column="7" selection-start-line="11" selection-start-column="7" selection-end-line="11" selection-end-column="7" />
+        <state relative-caret-position="547">
+          <caret line="63" lean-forward="true" selection-start-line="63" selection-end-line="63" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
