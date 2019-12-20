@@ -415,4 +415,5 @@ def cube_to_array(fname):
     cube.close()
     return data, meta
 
-
+# def get_density(wfn, Matrix, L, D, name=None, cube_file=False):
+#     vp_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, vp, "Large_vp")

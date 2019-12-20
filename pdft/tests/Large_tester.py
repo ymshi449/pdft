@@ -68,34 +68,34 @@ mol = pdft.U_Molecule(Full_Molec, "cc-pvdz", "SVWN")
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
-vp,vpa,vpb,rho_conv, ep_conv = pdfter.find_vp_response(maxiter=1, beta=0.05, atol=1e-5)
+vp,vpa,vpb,rho_conv, ep_conv = pdfter.find_vp(maxiter=2, beta=5, atol=1e-5)
 
 #%% Plotting
-#Set the box lenght and grid fineness.
-L = [8.0,  8.0, 8.0]
-D = [0.2, 0.2, 0.2]
-#%%
-# Plot file
-O, N =  libcubeprop.build_grid(mol.wfn, L, D)
-block, points, nxyz, npoints = libcubeprop.populate_grid(mol.wfn, O, N, D)
-f, (ax1, ax2) = plt.subplots(1, 2)
-# # Plot vp
-vp_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, vp, "Large_vp")
-# vp_cube, cube_info = libcubeprop.cube_to_array("Large_vp.cube")
-ax1.imshow(vp_cube[43, :, :], interpolation="bicubic")
-# ax1.colorbar()
-ax1.set_title("vp")
-density = psi4.core.Matrix.from_array(mol.Da.np + mol.Db.np)
-# Plot density
-rho_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, density, "Large_rho")
-del block
-del points
-del nxyz
-del npoints
-# rho_cube, cube_info = libcubeprop.cube_to_array("Large_rho.cube")
-ax2.imshow(rho_cube[43, :, :], interpolation="bicubic")
-# ax2.colorbar()
-ax2.set_title("Density")
+# #Set the box lenght and grid fineness.
+# L = [8.0,  8.0, 8.0]
+# D = [0.2, 0.2, 0.2]
+# #%%
+# # Plot points
+# O, N =  libcubeprop.build_grid(mol.wfn, L, D)
+# block, points, nxyz, npoints = libcubeprop.populate_grid(mol.wfn, O, N, D)
+# fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 12), dpi=160)
+# # # Plot vp
+# vp_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, vp, "Large_vp")
+# # vp_cube, cube_info = libcubeprop.cube_to_array("Large_vp.cube")
+# pt1 = ax1.imshow(vp_cube[40, :, :], interpolation="bicubic")
+# fig.colorbar(pt1, ax=ax1)
+# ax1.set_title("vp")
+# # Plot density
+# density = psi4.core.Matrix.from_array(mol.Da.np + mol.Db.np)
+# rho_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, density, "Large_rho")
+# del block
+# del points
+# del nxyz
+# del npoints
+# # rho_cube, cube_info = libcubeprop.cube_to_array("Large_rho.cube")
+# pt2 = ax2.imshow(rho_cube[40, :, :], interpolation="bicubic")
+# fig.colorbar(pt2, ax=ax2)
+# ax2.set_title("Density")
 # ## max index
 # # np.unravel_index(np.argmax(np.abs(h2o_cube), axis=None), np.abs(h2o_cube).shape)
 

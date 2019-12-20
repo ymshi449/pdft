@@ -593,8 +593,8 @@ class U_Molecule():
         else:
             vp_a = psi4.core.Matrix(self.nbf,self.nbf)
             vp_b = psi4.core.Matrix(self.nbf,self.nbf)
-            vp_a.np[:] = 0
-            vp_b.np[:] = 0
+            vp_a.np[:] = 0.0
+            vp_b.np[:] = 0.0
             self.initialize()
 
 
@@ -841,10 +841,9 @@ class U_Embedding:
             total_density_a = np.zeros_like(self.molecule.Da.np)
             total_density_b = np.zeros_like(self.molecule.Db.np)
             Ef = 0.0
-
             for i in range(self.nfragments):
                 self.fragments[i].scf(vp_matrix=vp, maxiter=1000)
-                Ef += self.fragments[i].frag_energy
+                Ef += self.fragments[i].frag_energy - self.fragments[i].Enuc
             Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
             if np.isclose(Ep_convergence[-2], Ep_convergence[-1], atol=atol):
                 print("Break because Ep does not update")
@@ -992,7 +991,7 @@ class U_Embedding:
             for i in range(self.nfragments):
                 print("Calcualte fragment %i with new vp" %i)
                 self.fragments[i].scf(vp_matrix=vp, maxiter=100, print_energies=True)
-                Ef += self.fragments[i].frag_energy
+                Ef += self.fragments[i].frag_energy - self.fragments[i].Enuc
             Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
             # if np.isclose( total_densities.sum(),self.molecule.D.sum(), atol=1e-5) :
             if np.isclose(Ep_convergence[-2], Ep_convergence[-1], atol=atol):
