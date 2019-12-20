@@ -619,6 +619,7 @@ class U_Molecule():
         D_conv = psi4.core.get_option("SCF", "D_CONVERGENCE")
 
         for SCF_ITER in range(maxiter+1):
+            print(SCF_ITER)
 
             self.jk.C_left_add(Cocc_a)
             self.jk.C_left_add(Cocc_b)
@@ -640,23 +641,22 @@ class U_Molecule():
             F_a.axpy(1.0, self.jk.J()[0])
             F_a.axpy(1.0, self.jk.J()[1]) 
             F_b.axpy(1.0, self.jk.J()[0])
-            F_b.axpy(1.0, self.jk.J()[1])                 
+            F_b.axpy(1.0, self.jk.J()[1])
             F_a.axpy(1.0, Vxc_a)
             F_b.axpy(1.0, Vxc_b)
             F_a.axpy(1.0, vp_a)
             F_b.axpy(1.0, vp_b)
 
             Vks_a = self.mints.ao_potential()
-            Vks_a.axpy(0.5, self.jk.J()[0])
-            Vks_a.axpy(0.5, self.jk.J()[1])
+            Vks_a.axpy(0.5, self.jk.J()[0])  # why there is a 0.5
+            Vks_a.axpy(0.5, self.jk.J()[1])  # why there is a 0.5
             Vks_a.axpy(1.0, Vxc_a)
 
             Vks_b = self.mints.ao_potential()
-            Vks_b.axpy(0.5, self.jk.J()[0])
-            Vks_b.axpy(0.5, self.jk.J()[1])
+            Vks_b.axpy(0.5, self.jk.J()[0])  # why there is a 0.5
+            Vks_b.axpy(0.5, self.jk.J()[1])  # why there is a 0.5
             Vks_b.axpy(1.0, Vxc_b)
             
-
             #DIIS
             diisa_e = psi4.core.triplet(F_a, D_a, self.S, False, False, False)
             diisa_e.subtract(psi4.core.triplet(self.S, D_a, F_a, False, False, False))
@@ -674,7 +674,7 @@ class U_Molecule():
             Core = 1.0 * self.H.vector_dot(D_a) + 1.0 * self.H.vector_dot(D_b)
             Hartree_a = 1.0 * self.jk.J()[0].vector_dot(D_a) + self.jk.J()[1].vector_dot(D_a)
             Hartree_b = 1.0 * self.jk.J()[0].vector_dot(D_b) + self.jk.J()[1].vector_dot(D_b)
-            Partition = 1.0 * vp_a.vector_dot(D_a) + vp_b.vector_dot(D_b)
+            Partition = vp_a.vector_dot(D_a) + vp_b.vector_dot(D_b)
             Exchange_Correlation = ks_e
 
             SCF_E = Core
@@ -710,17 +710,17 @@ class U_Molecule():
                     print(F'SCF Convergence: NUM_ITER = {SCF_ITER} dE = {abs(SCF_E - Eold)} dDIIS = {dRMS}')
 
 
-        if print_energies is True:
-            print(F'\n')
-            print('Energy Contributions: ')
-            print('\n')
-            print(F'Core:                  {Core}')
-            print(F'Hartree:              {(Hartree_a + Hartree_b) * 0.5}')
-            print(F'Exchange Correlation:  {ks_e}')
-            print(F'Partition Energy:      {Partition}')
-            print(F'Nuclear Repulsion:     {self.Enuc}')
-            print(F'Total Energy           {SCF_E}')
-            print(F'\n')
+        # if print_energies is True:
+        #     print(F'\n')
+        #     print('Energy Contributions: ')
+        #     print('\n')
+        #     print(F'Core:                  {Core}')
+        #     print(F'Hartree:              {(Hartree_a + Hartree_b) * 0.5}')
+        #     print(F'Exchange Correlation:  {ks_e}')
+        #     print(F'Partition Energy:      {Partition}')
+        #     print(F'Nuclear Repulsion:     {self.Enuc}')
+        #     print(F'Total Energy           {SCF_E}')
+        #     print(F'\n')
 
         energetics = {"Core":Core, "Hartree":(Hartree_a+Hartree_b)*0.5, "Exchange_Correlation":ks_e, "Nuclear":self.Enuc, "Total Energy":SCF_E}
 
@@ -785,8 +785,6 @@ class U_Embedding:
         self.molecule.scf(maxiter=1000, print_energies=True)
         for i in range(self.nfragments):
             self.fragments[i].scf(maxiter=1000, print_energies=True)
-            Ef += self.fragments[i].energy
-        for i in range(self.nfragments):
             Ef += self.fragments[i].frag_energy
         # vp initialize
         if guess is None:
@@ -863,6 +861,7 @@ class U_Embedding:
     def find_vp_response(self, maxiter=21, beta=None, atol=2e-4, guess=None):
         """
         Using the inverse of static response function to update dvp from a dn.
+        This version did inversion on xi_q =  psi_i*psi_j where psi is mo.
         See Jonathan's Thesis 5.4 5.5 5.6.
         :param maxiter: maximum iterations
         :param atol: convergence criteria
@@ -875,8 +874,6 @@ class U_Embedding:
         self.molecule.scf(maxiter=1000, print_energies=True)
         for i in range(self.nfragments):
             self.fragments[i].scf(maxiter=1000, print_energies=True)
-            Ef += self.fragments[i].energy
-        for i in range(self.nfragments):
             Ef += self.fragments[i].frag_energy
         # vp initialize
         if guess is None:
@@ -898,7 +895,8 @@ class U_Embedding:
         # Prepare for tha auxiliary basis set.
         aux_basis = psi4.core.BasisSet.build(self.molecule.geometry, "DF_BASIS_SCF", "",
                                              "JKFIT", self.molecule.basis)
-        S_Pmn_ao = np.squeeze(self.molecule.mints.ao_3coverlap(aux_basis, self.molecule.wfn.basisset(),
+        S_Pmn_ao = np.squeeze(self.molecule.mints.ao_3coverlap(aux_basis,
+                                                               self.molecule.wfn.basisset(),
                                                                self.molecule.wfn.basisset()))
         S_Pmn_ao = 0.5*(np.transpose(S_Pmn_ao, (0, 2, 1)) + S_Pmn_ao)
         S_PQ = np.array(self.molecule.mints.ao_overlap(aux_basis, aux_basis))
@@ -956,13 +954,17 @@ class U_Embedding:
                 S_Pmn_mo_b = np.einsum('mi,nj,Pmn->Pij', i.Cb.np, i.Cb.np, S_Pmn_ao, optimize=True)
 
                 # Normalization
-                fouroverlap_a = np.einsum('mij,nij,mn->ij', S_Pmn_mo_a[:, :i.wfn.nalpha(), i.wfn.nalpha():], S_Pmn_mo_a[:, :i.wfn.nalpha(), i.wfn.nalpha():], S_PQinv, optimize=True)
-                fouroverlap_b = np.einsum('mij,nij,mn->ij', S_Pmn_mo_b[:, :i.wfn.nbeta(), i.wfn.nbeta():], S_Pmn_mo_b[:, :i.wfn.nbeta(), i.wfn.nbeta():], S_PQinv, optimize=True)
+                fouroverlap_a = np.einsum('mij,nij,mn->ij', S_Pmn_mo_a[:, :i.wfn.nalpha(), i.wfn.nalpha():],
+                                          S_Pmn_mo_a[:, :i.wfn.nalpha(), i.wfn.nalpha():], S_PQinv, optimize=True)
+                fouroverlap_b = np.einsum('mij,nij,mn->ij', S_Pmn_mo_b[:, :i.wfn.nbeta(), i.wfn.nbeta():],
+                                          S_Pmn_mo_b[:, :i.wfn.nbeta(), i.wfn.nbeta():], S_PQinv, optimize=True)
                 fouroverlap_a += 1e-17
                 fouroverlap_b += 1e-17
-                C_a += np.einsum('ai,bj,Cij,ij -> Cab', i.Ca.np[:, :i.wfn.nalpha()], i.Ca.np[:, i.wfn.nalpha():], S_Pmn_mo_a[:, :i.wfn.nalpha(), i.wfn.nalpha():],
+                C_a += np.einsum('ai,bj,Cij,ij -> Cab', i.Ca.np[:, :i.wfn.nalpha()], i.Ca.np[:, i.wfn.nalpha():],
+                                 S_Pmn_mo_a[:, :i.wfn.nalpha(), i.wfn.nalpha():],
                                  epsilon_a/fouroverlap_a/(2*np.sqrt(2/np.pi)), optimize=True)
-                C_b += np.einsum('ai,bj,Cij,ij -> Cab', i.Cb.np[:, :i.wfn.nbeta()], i.Cb.np[:, i.wfn.nbeta():], S_Pmn_mo_b[:, :i.wfn.nbeta(), i.wfn.nbeta():],
+                C_b += np.einsum('ai,bj,Cij,ij -> Cab', i.Cb.np[:, :i.wfn.nbeta()], i.Cb.np[:, i.wfn.nbeta():],
+                                 S_Pmn_mo_b[:, :i.wfn.nbeta(), i.wfn.nbeta():],
                                  epsilon_b/fouroverlap_b/(2*np.sqrt(2/np.pi)), optimize=True)
 
             # vp(r) = C_{Cab}(CD)^{-1}(Dmn)dD_(mn)\phi_a(r)\phi_b(r) = dvp_a/b_r_{ab}\phi_a(r)\phi_b(r)
@@ -973,11 +975,11 @@ class U_Embedding:
             delta_vp_a = np.einsum('Cab,CD,Dmn,mn -> ab', C_a, S_PQinv, S_Pmn_ao, - beta * DaDiff, optimize=True)
             delta_vp_b = np.einsum('Cab,CD,Dmn,mn -> ab', C_b, S_PQinv, S_Pmn_ao, - beta * DbDiff, optimize=True)
 
-            delta_vp_a = 0.5*(delta_vp_a.T + delta_vp_a)
-            delta_vp_b = 0.5*(delta_vp_b.T + delta_vp_b)
-
             delta_vp_a = np.einsum('ijmn,mn->ij', fouroverlap, delta_vp_a)
             delta_vp_b = np.einsum('ijmn,mn->ij', fouroverlap, delta_vp_b)
+
+            delta_vp_a = 0.5*(delta_vp_a.T + delta_vp_a)
+            delta_vp_b = 0.5*(delta_vp_b.T + delta_vp_b)
 
             vp_a.np[:] += delta_vp_a
             vp_b.np[:] += delta_vp_b
@@ -988,7 +990,8 @@ class U_Embedding:
             Ef = 0.0
             # Check for convergence
             for i in range(self.nfragments):
-                self.fragments[i].scf(vp_matrix=vp, maxiter=1000, print_energies=True)
+                print("Calcualte fragment %i with new vp" %i)
+                self.fragments[i].scf(vp_matrix=vp, maxiter=100, print_energies=True)
                 Ef += self.fragments[i].frag_energy
             Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
             # if np.isclose( total_densities.sum(),self.molecule.D.sum(), atol=1e-5) :
