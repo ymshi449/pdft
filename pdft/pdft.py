@@ -847,7 +847,7 @@ class U_Embedding:
 
             for i in range(self.nfragments):
                 self.fragments[i].scf(vp_matrix=vp, maxiter=1000)
-                Ef += self.fragments[i].frag_energy
+                Ef += self.fragments[i].frag_energy - self.fragments[i].Enuc
             Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
             if np.isclose(Ep_convergence[-2], Ep_convergence[-1], atol=atol):
                 print("Break because Ep does not update")
