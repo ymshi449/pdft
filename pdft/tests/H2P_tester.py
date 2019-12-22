@@ -45,34 +45,33 @@ psi4.set_options({
 # energy_3, wfn_3 = psi4.energy("SVWN/cc-pVDZ", molecule=mol_geometry, return_wfn=True)
 
 #Make fragment calculations:
-f1  = pdft.U_Molecule(Monomer_2,  "6-311G", "SVWN")
-f2  = pdft.U_Molecule(Monomer_1,  "6-311G", "SVWN")
-mol = pdft.U_Molecule(Full_Molec, "6-311G", "SVWN")
+f1  = pdft.U_Molecule(Monomer_2,  "CC-PVDZ", "SVWN")
+f2  = pdft.U_Molecule(Monomer_1,  "CC-PVDZ", "SVWN")
+mol = pdft.U_Molecule(Full_Molec, "CC-PVDZ", "SVWN")
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
-vp,vpa,vpb,rho_conv, ep_conv = pdfter.find_vp_response(maxiter=10, beta=1, atol=1e-5)
+vp,vpa,vpb,rho_conv, ep_conv = pdfter.find_vp_response(maxiter=1, beta=1, atol=1e-5)
 #%%
 # pdfter.get_energies()
 #%%
-#%% Plotting
-#Set the box lenght and grid fineness.
-L = [8.0,  8.0, 8.0]
-D = [0.2, 0.2, 0.2]
-#%%
-# Plot file
-O, N =  libcubeprop.build_grid(mol.wfn, L, D)
-block, points, nxyz, npoints = libcubeprop.populate_grid(mol.wfn, O, N, D)
-f, (ax1, ax2) = plt.subplots(1, 2)
-vp_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, vp)
-libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, vp, name="Large_vp", weite_file=True)
-vp_cube1, _ = libcubeprop.cube_to_array("Large_vp.cube")
+# #%% Plotting Cubic
+# #Set the box lenght and grid fineness.
+# L = [8.0,  8.0, 8.0]
+# D = [0.2, 0.2, 0.2]
+# # Plot file
+# O, N =  libcubeprop.build_grid(mol.wfn, L, D)
+# block, points, nxyz, npoints = libcubeprop.populate_grid(mol.wfn, O, N, D)
+# f, (ax1, ax2) = plt.subplots(1, 2)
+# vp_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, vp)
 
 # #%%
-# # vp_plot.plot_matrix(vp,2,60)
-# vp_grid = mol.to_grid(vp.np)
-# fig3 = plt.figure(num=3, figsize=(16, 12), dpi=160)
-# pdft.plot1d_x(vp_grid, mol.Vpot, title="vp", figure=fig3)
+vp_grid = mol.to_grid(mol.Da.np + mol.Db.np - f1.Da.np - f1.Db.np - f2.Da.np - f2.Db.np)
+fig4 = plt.figure(num=3, figsize=(12, 9), dpi=160)
+pdft.plot1d_x(vp_grid, mol.Vpot, title="density", figure=fig4)
+vp_grid = mol.to_grid(vp.np)
+fig3 = plt.figure(num=3, figsize=(12, 9), dpi=160)
+pdft.plot1d_x(vp_grid, mol.Vpot, title="vp", figure=fig3)
 #
 # fig1 = plt.figure(num=1, figsize=(16, 12), dpi=160)
 # plt.plot(rho_conv, figure=fig1)
