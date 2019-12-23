@@ -619,8 +619,6 @@ class U_Molecule():
         D_conv = psi4.core.get_option("SCF", "D_CONVERGENCE")
 
         for SCF_ITER in range(maxiter+1):
-            print(SCF_ITER)
-
             self.jk.C_left_add(Cocc_a)
             self.jk.C_left_add(Cocc_b)
             self.jk.compute()
@@ -973,11 +971,11 @@ class U_Embedding:
             # Based on the naive hope, whenever the current lamdb does not improve the density, get a smaller one.
             if old_rho_conv < np.sum(np.abs(rho_fragment - rho_molecule)*w):
                 beta *= 0.7
-                lamdb_lastupdate_iter = scf_step
+                beta_lastupdate_iter = scf_step
             # If some lamdb has beed updating for a more than a long period, try to increase it to converge faster.
             elif (scf_step - beta_lastupdate_iter) > 21:
                 beta /= 0.8
-                lamdb_lastupdate_iter = scf_step
+                beta_lastupdate_iter = scf_step
 
             old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule)*w)
             rho_convergence.append(old_rho_conv)
@@ -989,7 +987,6 @@ class U_Embedding:
             C_a = np.zeros_like(S_Pmn_ao)
             C_b = np.zeros_like(S_Pmn_ao)
             for i in self.fragments:
-                print("fragment", i)
                 # GET dvp
                 # matrices for epsilon_i - epsilon_j. M
                 epsilon_occ_a = i.eig_a.np[:i.nalpha, None]
@@ -1016,13 +1013,14 @@ class U_Embedding:
                 C_b += np.einsum('ai,bj,Cij,ij -> Cab', i.Cb.np[:, :i.nbeta], i.Cb.np[:, i.nbeta:],
                                  S_Pmn_mo_b[:, :i.nbeta, i.nbeta:],
                                  epsilon_b/np.sqrt(fouroverlap_b)/(2*np.sqrt(2/np.pi)), optimize=True)
-
+            
             # vp(r) = C_{Cab}(CD)^{-1}(Dmn)dD_(mn)\phi_a(r)\phi_b(r) = dvp_a/b_r_{ab}\phi_a(r)\phi_b(r)
             # Basically this is the coefficients of vp(r) on rhorho
             DaDiff = np.copy(self.fragments_Da - self.molecule.Da.np)
             DbDiff = np.copy(self.fragments_Db - self.molecule.Db.np)
-            # DaDiff[:] = 100
-            # DbDiff[:] = 100
+            # DaDiff[:] = -1
+            # DbDiff[:] = -1
+            print("NORM", np.linalg.norm(C_a), np.linalg.norm(C_b))
             # vp(r) = C_{Cab}(CD)^{-1}(Dmn)dD_(mn)\phi_a(r)\phi_b(r) = dvp_a/b_r_{ab}\phi_a(r)\phi_b(r)
             delta_vp_a = np.einsum('Cab,CD,Dmn,mn -> ab', C_a, S_PQinv, S_Pmn_ao, - beta * DaDiff, optimize=True)
             delta_vp_b = np.einsum('Cab,CD,Dmn,mn -> ab', C_b, S_PQinv, S_Pmn_ao, - beta * DbDiff, optimize=True)
@@ -1032,18 +1030,18 @@ class U_Embedding:
 
             delta_vp_a = 0.5*(delta_vp_a.T + delta_vp_a)
             delta_vp_b = 0.5*(delta_vp_b.T + delta_vp_b)
-
             vp_a.np[:] += delta_vp_a
             vp_b.np[:] += delta_vp_b
 
             vp_total.np[:] += delta_vp_a + delta_vp_b
             vp = [vp_total, vp_total]
+            
             # # Update fragments info with vp we just git
             # Ef = 0.0
             # # Check for convergence
             # for i in range(self.nfragments):
-            #     print("Calcualte fragment %i with new vp" %i)
-            #     self.fragments[i].scf(vp_matrix=vp, maxiter=100, print_energies=True)
+            #     # print("Calcualte fragment %i with new vp" %i)
+            #     self.fragments[i].scf(vp_matrix=vp, maxiter=100, print_energies=False)
             #     Ef += self.fragments[i].frag_energy - self.fragments[i].Enuc
             # Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
             # # if np.isclose( total_densities.sum(),self.molecule.D.sum(), atol=1e-5) :
@@ -1057,7 +1055,7 @@ class U_Embedding:
             #     # raise Exception("Maximum number of SCF cycles exceeded for vp.")
             #     print("Maximum number of SCF cycles exceeded for vp.")
 
-        return vp_a, vp_b, vp_total, rho_convergence, Ep_convergence
+        return vp_total, vp_a, vp_b,  rho_convergence, Ep_convergence
 
 class Embedding:
     def __init__(self, fragments, molecule):
