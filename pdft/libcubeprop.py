@@ -327,11 +327,10 @@ def write_cube_file(wfn, O, N, D, nxyz, npoints, v, name, header):
         f.write("  ")
         if i%6 == 5:
             f.write("\n")
-
     f.close()
 
 
-def compute_density(wfn, O, N, D, npoints, points, nxyz, block, matrix, name=None, weite_file=False):
+def compute_density(wfn, O, N, D, npoints, points, nxyz, block, matrix, name=None, write_file=False):
 
     v = add_density(npoints, points, block, matrix)
     isocontour_range, threshold = compute_isocontour_range(v, npoints)
@@ -340,7 +339,7 @@ def compute_density(wfn, O, N, D, npoints, points, nxyz, block, matrix, name=Non
 
     header = F"""[e/a0^3]. Isocontour range for {density_percent} of the density ({format(isocontour_range[0], '1.5f')},{format(isocontour_range[1],'1.5f')}) \n"""
 
-    if weite_file is False:
+    if write_file is False:
         v2 = np.zeros_like(v)
         offset = 0
         for istart in range(0, int(N[0] + 1), nxyz):
