@@ -58,7 +58,7 @@ Full_Molec.set_name("Large")
 #Psi4 Options:
 psi4.set_options({'DFT_SPHERICAL_POINTS': 434,
                   'DFT_RADIAL_POINTS': 99,
-                  'REFERENCE' : 'RKS'})
+                  'REFERENCE' : 'UKS'})
 
 #Make fragment calculations:
 f1  = pdft.U_Molecule(Monomer_2,  "CC-PVDZ", "SVWN")
