@@ -774,29 +774,39 @@ class U_Embedding:
         beta: positive float
             Coefficient for delta_n = beta * (sum_fragment_densities - molecule_density)
 
+        guess = [vpa, vpb]
         Returns
         -------
         vp: psi4.core.Matrix
             Vp to be added to fragment ks matrix
 
         """
-        # Initialize
-        Ef = 0.0
-        # Run the first iteration
-        self.molecule.scf(maxiter=1000, print_energies=True)
-        for i in range(self.nfragments):
-            self.fragments[i].scf(maxiter=1000, print_energies=True)
-            Ef += self.fragments[i].energy
-        for i in range(self.nfragments):
-            total_density_a += self.fragments[i].Da.np
-            total_density_b += self.fragments[i].Db.np
-            Ef += self.fragments[i].frag_energy
         # vp initialize
         if guess is None:
-            vp_a = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.Da.np))
-            vp_b = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.Db.np))
-            vp_total = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.Db.np))
+            vp_a = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
+            vp_b = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
+            vp_total = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
             vp =  [ vp_a , vp_b ]
+            # Initialize
+            Ef = 0.0
+            # Run the first iteration
+            self.molecule.scf(maxiter=1000, print_energies=True)
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=1000, print_energies=True)
+                Ef += self.fragments[i].frag_energy - self.fragments[i].Enuc
+        else:
+            vp_a = guess[0]
+            vp_b = guess[1]
+            vp_total = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.Db.np))
+            vp_total.np[:] += vp_a.np + vp_b.np
+            vp = guess
+            # Initialize
+            Ef = 0.0
+            # Run the first iteration
+            self.molecule.scf(maxiter=1000, print_energies=True)
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=1000, print_energies=True, vp_matrix=vp)
+                Ef += self.fragments[i].frag_energy - self.fragments[i].Enuc
 
         _,_,_,w = self.molecule.Vpot.get_np_xyzw()
 
