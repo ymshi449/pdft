@@ -13,7 +13,7 @@ import qcelemental as qc
 import numpy as np
 import matplotlib.pyplot as plt
 
-psi4.set_num_threads(5)
+psi4.set_num_threads(3)
 
 
 def build_orbitals(diag, A, ndocc):
@@ -778,6 +778,10 @@ class U_Embedding:
         self.fragments_Da = None
         self.fragments_Db = None
 
+        # vp
+        self.vp_fock = None
+        self.vp      = None  # Real function on basis
+
     def get_density_sum(self):
         sum_a = self.fragments[0].Da.np.copy() * self.fragments[0].omega
         sum_b = self.fragments[0].Db.np.copy() * self.fragments[0].omega
@@ -798,7 +802,7 @@ class U_Embedding:
         ----------
         beta: positive float
             Coefficient for delta_n = beta * (sum_fragment_densities - molecule_density)
-        guess: list [vp_a, vp_b]
+        guess: Initial vp. Default None. If True, using self.vp and self.vp_fock. Otherwise, using given [vpa, vpb].
         Returns
         -------
         vp: psi4.core.Matrix
@@ -806,36 +810,61 @@ class U_Embedding:
 
         """
         # vp initialize
+        # self.fragments[1].flip_spin()
+        self.molecule.scf(maxiter=1000, print_energies=True)
+        S, _, _, _ = fouroverlap(self.molecule.wfn, self.molecule.geometry,
+                                           self.molecule.basis, self.molecule.mints)
         if guess is None:
             vp_a = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
             vp_b = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
             vp_total = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
-            vp =  [ vp_a , vp_b ]
+
+            vp_afock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
+            vp_bfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
+            vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
             # Initialize
             Ef = 0.0
             # Run the first iteration
-            self.molecule.scf(maxiter=1000, print_energies=True)
             for i in range(self.nfragments):
                 self.fragments[i].scf(maxiter=1000, print_energies=True)
+                Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+        elif guess is True:
+            vp_a = self.vp[0]
+            vp_b = self.vp[1]
+            vp_total = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.Db.np))
+            vp_total.np[:] += vp_a.np + vp_b.np
+
+            vp_afock = self.vp_fock[0]
+            vp_bfock = self.vp_fock[1]
+            vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.Db.np))
+            vp_totalfock.np[:] += vp_afock.np + vp_bfock.np
+            # Initialize
+            Ef = 0.0
+            # Run the first iteration
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=1000, print_energies=True, vp_matrix=self.vp_fock)
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
         else:
             vp_a = guess[0]
             vp_b = guess[1]
             vp_total = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.Db.np))
             vp_total.np[:] += vp_a.np + vp_b.np
-            vp = guess
+            self.vp = guess
+
+            vp_afock = np.einsum('ijmn,mn->ij', S, vp_a)
+            vp_bfock = np.einsum('ijmn,mn->ij', S, vp_b)
+            vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.Db.np))
+            vp_totalfock.np[:] += vp_afock.np + vp_bfock.np
+            self.vp_fock = [vp_totalfock, vp_totalfock]
+            flag_update_vpfock = True
             # Initialize
             Ef = 0.0
             # Run the first iteration
-            self.molecule.scf(maxiter=1000, print_energies=True)
             for i in range(self.nfragments):
-                self.fragments[i].scf(maxiter=1000, print_energies=True, vp_matrix=vp)
+                self.fragments[i].scf(maxiter=1000, print_energies=True, vp_matrix=self.vp_fock)
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
 
         _,_,_,w = self.molecule.Vpot.get_np_xyzw()
-
-        S, _, _, _ = fouroverlap(self.molecule.wfn, self.molecule.geometry,
-                                           self.molecule.basis, self.molecule.mints)
 
         ## Tracking rho and changing beta
         old_rho_conv = np.inf
@@ -852,11 +881,11 @@ class U_Embedding:
             rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
             # Based on a naive hope, whenever the current beta does not improve the density, get a smaller one.
             if old_rho_conv < np.sum(np.abs(rho_fragment - rho_molecule)*w):
-                beta *= 0.9
+                beta *= 0.7
                 beta_lastupdate_iter = scf_step
             # If some beta has beed used for a more than a long period, try to increase it to converge faster.
             elif (scf_step - beta_lastupdate_iter) > 3:
-                beta /= 0.95
+                beta /= 0.8
                 beta_lastupdate_iter = scf_step
             old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule)*w)
             rho_convergence.append(old_rho_conv)
@@ -867,22 +896,26 @@ class U_Embedding:
             delta_vp_b = beta * (self.fragments_Db - self.molecule.Db.np)
             delta_vp_a = 0.5 * (delta_vp_a + delta_vp_a.T)
             delta_vp_b = 0.5 * (delta_vp_b + delta_vp_b.T)
-            delta_vp_a = np.einsum('ijmn,mn->ij', S, delta_vp_a)
-            delta_vp_b = np.einsum('ijmn,mn->ij', S, delta_vp_b)
 
             vp_a.np[:] += delta_vp_a
             vp_b.np[:] += delta_vp_b
-
             vp_total.np[:] += delta_vp_a + delta_vp_b
-            # vp = [vp_a, vp_b]
-            vp = [vp_total, vp_total] # Use total_vp instead of spin vp for calculation.
+            self.vp = [vp_total, vp_total]
+
+            delta_vp_a = np.einsum('ijmn,mn->ij', S, delta_vp_a)
+            delta_vp_b = np.einsum('ijmn,mn->ij', S, delta_vp_b)
+
+            vp_afock.np[:] += delta_vp_a
+            vp_bfock.np[:] += delta_vp_b
+            vp_totalfock.np[:] += delta_vp_a + delta_vp_b
+            self.vp_fock = [vp_totalfock, vp_totalfock] # Use total_vp instead of spin vp for calculation.
 
             Ef = 0.0
             for i in range(self.nfragments):
-                self.fragments[i].scf(vp_matrix=vp, maxiter=1000)
+                self.fragments[i].scf(vp_matrix=self.vp_fock, maxiter=1000)
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
             Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
-            if np.isclose(Ep_convergence[-2], Ep_convergence[-1], atol=atol):
+            if False: #np.isclose(Ep_convergence[-2], Ep_convergence[-1], atol=atol):
                 print("Break because Ep does not update")
                 break
             elif beta < 1e-10:
@@ -892,7 +925,7 @@ class U_Embedding:
                 # raise Exception("Maximum number of SCF cycles exceeded for vp.")
                 print("Maximum number of SCF cycles exceeded for vp.")
 
-        return vp_total, vp_a, vp_b,  rho_convergence, Ep_convergence
+        return rho_convergence, Ep_convergence
 
     def find_vp_response(self, maxiter=21, beta=None, atol=1e-7, guess=None):
         """
@@ -905,42 +938,7 @@ class U_Embedding:
         :return:
         """
         # self.fragments[1].flip_spin()
-        if guess is None:
-            vp_a = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
-            vp_b = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
-            vp_total = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
-            vp =  [ vp_a , vp_b ]
-            # Initialize
-            Ef = 0.0
-            # Run the first iteration
-            self.molecule.scf(maxiter=1000, print_energies=True)
-            for i in range(self.nfragments):
-                self.fragments[i].scf(maxiter=1000, print_energies=True)
-                Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
-        else:
-            vp_a = guess[0]
-            vp_b = guess[1]
-            vp_total = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.Db.np))
-            vp_total.np[:] += vp_a.np + vp_b.np
-            vp = guess
-            # Initialize
-            Ef = 0.0
-            # Run the first iteration
-            self.molecule.scf(maxiter=1000, print_energies=True)
-            for i in range(self.nfragments):
-                self.fragments[i].scf(maxiter=1000, print_energies=True, vp_matrix=vp)
-                Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
-            
-        _,_,_,w = self.molecule.Vpot.get_np_xyzw()
-
-        ## Tracking rho and changing beta
-        old_rho_conv = np.inf
-        beta_lastupdate_iter = 0
-        rho_convergence = []
-        rho_molecule = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
-        Ep_convergence = []
-        Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
-
+        self.molecule.scf(maxiter=1000, print_energies=True)
         # Prepare for tha auxiliary basis set.
         aux_basis = psi4.core.BasisSet.build(self.molecule.geometry, "DF_BASIS_SCF", "",
                                              "JKFIT", self.molecule.basis)
@@ -954,6 +952,66 @@ class U_Embedding:
         S_PQinv = np.linalg.pinv(S_PQ, rcond=1e-15)
         S_PQinv = 0.5 * (S_PQinv.T + S_PQinv)
         fouroverlap = np.einsum('Pmn,PQ,Qrs->mnrs', S_Pmn_ao, S_PQinv, S_Pmn_ao, optimize=True)
+
+        if guess is None:
+            vp_a = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
+            vp_b = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
+            vp_total = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
+
+            vp_afock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
+            vp_bfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
+            vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
+            # Initialize
+            Ef = 0.0
+            # Run the first iteration
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=1000, print_energies=True)
+                Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+        elif guess is True:
+            vp_a = self.vp[0]
+            vp_b = self.vp[1]
+            vp_total = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.Db.np))
+            vp_total.np[:] += vp_a.np + vp_b.np
+
+            vp_afock = self.vp_fock[0]
+            vp_bfock = self.vp_fock[1]
+            vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.Db.np))
+            vp_totalfock.np[:] += vp_afock.np + vp_bfock.np
+            # Initialize
+            Ef = 0.0
+            # Run the first iteration
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=1000, print_energies=True, vp_matrix=self.vp_fock)
+                Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+        else:
+            vp_a = guess[0]
+            vp_b = guess[1]
+            vp_total = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.Db.np))
+            vp_total.np[:] += vp_a.np + vp_b.np
+            self.vp = guess
+
+            vp_afock = np.einsum('ijmn,mn->ij', fouroverlap, vp_a)
+            vp_bfock = np.einsum('ijmn,mn->ij', fouroverlap, vp_b)
+            vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.Db.np))
+            vp_totalfock.np[:] += vp_afock.np + vp_bfock.np
+            self.vp_fock = [vp_totalfock, vp_totalfock]
+            flag_update_vpfock = True
+            # Initialize
+            Ef = 0.0
+            # Run the first iteration
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=1000, print_energies=True, vp_matrix=self.vp_fock)
+                Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+
+        _, _, _, w = self.molecule.Vpot.get_np_xyzw()
+
+        ## Tracking rho and changing beta
+        old_rho_conv = np.inf
+        beta_lastupdate_iter = 0
+        rho_convergence = []
+        rho_molecule = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
+        Ep_convergence = []
+        Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
 
         if beta is None:
             beta = 1.0
@@ -1029,26 +1087,30 @@ class U_Embedding:
             delta_vp_a = np.einsum('Cab,CD,Dmn,mn -> ab', C_a, S_PQinv, S_Pmn_ao, - beta * DaDiff, optimize=True)
             delta_vp_b = np.einsum('Cab,CD,Dmn,mn -> ab', C_b, S_PQinv, S_Pmn_ao, - beta * DbDiff, optimize=True)
 
+            delta_vp_a = 0.5 * (delta_vp_a + delta_vp_a.T)
+            delta_vp_b = 0.5 * (delta_vp_b + delta_vp_b.T)
+
+            vp_a.np[:] += delta_vp_a
+            vp_b.np[:] += delta_vp_b
+            vp_total.np[:] += delta_vp_a + delta_vp_b
+            self.vp = [vp_total, vp_total]
+
             delta_vp_a = np.einsum('ijmn,mn->ij', fouroverlap, delta_vp_a)
             delta_vp_b = np.einsum('ijmn,mn->ij', fouroverlap, delta_vp_b)
 
-            delta_vp_a = 0.5*(delta_vp_a.T + delta_vp_a)
-            delta_vp_b = 0.5*(delta_vp_b.T + delta_vp_b)
-            vp_a.np[:] += delta_vp_a
-            vp_b.np[:] += delta_vp_b
-
-            vp_total.np[:] += delta_vp_a + delta_vp_b
-            vp = [vp_total, vp_total]
+            vp_afock.np[:] += delta_vp_a
+            vp_bfock.np[:] += delta_vp_b
+            vp_totalfock.np[:] += delta_vp_a + delta_vp_b
+            self.vp_fock = [vp_totalfock, vp_totalfock]  # Use total_vp instead of spin vp for calculation.
             
             # Update fragments info with vp we just git
             Ef = 0.0
             # Check for convergence
             for i in range(self.nfragments):
                 # print("Calcualte fragment %i with new vp" %i)
-                self.fragments[i].scf(vp_matrix=vp, maxiter=100, print_energies=False)
+                self.fragments[i].scf(vp_matrix=self.vp_fock, maxiter=100, print_energies=False)
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
             Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
-            # if np.isclose( total_densities.sum(),self.molecule.D.sum(), atol=1e-5) :
             if False: #np.isclose(Ep_convergence[-2], Ep_convergence[-1], atol=atol):
                 print("Break because Ep does not update")
                 break
@@ -1059,7 +1121,7 @@ class U_Embedding:
                 # raise Exception("Maximum number of SCF cycles exceeded for vp.")
                 print("Maximum number of SCF cycles exceeded for vp.")
 
-        return vp_total, vp_a, vp_b,  rho_convergence, Ep_convergence
+        return rho_convergence, Ep_convergence
 
 class Embedding:
     def __init__(self, fragments, molecule):
@@ -1131,7 +1193,7 @@ class Embedding:
 
         return vp
 
-def plot1d_x(data, Vpot, title=None, fignum= None):
+def plot1d_x(data, Vpot, dimmer_length=2.0, title=None, fignum= None):
     """
     Plot on x direction
     :param data: Any f(r) on grid
@@ -1147,10 +1209,11 @@ def plot1d_x(data, Vpot, title=None, fignum= None):
     else:
         f1 = plt.figure(num=fignum, figsize=(16, 12), dpi=160)
         plt.plot(x[mask & mask2][order], data[mask & mask2][order])
-    plt.axvline(x=1)
-    plt.axvline(x=-1)
+    plt.axvline(x=dimmer_length/2.0)
+    plt.axvline(x=-dimmer_length/2.0)
     plt.xlabel("x-axis")
     if title is not None:
         plt.ylabel(title)
         plt.title(title + " plot on the X axis")
     plt.show()
+    f1.savefig(title)

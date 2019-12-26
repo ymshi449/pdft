@@ -4,38 +4,41 @@ import matplotlib.pyplot as plt
 import libcubeprop
 import numpy as np
 
-Full_Molec =  psi4.geometry("""
+bondlength = 1.426
+
+Full_Molec =  psi4.geometry( """
 nocom
 noreorient
 0 3
-H  -1 0 0
-@H  0 0.4 0
-@H  0 -0.4 0
-H  1 0 0
+He %f 0.0 0.00
+@H  0 0.7 0
+@H  0 -0.7 0
+He -%f 0.0 0.00
 units bohr
-symmetry c1""")
+symmetry c1
+""" % (bondlength / 2, bondlength / 2))
 
 Monomer_1 =  psi4.geometry("""
 nocom
 noreorient
-@H  -1 0 0
-@H  0 0.4 0
-@H  0 -0.4 0
-H  1 0 0
+He %f 0.0 0.00
+@H  0 0.7 0
+@H  0 -0.7 0
+@He -%f 0.0 0.00
 units bohr
 symmetry c1
-""")
+""" % (bondlength / 2, bondlength / 2))
 
 Monomer_2 =  psi4.geometry("""
 nocom
 noreorient
-H  -1 0 0
-@H  0 0.4 0
-@H  0 -0.4 0
-@H  1 0 0
+@He %f 0.0 0.00
+@H  0 0.7 0
+@H  0 -0.7 0
+He -%f 0.0 0.00
 units bohr
 symmetry c1
-""")
+""" % (bondlength / 2, bondlength / 2))
 
 Full_Molec.set_name("H2triplet")
 
@@ -53,7 +56,10 @@ mol = pdft.U_Molecule(Full_Molec, "cc-pvdz", "SVWN")
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
-vp, vpa, vpb, rho_conv, ep_conv = pdfter.find_vp(maxiter=20, beta=10, atol=1e-12)
+# rho_conv, ep_conv = pdfter.find_vp(maxiter=50, beta=3, atol=1e-12)
+# vp_grid = mol.to_grid(pdfter.vp[0].np)
+# pdft.plot1d_x(vp_grid, mol.Vpot, title="vp", fignum=4, dimmer_length=bondlength)
+rho_conv, ep_conv = pdfter.find_vp_response(maxiter=50, beta=3, atol=1e-12)
 #%%
 # pdfter.get_energies()
 #%%
@@ -68,24 +74,9 @@ vp, vpa, vpb, rho_conv, ep_conv = pdfter.find_vp(maxiter=20, beta=10, atol=1e-12
 # vp_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, vp)
 
 #%%
-# rho = mol.to_grid(mol.Da.np + mol.Db.np)
-# pdft.plot1d_x(rho, mol.Vpot, title="density", fignum=1)
-# rho1 = mol.to_grid(f1.Da.np + f1.Db.np)
-# pdft.plot1d_x(rho1, mol.Vpot, fignum=1)
-# rho2 = mol.to_grid(f2.Da.np + f2.Db.np)
-# pdft.plot1d_x(rho2, mol.Vpot, fignum=1)
-#
-# vp_grid = mol.to_grid(mol.Da.np + mol.Db.np - f1.Da.np - f1.Db.np - f2.Da.np - f2.Db.np)
-# pdft.plot1d_x(vp_grid, mol.Vpot, title="density differnece", fignum=2)
+vp_grid = mol.to_grid(pdfter.vp[0].np)
+pdft.plot1d_x(vp_grid, mol.Vpot, title="vp", fignum=4, dimmer_length=bondlength)
 
-# vp_grid = mol.to_grid(vp.np)
-# pdft.plot1d_x(vp_grid, mol.Vpot, title="vp", fignum=4)
-
-# vp_grid = mol.to_grid(vpa.np)
-# pdft.plot1d_x(vp_grid, mol.Vpot, title="vpa", fignum=4)
-#
-# vp_grid = mol.to_grid(vpb.np)
-# pdft.plot1d_x(vp_grid, mol.Vpot, title="vpb", fignum=5)
 
 #
 # fig1 = plt.figure(num=1, figsize=(16, 12))

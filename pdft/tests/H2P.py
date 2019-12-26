@@ -4,38 +4,41 @@ import matplotlib.pyplot as plt
 import libcubeprop
 import numpy as np
 
+bondlength = 5
+
 Full_Molec =  psi4.geometry("""
 nocom
 noreorient
 1 2
-H  -1 0 0
-@H  0 0.4 0
-@H  0 -0.4 0
-H  1 0 0
+H  -%f 0.0 0
+@H  0 0.5 0
+@H  0 -0.5 0
+H  %f 0.0 0
 units bohr
-symmetry c1""")
+symmetry c1
+"""% (bondlength / 2, bondlength / 2))
 
 Monomer_1 =  psi4.geometry("""
 nocom
 noreorient
-@H  -1 0 0
-@H  0 0.4 0
-@H  0 -0.4 0
-H  1 0 0
+@H  -%f 0.0 0
+@H  0 0.5 0
+@H  0 -0.5 0
+H  %f 0.0 0
 units bohr
 symmetry c1
-""")
+"""% (bondlength / 2, bondlength / 2))
 
 Monomer_2 =  psi4.geometry("""
 nocom
 noreorient
-H  -1 0 0
-@H  0 0.4 0
-@H  0 -0.4 0
-@H  1 0 0
+H  -%f 0.0 0
+@H  0 0.5 0
+@H  0 -0.5 0
+@H  %f 0.0 0
 units bohr
 symmetry c1
-""")
+"""% (bondlength / 2, bondlength / 2))
 
 Full_Molec.set_name("H2P")
 
@@ -53,7 +56,7 @@ mol = pdft.U_Molecule(Full_Molec, "cc-pvdz", "SVWN")
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
-vp, vpa, vpb, rho_conv, ep_conv = pdfter.find_vp_response(maxiter=1, beta=1, atol=1e-5)
+rho_conv, ep_conv = pdfter.find_vp_response(maxiter=60, beta=1, atol=1e-5)
 #%%
 # pdfter.get_energies()
 #%%
@@ -68,25 +71,10 @@ vp, vpa, vpb, rho_conv, ep_conv = pdfter.find_vp_response(maxiter=1, beta=1, ato
 # vp_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, vp)
 
 #%%
-vp_grid = mol.to_grid(mol.Da.np + mol.Db.np)
-fig1 = plt.figure(num=3, figsize=(10, 8), dpi=160)
-pdft.plot1d_x(vp_grid, mol.Vpot, title="density", figure=fig1)
 
-vp_grid = mol.to_grid(mol.Da.np + mol.Db.np - 0.5*f1.Da.np - 0.5*f1.Db.np - 0.5*f2.Da.np - 0.5*f2.Db.np)
-fig2 = plt.figure(num=3, figsize=(10, 8), dpi=160)
-pdft.plot1d_x(vp_grid, mol.Vpot, title="density", figure=fig2)
+vp_grid = mol.to_grid(pdfter.vp[0].np)
+pdft.plot1d_x(vp_grid, mol.Vpot, title="vp", dimmer_length=bondlength)
 
-vp_grid = mol.to_grid(vp.np)
-fig3 = plt.figure(num=3, figsize=(10, 8), dpi=160)
-pdft.plot1d_x(vp_grid, mol.Vpot, title="vp", figure=fig3)
-
-vp_grid = mol.to_grid(vpa.np)
-fig4 = plt.figure(num=3, figsize=(10, 8), dpi=160)
-pdft.plot1d_x(vp_grid, mol.Vpot, title="vpa", figure=fig4)
-
-vp_grid = mol.to_grid(vpb.np)
-fig5 = plt.figure(num=3, figsize=(10, 8), dpi=160)
-pdft.plot1d_x(vp_grid, mol.Vpot, title="vpb", figure=fig5)
 #
 # fig1 = plt.figure(num=1, figsize=(16, 12))
 # plt.plot(rho_conv, figure=fig1)

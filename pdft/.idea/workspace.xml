@@ -4,6 +4,7 @@
     <list default="true" id="9296cb7c-98b5-4bb1-989c-3916221b2426" name="Default Changelist" comment="">
       <change afterPath="$PROJECT_DIR$/tests/H2triplet.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/tests/He2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.travis.yml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/CODE_OF_CONDUCT.md" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/LICENSE" beforeDir="false" />
@@ -114,14 +115,14 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.7465315">
+    <splitter split-orientation="horizontal" split-proportion="0.5720384">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/pdft.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="440">
-                  <caret line="902" column="41" lean-forward="true" selection-start-line="902" selection-start-column="41" selection-end-line="902" selection-end-column="41" />
+                  <caret line="949" column="34" lean-forward="true" selection-start-line="949" selection-start-column="34" selection-end-line="949" selection-end-column="34" />
                 </state>
               </provider>
             </entry>
@@ -133,7 +134,7 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/tests/formic.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="680">
+                <state relative-caret-position="861">
                   <caret line="70" column="65" selection-start-line="70" selection-start-column="65" selection-end-line="70" selection-end-column="65" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
@@ -145,8 +146,8 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/tests/H2P.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="400">
-                  <caret line="68" lean-forward="true" selection-start-line="68" selection-end-line="68" />
+                <state relative-caret-position="227">
+                  <caret line="58" column="52" selection-start-line="58" selection-start-column="52" selection-end-line="58" selection-end-column="54" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
                   </folding>
@@ -154,20 +155,23 @@
               </provider>
             </entry>
           </file>
-          <file pinned="false" current-in-tab="true">
+          <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/tests/H2triplet.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="267">
-                  <caret line="51" column="27" lean-forward="true" selection-start-line="51" selection-start-column="27" selection-end-line="51" selection-end-column="27" />
+                <state relative-caret-position="540">
+                  <caret line="61" column="74" selection-start-line="61" selection-start-column="74" selection-end-line="61" selection-end-column="74" />
                 </state>
               </provider>
             </entry>
           </file>
-          <file pinned="false" current-in-tab="false">
+          <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/tests/He2.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-260">
-                  <caret line="9" column="6" selection-start-line="9" selection-start-column="6" selection-end-line="9" selection-end-column="6" />
+                <state relative-caret-position="297">
+                  <caret line="65" column="3" lean-forward="true" selection-start-line="65" selection-start-column="3" selection-end-line="65" selection-end-column="3" />
+                  <folding>
+                    <element signature="e#0#11#0" expanded="true" />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -185,16 +189,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>lD</find>
-      <find>cube</find>
-      <find>to_grid</find>
-      <find>molecule</find>
-      <find>build_or</find>
-      <find>class u</find>
-      <find>vpot</find>
-      <find>old_D_conv</find>
-      <find>lambd</find>
-      <find>np.norm</find>
       <find>ep_conv</find>
       <find>maximum number</find>
       <find>* 0.5</find>
@@ -215,6 +209,16 @@
       <find>cc-pvdz</find>
       <find>sto-3g</find>
       <find>vp</find>
+      <find>omega</find>
+      <find>1 0</find>
+      <find>0.4</find>
+      <find>0.5 0</find>
+      <find>3.0</find>
+      <find>1.5</find>
+      <find>0.7</find>
+      <find>fourover</find>
+      <find>0.21</find>
+      <find>1 0.0</find>
     </findStrings>
     <replaceStrings>
       <replace>i.Cb</replace>
@@ -223,6 +227,15 @@
       <replace>np.linalg.norm</replace>
       <replace>sto-3g</replace>
       <replace>cc-pvdz</replace>
+      <replace>0.723 0.0</replace>
+      <replace>0.21</replace>
+      <replace>0.7 0</replace>
+      <replace>1.5</replace>
+      <replace>3</replace>
+      <replace>1</replace>
+      <replace>0.5</replace>
+      <replace>0.7</replace>
+      <replace>%f 0.0</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -232,13 +245,13 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/tests/Large_tester.py" />
-        <option value="$PROJECT_DIR$/tests/He2.py" />
         <option value="$PROJECT_DIR$/libcubeprop.py" />
         <option value="$PROJECT_DIR$/tests/H2P_tester.py" />
         <option value="$PROJECT_DIR$/tests/H2.py" />
-        <option value="$PROJECT_DIR$/tests/H2P.py" />
         <option value="$PROJECT_DIR$/tests/formic.py" />
+        <option value="$PROJECT_DIR$/tests/H2P.py" />
         <option value="$PROJECT_DIR$/tests/H2triplet.py" />
+        <option value="$PROJECT_DIR$/tests/He2.py" />
         <option value="$PROJECT_DIR$/pdft.py" />
       </list>
     </option>
@@ -324,7 +337,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.H2triplet">
+  <component name="RunManager" selected="Python.He2">
     <configuration name="H2P_tester" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="pdft" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -386,6 +399,9 @@
       <module name="pdft" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -447,10 +463,10 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.H2triplet" />
-        <item itemvalue="Python.Large_tester" />
-        <item itemvalue="Python.H2P_tester" />
         <item itemvalue="Python.He2" />
+        <item itemvalue="Python.H2triplet" />
+        <item itemvalue="Python.H2P_tester" />
+        <item itemvalue="Python.Large_tester" />
         <item itemvalue="Python.pdft" />
       </list>
     </recent_temporary>
@@ -482,11 +498,13 @@
       <workItem from="1576674932047" duration="6561000" />
       <workItem from="1576681810956" duration="1660000" />
       <workItem from="1576851371113" duration="23562000" />
+      <workItem from="1577221936039" duration="253000" />
+      <workItem from="1577383812350" duration="11404000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="122659000" />
+    <option name="totallyTimeSpent" value="134559000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="-2" width="1920" height="1082" extended-state="6" />
@@ -503,15 +521,15 @@
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="8" />
+      <window_info anchor="bottom" id="Version Control" order="8" weight="0.32879582" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" weight="0.32948583" />
-      <window_info anchor="bottom" x="1920" y="55" width="1920" height="1025" id="Terminal" maximized="true" order="11" type="WINDOWED" weight="0.32843652" />
+      <window_info anchor="bottom" x="1920" y="55" width="1920" height="1025" id="Terminal" maximized="true" order="11" type="WINDOWED" visible="true" weight="0.32843652" />
       <window_info active="true" anchor="bottom" x="1920" y="55" width="1920" height="1025" id="Python Console" maximized="true" order="12" type="WINDOWED" visible="true" weight="0.32948583" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" x="0" y="155" width="1920" height="925" id="SciView" order="3" type="WINDOWED" weight="0.2145144" />
+      <window_info anchor="right" x="0" y="313" width="1920" height="767" id="SciView" order="3" type="WINDOWED" weight="0.2145144" />
       <window_info anchor="right" x="0" y="0" width="430" height="882" id="Documentation" order="4" side_tool="true" weight="0.32977587" />
       <window_info anchor="right" id="Database" order="5" />
     </layout>
@@ -555,13 +573,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/Large.cube">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-80">
-          <caret line="5" column="14" selection-start-line="5" selection-start-column="14" selection-end-line="5" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/Large.cube" />
     <entry file="file://$USER_HOME$/anaconda3/envs/work/lib/python3.7/site-packages/numpy/core/fromnumeric.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="308">
@@ -569,16 +581,8 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/Large_rho.cube">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/AAA.cube">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="20">
-          <caret line="1" column="13" lean-forward="true" selection-start-line="1" selection-start-column="13" selection-end-line="1" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/Large_rho.cube" />
+    <entry file="file://$PROJECT_DIR$/tests/AAA.cube" />
     <entry file="file://$PROJECT_DIR$/libcubeprop.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1117">
@@ -589,27 +593,37 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/He2.py">
+    <entry file="file://$PROJECT_DIR$/tests/formic.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-260">
-          <caret line="9" column="6" selection-start-line="9" selection-start-column="6" selection-end-line="9" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/H2P.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="400">
-          <caret line="68" lean-forward="true" selection-start-line="68" selection-end-line="68" />
+        <state relative-caret-position="861">
+          <caret line="70" column="65" selection-start-line="70" selection-start-column="65" selection-end-line="70" selection-end-column="65" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/formic.py">
+    <entry file="file://$PROJECT_DIR$/tests/H2P.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="680">
-          <caret line="70" column="65" selection-start-line="70" selection-start-column="65" selection-end-line="70" selection-end-column="65" />
+        <state relative-caret-position="227">
+          <caret line="58" column="52" selection-start-line="58" selection-start-column="52" selection-end-line="58" selection-end-column="54" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/H2triplet.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="540">
+          <caret line="61" column="74" selection-start-line="61" selection-start-column="74" selection-end-line="61" selection-end-column="74" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/He2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="297">
+          <caret line="65" column="3" lean-forward="true" selection-start-line="65" selection-start-column="3" selection-end-line="65" selection-end-column="3" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
@@ -619,14 +633,7 @@
     <entry file="file://$PROJECT_DIR$/pdft.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="440">
-          <caret line="902" column="41" lean-forward="true" selection-start-line="902" selection-start-column="41" selection-end-line="902" selection-end-column="41" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/H2triplet.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="267">
-          <caret line="51" column="27" lean-forward="true" selection-start-line="51" selection-start-column="27" selection-end-line="51" selection-end-column="27" />
+          <caret line="949" column="34" lean-forward="true" selection-start-line="949" selection-start-column="34" selection-end-line="949" selection-end-column="34" />
         </state>
       </provider>
     </entry>

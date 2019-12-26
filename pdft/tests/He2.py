@@ -4,32 +4,40 @@ import matplotlib.pyplot as plt
 import libcubeprop
 import numpy as np
 
+bondlength = 5
+
 Full_Molec =  psi4.geometry( """
 nocom
 noreorient
-He 3.0 0.0 0.00
-@He -0.0 0.0 0.00
-He -3.0 0.0 0.00
+He %f 0.0 0.00
+@H  0 0.7 0
+@H  0 -0.7 0
+He -%f 0.0 0.00
+units bohr
 symmetry c1
-""")
+""" % (bondlength / 2, bondlength / 2))
 
 Monomer_1 =  psi4.geometry("""
 nocom
 noreorient
-He 3.0 0.0 0.00
-@He -0.0 0.0 0.00
-@He -3.0 0.0 0.00
+He %f 0.0 0.00
+@H  0 0.7 0
+@H  0 -0.7 0
+@He -%f 0.0 0.00
+units bohr
 symmetry c1
-""")
+""" % (bondlength / 2, bondlength / 2))
 
 Monomer_2 =  psi4.geometry("""
 nocom
 noreorient
-@He 3.0 0.0 0.00
-@He -0.0 0.0 0.00
-He -3.0 0.0 0.00
+@He %f 0.0 0.00
+@H  0 0.7 0
+@H  0 -0.7 0
+He -%f 0.0 0.00
+units bohr
 symmetry c1
-""")
+""" % (bondlength / 2, bondlength / 2))
 
 Full_Molec.set_name("He2")
 
@@ -46,39 +54,29 @@ psi4.set_options({
 # energy_3, wfn_3 = psi4.energy("SVWN/cc-pvdz", molecule=mol_geometry, return_wfn=True)
 
 #Make fragment calculations:
-f1  = pdft.U_Molecule(Monomer_2,  "cc-pvdz", "SVWN")
-f2  = pdft.U_Molecule(Monomer_1,  "cc-pvdz", "SVWN")
 mol = pdft.U_Molecule(Full_Molec, "cc-pvdz", "SVWN")
+f1  = pdft.U_Molecule(Monomer_2,  "cc-pvdz", "SVWN", jk=mol.jk)
+f2  = pdft.U_Molecule(Monomer_1,  "cc-pvdz", "SVWN", jk=mol.jk)
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
-vp, vpa, vpb, rho_conv, ep_conv = pdfter.find_vp_response(maxiter=1, beta=1, atol=1e-5)
+rho_conv, ep_conv = pdfter.find_vp(maxiter=10, beta=4, atol=1e-5)
 #%%
 # pdfter.get_energies()
 #%%
 #%% Plotting Cubic
-#Set the box lenght and grid fineness.
-L = [8.0,  8.0, 8.0]
-D = [0.2, 0.2, 0.2]
-# Plot file
-O, N =  libcubeprop.build_grid(mol.wfn, L, D)
-block, points, nxyz, npoints = libcubeprop.populate_grid(mol.wfn, O, N, D)
-f, (ax1, ax2) = plt.subplots(1, 2)
-libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, vp, name="He2", write_file=True)
+# #Set the box lenght and grid fineness.
+# L = [8.0,  8.0, 8.0]
+# D = [0.2, 0.2, 0.2]
+# # Plot file
+# O, N =  libcubeprop.build_grid(mol.wfn, L, D)
+# block, points, nxyz, npoints = libcubeprop.populate_grid(mol.wfn, O, N, D)
+# f, (ax1, ax2) = plt.subplots(1, 2)
+# libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, vp, name="He2", write_file=True)
 
 #%%
-# vp_grid = mol.to_grid(mol.Da.np + mol.Db.np - f1.Da.np - f1.Db.np - f2.Da.np - f2.Db.np)
-# fig4 = plt.figure(num=3, figsize=(10, 8), dpi=160)
-# pdft.plot1d_x(vp_grid, mol.Vpot, title="density", figure=fig4)
-# vp_grid = mol.to_grid(vp.np)
-# fig3 = plt.figure(num=3, figsize=(10, 8), dpi=160)
-# pdft.plot1d_x(vp_grid, mol.Vpot, title="vp", figure=fig3)
-# vp_grid = mol.to_grid(vpa.np)
-# fig4 = plt.figure(num=3, figsize=(10, 8), dpi=160)
-# pdft.plot1d_x(vp_grid, mol.Vpot, title="vpa", figure=fig4)
-# vp_grid = mol.to_grid(vpb.np)
-# fig5 = plt.figure(num=3, figsize=(10, 8), dpi=160)
-# pdft.plot1d_x(vp_grid, mol.Vpot, title="vpb", figure=fig5)
+vp_grid = mol.to_grid(pdfter.vp[0].np)
+pdft.plot1d_x(vp_grid, mol.Vpot, title="vp" + str(bondlength), fignum=4, dimmer_length=bondlength)
 #
 # fig1 = plt.figure(num=1, figsize=(16, 12))
 # plt.plot(rho_conv, figure=fig1)
