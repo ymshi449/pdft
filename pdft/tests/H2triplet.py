@@ -59,7 +59,12 @@ pdfter = pdft.U_Embedding([f1, f2], mol)
 # rho_conv, ep_conv = pdfter.find_vp(maxiter=50, beta=3, atol=1e-12)
 # vp_grid = mol.to_grid(pdfter.vp[0].np)
 # pdft.plot1d_x(vp_grid, mol.Vpot, title="vp", fignum=4, dimmer_length=bondlength)
-vp_result = pdfter.find_vp_optimizing(maxiter=50)
+
+pdfter.initial_run(1000)
+dd = mol.to_grid(pdfter.fragments_Da + pdfter.fragments_Db - mol.Da.np - mol.Db.np)
+pdft.plot1d_x(-dd, mol.Vpot, title="dd bond:" + str(bondlength), fignum=2, dimmer_length=bondlength)
+
+rho_conv, ep_conv = pdfter.find_vp_response(maxiter=1, beta=3, atol=1e-12)
 #%%
 # pdfter.get_energies()
 #%%
@@ -76,10 +81,9 @@ vp_result = pdfter.find_vp_optimizing(maxiter=50)
 #%%
 vp_grid = mol.to_grid(pdfter.vp[0])
 pdft.plot1d_x(vp_grid, mol.Vpot, title="vp", fignum=4, dimmer_length=bondlength)
-
-# pdfter.find_vp(maxiter=50, beta=1)
-# vp_grid = mol.to_grid(pdfter.vp[0])
-# pdft.plot1d_x(vp_grid, mol.Vpot, title="vp", fignum=3, dimmer_length=bondlength)
+pdfter.get_density_sum()
+dd = mol.to_grid(pdfter.fragments_Da + pdfter.fragments_Db - mol.Da.np - mol.Db.np)
+pdft.plot1d_x(-dd, mol.Vpot, title="dd bond:" + str(bondlength), fignum=3, dimmer_length=bondlength)
 #
 # fig1 = plt.figure(num=1, figsize=(16, 12))
 # plt.plot(rho_conv, figure=fig1)

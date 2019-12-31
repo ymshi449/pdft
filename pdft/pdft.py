@@ -795,8 +795,18 @@ class U_Embedding:
 
         self.fragments_Da = sum_a
         self.fragments_Db = sum_b
+        return
+    
+    def initial_run(self, max_iter):
+        self.molecule.scf(maxiter=max_iter, print_energies=True)
 
-    def find_vp(self, beta, guess=None, maxiter=10, atol=2e-4):
+        for i in range(self.nfragments):
+            self.fragments[i].scf(maxiter=max_iter, print_energies=True)
+
+        self.get_density_sum()
+        return
+        
+    def find_vp(self, beta, maxiter=21, guess=None, atol=2e-4):
         """
         Given a target function, finds vp_matrix to be added to each fragment
         ks matrix to match full molecule energy/density
@@ -1137,32 +1147,28 @@ class U_Embedding:
         elif guess is True:
             vp_a = self.vp[0]
             vp_b = self.vp[1]
-            vp_total = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.Db.np))
+            vp_total = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
             vp_total.np[:] += vp_a.np + vp_b.np
 
             vp_afock = self.vp_fock[0]
             vp_bfock = self.vp_fock[1]
-            vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.Db.np))
+            vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
             vp_totalfock.np[:] += vp_afock.np + vp_bfock.np
-            # Initialize
-            Ef = 0.0
-            # Run the first iteration
-            for i in range(self.nfragments):
-                self.fragments[i].scf(maxiter=1000, print_energies=True, vp_matrix=self.vp_fock)
-                Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+            # Skip running the first iteration! When guess is True, everything is expected to be stored in this obj.
+            Ef = np.Inf
+
         else:
             vp_a = guess[0]
             vp_b = guess[1]
-            vp_total = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.Db.np))
+            vp_total = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
             vp_total.np[:] += vp_a.np + vp_b.np
             self.vp = guess
 
             vp_afock = np.einsum('ijmn,mn->ij', fouroverlap, vp_a)
             vp_bfock = np.einsum('ijmn,mn->ij', fouroverlap, vp_b)
-            vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.Db.np))
+            vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
             vp_totalfock.np[:] += vp_afock.np + vp_bfock.np
             self.vp_fock = [vp_totalfock, vp_totalfock]
-            flag_update_vpfock = True
             # Initialize
             Ef = 0.0
             # Run the first iteration
@@ -1371,10 +1377,12 @@ def plot1d_x(data, Vpot, dimmer_length=2.0, title=None, fignum= None):
     mask2 = np.isclose(abs(z), 0, atol=1E-11)
     order = np.argsort(x[mask & mask2])
     if fignum is None:
-        f1 = plt.figure(num=None, figsize=(16, 12), dpi=160)
+        # f1 = plt.figure(num=None, figsize=(16, 12), dpi=160)        
+        f1 = plt.figure()
         plt.plot(x[mask & mask2][order], data[mask & mask2][order])
     else:
-        f1 = plt.figure(num=fignum, figsize=(16, 12), dpi=160)
+        # f1 = plt.figure(num=fignum, figsize=(16, 12), dpi=160)        
+        f1 = plt.figure()
         plt.plot(x[mask & mask2][order], data[mask & mask2][order])
     plt.axvline(x=dimmer_length/2.0)
     plt.axvline(x=-dimmer_length/2.0)
@@ -1383,4 +1391,3 @@ def plot1d_x(data, Vpot, dimmer_length=2.0, title=None, fignum= None):
         plt.ylabel(title)
         plt.title(title + " plot on the X axis")
     plt.show()
-    f1.savefig(title)
