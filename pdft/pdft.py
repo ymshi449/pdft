@@ -12,6 +12,7 @@ import psi4
 import qcelemental as qc
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.optimize import minimize
 
 psi4.set_num_threads(3)
 
@@ -782,6 +783,8 @@ class U_Embedding:
         self.vp_fock = None
         self.vp      = None  # Real function on basis
 
+        self.four_overlap = None
+
     def get_density_sum(self):
         sum_a = self.fragments[0].Da.np.copy() * self.fragments[0].omega
         sum_b = self.fragments[0].Db.np.copy() * self.fragments[0].omega
@@ -897,9 +900,9 @@ class U_Embedding:
             delta_vp_a = 0.5 * (delta_vp_a + delta_vp_a.T)
             delta_vp_b = 0.5 * (delta_vp_b + delta_vp_b.T)
 
-            vp_a.np[:] += delta_vp_a
-            vp_b.np[:] += delta_vp_b
-            vp_total.np[:] += delta_vp_a + delta_vp_b
+            vp_a += delta_vp_a
+            vp_b += delta_vp_b
+            vp_total += delta_vp_a + delta_vp_b
             self.vp = [vp_total, vp_total]
 
             delta_vp_a = np.einsum('ijmn,mn->ij', S, delta_vp_a)
@@ -926,6 +929,166 @@ class U_Embedding:
                 print("Maximum number of SCF cycles exceeded for vp.")
 
         return rho_convergence, Ep_convergence
+
+    def response(self, vp_array):
+        """
+        To get the Cai operator on the basis set xi_p = phi_i*phi_j as a matrix.
+        :return: Cai matrix as np.array self.molecule.nbf**2 x self.molecule.nbf**2
+        """
+        vp = vp_array.reshape(self.molecule.nbf, self.molecule.nbf)
+        # If the vp stored is not the same as the vp we got, re-run scp calculations and update vp.
+        if not np.linalg.norm(vp - self.vp[0]) < 1e-7:
+            # update vp and vp fock
+            self.vp = [vp, vp]
+            vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
+            vp_totalfock.np[:] = np.einsum('ijmn,mn->ij', self.four_overlap,
+                                           vp)
+            self.vp_fock = [vp_totalfock, vp_totalfock]
+            # re-run scp
+            for i in range(self.nfragments):
+                # print("Calcualte fragment %i with new vp" %i)
+                self.fragments[i].scf(vp_matrix=self.vp_fock, maxiter=100, print_energies=False)
+
+        Cai = np.zeros((self.molecule.nbf**2, self.molecule.nbf**2))
+        for i in self.fragments:
+            # GET dvp
+            # matrices for epsilon_i - epsilon_j. M
+            epsilon_occ_a = i.eig_a.np[:i.nalpha, None]
+            epsilon_occ_b = i.eig_b.np[:i.nbeta, None]
+            epsilon_unocc_a = i.eig_a.np[i.nalpha:]
+            epsilon_unocc_b = i.eig_b.np[i.nbeta:]
+            epsilon_a = epsilon_occ_a - epsilon_unocc_a
+            epsilon_b = epsilon_occ_b - epsilon_unocc_b
+            Cai += 2*i.omega*np.einsum('ai,bj,ci,dj,ij -> abcd', i.Ca.np[:, :i.nalpha], i.Ca.np[:, i.nalpha:],
+                             i.Ca.np[:, :i.nalpha], i.Ca.np[:, i.nalpha:],
+                             np.reciprocal(epsilon_a), optimize=True).reshape(self.molecule.nbf**2, self.molecule.nbf**2)
+            Cai += 2*i.omega*np.einsum('ai,bj,ci,dj,ij -> abcd', i.Cb.np[:, :i.nbeta], i.Cb.np[:, i.nbeta:],
+                             i.Cb.np[:, :i.nbeta], i.Cb.np[:, i.nbeta:],
+                             np.reciprocal(epsilon_b), optimize=True).reshape(self.molecule.nbf**2, self.molecule.nbf**2)
+        assert np.linalg.norm(Cai - Cai.T) < 1e-3, "Cai not symmetry"
+        return Cai
+
+    def density_difference(self, vp_array, matrix=False):
+        """
+        To get Jaccobi vector for difference on the basis set xi_p = phi_i*phi_j.
+        a + b
+        :return: Jac, If matrix=False (default), vector as np.array self.molecule.nbf**2.
+        If matrix=True, return a matrix self.molecule.nbf x self.molecule.nbf
+
+        """
+        vp = vp_array.reshape(self.molecule.nbf, self.molecule.nbf)
+        # If the vp stored is not the same as the vp we got, re-run scp calculations and update vp.
+        if not np.linalg.norm(vp - self.vp[0]) < 1e-7:
+            # update vp and vp fock
+            self.vp = [vp, vp]
+            vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
+            vp_totalfock.np[:] = np.einsum('ijmn,mn->ij', self.four_overlap,
+                                           vp)
+            self.vp_fock = [vp_totalfock, vp_totalfock]
+            # re-run scp
+            for i in range(self.nfragments):
+                # print("Calcualte fragment %i with new vp" %i)
+                self.fragments[i].scf(vp_matrix=self.vp_fock, maxiter=100, print_energies=False)
+
+        self.get_density_sum()
+        Jac = self.fragments_Da - self.molecule.Da + self.fragments_Db - self.molecule.Db
+        if matrix:
+            return Jac
+        else:
+            return Jac.reshape(self.molecule.nbf**2)
+
+    def lagrange_mul(self, vp_array):
+        """
+        Return Lagrange Multipliers value.
+        :return: L
+        """
+        vp = vp_array.reshape(self.molecule.nbf, self.molecule.nbf)
+        # If the vp stored is not the same as the vp we got, re-run scp calculations and update vp.
+        if not np.linalg.norm(vp - self.vp[0]) < 1e-7:
+            # update vp and vp fock
+            self.vp = [vp, vp]
+            vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
+            vp_totalfock.np[:] = np.einsum('ijmn,mn->ij', self.four_overlap, vp)
+            self.vp_fock = [vp_totalfock, vp_totalfock]
+            # re-run scp
+            for i in range(self.nfragments):
+                # print("Calcualte fragment %i with new vp" %i)
+                self.fragments[i].scf(vp_matrix=self.vp_fock, maxiter=100, print_energies=False)
+        L = 0
+        Ef = 0.0
+        for i in range(self.nfragments):
+            # print("Calcualte fragment %i with new vp" %i)
+            L += self.fragments[i].energy*self.fragments[i].omega
+            Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+        Ep = self.molecule.energy - self.molecule.Enuc - Ef
+        print("L: ", L, "Ef: ", Ef, "Ep: ", Ep)
+        return L
+
+
+    def find_vp_optimizing(self, maxiter=21, guess=None, opt_method="Newton-CG"):
+        """
+        :param maxiter:
+        :param atol:
+        :param guess:
+        :return:
+        """
+        # Initial run
+        self.four_overlap, _, _, _ = fouroverlap(self.molecule.wfn, self.molecule.geometry,
+                                 self.molecule.basis, self.molecule.mints)
+        self.molecule.scf(maxiter=1000, print_energies=True)
+        if guess is None:
+            vp_total = np.zeros_like(self.molecule.H.np)
+            self.vp = [vp_total, vp_total]
+
+            vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
+            self.vp_fock = [vp_totalfock, vp_totalfock]
+            # Initialize
+            Ef = 0.0
+            # Run the first iteration
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=1000, print_energies=True)
+                Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+        elif guess is True:
+            vp_a = self.vp[0]
+            vp_b = self.vp[1]
+            vp_total = vp_a.np + vp_b.np
+
+            vp_afock = self.vp_fock[0]
+            vp_bfock = self.vp_fock[1]
+            vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.Db.np))
+            vp_totalfock.np[:] += vp_afock.np + vp_bfock.np
+            # Initialize
+            Ef = 0.0
+            # Run the first iteration
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=1000, print_energies=True, vp_matrix=self.vp_fock)
+                Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+        else:
+            vp_a = guess[0]
+            vp_b = guess[1]
+            vp_total = vp_a + vp_b
+            self.vp = guess
+
+            vp_afock = np.einsum('ijmn,mn->ij', self.four_overlap, vp_a)
+            vp_bfock = np.einsum('ijmn,mn->ij', self.four_overlap, vp_b)
+            vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.Db.np))
+            vp_totalfock.np[:] += vp_afock.np + vp_bfock.np
+            self.vp_fock = [vp_totalfock, vp_totalfock]
+            flag_update_vpfock = True
+            # Initialize
+            Ef = 0.0
+            # Run the first iteration
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=1000, print_energies=True, vp_matrix=self.vp_fock)
+                Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+
+        opt = {
+            "disp": True,
+            "maxiter": maxiter
+        }
+
+        vp_array = minimize(self.lagrange_mul, vp_total.reshape(self.molecule.nbf**2),
+                            jac=self.density_difference, hess=self.response, method=opt_method, options=opt)
 
     def find_vp_response(self, maxiter=21, beta=None, atol=1e-7, guess=None):
         """

@@ -59,7 +59,7 @@ pdfter = pdft.U_Embedding([f1, f2], mol)
 # rho_conv, ep_conv = pdfter.find_vp(maxiter=50, beta=3, atol=1e-12)
 # vp_grid = mol.to_grid(pdfter.vp[0].np)
 # pdft.plot1d_x(vp_grid, mol.Vpot, title="vp", fignum=4, dimmer_length=bondlength)
-rho_conv, ep_conv = pdfter.find_vp_response(maxiter=50, beta=3, atol=1e-12)
+pdfter.find_vp_optimizing(maxiter=50)
 #%%
 # pdfter.get_energies()
 #%%
