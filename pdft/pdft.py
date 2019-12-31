@@ -992,10 +992,11 @@ class U_Embedding:
 
         self.get_density_sum()
         Jac = self.fragments_Da - self.molecule.Da + self.fragments_Db - self.molecule.Db
+        print("density difference", np.linalg.norm(Jac))
         if matrix:
-            return Jac
+            return -Jac
         else:
-            return Jac.reshape(self.molecule.nbf**2)
+            return -Jac.reshape(self.molecule.nbf**2)
 
     def lagrange_mul(self, vp_array):
         """
@@ -1024,7 +1025,6 @@ class U_Embedding:
         print("L: ", L, "Ef: ", Ef, "Ep: ", Ep)
         return L
 
-
     def find_vp_optimizing(self, maxiter=21, guess=None, opt_method="Newton-CG"):
         """
         :param maxiter:
@@ -1048,10 +1048,13 @@ class U_Embedding:
             for i in range(self.nfragments):
                 self.fragments[i].scf(maxiter=1000, print_energies=True)
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+            # if note given, use the first density difference to be initial
+            self.get_density_sum()
+            vp_initial = self.fragments_Da - self.molecule.Da + self.fragments_Db - self.molecule.Db
         elif guess is True:
             vp_a = self.vp[0]
             vp_b = self.vp[1]
-            vp_total = vp_a.np + vp_b.np
+            vp_total = (vp_a.np + vp_b.np) * 0.5
 
             vp_afock = self.vp_fock[0]
             vp_bfock = self.vp_fock[1]
@@ -1063,10 +1066,12 @@ class U_Embedding:
             for i in range(self.nfragments):
                 self.fragments[i].scf(maxiter=1000, print_energies=True, vp_matrix=self.vp_fock)
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+            # otherwise, use the given one
+            vp_initial = vp_total
         else:
             vp_a = guess[0]
             vp_b = guess[1]
-            vp_total = vp_a + vp_b
+            vp_total = (vp_a.np + vp_b.np) * 0.5
             self.vp = guess
 
             vp_afock = np.einsum('ijmn,mn->ij', self.four_overlap, vp_a)
@@ -1074,21 +1079,20 @@ class U_Embedding:
             vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.Db.np))
             vp_totalfock.np[:] += vp_afock.np + vp_bfock.np
             self.vp_fock = [vp_totalfock, vp_totalfock]
-            flag_update_vpfock = True
             # Initialize
             Ef = 0.0
             # Run the first iteration
             for i in range(self.nfragments):
                 self.fragments[i].scf(maxiter=1000, print_energies=True, vp_matrix=self.vp_fock)
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
-
+            vp_initial = vp_total
         opt = {
             "disp": True,
             "maxiter": maxiter
         }
-
-        vp_array = minimize(self.lagrange_mul, vp_total.reshape(self.molecule.nbf**2),
+        vp_array = minimize(self.lagrange_mul, vp_initial.reshape(self.molecule.nbf**2),
                             jac=self.density_difference, hess=self.response, method=opt_method, options=opt)
+        return vp_array
 
     def find_vp_response(self, maxiter=21, beta=None, atol=1e-7, guess=None):
         """

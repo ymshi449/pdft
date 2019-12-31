@@ -59,7 +59,7 @@ pdfter = pdft.U_Embedding([f1, f2], mol)
 # rho_conv, ep_conv = pdfter.find_vp(maxiter=50, beta=3, atol=1e-12)
 # vp_grid = mol.to_grid(pdfter.vp[0].np)
 # pdft.plot1d_x(vp_grid, mol.Vpot, title="vp", fignum=4, dimmer_length=bondlength)
-pdfter.find_vp_optimizing(maxiter=50)
+vp_result = pdfter.find_vp_optimizing(maxiter=50)
 #%%
 # pdfter.get_energies()
 #%%
@@ -74,10 +74,12 @@ pdfter.find_vp_optimizing(maxiter=50)
 # vp_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, vp)
 
 #%%
-vp_grid = mol.to_grid(pdfter.vp[0].np)
+vp_grid = mol.to_grid(pdfter.vp[0])
 pdft.plot1d_x(vp_grid, mol.Vpot, title="vp", fignum=4, dimmer_length=bondlength)
 
-
+# pdfter.find_vp(maxiter=50, beta=1)
+# vp_grid = mol.to_grid(pdfter.vp[0])
+# pdft.plot1d_x(vp_grid, mol.Vpot, title="vp", fignum=3, dimmer_length=bondlength)
 #
 # fig1 = plt.figure(num=1, figsize=(16, 12))
 # plt.plot(rho_conv, figure=fig1)
