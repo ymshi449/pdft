@@ -980,7 +980,7 @@ class U_Embedding:
 
     def density_difference(self, vp_array, matrix=False):
         """
-        To get Jaccobi vector for difference on the basis set xi_p = phi_i*phi_j.
+        To get Jaccobi vector, which is the density difference on the basis set xi_p = phi_i*phi_j.
         a + b
         :return: Jac, If matrix=False (default), vector as np.array self.molecule.nbf**2.
         If matrix=True, return a matrix self.molecule.nbf x self.molecule.nbf
@@ -1010,7 +1010,7 @@ class U_Embedding:
 
     def lagrange_mul(self, vp_array):
         """
-        Return Lagrange Multipliers value.
+        Return Lagrange Multipliers (G) value.
         :return: L
         """
         vp = vp_array.reshape(self.molecule.nbf, self.molecule.nbf)
@@ -1100,6 +1100,8 @@ class U_Embedding:
             "disp": True,
             "maxiter": maxiter
         }
+
+        # optimize using cipy, default as Newton-CG.
         vp_array = minimize(self.lagrange_mul, vp_initial.reshape(self.molecule.nbf**2),
                             jac=self.density_difference, hess=self.response, method=opt_method, options=opt)
         return vp_array
