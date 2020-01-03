@@ -976,6 +976,7 @@ class U_Embedding:
                              i.Cb.np[:, :i.nbeta], i.Cb.np[:, i.nbeta:],
                              np.reciprocal(epsilon_b), optimize=True).reshape(self.molecule.nbf**2, self.molecule.nbf**2)
         assert np.linalg.norm(Cai - Cai.T) < 1e-3, "Cai not symmetry"
+        print("Response", np.linalg.norm(Cai))
         return Cai
 
     def density_difference(self, vp_array, matrix=False):
@@ -1058,9 +1059,18 @@ class U_Embedding:
             for i in range(self.nfragments):
                 self.fragments[i].scf(maxiter=1000, print_energies=True)
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+            
             # if note given, use the first density difference to be initial
             self.get_density_sum()
-            vp_initial = self.fragments_Da - self.molecule.Da + self.fragments_Db - self.molecule.Db
+            vp_total = self.fragments_Da - self.molecule.Da + self.fragments_Db - self.molecule.Db
+            self.vp = [vp_total, vp_total]
+            vp_totalfock.np[:] = np.einsum('ijmn,mn->ij', self.four_overlap, vp_total)
+            self.vp_fock = [vp_totalfock, vp_totalfock]
+            # And run the iteration
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=1000, print_energies=True)
+                Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+
         elif guess is True:
             vp_a = self.vp[0]
             vp_b = self.vp[1]
@@ -1077,7 +1087,6 @@ class U_Embedding:
                 self.fragments[i].scf(maxiter=1000, print_energies=True, vp_matrix=self.vp_fock)
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
             # otherwise, use the given one
-            vp_initial = vp_total
         else:
             vp_a = guess[0]
             vp_b = guess[1]
@@ -1095,14 +1104,13 @@ class U_Embedding:
             for i in range(self.nfragments):
                 self.fragments[i].scf(maxiter=1000, print_energies=True, vp_matrix=self.vp_fock)
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
-            vp_initial = vp_total
         opt = {
             "disp": True,
             "maxiter": maxiter
         }
 
         # optimize using cipy, default as Newton-CG.
-        vp_array = minimize(self.lagrange_mul, vp_initial.reshape(self.molecule.nbf**2),
+        vp_array = minimize(self.lagrange_mul, vp_total.reshape(self.molecule.nbf**2),
                             jac=self.density_difference, hess=self.response, method=opt_method, options=opt)
         return vp_array
 
