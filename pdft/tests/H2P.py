@@ -56,7 +56,7 @@ mol = pdft.U_Molecule(Full_Molec, "cc-pvdz", "SVWN")
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
-rho_conv, ep_conv = pdfter.find_vp_response(maxiter=60, beta=1, atol=1e-5)
+dvp = pdfter.find_vp_response2(maxiter=10)
 #%%
 # pdfter.get_energies()
 #%%
@@ -72,7 +72,7 @@ rho_conv, ep_conv = pdfter.find_vp_response(maxiter=60, beta=1, atol=1e-5)
 
 #%%
 
-vp_grid = mol.to_grid(pdfter.vp[0].np)
+vp_grid = mol.to_grid(pdfter.vp[0])
 pdft.plot1d_x(vp_grid, mol.Vpot, title="vp", dimmer_length=bondlength)
 
 #
