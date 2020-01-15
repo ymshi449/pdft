@@ -805,7 +805,7 @@ class U_Embedding:
 
         self.get_density_sum()
         return
-        
+
     def find_vp(self, beta, maxiter=21, guess=None, atol=2e-4):
         """
         Given a target function, finds vp_matrix to be added to each fragment
@@ -939,6 +939,160 @@ class U_Embedding:
                 print("Maximum number of SCF cycles exceeded for vp.")
 
         return rho_convergence, Ep_convergence
+
+    def vp_all96(self, beta=6):
+        """
+        Return vp on grid and vp_fock on the basis.
+        """
+
+        C = -6.0 / 4.0 / (4 * np.pi) ** 1.5
+
+        vp = np.zeros_like(self.molecule.Vpot.get_np_xyzw()[-1])
+        vp_fock = np.zeros_like(self.fragments[0].Da.np)
+
+        points_func = self.molecule.Vpot.properties()[0]
+
+        w1_old = 0
+        n1 = 0.0
+
+        # First loop over the outer set of blocks
+        for l_block in range(self.molecule.Vpot.nblocks()):
+            #     for l_block in range(70,Vpot.nblocks()):
+            # Obtain general grid information
+            l_grid = self.molecule.Vpot.get_block(l_block)
+            l_w = np.array(l_grid.w())
+            l_x = np.array(l_grid.x())
+            l_y = np.array(l_grid.y())
+            l_z = np.array(l_grid.z())
+            l_npoints = l_w.shape[0]
+
+            points_func.compute_points(l_grid)
+            l_lpos = np.array(l_grid.functions_local_to_global())
+
+            # Compute phi!
+            l_phi = np.array(points_func.basis_values()["PHI"])[:l_npoints, :l_lpos.shape[0]]
+            l_phi_x = np.array(points_func.basis_values()["PHI_X"])[:l_npoints, :l_lpos.shape[0]]
+            l_phi_y = np.array(points_func.basis_values()["PHI_Y"])[:l_npoints, :l_lpos.shape[0]]
+            l_phi_z = np.array(points_func.basis_values()["PHI_Z"])[:l_npoints, :l_lpos.shape[0]]
+            # Build a local slice of D
+            lD1 = self.fragments[0].Da.np[(l_lpos[:, None], l_lpos)]
+
+            # Copmute block-rho and block-gamma
+            rho1 = 2.0 * np.einsum('pm,mn,pn->p', l_phi, lD1, l_phi, optimize=True)
+
+            total_rho1 = 2.0 * np.einsum('pm,mn,pn->p', l_phi, lD1 + self.fragments[1].Da.np[(l_lpos[:, None], l_lpos)], l_phi,
+                                         optimize=True)
+
+            # 2.0 for Px D P + P D Px, 2.0 for non-spin Density
+            rho_x1 = 4.0 * np.einsum('pm,mn,pn->p', l_phi, lD1, l_phi_x, optimize=True)
+            rho_y1 = 4.0 * np.einsum('pm,mn,pn->p', l_phi, lD1, l_phi_y, optimize=True)
+            rho_z1 = 4.0 * np.einsum('pm,mn,pn->p', l_phi, lD1, l_phi_z, optimize=True)
+            gamma1 = rho_x1 ** 2 + rho_y1 ** 2 + rho_z1 ** 2
+
+            # The integral cutoff.
+            l_local_w_homo = gamma1 ** 0.5 <= 2 * beta * ((9 * np.pi) ** (-1.0 / 6.0)) * (rho1 ** (7.0 / 6.0))
+            l_local_w_rho = rho1 > 1e-34
+            l_local_w = l_local_w_homo * l_local_w_rho
+
+            if not np.any(l_local_w):
+                w1_old += l_npoints
+                continue
+
+            n2 = 0.0
+            w2_old = 0
+            # Loop over the inner set of blocks
+            for r_block in range(self.molecule.Vpot.nblocks()):
+
+                r_grid = self.molecule.Vpot.get_block(r_block)
+                r_w = np.array(r_grid.w())
+                r_x = np.array(r_grid.x())
+                r_y = np.array(r_grid.y())
+                r_z = np.array(r_grid.z())
+                r_npoints = r_w.shape[0]
+
+                points_func.compute_points(r_grid)
+                r_lpos = np.array(r_grid.functions_local_to_global())
+
+                # Compute phi!
+                r_phi = np.array(points_func.basis_values()["PHI"])[:r_npoints, :r_lpos.shape[0]]
+                r_phi_x = np.array(points_func.basis_values()["PHI_X"])[:r_npoints, :r_lpos.shape[0]]
+                r_phi_y = np.array(points_func.basis_values()["PHI_Y"])[:r_npoints, :r_lpos.shape[0]]
+                r_phi_z = np.array(points_func.basis_values()["PHI_Z"])[:r_npoints, :r_lpos.shape[0]]
+
+                # Build a local slice of D
+                lD2 = self.fragments[1].Da.np[(r_lpos[:, None], r_lpos)]
+
+                total_rho2 = 2.0 * np.einsum('pm,mn,pn->p', r_phi, self.fragments[0].Da.np[(r_lpos[:, None], r_lpos)] + lD2, r_phi,
+                                             optimize=True)
+
+                # Copmute block-rho and block-gamma
+                rho2 = 2.0 * np.einsum('pm,mn,pn->p', r_phi, lD2, r_phi, optimize=True)
+                # 2.0 for Px D P + P D Px, 2.0 for non-spin Density
+                rho_x2 = 4.0 * np.einsum('pm,mn,pn->p', r_phi, lD2, r_phi_x, optimize=True)
+                rho_y2 = 4.0 * np.einsum('pm,mn,pn->p', r_phi, lD2, r_phi_y, optimize=True)
+                rho_z2 = 4.0 * np.einsum('pm,mn,pn->p', r_phi, lD2, r_phi_z, optimize=True)
+                gamma2 = rho_x2 ** 2 + rho_y2 ** 2 + rho_z2 ** 2
+
+                # The integrate cutoff.
+                r_local_w_homo = gamma2 ** 0.5 <= 2 * beta * ((9 * np.pi) ** (-1.0 / 6.0)) * (rho2 ** (7.0 / 6.0))
+                r_local_w_rho = rho2 > 1e-34
+                r_local_w = r_local_w_homo * r_local_w_rho
+                #           r_local_w = r_local_w_homo
+
+                if not np.any(r_local_w):
+                    w2_old += r_npoints
+                    continue
+
+                # Build the distnace matrix
+                R2 = (l_x[:, None] - r_x) ** 2
+                R2 += (l_y[:, None] - r_y) ** 2
+                R2 += (l_z[:, None] - r_z) ** 2
+                R2 += 1e-34
+                R6inv = R2 ** -3
+                np.fill_diagonal(R6inv, 0.0)
+
+
+
+                # Add vp for fragment 1
+                vp[w1_old:w1_old + l_npoints] += np.sum(rho2
+                                                        / (np.sqrt(rho1[:, None]) + np.sqrt(rho2) + 1e-34) ** 2
+                                                        * R6inv * r_local_w * r_w, axis=1
+                                                        ) * np.sqrt(rho1) / (total_rho1 + 1e-34) * 0.5 * l_local_w
+                # Add vp for fragment 2
+                vp[w2_old:w2_old + r_npoints] += np.sum(rho1[:, None]
+                                                        / (np.sqrt(rho1[:, None]) + np.sqrt(rho2) + 1e-34) ** 2
+                                                        * R6inv * l_local_w[:, None] * l_w[:, None], axis=0
+                                                        ) * np.sqrt(rho2) / (total_rho2 + 1e-34) * 0.5 * r_local_w
+
+                if np.any(np.sqrt(rho1) / (total_rho1 + 1e-34) * 0.5 * l_local_w > 1e4):
+                    print("A")
+                    print(np.sqrt(rho1))
+                    print(total_rho1 + 1e-34)
+                    print(l_local_w)
+                if np.any(np.sqrt(rho2) / (total_rho2 + 1e-34) * 0.5 * r_local_w > 1e4):
+                    print("B")
+                    print(np.sqrt(rho2))
+                    print((total_rho2 + 1e-34))
+                    print(r_local_w)
+
+                # Add vp_fock for fragment 2
+                vp_fock[(r_lpos[:, None], r_lpos)] += np.einsum("p,p,pa,pb->ab", r_w, vp[w2_old:w2_old + r_npoints],
+                                                                r_phi, r_phi, optimize=True)
+                n2 += np.sum(rho2 * r_local_w * r_w)
+                w2_old += r_npoints
+
+            #       Add vp_fock for fragment 1
+            vp_fock[(l_lpos[:, None], l_lpos)] += np.einsum("p,p,pa,pb->ab", l_w, vp[w1_old:w1_old + l_npoints], l_phi,
+                                                            l_phi, optimize=True)
+            n1 += np.sum(rho1 * l_local_w * l_w)
+            w1_old += l_npoints
+
+        vp *= C
+        vp_fock *= C
+        if np.all(np.abs(vp) < 1e3):
+            print("Unphysical vp %f" % np.linalg.norm(vp))
+        print("Electrons Used", n1, n2)
+        return vp, vp_fock
 
     def response(self, vp_array):
         """
