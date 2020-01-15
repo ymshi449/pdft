@@ -10,10 +10,10 @@ Full_Molec =  psi4.geometry( """
 nocom
 noreorient
 0 3
-He %f 0.0 0.00
+H %f 0.0 0.00
 @H  0 0.7 0
 @H  0 -0.7 0
-He -%f 0.0 0.00
+H -%f 0.0 0.00
 units bohr
 symmetry c1
 """ % (bondlength / 2, bondlength / 2))
@@ -21,10 +21,10 @@ symmetry c1
 Monomer_1 =  psi4.geometry("""
 nocom
 noreorient
-He %f 0.0 0.00
+H %f 0.0 0.00
 @H  0 0.7 0
 @H  0 -0.7 0
-@He -%f 0.0 0.00
+@H -%f 0.0 0.00
 units bohr
 symmetry c1
 """ % (bondlength / 2, bondlength / 2))
@@ -32,10 +32,10 @@ symmetry c1
 Monomer_2 =  psi4.geometry("""
 nocom
 noreorient
-@He %f 0.0 0.00
+@H %f 0.0 0.00
 @H  0 0.7 0
 @H  0 -0.7 0
-He -%f 0.0 0.00
+H -%f 0.0 0.00
 units bohr
 symmetry c1
 """ % (bondlength / 2, bondlength / 2))
@@ -56,7 +56,7 @@ mol = pdft.U_Molecule(Full_Molec, "cc-pvdz", "SVWN")
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
-dvp = pdfter.find_vp_response2(maxiter=100)
+dvp, hess, jac = pdfter.find_vp_response2(maxiter=770)
 #%%
 # pdfter.get_energies()
 #%%

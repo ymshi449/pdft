@@ -68,7 +68,7 @@ mol = pdft.U_Molecule(Full_Molec, "cc-pvdz", "SVWN")
 
 #%%Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
-vp,vpa,vpb,rho_conv, ep_conv = pdfter.find_vp_response(maxiter=100, beta=5, atol=1e-5)
+rho_conv, ep_conv = pdfter.find_vp_response(maxiter=1000, beta=0.01, atol=1e-5)
 
 #%% Plotting
 # #Set the box lenght and grid fineness.

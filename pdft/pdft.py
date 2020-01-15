@@ -1194,13 +1194,13 @@ class U_Embedding:
             self.get_density_sum()
             rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
             # Based on the naive hope, whenever the current lamdb does not improve the density, get a smaller one.
-            if old_rho_conv < np.sum(np.abs(rho_fragment - rho_molecule) * w):
-                beta *= 0.9
-                beta_lastupdate_iter = scf_step
-            # If some lamdb has beed updating for a more than a long period, try to increase it to converge faster.
-            elif (scf_step - beta_lastupdate_iter) > 3:
-                beta /= 0.8
-                beta_lastupdate_iter = scf_step
+            # if old_rho_conv < np.sum(np.abs(rho_fragment - rho_molecule) * w):
+            #     beta *= 0.9
+            #     beta_lastupdate_iter = scf_step
+            # # If some lamdb has beed updating for a more than a long period, try to increase it to converge faster.
+            # elif (scf_step - beta_lastupdate_iter) > 3:
+            #     beta /= 0.8
+            #     beta_lastupdate_iter = scf_step
 
             old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
             rho_convergence.append(old_rho_conv)
@@ -1212,8 +1212,8 @@ class U_Embedding:
             hess = self.response(self.vp[0].reshape(self.molecule.nbf**2))
             jac = self.density_difference(self.vp[0].reshape(self.molecule.nbf**2))
             # Solve the linear system by lstsq, because of singularity.
-            dvp= np.linalg.lstsq(hess, beta*jac, rcond=None)[0]
-            # print("Solved?", np.allclose(np.dot(hess, dvp),  beta*jac))
+            dvp = np.linalg.lstsq(hess, beta*jac, rcond=None)[0]
+            print("Solved?", np.linalg.norm(np.dot(hess, dvp) - beta*jac))
             vp_change = np.linalg.norm(dvp, ord=1)
             print("Imporvement", vp_change)
             dvp = dvp.reshape(self.molecule.nbf, self.molecule.nbf)
@@ -1232,7 +1232,7 @@ class U_Embedding:
             # Check for convergence
             for i in range(self.nfragments):
                 # print("Calcualte fragment %i with new vp" %i)
-                self.fragments[i].scf(vp_matrix=self.vp_fock, maxiter=1000, print_energies=False)
+                self.fragments[i].scf(vp_matrix=self.vp_fock, maxiter=30000, print_energies=False)
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
             Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
             if vp_change < 1e-10: #np.isclose(Ep_convergence[-2], Ep_convergence[-1], atol=atol):
@@ -1245,7 +1245,7 @@ class U_Embedding:
                 # raise Exception("Maximum number of SCF cycles exceeded for vp.")
                 print("Maximum number of SCF cycles exceeded for vp.")
 
-        return dvp
+        return dvp, jac, hess
 
     def find_vp_response(self, maxiter=21, beta=None, atol=1e-7, guess=None):
         """
@@ -1274,9 +1274,9 @@ class U_Embedding:
         fouroverlap = np.einsum('Pmn,PQ,Qrs->mnrs', S_Pmn_ao, S_PQinv, S_Pmn_ao, optimize=True)
 
         if guess is None:
-            vp_a = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
-            vp_b = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
-            vp_total = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
+            vp_a = np.zeros_like(self.molecule.H.np)
+            vp_b = np.zeros_like(self.molecule.H.np)
+            vp_total = np.zeros_like(self.molecule.H.np)
 
             vp_afock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
             vp_bfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
@@ -1407,9 +1407,9 @@ class U_Embedding:
             delta_vp_a = 0.5 * (delta_vp_a + delta_vp_a.T)
             delta_vp_b = 0.5 * (delta_vp_b + delta_vp_b.T)
 
-            vp_a.np[:] += delta_vp_a
-            vp_b.np[:] += delta_vp_b
-            vp_total.np[:] += delta_vp_a + delta_vp_b
+            vp_a += delta_vp_a
+            vp_b += delta_vp_b
+            vp_total += delta_vp_a + delta_vp_b
             self.vp = [vp_total, vp_total]
 
             delta_vp_a = np.einsum('ijmn,mn->ij', fouroverlap, delta_vp_a)
@@ -1425,7 +1425,7 @@ class U_Embedding:
             # Check for convergence
             for i in range(self.nfragments):
                 # print("Calcualte fragment %i with new vp" %i)
-                self.fragments[i].scf(vp_matrix=self.vp_fock, maxiter=100, print_energies=False)
+                self.fragments[i].scf(vp_matrix=self.vp_fock, maxiter=30000, print_energies=False)
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
             Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
             if False:  # np.isclose(Ep_convergence[-2], Ep_convergence[-1], atol=atol):

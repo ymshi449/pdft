@@ -106,6 +106,7 @@
       <change beforePath="$PROJECT_DIR$/pdft/tests/test_psi4_energy.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/setup.cfg" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/H2P.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/H2P.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/versioneer.py" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -115,14 +116,14 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.64941305">
+    <splitter split-orientation="horizontal" split-proportion="0.53681964">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/pdft.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="340">
-                  <caret line="1013" column="46" lean-forward="true" selection-start-line="1013" selection-start-column="46" selection-end-line="1013" selection-end-column="46" />
+                <state relative-caret-position="-2780">
+                  <caret line="978" column="46" lean-forward="true" selection-start-line="978" selection-start-column="46" selection-end-line="978" selection-end-column="46" />
                 </state>
               </provider>
             </entry>
@@ -131,11 +132,11 @@
       </split-first>
       <split-second>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file pinned="false" current-in-tab="false">
+          <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/tests/formic.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="2040">
-                  <caret line="105" column="55" selection-start-line="105" selection-start-column="55" selection-end-line="105" selection-end-column="55" />
+                <state relative-caret-position="387">
+                  <caret line="70" column="56" selection-start-line="70" selection-start-column="56" selection-end-line="70" selection-end-column="56" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
                   </folding>
@@ -143,11 +144,11 @@
               </provider>
             </entry>
           </file>
-          <file pinned="false" current-in-tab="true">
+          <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/tests/H2P.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="221">
-                  <caret line="58" column="41" selection-start-line="58" selection-start-column="41" selection-end-line="58" selection-end-column="41" />
+                <state relative-caret-position="1080">
+                  <caret line="58" selection-start-line="58" selection-end-line="59" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
                   </folding>
@@ -158,8 +159,8 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/tests/H2triplet.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="360">
-                  <caret line="58" selection-start-line="58" selection-end-line="58" selection-end-column="43" />
+                <state relative-caret-position="401">
+                  <caret line="58" column="53" selection-start-line="58" selection-start-column="53" selection-end-line="58" selection-end-column="53" />
                 </state>
               </provider>
             </entry>
@@ -189,7 +190,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>maximum number</find>
       <find>* 0.5</find>
       <find>SCF</find>
       <find>HEAD</find>
@@ -219,6 +219,7 @@
       <find>1 0.0</find>
       <find>optimize.mi</find>
       <find>sto-3g</find>
+      <find>He</find>
     </findStrings>
     <replaceStrings>
       <replace>i.Cb</replace>
@@ -236,6 +237,7 @@
       <replace>0.7</replace>
       <replace>%f 0.0</replace>
       <replace>cc-pvdz</replace>
+      <replace>H</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -249,14 +251,14 @@
         <option value="$PROJECT_DIR$/tests/H2P_tester.py" />
         <option value="$PROJECT_DIR$/tests/H2.py" />
         <option value="$PROJECT_DIR$/tests/He2.py" />
-        <option value="$PROJECT_DIR$/tests/formic.py" />
+        <option value="$PROJECT_DIR$/tests/H2P.py" />
         <option value="$PROJECT_DIR$/tests/H2triplet.py" />
         <option value="$PROJECT_DIR$/pdft.py" />
-        <option value="$PROJECT_DIR$/tests/H2P.py" />
+        <option value="$PROJECT_DIR$/tests/formic.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="y" value="-2" />
     <option name="width" value="1920" />
     <option name="height" value="1082" />
@@ -301,11 +303,14 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.H2P_tester">
+  <component name="RunManager" selected="Python.Large_tester">
     <configuration name="H2P_tester" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="pdft" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -325,6 +330,9 @@
       <module name="pdft" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -430,11 +438,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.H2P_tester" />
+        <item itemvalue="Python.Large_tester" />
         <item itemvalue="Python.H2triplet" />
+        <item itemvalue="Python.H2P_tester" />
         <item itemvalue="Python.pdft" />
         <item itemvalue="Python.He2" />
-        <item itemvalue="Python.Large_tester" />
       </list>
     </recent_temporary>
   </component>
@@ -472,15 +480,17 @@
       <workItem from="1577812632077" duration="11793000" />
       <workItem from="1577825651443" duration="714000" />
       <workItem from="1578328633219" duration="8611000" />
+      <workItem from="1578406692561" duration="4122000" />
+      <workItem from="1578416484030" duration="24000" />
+      <workItem from="1578430818205" duration="3625000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="156489000" />
+    <option name="totallyTimeSpent" value="164260000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="-2" width="1920" height="1082" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.20864461" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -497,11 +507,11 @@
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" weight="0.32948583" />
       <window_info anchor="bottom" x="1920" y="256" width="1717" height="911" id="Terminal" order="11" type="WINDOWED" weight="0.32843652" />
-      <window_info anchor="bottom" x="1920" y="55" width="1920" height="1025" id="Python Console" maximized="true" order="12" type="WINDOWED" visible="true" weight="0.32948583" />
+      <window_info active="true" anchor="bottom" x="1920" y="55" width="1920" height="1025" id="Python Console" maximized="true" order="12" type="WINDOWED" visible="true" weight="0.32948583" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" x="-495" y="313" width="1920" height="767" id="SciView" order="3" type="WINDOWED" weight="0.2145144" />
+      <window_info anchor="right" x="38" y="140" width="1747" height="935" id="SciView" order="3" type="WINDOWED" visible="true" weight="0.2145144" />
       <window_info anchor="right" x="0" y="0" width="430" height="882" id="Documentation" order="4" side_tool="true" weight="0.32977587" />
       <window_info anchor="right" id="Database" order="5" />
     </layout>
@@ -576,10 +586,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/formic.py">
+    <entry file="file://$USER_HOME$/anaconda3/envs/work/lib/python3.7/site-packages/numpy/core/einsumfunc.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2040">
-          <caret line="105" column="55" selection-start-line="105" selection-start-column="55" selection-end-line="105" selection-end-column="55" />
+        <state relative-caret-position="308">
+          <caret line="1355" selection-start-line="1355" selection-end-line="1355" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/H2P.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1080">
+          <caret line="58" selection-start-line="58" selection-end-line="59" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
@@ -596,34 +613,27 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/anaconda3/envs/work/lib/python3.7/site-packages/numpy/core/einsumfunc.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="308">
-          <caret line="1355" selection-start-line="1355" selection-end-line="1355" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/H2triplet.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="58" selection-start-line="58" selection-end-line="58" selection-end-column="43" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/H2P.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="58" column="41" selection-start-line="58" selection-start-column="41" selection-end-line="58" selection-end-column="41" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="401">
+          <caret line="58" column="53" selection-start-line="58" selection-start-column="53" selection-end-line="58" selection-end-column="53" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pdft.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="1013" column="46" lean-forward="true" selection-start-line="1013" selection-start-column="46" selection-end-line="1013" selection-end-column="46" />
+        <state relative-caret-position="-2780">
+          <caret line="978" column="46" lean-forward="true" selection-start-line="978" selection-start-column="46" selection-end-line="978" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/formic.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="387">
+          <caret line="70" column="56" selection-start-line="70" selection-start-column="56" selection-end-line="70" selection-end-column="56" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

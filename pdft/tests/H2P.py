@@ -56,7 +56,7 @@ mol = pdft.U_Molecule(Full_Molec, "cc-pvdz", "SVWN")
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
-dvp = pdfter.find_vp_response2(maxiter=10)
+dvp, jac, hess = pdfter.find_vp_response2(maxiter=1)
 #%%
 # pdfter.get_energies()
 #%%
