@@ -797,7 +797,7 @@ class U_Embedding:
         self.fragments_Db = sum_b
         return
     
-    def initial_run(self, max_iter):
+    def fragments_scf(self, max_iter, initial_guess=None):
         self.molecule.scf(maxiter=max_iter, print_energies=True)
 
         for i in range(self.nfragments):
@@ -1051,8 +1051,6 @@ class U_Embedding:
                 R6inv = R2 ** -3
                 np.fill_diagonal(R6inv, 0.0)
 
-
-
                 # Add vp for fragment 1
                 vp[w1_old:w1_old + l_npoints] += np.sum(rho2
                                                         / (np.sqrt(rho1[:, None]) + np.sqrt(rho2) + 1e-34) ** 2
@@ -1064,16 +1062,16 @@ class U_Embedding:
                                                         * R6inv * l_local_w[:, None] * l_w[:, None], axis=0
                                                         ) * np.sqrt(rho2) / (total_rho2 + 1e-34) * 0.5 * r_local_w
 
-                if np.any(np.sqrt(rho1) / (total_rho1 + 1e-34) * 0.5 * l_local_w > 1e4):
-                    print("A")
-                    print(np.sqrt(rho1))
-                    print(total_rho1 + 1e-34)
-                    print(l_local_w)
-                if np.any(np.sqrt(rho2) / (total_rho2 + 1e-34) * 0.5 * r_local_w > 1e4):
-                    print("B")
-                    print(np.sqrt(rho2))
-                    print((total_rho2 + 1e-34))
-                    print(r_local_w)
+                # if np.any(np.sqrt(rho1) / (total_rho1 + 1e-34) * 0.5 * l_local_w > 1e4):
+                #     print("A")
+                #     print(np.sqrt(rho1))
+                #     print(total_rho1 + 1e-34)
+                #     print(l_local_w)
+                # if np.any(np.sqrt(rho2) / (total_rho2 + 1e-34) * 0.5 * r_local_w > 1e4):
+                #     print("B")
+                #     print(np.sqrt(rho2))
+                #     print((total_rho2 + 1e-34))
+                #     print(r_local_w)
 
                 # Add vp_fock for fragment 2
                 vp_fock[(r_lpos[:, None], r_lpos)] += np.einsum("p,p,pa,pb->ab", r_w, vp[w2_old:w2_old + r_npoints],
@@ -1087,11 +1085,13 @@ class U_Embedding:
             n1 += np.sum(rho1 * l_local_w * l_w)
             w1_old += l_npoints
 
+        vp_fock = 0.5 * (vp_fock + vp_fock.T)
         vp *= C
         vp_fock *= C
         if np.all(np.abs(vp) < 1e3):
             print("Unphysical vp %f" % np.linalg.norm(vp))
         print("Electrons Used", n1, n2)
+
         return vp, vp_fock
 
     def response(self, vp_array):
