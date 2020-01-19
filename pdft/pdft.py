@@ -797,11 +797,78 @@ class U_Embedding:
         self.fragments_Db = sum_b
         return
     
-    def fragments_scf(self, max_iter, initial_guess=None):
-        self.molecule.scf(maxiter=max_iter, print_energies=True)
+    def fragments_scf(self, max_iter, vp=None, vp_fock=None, printflag=False):
+        # Run the whole molecule SCF calculation if not calculated before.
+        if self.molecule.Da is None:
+            self.molecule.scf(maxiter=max_iter, print_energies=printflag)
+        
+        if vp is None and vp_fock is None:
+            # No vp is given.
+            # Run the scf
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=max_iter, print_energies=printflag)
+        
+        elif vp is True and vp_fock is None:
+            if self.four_overlap is None:
+                self.four_overlap, _, _, _ = fouroverlap(self.molecule.wfn, self.molecule.geometry,
+                                                     self.molecule.basis, self.molecule.mints)
+            vp_fock = np.einsum('ijmn,mn->ij', self.four_overlap, self.vp[0])
+            vp_fock = psi4.core.Matrix.from_array(vp_fock)
+            self.vp_fock = [vp_fock, vp_fock]
+            # Run the scf
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=max_iter, print_energies=printflag, vp_matrix=self.vp_fock)
+        elif (vp is not None and vp is not True) and vp_fock is None:
+            self.vp = vp
+            if self.four_overlap is None:
+                self.four_overlap, _, _, _ = fouroverlap(self.molecule.wfn, self.molecule.geometry,
+                                                     self.molecule.basis, self.molecule.mints)
+            vp_fock = np.einsum('ijmn,mn->ij', self.four_overlap, self.vp[0])
+            vp_fock = psi4.core.Matrix.from_array(vp_fock)
+            self.vp_fock = [vp_fock, vp_fock]
+            # Run the scf
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=max_iter, print_energies=printflag, vp_matrix=self.vp_fock)
+        elif vp is None and vp_fock is True:
+            # Zero self.vp so self.vp_fock does not correspond to an old version.
+            self.vp = None
 
-        for i in range(self.nfragments):
-            self.fragments[i].scf(maxiter=max_iter, print_energies=True)
+            # Run the scf
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=max_iter, print_energies=printflag, vp_matrix=self.vp_fock)
+        
+        elif vp is True and vp_fock is True:
+            # Run the scf
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=max_iter, print_energies=printflag, vp_matrix=self.vp_fock)
+        elif (vp is not None and vp is not True) and vp_fock is True:
+            self.vp = vp
+            self.vp_fock = [vp_fock, vp_fock]
+            # Run the scf
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=max_iter, print_energies=printflag, vp_matrix=self.vp_fock)
+        elif vp is None and (vp_fock is not None and vp_fock is not True):
+            # Zero self.vp so self.vp_fock does not correspond to an old version.
+            self.vp = None
+            
+            self.vp_fock = vp_fock
+            # Run the scf
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=max_iter, print_energies=printflag, vp_matrix=self.vp_fock)
+        
+        elif vp is True and (vp_fock is not None and vp_fock is not True):
+            self.vp_fock = vp_fock
+            # Run the scf
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=max_iter, print_energies=printflag, vp_matrix=self.vp_fock)
+        elif (vp is not None and vp is not True) and (vp_fock is not None and vp_fock is not True):
+            self.vp = vp
+            self.vp_fock = vp_fock
+            # Run the scf
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=max_iter, print_energies=printflag, vp_matrix=self.vp_fock)
+        else:
+            assert False, "If statement should never get here."
 
         self.get_density_sum()
         return
@@ -869,7 +936,6 @@ class U_Embedding:
             vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.Db.np))
             vp_totalfock.np[:] += vp_afock.np + vp_bfock.np
             self.vp_fock = [vp_totalfock, vp_totalfock]
-            flag_update_vpfock = True
             # Initialize
             Ef = 0.0
             # Run the first iteration

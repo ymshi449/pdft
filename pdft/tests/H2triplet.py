@@ -50,13 +50,13 @@ psi4.set_options({
 })
 
 #Make fragment calculations:
-f1  = pdft.U_Molecule(Monomer_2,  "cc-pvdz", "SVWN")
-f2  = pdft.U_Molecule(Monomer_1,  "cc-pvdz", "SVWN")
-mol = pdft.U_Molecule(Full_Molec, "cc-pvdz", "SVWN")
+f1  = pdft.U_Molecule(Monomer_2,  "sto-3g", "SVWN")
+f2  = pdft.U_Molecule(Monomer_1,  "sto-3g", "SVWN")
+mol = pdft.U_Molecule(Full_Molec, "sto-3g", "SVWN")
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
-dvp, hess, jac = pdfter.find_vp_response2(maxiter=770)
+vs_array = pdfter.find_vp_optimizing(maxiter=14)
 #%%
 # pdfter.get_energies()
 #%%

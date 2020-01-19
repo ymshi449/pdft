@@ -1790,3 +1790,143 @@ JK: JK                              :      0.000u      0.000s      0.001w     30
 JK: AO2USO                          :      0.000u      0.000s      0.000w     30 calls
 
 **************************************************************************************
+
+Host: DESKTOP-GRJIQEP
+
+Timers On : Sat Jan 18 19:35:48 2020
+Timers Off: Sat Jan 18 20:00:41 2020
+
+Wall Time:     1492.93 seconds
+
+                                                       Time (seconds)
+Module                                       User      System        Wall        Calls
+Total PK formation time             :      0.083u      0.067s      0.093w      1 calls
+V: Grid                             :      0.633u      0.083s      0.166w      3 calls
+JK: D                               :      0.000u      0.000s      0.001w     90 calls
+JK: USO2AO                          :      0.000u      0.000s      0.001w     90 calls
+JK: JK                              :      0.050u      0.000s      0.002w     90 calls
+PK computes JK                      :      0.050u      0.000s      0.001w     90 calls
+JK: AO2USO                          :      0.000u      0.000s      0.000w     90 calls
+
+--------------------------------------------------------------------------------------
+Total PK formation time             :      0.083u      0.067s      0.093w      1 calls
+V: Grid                             :      0.633u      0.083s      0.166w      3 calls
+JK: D                               :      0.000u      0.000s      0.001w     90 calls
+JK: USO2AO                          :      0.000u      0.000s      0.001w     90 calls
+JK: JK                              :      0.050u      0.000s      0.002w     90 calls
+| PK computes JK                    :      0.050u      0.000s      0.001w     90 calls
+JK: AO2USO                          :      0.000u      0.000s      0.000w     90 calls
+
+**************************************************************************************
+
+Host: DESKTOP-GRJIQEP
+
+Timers On : Sat Jan 18 20:00:51 2020
+Timers Off: Sat Jan 18 20:05:41 2020
+
+Wall Time:      290.02 seconds
+
+                                                       Time (seconds)
+Module                                       User      System        Wall        Calls
+Total PK formation time             :      0.050u      0.000s      0.039w      1 calls
+V: Grid                             :      0.483u      0.083s      0.153w      3 calls
+JK: D                               :      0.000u      0.000s      0.001w     90 calls
+JK: USO2AO                          :      0.000u      0.000s      0.001w     90 calls
+JK: JK                              :      0.000u      0.000s      0.001w     90 calls
+PK computes JK                      :      0.000u      0.000s      0.001w     90 calls
+JK: AO2USO                          :      0.000u      0.000s      0.000w     90 calls
+
+--------------------------------------------------------------------------------------
+Total PK formation time             :      0.050u      0.000s      0.039w      1 calls
+V: Grid                             :      0.483u      0.083s      0.153w      3 calls
+JK: D                               :      0.000u      0.000s      0.001w     90 calls
+JK: USO2AO                          :      0.000u      0.000s      0.001w     90 calls
+JK: JK                              :      0.000u      0.000s      0.001w     90 calls
+| PK computes JK                    :      0.000u      0.000s      0.001w     90 calls
+JK: AO2USO                          :      0.000u      0.000s      0.000w     90 calls
+
+**************************************************************************************
+
+Host: DESKTOP-GRJIQEP
+
+Timers On : Sat Jan 18 20:07:15 2020
+Timers Off: Sat Jan 18 20:29:51 2020
+
+Wall Time:     1355.71 seconds
+
+                                                       Time (seconds)
+Module                                       User      System        Wall        Calls
+Total PK formation time             :      0.050u      0.000s      0.037w      1 calls
+V: Grid                             :      0.500u      0.133s      0.107w      3 calls
+JK: D                               :      0.000u      0.000s      0.001w     90 calls
+JK: USO2AO                          :      0.000u      0.000s      0.001w     90 calls
+JK: JK                              :      0.000u      0.000s      0.001w     90 calls
+PK computes JK                      :      0.000u      0.000s      0.001w     90 calls
+JK: AO2USO                          :      0.000u      0.000s      0.000w     90 calls
+
+--------------------------------------------------------------------------------------
+Total PK formation time             :      0.050u      0.000s      0.037w      1 calls
+V: Grid                             :      0.500u      0.133s      0.107w      3 calls
+JK: D                               :      0.000u      0.000s      0.001w     90 calls
+JK: USO2AO                          :      0.000u      0.000s      0.001w     90 calls
+JK: JK                              :      0.000u      0.000s      0.001w     90 calls
+| PK computes JK                    :      0.000u      0.000s      0.001w     90 calls
+JK: AO2USO                          :      0.000u      0.000s      0.000w     90 calls
+
+**************************************************************************************
+
+Host: DESKTOP-GRJIQEP
+
+Timers On : Sat Jan 18 20:29:55 2020
+Timers Off: Sat Jan 18 20:35:56 2020
+
+Wall Time:      360.98 seconds
+
+                                                       Time (seconds)
+Module                                       User      System        Wall        Calls
+Total PK formation time             :      0.083u      0.000s      0.036w      1 calls
+V: Grid                             :      0.667u      0.033s      0.117w      3 calls
+JK: D                               :      0.000u      0.033s      0.001w     90 calls
+JK: USO2AO                          :      0.000u      0.000s      0.001w     90 calls
+JK: JK                              :      0.083u      0.000s      0.001w     90 calls
+PK computes JK                      :      0.083u      0.000s      0.001w     90 calls
+JK: AO2USO                          :      0.000u      0.000s      0.000w     90 calls
+
+--------------------------------------------------------------------------------------
+Total PK formation time             :      0.083u      0.000s      0.036w      1 calls
+V: Grid                             :      0.667u      0.033s      0.117w      3 calls
+JK: D                               :      0.000u      0.033s      0.001w     90 calls
+JK: USO2AO                          :      0.000u      0.000s      0.001w     90 calls
+JK: JK                              :      0.083u      0.000s      0.001w     90 calls
+| PK computes JK                    :      0.083u      0.000s      0.001w     90 calls
+JK: AO2USO                          :      0.000u      0.000s      0.000w     90 calls
+
+**************************************************************************************
+
+Host: DESKTOP-GRJIQEP
+
+Timers On : Sat Jan 18 20:36:01 2020
+Timers Off: Sat Jan 18 21:22:04 2020
+
+Wall Time:     2762.77 seconds
+
+                                                       Time (seconds)
+Module                                       User      System        Wall        Calls
+Total PK formation time             :      0.050u      0.000s      0.036w      1 calls
+V: Grid                             :      0.450u      0.033s      0.106w      3 calls
+JK: D                               :      0.000u      0.033s      0.011w   2092 calls
+JK: USO2AO                          :      0.000u      0.000s      0.012w   2092 calls
+JK: JK                              :      0.000u      0.000s      0.037w   2092 calls
+PK computes JK                      :      0.000u      0.000s      0.028w   2092 calls
+JK: AO2USO                          :      0.000u      0.000s      0.005w   2092 calls
+
+--------------------------------------------------------------------------------------
+Total PK formation time             :      0.050u      0.000s      0.036w      1 calls
+V: Grid                             :      0.450u      0.033s      0.106w      3 calls
+JK: D                               :      0.000u      0.033s      0.011w   2092 calls
+JK: USO2AO                          :      0.000u      0.000s      0.012w   2092 calls
+JK: JK                              :      0.000u      0.000s      0.037w   2092 calls
+| PK computes JK                    :      0.000u      0.000s      0.028w   2092 calls
+JK: AO2USO                          :      0.000u      0.000s      0.005w   2092 calls
+
+**************************************************************************************
