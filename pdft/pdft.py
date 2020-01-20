@@ -1057,7 +1057,7 @@ class U_Embedding:
 
             # The integral cutoff.
             l_local_w_homo = gamma1 ** 0.5 <= 2 * beta * ((9 * np.pi) ** (-1.0 / 6.0)) * (rho1 ** (7.0 / 6.0))
-            l_local_w_rho = rho1 > 1e-34
+            l_local_w_rho = rho1 > 1e-21
             l_local_w = l_local_w_homo * l_local_w_rho
 
             if not np.any(l_local_w):
@@ -1101,7 +1101,7 @@ class U_Embedding:
 
                 # The integrate cutoff.
                 r_local_w_homo = gamma2 ** 0.5 <= 2 * beta * ((9 * np.pi) ** (-1.0 / 6.0)) * (rho2 ** (7.0 / 6.0))
-                r_local_w_rho = rho2 > 1e-34
+                r_local_w_rho = rho2 > 1e-21
                 r_local_w = r_local_w_homo * r_local_w_rho
                 #           r_local_w = r_local_w_homo
 
