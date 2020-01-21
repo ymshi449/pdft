@@ -3,7 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="9296cb7c-98b5-4bb1-989c-3916221b2426" name="Default Changelist" comment="Merge branch 'master' of https://github.com/purduedft/pdft&#10;&#10;# Conflicts:&#10;#&#9;pdft/pdft.py">
       <change afterPath="$PROJECT_DIR$/tests/H2triplet.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.travis.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALL96.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/ALL96.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CODE_OF_CONDUCT.md" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/LICENSE" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/MANIFEST.in" beforeDir="false" />
@@ -104,6 +106,7 @@
       <change beforePath="$PROJECT_DIR$/pdft/tests/test_psi4_energy.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/setup.cfg" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/timer.dat" beforeDir="false" afterPath="$PROJECT_DIR$/timer.dat" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/versioneer.py" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -113,14 +116,14 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.58217716">
+    <splitter split-orientation="horizontal" split-proportion="0.50053364">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/pdft.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="430">
-                  <caret line="806" column="14" lean-forward="true" selection-start-line="806" selection-start-column="14" selection-end-line="806" selection-end-column="14" />
+                <state relative-caret-position="-510">
+                  <caret line="1067" column="45" selection-start-line="1067" selection-start-column="45" selection-end-line="1067" selection-end-column="45" />
                 </state>
               </provider>
             </entry>
@@ -132,11 +135,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/tests/He2.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="567">
-                  <caret line="62" column="37" selection-start-line="62" selection-start-column="37" selection-end-line="62" selection-end-column="37" />
-                  <folding>
-                    <element signature="e#0#11#0" expanded="true" />
-                  </folding>
+                <state relative-caret-position="557">
+                  <caret line="105" column="33" selection-start-line="105" selection-start-column="33" selection-end-line="105" selection-end-column="33" />
                 </state>
               </provider>
             </entry>
@@ -144,8 +144,8 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/tests/H2triplet.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="461">
-                  <caret line="73" column="35" lean-forward="true" selection-start-line="73" selection-start-column="10" selection-end-line="73" selection-end-column="35" />
+                <state relative-caret-position="247">
+                  <caret line="66" column="13" selection-start-line="66" selection-start-column="13" selection-end-line="66" selection-end-column="13" />
                 </state>
               </provider>
             </entry>
@@ -163,11 +163,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>Vpot</find>
-      <find>convergan</find>
-      <find>vp_add</find>
-      <find>Delta_D</find>
-      <find>* 0.50</find>
       <find>plot</find>
       <find>find_vp</find>
       <find>matrix</find>
@@ -193,6 +188,11 @@
       <find>Da().np</find>
       <find>cc-pvdz</find>
       <find>ini</find>
+      <find>self.four_over</find>
+      <find>basis</find>
+      <find>to_grid</find>
+      <find>6-311gss</find>
+      <find>from</find>
     </findStrings>
     <replaceStrings>
       <replace>i.Cb</replace>
@@ -212,6 +212,7 @@
       <replace>H</replace>
       <replace>Da.np</replace>
       <replace>sto-3g</replace>
+      <replace>def2-qzvpp-jfit</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -227,8 +228,8 @@
         <option value="$PROJECT_DIR$/tests/H2P.py" />
         <option value="$PROJECT_DIR$/tests/H2triplet.py" />
         <option value="$PROJECT_DIR$/tests/formic.py" />
-        <option value="$PROJECT_DIR$/tests/He2.py" />
         <option value="$PROJECT_DIR$/pdft.py" />
+        <option value="$PROJECT_DIR$/tests/He2.py" />
       </list>
     </option>
   </component>
@@ -266,7 +267,7 @@
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/tests" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/tests/He2Bond10" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -473,14 +474,17 @@
       <workItem from="1578416484030" duration="24000" />
       <workItem from="1578430818205" duration="3625000" />
       <workItem from="1579184038935" duration="5990000" />
+      <workItem from="1579533501284" duration="5149000" />
+      <workItem from="1579619743893" duration="11707000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="178825000" />
+    <option name="totallyTimeSpent" value="195681000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="-2" width="1920" height="1082" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.20864461" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -501,7 +505,7 @@
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" x="0" y="145" width="1920" height="935" id="SciView" order="3" type="WINDOWED" weight="0.2145144" />
+      <window_info anchor="right" x="0" y="128" width="1920" height="832" id="SciView" order="3" type="WINDOWED" visible="true" weight="0.2145144" />
       <window_info anchor="right" x="0" y="0" width="430" height="882" id="Documentation" order="4" side_tool="true" weight="0.32977587" />
       <window_info anchor="right" id="Database" order="5" />
     </layout>
@@ -603,27 +607,24 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/pdft.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-510">
+          <caret line="1067" column="45" selection-start-line="1067" selection-start-column="45" selection-end-line="1067" selection-end-column="45" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/tests/H2triplet.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="461">
-          <caret line="73" column="35" lean-forward="true" selection-start-line="73" selection-start-column="10" selection-end-line="73" selection-end-column="35" />
+        <state relative-caret-position="247">
+          <caret line="66" column="13" selection-start-line="66" selection-start-column="13" selection-end-line="66" selection-end-column="13" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/He2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="567">
-          <caret line="62" column="37" selection-start-line="62" selection-start-column="37" selection-end-line="62" selection-end-column="37" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pdft.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="430">
-          <caret line="806" column="14" lean-forward="true" selection-start-line="806" selection-start-column="14" selection-end-line="806" selection-end-column="14" />
+        <state relative-caret-position="557">
+          <caret line="105" column="33" selection-start-line="105" selection-start-column="33" selection-end-line="105" selection-end-column="33" />
         </state>
       </provider>
     </entry>

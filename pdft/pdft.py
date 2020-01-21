@@ -533,6 +533,49 @@ class U_Molecule():
         plot = qc.models.Molecule.from_data(self.geometry.save_string_xyz())
         return plot
 
+    def to_basis(self, value, w=None):
+        """
+        For any function on integration grid points, get the coefficients on the basis set.
+        The solution is not unique.
+
+        value: array of values on points
+        One should use the same wfn for all the fragments and the entire systems since different geometry will
+        give different arrangement of xyzw.
+        w: how many points to use for fitting. Default as None: use them all. If w, ROUGHLY w*nbf. w should always be greater than 1.
+        :return: The value of f(r) on grid points.
+        """
+        vpot = self.Vpot
+        points_func = vpot.properties()[0]
+        nbf = self.nbf
+        if w is not None:
+            assert w>1, "w has to be greater than 1 !"
+            w = int(w*nbf) + 1
+        else:
+            w = value.shape[0]
+        basis_grid_matrix = np.empty((0, nbf ** 2))
+        for b in range(vpot.nblocks()):
+            # Obtain block information
+            block = vpot.get_block(b)
+            points_func.compute_points(block)
+            npoints = block.npoints()
+            lpos = np.array(block.functions_local_to_global())
+            # Compute phi!
+            phi = np.array(points_func.basis_values()["PHI"])[:npoints, :lpos.shape[0]]
+            appended = np.zeros((npoints, nbf ** 2))
+            for i in range(0, npoints):
+                appendelements = np.zeros((1, nbf))
+                appendelements[0, lpos] = phi[i, :]
+                appended[i, :] = np.squeeze((appendelements.T.dot(appendelements)).reshape(nbf ** 2, 1))
+            appended = appended.reshape(npoints, nbf ** 2)
+            basis_grid_matrix = np.append(basis_grid_matrix, appended, axis=0)
+            if basis_grid_matrix.shape[0] >= w:
+                break
+        Da = np.linalg.lstsq(basis_grid_matrix, value[:basis_grid_matrix.shape[0]], rcond=None)
+        Da = Da[0].reshape(nbf, nbf)
+        Da = 0.5 * (Da + Da.T)
+        return Da
+
+
     def to_grid(self, Duv, Duv_b=None, vpot=None):
         """
         For any function on double ao basis: f(r) = Duv*phi_u(r)*phi_v(r), e.g. the density.
@@ -1057,7 +1100,7 @@ class U_Embedding:
 
             # The integral cutoff.
             l_local_w_homo = gamma1 ** 0.5 <= 2 * beta * ((9 * np.pi) ** (-1.0 / 6.0)) * (rho1 ** (7.0 / 6.0))
-            l_local_w_rho = rho1 > 1e-21
+            l_local_w_rho = rho1 > 1e-17
             l_local_w = l_local_w_homo * l_local_w_rho
 
             if not np.any(l_local_w):
@@ -1066,6 +1109,8 @@ class U_Embedding:
 
             n2 = 0.0
             w2_old = 0
+
+            dvp_l = np.zeros(l_npoints)
             # Loop over the inner set of blocks
             for r_block in range(self.molecule.Vpot.nblocks()):
 
@@ -1101,7 +1146,7 @@ class U_Embedding:
 
                 # The integrate cutoff.
                 r_local_w_homo = gamma2 ** 0.5 <= 2 * beta * ((9 * np.pi) ** (-1.0 / 6.0)) * (rho2 ** (7.0 / 6.0))
-                r_local_w_rho = rho2 > 1e-21
+                r_local_w_rho = rho2 > 1e-17
                 r_local_w = r_local_w_homo * r_local_w_rho
                 #           r_local_w = r_local_w_homo
 
@@ -1118,15 +1163,21 @@ class U_Embedding:
                 np.fill_diagonal(R6inv, 0.0)
 
                 # Add vp for fragment 1
+                dvp_l += np.sum(rho2
+                                / (np.sqrt(rho1[:, None]) + np.sqrt(rho2) + 1e-34) ** 2
+                                * R6inv * r_local_w * r_w, axis=1
+                                ) * np.sqrt(rho1) / (total_rho1 + 1e-34) * 0.5 * l_local_w
+
                 vp[w1_old:w1_old + l_npoints] += np.sum(rho2
                                                         / (np.sqrt(rho1[:, None]) + np.sqrt(rho2) + 1e-34) ** 2
                                                         * R6inv * r_local_w * r_w, axis=1
                                                         ) * np.sqrt(rho1) / (total_rho1 + 1e-34) * 0.5 * l_local_w
                 # Add vp for fragment 2
-                vp[w2_old:w2_old + r_npoints] += np.sum(rho1[:, None]
-                                                        / (np.sqrt(rho1[:, None]) + np.sqrt(rho2) + 1e-34) ** 2
-                                                        * R6inv * l_local_w[:, None] * l_w[:, None], axis=0
-                                                        ) * np.sqrt(rho2) / (total_rho2 + 1e-34) * 0.5 * r_local_w
+                dvp_r = np.sum(rho1[:, None]
+                               / (np.sqrt(rho1[:, None]) + np.sqrt(rho2) + 1e-34) ** 2
+                               * R6inv * l_local_w[:, None] * l_w[:, None], axis=0
+                               ) * np.sqrt(rho2) / (total_rho2 + 1e-34) * 0.5 * r_local_w
+                vp[w2_old:w2_old + r_npoints] += dvp_r
 
                 # if np.any(np.sqrt(rho1) / (total_rho1 + 1e-34) * 0.5 * l_local_w > 1e4):
                 #     print("A")
@@ -1140,13 +1191,13 @@ class U_Embedding:
                 #     print(r_local_w)
 
                 # Add vp_fock for fragment 2
-                vp_fock[(r_lpos[:, None], r_lpos)] += np.einsum("p,p,pa,pb->ab", r_w, vp[w2_old:w2_old + r_npoints],
+                vp_fock[(r_lpos[:, None], r_lpos)] += np.einsum("p,p,pa,pb->ab", r_w, dvp_r,
                                                                 r_phi, r_phi, optimize=True)
                 n2 += np.sum(rho2 * r_local_w * r_w)
                 w2_old += r_npoints
 
             #       Add vp_fock for fragment 1
-            vp_fock[(l_lpos[:, None], l_lpos)] += np.einsum("p,p,pa,pb->ab", l_w, vp[w1_old:w1_old + l_npoints], l_phi,
+            vp_fock[(l_lpos[:, None], l_lpos)] += np.einsum("p,p,pa,pb->ab", l_w, dvp_l, l_phi,
                                                             l_phi, optimize=True)
             n1 += np.sum(rho1 * l_local_w * l_w)
             w1_old += l_npoints
@@ -1154,8 +1205,8 @@ class U_Embedding:
         vp_fock = 0.5 * (vp_fock + vp_fock.T)
         vp *= C
         vp_fock *= C
-        if np.all(np.abs(vp) < 1e3):
-            print("Unphysical vp %f" % np.linalg.norm(vp))
+        if np.any(np.abs(vp) > 1e3):
+            print("Singulartiy vp %f" % np.linalg.norm(vp))
         print("Electrons Used", n1, n2)
 
         return vp, vp_fock
@@ -1730,7 +1781,7 @@ class Embedding:
 
         return vp
 
-def plot1d_x(data, Vpot, dimmer_length=2.0, title=None, fignum= None):
+def plot1d_x(data, Vpot, dimmer_length=None, title=None, fignum= None):
     """
     Plot on x direction
     :param data: Any f(r) on grid
@@ -1748,8 +1799,9 @@ def plot1d_x(data, Vpot, dimmer_length=2.0, title=None, fignum= None):
         # f1 = plt.figure(num=fignum, figsize=(16, 12), dpi=160)        
         f1 = plt.figure()
         plt.plot(x[mask & mask2][order], data[mask & mask2][order])
-    plt.axvline(x=dimmer_length/2.0)
-    plt.axvline(x=-dimmer_length/2.0)
+    if dimmer_length is not None:
+        plt.axvline(x=dimmer_length/2.0)
+        plt.axvline(x=-dimmer_length/2.0)
     plt.xlabel("x-axis")
     if title is not None:
         plt.ylabel(title)
