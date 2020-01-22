@@ -1063,16 +1063,17 @@ class U_Embedding:
         self.fragments_scf(scf_maxiter)
 
         all96_e_old = 0.0
-
+        vp_fock_all96_old = 0.0
         for vp_step in range(1,vp_maxiter+1):
             self.get_density_sum()
             # Initial vp_all96
             all96_e, vp_all96, vp_fock_all96 = self.vp_all96()
             print("Iteration % i, ALL96 E %.14f, ALL96 E difference %.14f" % (vp_step, all96_e, abs((all96_e_old - all96_e) / all96_e)))
-            if abs((all96_e_old - all96_e) / all96_e) < rtol:
+            if abs((all96_e_old - all96_e) / all96_e) < rtol and np.allclose(vp_fock_all96_old, vp_fock_all96, atol=0.0):
                 print("ALL96 Energy Converged:", all96_e)
                 break
             all96_e_old = all96_e
+            vp_fock_all96_old = vp_fock_all96
             vp_fock_psi4 = psi4.core.Matrix.from_array(vp_fock_all96)
             self.fragments_scf(scf_maxiter, vp_fock=[vp_fock_psi4, vp_fock_psi4])
 
@@ -1096,7 +1097,7 @@ class U_Embedding:
 
         # First loop over the outer set of blocks
         for l_block in range(self.molecule.Vpot.nblocks()):
-            #     for l_block in range(70,Vpot.nblocks()):
+            #     for l_block in range(70, Vpot.nblocks()):
             # Obtain general grid information
             l_grid = self.molecule.Vpot.get_block(l_block)
             l_w = np.array(l_grid.w())
