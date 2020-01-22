@@ -679,7 +679,7 @@ class U_Molecule():
             self.Vpot.set_D([D_a,D_b])
             self.Vpot.properties()[0].set_pointers(D_a, D_b)
 
-            ks_e ,Vxc_a, Vxc_b = U_xc(D_a, D_b, self.Vpot)
+            ks_e, Vxc_a, Vxc_b = U_xc(D_a, D_b, self.Vpot)
             Vxc_a = psi4.core.Matrix.from_array(Vxc_a)
             Vxc_b = psi4.core.Matrix.from_array(Vxc_b)
 
@@ -716,9 +716,9 @@ class U_Molecule():
             dRMSa = diisa_e.rms()
             dRMSb = diisb_e.rms()
 
-            Core = 1.0 * self.H.vector_dot(D_a) + 1.0 * self.H.vector_dot(D_b)
-            Hartree_a = 1.0 * self.jk.J()[0].vector_dot(D_a) + self.jk.J()[1].vector_dot(D_a)
-            Hartree_b = 1.0 * self.jk.J()[0].vector_dot(D_b) + self.jk.J()[1].vector_dot(D_b)
+            Core = self.H.vector_dot(D_a) + self.H.vector_dot(D_b)
+            Hartree_a = self.jk.J()[0].vector_dot(D_a) + self.jk.J()[1].vector_dot(D_a)
+            Hartree_b = self.jk.J()[0].vector_dot(D_b) + self.jk.J()[1].vector_dot(D_b)
             Partition = vp_a.vector_dot(D_a) + vp_b.vector_dot(D_b)
             Exchange_Correlation = ks_e
 
@@ -1049,6 +1049,35 @@ class U_Embedding:
 
         return rho_convergence, Ep_convergence
 
+    def find_vp_all96(self, vp_maxiter, scf_maxiter, guess=None, rtol=1e-3):
+        """
+        vp = vp_non-local = vp_all96. Total scf iteration max = vp_maxiter*scf_maxiter*num_fragments + entire system scf
+
+        :param vp_maxiter: maximum num of vp update iteration needed.
+        :param vp_maxiter: maximum num of scf update iteration needed.
+        :param guess: Initial guess of vp.
+        :param rtol: Relative ALL96 energy difference as the convergence criteria.
+        :return:
+        """
+        # Run the initial
+        self.fragments_scf(scf_maxiter)
+
+        all96_e_old = 0.0
+
+        for vp_step in range(1,vp_maxiter+1):
+            self.get_density_sum()
+            # Initial vp_all96
+            all96_e, vp_all96, vp_fock_all96 = self.vp_all96()
+            print("Iteration % i, ALL96 E %.14f, ALL96 E difference %.14f" % (vp_step, all96_e, abs((all96_e_old - all96_e) / all96_e)))
+            if abs((all96_e_old - all96_e) / all96_e) < rtol:
+                print("ALL96 Energy Converged:", all96_e)
+                break
+            all96_e_old = all96_e
+            vp_fock_psi4 = psi4.core.Matrix.from_array(vp_fock_all96)
+            self.fragments_scf(scf_maxiter, vp_fock=[vp_fock_psi4, vp_fock_psi4])
+
+        return all96_e, vp_all96, vp_fock_all96
+
     def vp_all96(self, beta=6):
         """
         Return vp on grid and vp_fock on the basis.
@@ -1062,7 +1091,8 @@ class U_Embedding:
         points_func = self.molecule.Vpot.properties()[0]
 
         w1_old = 0
-        n1 = 0.0
+
+        all96_e = 0.0
 
         # First loop over the outer set of blocks
         for l_block in range(self.molecule.Vpot.nblocks()):
@@ -1107,9 +1137,8 @@ class U_Embedding:
                 w1_old += l_npoints
                 continue
 
-            n2 = 0.0
             w2_old = 0
-
+            l_integrant = np.zeros_like(rho1)
             dvp_l = np.zeros(l_npoints)
             # Loop over the inner set of blocks
             for r_block in range(self.molecule.Vpot.nblocks()):
@@ -1162,6 +1191,7 @@ class U_Embedding:
                 R6inv = R2 ** -3
                 np.fill_diagonal(R6inv, 0.0)
 
+                # vp calculation.
                 # Add vp for fragment 1
                 dvp_l += np.sum(rho2
                                 / (np.sqrt(rho1[:, None]) + np.sqrt(rho2) + 1e-34) ** 2
@@ -1179,37 +1209,28 @@ class U_Embedding:
                                ) * np.sqrt(rho2) / (total_rho2 + 1e-34) * 0.5 * r_local_w
                 vp[w2_old:w2_old + r_npoints] += dvp_r
 
-                # if np.any(np.sqrt(rho1) / (total_rho1 + 1e-34) * 0.5 * l_local_w > 1e4):
-                #     print("A")
-                #     print(np.sqrt(rho1))
-                #     print(total_rho1 + 1e-34)
-                #     print(l_local_w)
-                # if np.any(np.sqrt(rho2) / (total_rho2 + 1e-34) * 0.5 * r_local_w > 1e4):
-                #     print("B")
-                #     print(np.sqrt(rho2))
-                #     print((total_rho2 + 1e-34))
-                #     print(r_local_w)
+                # E calculation
+                r_integrant = np.sqrt(rho1[:, None] * rho2) / (np.sqrt(rho1[:, None]) + np.sqrt(rho2) + 1e-34) * R6inv
+                l_integrant += np.sum(r_integrant * r_local_w * r_w, axis=1)
 
                 # Add vp_fock for fragment 2
                 vp_fock[(r_lpos[:, None], r_lpos)] += np.einsum("p,p,pa,pb->ab", r_w, dvp_r,
                                                                 r_phi, r_phi, optimize=True)
-                n2 += np.sum(rho2 * r_local_w * r_w)
                 w2_old += r_npoints
 
             #       Add vp_fock for fragment 1
             vp_fock[(l_lpos[:, None], l_lpos)] += np.einsum("p,p,pa,pb->ab", l_w, dvp_l, l_phi,
                                                             l_phi, optimize=True)
-            n1 += np.sum(rho1 * l_local_w * l_w)
             w1_old += l_npoints
+            # E calculation
+            all96_e += C * np.sum(l_integrant * l_local_w * l_w)
 
         vp_fock = 0.5 * (vp_fock + vp_fock.T)
         vp *= C
         vp_fock *= C
         if np.any(np.abs(vp) > 1e3):
             print("Singulartiy vp %f" % np.linalg.norm(vp))
-        print("Electrons Used", n1, n2)
-
-        return vp, vp_fock
+        return all96_e, vp, vp_fock
 
     def response(self, vp_array):
         """
