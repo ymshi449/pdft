@@ -2,7 +2,7 @@ import psi4
 import pdft
 from cubeprop import Cube
 import matplotlib.pyplot as plt
-
+psi4.set_output_file("H2P")
 Monomer_1 =  psi4.geometry("""
 nocom
 noreorient
@@ -23,6 +23,7 @@ units bohr
 symmetry c1
 """)
 Full_Molec =  psi4.geometry("""
+1 2
 nocom
 noreorient
 H  -1 0 0
@@ -45,8 +46,8 @@ psi4.set_options({
 # energy_3, wfn_3 = psi4.energy("SVWN/cc-pVDZ", molecule=mol_geometry, return_wfn=True)
 
 #Make fragment calculations:
-f1  = pdft.U_Molecule(Monomer_2,  "CC-PVDZ", "SVWN")
-f2  = pdft.U_Molecule(Monomer_1,  "CC-PVDZ", "SVWN")
+f1  = pdft.U_Molecule(Monomer_2,  "cc-pvdz", "SVWN", omega=0.5)
+f2  = pdft.U_Molecule(Monomer_1,  "cc-pvdz", "SVWN", omega=0.5)
 mol = pdft.U_Molecule(Full_Molec, "CC-PVDZ", "SVWN")
 
 #Start a pdft systemm, and perform calculation to find vp

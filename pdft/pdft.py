@@ -430,7 +430,7 @@ class Molecule():
 
 
 class U_Molecule():
-    def __init__(self, geometry, basis, method, omega=[None, None], mints=None, jk=None):
+    def __init__(self, geometry, basis, method, omega=1, mints=None, jk=None):
         """
         :param geometry:
         :param basis:
@@ -461,6 +461,9 @@ class U_Molecule():
 
         self.nalpha     = self.wfn.nalpha()
         self.nbeta      = self.wfn.nbeta()
+
+        #Fractional Occupation
+        self.omega = omega
 
         #From methods
         self.jk             = jk if jk is not None else self.form_JK()
@@ -753,16 +756,93 @@ class U_Embedding:
         self.fragments_Db = None
 
     def get_density_sum(self):
-        sum_a = self.fragments[0].Da.np.copy() # * 0.50
-        sum_b = self.fragments[0].Db.np.copy() # * 0.50
+        sum_a = self.fragments[0].Da.np.copy() * self.fragments[0].omega
+        sum_b = self.fragments[0].Db.np.copy() * self.fragments[0].omega
 
-        for i in range(1,len(self.fragments)):
-            sum_a +=  self.fragments[i].Da.np # * 0.50
+        for i in range(1, len(self.fragments)):
+            sum_a += self.fragments[i].Da.np * self.fragments[i].omega
+            sum_b += self.fragments[i].Db.np * self.fragments[i].omega
 
-        for i in range(1,len(self.fragments)):
-            sum_b +=  self.fragments[i].Db.np # * 0.50
         self.fragments_Da = sum_a
         self.fragments_Db = sum_b
+        return
+
+    def fragments_scf(self, max_iter, vp=None, vp_fock=None, printflag=False):
+        # Run the whole molecule SCF calculation if not calculated before.
+        if self.molecule.Da is None:
+            self.molecule.scf(maxiter=max_iter, print_energies=printflag)
+
+        if vp is None and vp_fock is None:
+            # No vp is given.
+            # Run the scf
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=max_iter, print_energies=printflag)
+
+        elif vp is True and vp_fock is None:
+            if self.four_overlap is None:
+                self.four_overlap, _, _, _ = fouroverlap(self.molecule.wfn, self.molecule.geometry,
+                                                         self.molecule.basis, self.molecule.mints)
+            vp_fock = np.einsum('ijmn,mn->ij', self.four_overlap, self.vp[0])
+            vp_fock = psi4.core.Matrix.from_array(vp_fock)
+            self.vp_fock = [vp_fock, vp_fock]
+            # Run the scf
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=max_iter, print_energies=printflag, vp_matrix=self.vp_fock)
+        elif (vp is not None and vp is not True) and vp_fock is None:
+            self.vp = vp
+            if self.four_overlap is None:
+                self.four_overlap, _, _, _ = fouroverlap(self.molecule.wfn, self.molecule.geometry,
+                                                         self.molecule.basis, self.molecule.mints)
+            vp_fock = np.einsum('ijmn,mn->ij', self.four_overlap, self.vp[0])
+            vp_fock = psi4.core.Matrix.from_array(vp_fock)
+            self.vp_fock = [vp_fock, vp_fock]
+            # Run the scf
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=max_iter, print_energies=printflag, vp_matrix=self.vp_fock)
+        elif vp is None and vp_fock is True:
+            # Zero self.vp so self.vp_fock does not correspond to an old version.
+            self.vp = None
+
+            # Run the scf
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=max_iter, print_energies=printflag, vp_matrix=self.vp_fock)
+
+        elif vp is True and vp_fock is True:
+            # Run the scf
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=max_iter, print_energies=printflag, vp_matrix=self.vp_fock)
+        elif (vp is not None and vp is not True) and vp_fock is True:
+            self.vp = vp
+            self.vp_fock = [vp_fock, vp_fock]
+            # Run the scf
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=max_iter, print_energies=printflag, vp_matrix=self.vp_fock)
+        elif vp is None and (vp_fock is not None and vp_fock is not True):
+            # Zero self.vp so self.vp_fock does not correspond to an old version.
+            self.vp = None
+
+            self.vp_fock = vp_fock
+            # Run the scf
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=max_iter, print_energies=printflag, vp_matrix=self.vp_fock)
+
+        elif vp is True and (vp_fock is not None and vp_fock is not True):
+            self.vp_fock = vp_fock
+            # Run the scf
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=max_iter, print_energies=printflag, vp_matrix=self.vp_fock)
+        elif (vp is not None and vp is not True) and (vp_fock is not None and vp_fock is not True):
+            self.vp = vp
+            self.vp_fock = vp_fock
+            # Run the scf
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=max_iter, print_energies=printflag, vp_matrix=self.vp_fock)
+        else:
+            assert False, "If statement should never get here."
+
+        self.get_density_sum()
+        return
+
 
     def find_vp(self, beta, guess=None, maxiter=10, atol=2e-4):
         """
@@ -793,7 +873,7 @@ class U_Embedding:
             self.molecule.scf(maxiter=1000, print_energies=True)
             for i in range(self.nfragments):
                 self.fragments[i].scf(maxiter=1000, print_energies=True)
-                Ef += self.fragments[i].frag_energy - self.fragments[i].Enuc
+                Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
         else:
             vp_a = guess[0]
             vp_b = guess[1]
@@ -806,7 +886,7 @@ class U_Embedding:
             self.molecule.scf(maxiter=1000, print_energies=True)
             for i in range(self.nfragments):
                 self.fragments[i].scf(maxiter=1000, print_energies=True, vp_matrix=vp)
-                Ef += self.fragments[i].frag_energy - self.fragments[i].Enuc
+                Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
 
         _,_,_,w = self.molecule.Vpot.get_np_xyzw()
 
@@ -857,7 +937,7 @@ class U_Embedding:
 
             for i in range(self.nfragments):
                 self.fragments[i].scf(vp_matrix=vp, maxiter=1000)
-                Ef += self.fragments[i].frag_energy - self.fragments[i].Enuc
+                Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
             Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
             if np.isclose(Ep_convergence[-2], Ep_convergence[-1], atol=atol):
                 print("Break because Ep does not update")
