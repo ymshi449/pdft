@@ -1064,7 +1064,7 @@ class U_Embedding:
 
         all96_e_old = 0.0
         vp_fock_all96_old = 0.0
-        for vp_step in range(1,vp_maxiter+1):
+        for vp_step in range(1, vp_maxiter+1):
             self.get_density_sum()
             # Initial vp_all96
             all96_e, vp_all96, vp_fock_all96 = self.vp_all96()

@@ -16,7 +16,7 @@ psi4.set_options({
 psi4.set_output_file("HeALL96")
 bindingenergy = []
 bindinglength = []
-for bondlength in range(20, 90, 5):
+for bondlength in range(7, 10):
     print("============%f==============" % bondlength)
     Full_Molec =  psi4.geometry( """
     nocom
@@ -102,7 +102,9 @@ y_HeHeccpvdz = np.array(bindingenergy)
 # if pdfter.four_overlap is None:
 #     pdfter.four_overlap, _, _, _ = pdft.fouroverlap(pdfter.molecule.wfn, pdfter.molecule.geometry,
 #                                                     pdfter.molecule.basis, pdfter.molecule.mints)
+
 vp_basis_all96 = mol.to_basis(vp_all96)
+
 # vp_fock_all96_1 = np.einsum("abcd, ab -> cd", pdfter.four_overlap, vp_basis_all96)
 # print("vp_all96 consists with vp_fock_all96?", np.allclose(vp_fock_all96_1, vp_fock_all96, atol=np.linalg.norm(vp_fock_all96)*0.1))
 # vp_all96_1 = mol.to_grid(vp_basis_all96)
@@ -121,7 +123,7 @@ vp_basis_all96 = mol.to_basis(vp_all96)
 # block, points, nxyz, npoints = libcubeprop.populate_grid(mol.wfn, O, N, D)
 # vp_basis_all96_psi4 = psi4.core.Matrix.from_array(vp_basis_all96)
 # vp_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, vp_basis_all96_psi4)
-# rotated_img = scipy.ndimage.rotate(vp_cube[:, :, 19], -90)
+# rotated_img = scipy.ndimage.rotate(vp_cube[:, :50, 19], -90)
 # f, ax = plt.subplots(1, 1, figsize=(16, 12), dpi=160)
 # plt.imshow(rotated_img, interpolation="bicubic")
 # plt.title("vpALL96 on basis.")

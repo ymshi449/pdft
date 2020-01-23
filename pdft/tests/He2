@@ -1,0 +1,55 @@
+   => Loading Basis Set <=
+
+    Name: DEF2-QZVPP-JFIT
+    Role: ORBITAL
+    Keyword: BASIS
+    atoms 1-4 entry HE         line    37 file /home/yuming/anaconda3/envs/work/share/psi4/basis/def2-qzvpp-jfit.gbs 
+
+  Using in-core PK algorithm.
+   Calculation information:
+      Number of atoms:                   4
+      Number of AO shells:              20
+      Number of primitives:             32
+      Number of atomic orbitals:        48
+      Number of basis functions:        44
+
+      Integral cutoff                 1.00e-12
+      Number of threads:                 3
+
+  Performing in-core PK
+  Using 981090 doubles for integral storage.
+  We computed 22685 shell quartets total.
+  Whereas there are 22155 unique shell quartets.
+     2.39 percent of shell quartets recomputed by reordering.
+
+  ==> DiskJK: Disk-Based J/K Matrices <==
+
+    J tasked:                  Yes
+    K tasked:                   No
+    wK tasked:                  No
+    Memory [MiB]:              953
+    Schwarz Cutoff:          1E-12
+
+    OpenMP threads:              3
+
+   => Loading Basis Set <=
+
+    Name: DEF2-QZVPP-JFIT
+    Role: ORBITAL
+    Keyword: BASIS
+    atoms 1-4 entry HE         line    37 file /home/yuming/anaconda3/envs/work/share/psi4/basis/def2-qzvpp-jfit.gbs 
+
+   => Loading Basis Set <=
+
+    Name: DEF2-QZVPP-JFIT
+    Role: ORBITAL
+    Keyword: BASIS
+    atoms 1-4 entry HE         line    37 file /home/yuming/anaconda3/envs/work/share/psi4/basis/def2-qzvpp-jfit.gbs 
+
+   => Loading Basis Set <=
+
+    Name: (DEF2-QZVPP-JFIT AUX)
+    Role: JKFIT
+    Keyword: DF_BASIS_SCF
+    atoms 1-4 entry HE         line    39 file /home/yuming/anaconda3/envs/work/share/psi4/basis/def2-qzvpp-jkfit.gbs 
+
