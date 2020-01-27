@@ -1070,6 +1070,7 @@ class U_Embedding:
         vp = vp_array.reshape(self.molecule.nbf, self.molecule.nbf)
         # If the vp stored is not the same as the vp we got, re-run scp calculations and update vp.
         if not np.linalg.norm(vp - self.vp[0]) < 1e-7:
+            print("HERE!!!!!!!!!!!!!!!!")
             # update vp and vp fock
             self.vp = [vp, vp]
             self.fragments_scf(1000, vp=True)
@@ -1121,6 +1122,7 @@ class U_Embedding:
 
         jac = np.einsum("u,ui->i", (density_difference_a + density_difference_b).reshape(self.molecule.nbf**2),
                         self.four_overlap.reshape(self.molecule.nbf**2, self.molecule.nbf**2), optimize=True)
+        print("Jac norm:", np.linalg.norm(jac))
         return jac
 
     def lagrange_mul(self, vp_array):
@@ -1255,6 +1257,18 @@ class U_Embedding:
             for i in range(self.nfragments):
                 self.fragments[i].scf(maxiter=1000, print_energies=True)
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+
+            # if note given, use the first density difference to be initial
+            self.get_density_sum()
+            vp_total = self.fragments_Da - self.molecule.Da + self.fragments_Db - self.molecule.Db
+            self.vp = [vp_total, vp_total]
+            vp_totalfock.np[:] = np.einsum('ijmn,mn->ij', self.four_overlap, vp_total)
+            self.vp_fock = [vp_totalfock, vp_totalfock]
+            # And run the iteration
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=1000, print_energies=True)
+                Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+
         elif guess is True:
 
             vp_total = self.vp[0]
@@ -1324,14 +1338,16 @@ class U_Embedding:
                 F'Iter: {scf_step - 1} beta: {beta} dD: {np.linalg.norm(self.fragments_Da + self.fragments_Db - (self.molecule.Da.np + self.molecule.Db.np), ord=1)} '
                 F'd_rho: {old_rho_conv} Ep: {Ep_convergence[-1]}')
 
-            hess = self.response(self.vp[0].reshape(self.molecule.nbf**2))
-            jac = self.density_difference(self.vp[0].reshape(self.molecule.nbf**2))
+            hess = self.hess(self.vp[0].reshape(self.molecule.nbf**2))
+            jac = self.jac(self.vp[0].reshape(self.molecule.nbf**2))
             # Solve the linear system by lstsq, because of singularity.
-            dvp = np.linalg.lstsq(hess, beta*jac, rcond=None)[0]
+            # dvp = np.linalg.lstsq(hess, beta*jac, rcond=10-6)[0]
+            hess_inv = np.linalg.pinv(hess, rcond=1e-6)
+            dvp = hess_inv.dot(beta*jac)
             print("Solved?", np.linalg.norm(np.dot(hess, dvp) - beta*jac))
             vp_change = np.linalg.norm(dvp, ord=1)
             print("Imporvement", vp_change)
-            dvp = dvp.reshape(self.molecule.nbf, self.molecule.nbf)
+            dvp = -dvp.reshape(self.molecule.nbf, self.molecule.nbf)
 
             vp_total += dvp
             # print(vp_total)
