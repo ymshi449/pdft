@@ -2,115 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9296cb7c-98b5-4bb1-989c-3916221b2426" name="Default Changelist" comment="Merge branch 'master' of https://github.com/purduedft/pdft&#10;&#10;# Conflicts:&#10;#&#9;pdft/pdft.py">
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/other.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/pdft.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/H2.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/He2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.travis.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CODE_OF_CONDUCT.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/LICENSE" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MANIFEST.in" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/appveyor.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/devtools/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/devtools/conda-envs/test_env.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/devtools/scripts/create_conda_env.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/devtools/travis-ci/before_install.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/Makefile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/doctrees/api.doctree" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/doctrees/environment.pickle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/doctrees/getting_started.doctree" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/doctrees/index.doctree" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/.buildinfo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_sources/api.rst.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_sources/getting_started.rst.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_sources/index.rst.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/ajax-loader.gif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/basic.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/comment-bright.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/comment-close.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/comment.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/css/badge_only.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/css/theme.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/doctools.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/documentation_options.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/down-pressed.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/down.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/file.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/fonts/Lato/lato-bold.eot" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/fonts/Lato/lato-bold.ttf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/fonts/Lato/lato-bold.woff" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/fonts/Lato/lato-bold.woff2" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/fonts/Lato/lato-bolditalic.eot" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/fonts/Lato/lato-bolditalic.ttf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/fonts/Lato/lato-bolditalic.woff" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/fonts/Lato/lato-bolditalic.woff2" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/fonts/Lato/lato-italic.eot" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/fonts/Lato/lato-italic.ttf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/fonts/Lato/lato-italic.woff" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/fonts/Lato/lato-italic.woff2" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/fonts/Lato/lato-regular.eot" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/fonts/Lato/lato-regular.ttf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/fonts/Lato/lato-regular.woff" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/fonts/Lato/lato-regular.woff2" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/fonts/RobotoSlab/roboto-slab-v7-bold.eot" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/fonts/RobotoSlab/roboto-slab-v7-bold.ttf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/fonts/RobotoSlab/roboto-slab-v7-bold.woff" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/fonts/RobotoSlab/roboto-slab-v7-bold.woff2" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/fonts/RobotoSlab/roboto-slab-v7-regular.eot" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/fonts/RobotoSlab/roboto-slab-v7-regular.ttf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/fonts/RobotoSlab/roboto-slab-v7-regular.woff" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/fonts/RobotoSlab/roboto-slab-v7-regular.woff2" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/fonts/fontawesome-webfont.eot" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/fonts/fontawesome-webfont.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/fonts/fontawesome-webfont.ttf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/fonts/fontawesome-webfont.woff" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/fonts/fontawesome-webfont.woff2" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/jquery-3.2.1.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/jquery.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/js/modernizr.min.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/js/theme.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/minus.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/plus.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/pygments.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/searchtools.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/underscore-1.3.1.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/underscore.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/up-pressed.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/up.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/_static/websupport.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/api.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/genindex.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/getting_started.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/objects.inv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/search.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_build/html/searchindex.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_static/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/_templates/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/api.rst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/conf.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/getting_started.rst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/index.rst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/make.bat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pdft/.pdft.py.swp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pdft/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pdft/_version.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pdft/cubeprop.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pdft/data/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pdft/data/look_and_say.dat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pdft/pdft.py" beforeDir="false" afterPath="$PROJECT_DIR$/pdft/pdft.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pdft/pdft_examples.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pdft/tests/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pdft/tests/test_psi4_energy.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/setup.cfg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/versioneer.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -247,7 +139,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="y" value="-2" />
     <option name="width" value="1920" />
     <option name="height" value="1082" />
@@ -448,15 +340,16 @@
       <workItem from="1576674932047" duration="6561000" />
       <workItem from="1576681810956" duration="1660000" />
       <workItem from="1577196772979" duration="4823000" />
-      <workItem from="1580132174903" duration="12868000" />
+      <workItem from="1580132174903" duration="13591000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="97196000" />
+    <option name="totallyTimeSpent" value="97919000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="-2" width="1920" height="1082" extended-state="6" />
+    <frame x="0" y="-2" width="1920" height="1082" extended-state="7" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.20864461" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -472,12 +365,12 @@
       <window_info anchor="bottom" id="Version Control" order="8" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" weight="0.32948583" />
-      <window_info anchor="bottom" x="1920" y="55" width="1920" height="1025" id="Terminal" maximized="true" order="11" type="WINDOWED" visible="true" weight="0.32843652" />
-      <window_info anchor="bottom" x="1920" y="57" width="1920" height="1023" id="Python Console" order="12" type="WINDOWED" visible="true" weight="0.32948583" />
+      <window_info anchor="bottom" x="1920" y="55" width="1920" height="1025" id="Terminal" maximized="true" order="11" type="WINDOWED" weight="0.32843652" />
+      <window_info anchor="bottom" x="1920" y="57" width="1920" height="1023" id="Python Console" order="12" type="WINDOWED" weight="0.32948583" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info active="true" anchor="right" x="0" y="28" width="1920" height="1052" id="SciView" order="3" type="WINDOWED" visible="true" weight="0.2145144" />
+      <window_info anchor="right" x="0" y="28" width="1920" height="1052" id="SciView" maximized="true" order="3" type="WINDOWED" weight="0.2145144" />
       <window_info anchor="right" x="0" y="0" width="430" height="882" id="Documentation" order="4" side_tool="true" weight="0.32977587" />
       <window_info anchor="right" id="Database" order="5" />
     </layout>
