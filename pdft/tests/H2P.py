@@ -4,7 +4,9 @@ import matplotlib.pyplot as plt
 import libcubeprop
 import numpy as np
 
-bondlength = 5
+psi4.set_output_file("H2P")
+
+bondlength = 2.0
 
 Full_Molec =  psi4.geometry("""
 nocom
@@ -56,7 +58,7 @@ mol = pdft.U_Molecule(Full_Molec, "cc-pvdz", "SVWN")
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
-dvp, jac, hess = pdfter.find_vp_response2(maxiter=1)
+vp_solution = pdfter.find_vp_optimizing(maxiter=20)
 #%%
 # pdfter.get_energies()
 #%%
@@ -91,4 +93,3 @@ pdft.plot1d_x(vp_grid, mol.Vpot, title="vp", dimmer_length=bondlength)
 # fig2.savefig("Ep")
 # plt.show()
 
-# %%
