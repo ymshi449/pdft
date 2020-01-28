@@ -1094,7 +1094,7 @@ class U_Embedding:
         assert np.linalg.norm(hess - hess.T) < 1e-3, "hess not symmetry"
         hess = 0.5 * (hess + hess.T)
         print("Response", np.linalg.norm(hess))
-        return hess
+        return -hess
 
     def jac(self, vp_array):
         """
@@ -1123,7 +1123,7 @@ class U_Embedding:
         jac = np.einsum("u,ui->i", (density_difference_a + density_difference_b).reshape(self.molecule.nbf**2),
                         self.four_overlap.reshape(self.molecule.nbf**2, self.molecule.nbf**2), optimize=True)
         print("Jac norm:", np.linalg.norm(jac))
-        return jac
+        return -jac
 
     def lagrange_mul(self, vp_array):
         """
@@ -1149,8 +1149,15 @@ class U_Embedding:
             L += self.fragments[i].energy*self.fragments[i].omega
             Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
         Ep = self.molecule.energy - self.molecule.Enuc - Ef
+
+        self.get_density_sum()
+        density_difference_a = self.fragments_Da - self.molecule.Da.np
+        density_difference_b = self.fragments_Db - self.molecule.Db.np
+
+        L += np.sum(self.vp_fock[0].np*(density_difference_a + density_difference_b))
+
         print("L: ", L, "Ef: ", Ef, "Ep: ", Ep)
-        return L
+        return -L
 
     def find_vp_optimizing(self, maxiter=21, guess=None, opt_method="Newton-CG"):
         """

@@ -41,14 +41,14 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.6744931">
+    <splitter split-orientation="horizontal" split-proportion="0.6125934">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/pdft.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="410">
-                  <caret line="1342" column="64" lean-forward="true" selection-start-line="1342" selection-start-column="64" selection-end-line="1342" selection-end-column="64" />
+                <state relative-caret-position="520">
+                  <caret line="1093" column="66" selection-start-line="1093" selection-start-column="66" selection-end-line="1093" selection-end-column="66" />
                 </state>
               </provider>
             </entry>
@@ -56,7 +56,7 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$USER_HOME$/anaconda3/envs/work/lib/python3.7/site-packages/numpy/core/einsumfunc.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="308">
+                <state relative-caret-position="27420">
                   <caret line="1378" selection-start-line="1378" selection-end-line="1378" />
                 </state>
               </provider>
@@ -69,7 +69,7 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/tests/formic.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1127">
+                <state relative-caret-position="1300">
                   <caret line="68" column="5" selection-start-line="68" selection-start-column="5" selection-end-line="68" selection-end-column="5" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
@@ -81,8 +81,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/tests/H2P.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="780">
-                  <caret line="63" column="42" lean-forward="true" selection-start-line="63" selection-start-column="42" selection-end-line="63" selection-end-column="42" />
+                <state relative-caret-position="400">
+                  <caret line="53" column="23" selection-start-line="53" selection-start-column="23" selection-end-line="53" selection-end-column="23" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
                   </folding>
@@ -93,7 +93,7 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/tests/He2.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1600">
+                <state relative-caret-position="1520">
                   <caret line="80" selection-start-line="80" selection-end-line="80" />
                 </state>
               </provider>
@@ -180,7 +180,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="y" value="25" />
     <option name="width" value="1920" />
     <option name="height" value="1055" />
@@ -355,9 +355,6 @@
       <module name="pdft" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -376,9 +373,9 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.H2P_tester" />
+        <item itemvalue="Python.pdft" />
         <item itemvalue="Python.Large_tester" />
         <item itemvalue="Python.H2triplet" />
-        <item itemvalue="Python.pdft" />
         <item itemvalue="Python.He2" />
       </list>
     </recent_temporary>
@@ -421,15 +418,15 @@
       <workItem from="1578416484030" duration="24000" />
       <workItem from="1578430818205" duration="3625000" />
       <workItem from="1580150549532" duration="5355000" />
+      <workItem from="1580247061024" duration="1745000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="172323000" />
+    <option name="totallyTimeSpent" value="174068000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="-2" width="1920" height="1082" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.20864461" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -450,7 +447,7 @@
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" x="3" y="145" width="1817" height="935" id="SciView" order="3" type="WINDOWED" weight="0.2145144" />
+      <window_info anchor="right" x="0" y="145" width="1847" height="935" id="SciView" order="3" type="WINDOWED" visible="true" weight="0.2145144" />
       <window_info anchor="right" x="0" y="0" width="430" height="882" id="Documentation" order="4" side_tool="true" weight="0.32977587" />
       <window_info anchor="right" id="Database" order="5" />
     </layout>
@@ -532,16 +529,16 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/He2.py">
+    <entry file="file://$USER_HOME$/anaconda3/envs/work/lib/python3.7/site-packages/numpy/core/einsumfunc.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1600">
-          <caret line="80" selection-start-line="80" selection-end-line="80" />
+        <state relative-caret-position="27420">
+          <caret line="1378" selection-start-line="1378" selection-end-line="1378" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/formic.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1127">
+        <state relative-caret-position="1300">
           <caret line="68" column="5" selection-start-line="68" selection-start-column="5" selection-end-line="68" selection-end-column="5" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
@@ -549,17 +546,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/anaconda3/envs/work/lib/python3.7/site-packages/numpy/core/einsumfunc.py">
+    <entry file="file://$PROJECT_DIR$/tests/He2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="308">
-          <caret line="1378" selection-start-line="1378" selection-end-line="1378" />
+        <state relative-caret-position="1520">
+          <caret line="80" selection-start-line="80" selection-end-line="80" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/H2P.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="780">
-          <caret line="63" column="42" lean-forward="true" selection-start-line="63" selection-start-column="42" selection-end-line="63" selection-end-column="42" />
+        <state relative-caret-position="400">
+          <caret line="53" column="23" selection-start-line="53" selection-start-column="23" selection-end-line="53" selection-end-column="23" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
@@ -568,8 +565,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pdft.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="410">
-          <caret line="1342" column="64" lean-forward="true" selection-start-line="1342" selection-start-column="64" selection-end-line="1342" selection-end-column="64" />
+        <state relative-caret-position="520">
+          <caret line="1093" column="66" selection-start-line="1093" selection-start-column="66" selection-end-line="1093" selection-end-column="66" />
         </state>
       </provider>
     </entry>
