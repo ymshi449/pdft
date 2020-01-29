@@ -12,7 +12,7 @@ import psi4
 import qcelemental as qc
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.optimize import minimize
+import scipy.optimize as optimizer
 
 psi4.set_num_threads(3)
 
@@ -1234,8 +1234,8 @@ class U_Embedding:
         }
 
         # optimize using cipy, default as Newton-CG.
-        vp_array = minimize(self.lagrange_mul, vp_total.reshape(self.molecule.nbf**2),
-                            jac=self.jac, hess=self.hess, method=opt_method, options=opt)
+        vp_array = optimizer.minimize(self.lagrange_mul, vp_total.reshape(self.molecule.nbf**2),
+                                      jac=self.jac, hess=self.hess, method=opt_method, options=opt)
         return vp_array
 
     def find_vp_response2(self, maxiter=21, beta=None, atol=1e-7, guess=None):
@@ -1353,7 +1353,7 @@ class U_Embedding:
             dvp = hess_inv.dot(beta*jac)
             print("Solved?", np.linalg.norm(np.dot(hess, dvp) - beta*jac))
             vp_change = np.linalg.norm(dvp, ord=1)
-            print("Imporvement", vp_change)
+            print("Improvement", vp_change)
             dvp = -dvp.reshape(self.molecule.nbf, self.molecule.nbf)
 
             vp_total += dvp

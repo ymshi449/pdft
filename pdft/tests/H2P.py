@@ -13,8 +13,7 @@ nocom
 noreorient
 1 2
 H  -%f 0.0 0
-@H  0 0.5 0
-@H  0 -0.5 0
+@H  0 0 0
 H  %f 0.0 0
 units bohr
 symmetry c1
@@ -24,8 +23,7 @@ Monomer_1 =  psi4.geometry("""
 nocom
 noreorient
 @H  -%f 0.0 0
-@H  0 0.5 0
-@H  0 -0.5 0
+@H  0 0 0
 H  %f 0.0 0
 units bohr
 symmetry c1
@@ -35,8 +33,7 @@ Monomer_2 =  psi4.geometry("""
 nocom
 noreorient
 H  -%f 0.0 0
-@H  0 0.5 0
-@H  0 -0.5 0
+@H  0 0 0
 @H  %f 0.0 0
 units bohr
 symmetry c1
@@ -61,7 +58,7 @@ pdfter = pdft.U_Embedding([f1, f2], mol)
 
 vp_solution = pdfter.find_vp_optimizing(maxiter=29)
 #
-# dvp, jac, hess = pdfter.find_vp_response2(1)
+# dvp, jac, hess = pdfter.find_vp_response2(4)
 #%%
 # pdfter.get_energies()
 #%%
