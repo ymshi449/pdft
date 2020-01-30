@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import libcubeprop
 import numpy as np
 
-bondlength = 5
+bondlength = 6
 
 Full_Molec =  psi4.geometry( """
 nocom
@@ -54,21 +54,17 @@ psi4.set_options({
 # energy_3, wfn_3 = psi4.energy("SVWN/cc-pvdz", molecule=mol_geometry, return_wfn=True)
 
 #Make fragment calculations:
-mol = pdft.U_Molecule(Full_Molec, "cc-pvdz", "SVWN")
-f1  = pdft.U_Molecule(Monomer_2,  "cc-pvdz", "SVWN", jk=mol.jk)
-f2  = pdft.U_Molecule(Monomer_1,  "cc-pvdz", "SVWN", jk=mol.jk)
+mol = pdft.U_Molecule(Full_Molec, "aug-cc-pvdz", "SVWN")
+f1  = pdft.U_Molecule(Monomer_2,  "aug-cc-pvdz", "SVWN", jk=mol.jk)
+f2  = pdft.U_Molecule(Monomer_1,  "aug-cc-pvdz", "SVWN", jk=mol.jk)
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
 
-pdfter.initial_run(1000)
-dd = mol.to_grid(pdfter.fragments_Da + pdfter.fragments_Db - mol.Da.np - mol.Db.np)
-pdft.plot1d_x(-dd, mol.Vpot, title="dd bond w/o vp", fignum=2, dimmer_length=bondlength)
+# vp_solution = pdfter.find_vp_optimizing(maxiter=29)
+#
+dvp, jac, hess, rho_conv, ep_conv = pdfter.find_vp_response2(210, beta=0.1)
 
-rho_conv, ep_conv = pdfter.find_vp_response(maxiter=10, beta=4, atol=1e-5)
-#%%
-# pdfter.get_energies()
-#%%
 #%% Plotting Cubic
 # #Set the box lenght and grid fineness.
 # L = [8.0,  8.0, 8.0]
@@ -80,11 +76,11 @@ rho_conv, ep_conv = pdfter.find_vp_response(maxiter=10, beta=4, atol=1e-5)
 # libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, vp, name="He2", write_file=True)
 
 #%%
-vp_grid = mol.to_grid(pdfter.vp[0].np)
-pdft.plot1d_x(vp_grid, mol.Vpot, title="vp bond:" + str(bondlength), fignum=4, dimmer_length=bondlength)
-pdfter.get_density_sum()
-dd = mol.to_grid(pdfter.fragments_Da + pdfter.fragments_Db - mol.Da.np - mol.Db.np)
-pdft.plot1d_x(-dd, mol.Vpot, title="dd bond:" + str(bondlength), fignum=3, dimmer_length=bondlength)
+# vp_grid = mol.to_grid(pdfter.vp[0].np)
+# pdft.plot1d_x(vp_grid, mol.Vpot, title="vp bond:" + str(bondlength), fignum=4, dimmer_length=bondlength)
+# pdfter.get_density_sum()
+# dd = mol.to_grid(pdfter.fragments_Da + pdfter.fragments_Db - mol.Da.np - mol.Db.np)
+# pdft.plot1d_x(-dd, mol.Vpot, title="dd bond:" + str(bondlength), fignum=3, dimmer_length=bondlength)
 #
 # fig1 = plt.figure(num=1, figsize=(16, 12))
 # plt.plot(rho_conv, figure=fig1)

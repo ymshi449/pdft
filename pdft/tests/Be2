@@ -3,24 +3,24 @@
     Name: AUG-CC-PVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-4 entry H          line    36 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz.gbs 
+    atoms 1-4 entry BE         line   103 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz.gbs 
 
   Using in-core PK algorithm.
    Calculation information:
       Number of atoms:                   4
-      Number of AO shells:              20
-      Number of primitives:             28
-      Number of atomic orbitals:        36
-      Number of basis functions:        36
+      Number of AO shells:              36
+      Number of primitives:            112
+      Number of atomic orbitals:       100
+      Number of basis functions:        92
 
       Integral cutoff                 1.00e-12
       Number of threads:                 3
 
   Performing in-core PK
-  Using 444222 doubles for integral storage.
-  We computed 25651 shell quartets total.
-  Whereas there are 22155 unique shell quartets.
-    15.78 percent of shell quartets recomputed by reordering.
+  Using 18305562 doubles for integral storage.
+  We computed 233521 shell quartets total.
+  Whereas there are 222111 unique shell quartets.
+     5.14 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -37,24 +37,24 @@
     Name: AUG-CC-PVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-4 entry H          line    36 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz.gbs 
+    atoms 1-4 entry BE         line   103 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz.gbs 
 
   Using in-core PK algorithm.
    Calculation information:
       Number of atoms:                   4
-      Number of AO shells:              20
-      Number of primitives:             28
-      Number of atomic orbitals:        36
-      Number of basis functions:        36
+      Number of AO shells:              36
+      Number of primitives:            112
+      Number of atomic orbitals:       100
+      Number of basis functions:        92
 
       Integral cutoff                 1.00e-12
       Number of threads:                 3
 
   Performing in-core PK
-  Using 444222 doubles for integral storage.
-  We computed 25651 shell quartets total.
-  Whereas there are 22155 unique shell quartets.
-    15.78 percent of shell quartets recomputed by reordering.
+  Using 18305562 doubles for integral storage.
+  We computed 233521 shell quartets total.
+  Whereas there are 222111 unique shell quartets.
+     5.14 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -71,24 +71,24 @@
     Name: AUG-CC-PVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-4 entry H          line    36 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz.gbs 
+    atoms 1-4 entry BE         line   103 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz.gbs 
 
   Using in-core PK algorithm.
    Calculation information:
       Number of atoms:                   4
-      Number of AO shells:              20
-      Number of primitives:             28
-      Number of atomic orbitals:        36
-      Number of basis functions:        36
+      Number of AO shells:              36
+      Number of primitives:            112
+      Number of atomic orbitals:       100
+      Number of basis functions:        92
 
       Integral cutoff                 1.00e-12
       Number of threads:                 3
 
   Performing in-core PK
-  Using 444222 doubles for integral storage.
-  We computed 25651 shell quartets total.
-  Whereas there are 22155 unique shell quartets.
-    15.78 percent of shell quartets recomputed by reordering.
+  Using 18305562 doubles for integral storage.
+  We computed 233521 shell quartets total.
+  Whereas there are 222111 unique shell quartets.
+     5.14 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -105,5 +105,5 @@
     Name: (AUG-CC-PVDZ AUX)
     Role: JKFIT
     Keyword: DF_BASIS_SCF
-    atoms 1-4 entry H          line    70 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz-jkfit.gbs 
+    atoms 1-4 entry BE         line   101 file /home/yuming/anaconda3/envs/work/share/psi4/basis/def2-qzvpp-jkfit.gbs 
 

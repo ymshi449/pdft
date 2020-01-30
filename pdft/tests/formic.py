@@ -3,6 +3,8 @@ import pdft
 import libcubeprop
 import matplotlib.pyplot as plt
 
+psi4.set_output_file("formic")
+
 Full_Molec = psi4.geometry("""
 nocom
 noreorient
@@ -68,7 +70,8 @@ mol = pdft.U_Molecule(Full_Molec, "cc-pvdz", "SVWN")
 
 #%%Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
-rho_conv, ep_conv = pdfter.find_vp_response(maxiter=1000, beta=0.01, atol=1e-5)
+# rho_conv, ep_conv = pdfter.find_vp_response(maxiter=1000, beta=0.01, atol=1e-5)
+dvp, jac, hess, rho_conv, ep_conv = pdfter.find_vp_response2(210, beta=0.1)
 
 #%% Plotting
 # #Set the box lenght and grid fineness.

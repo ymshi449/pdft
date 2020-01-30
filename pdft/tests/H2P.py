@@ -13,7 +13,8 @@ nocom
 noreorient
 1 2
 H  -%f 0.0 0
-@H  0 0 0
+@H  0 -0.4 0
+@H  0 0.4 0
 H  %f 0.0 0
 units bohr
 symmetry c1
@@ -23,7 +24,8 @@ Monomer_1 =  psi4.geometry("""
 nocom
 noreorient
 @H  -%f 0.0 0
-@H  0 0 0
+@H  0 -0.4 0
+@H  0 0.4 0
 H  %f 0.0 0
 units bohr
 symmetry c1
@@ -33,7 +35,8 @@ Monomer_2 =  psi4.geometry("""
 nocom
 noreorient
 H  -%f 0.0 0
-@H  0 0 0
+@H  0 -0.4 0
+@H  0 0.4 0
 @H  %f 0.0 0
 units bohr
 symmetry c1
@@ -47,18 +50,17 @@ psi4.set_options({
     # 'DFT_RADIAL_POINTS':    5,
     'REFERENCE' : 'UKS'
 })
-
 #Make fragment calculations:
-f1  = pdft.U_Molecule(Monomer_2,  "cc-pvdz", "SVWN", omega=0.5)
-f2  = pdft.U_Molecule(Monomer_1,  "cc-pvdz", "SVWN", omega=0.5)
-mol = pdft.U_Molecule(Full_Molec, "cc-pvdz", "SVWN")
+f1  = pdft.U_Molecule(Monomer_2,  "aug-cc-pvdz", "svwn", omega=0.5)
+f2  = pdft.U_Molecule(Monomer_1,  "aug-cc-pvdz", "svwn", omega=0.5)
+mol = pdft.U_Molecule(Full_Molec, "aug-cc-pvdz", "svwn")
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
 
-vp_solution = pdfter.find_vp_optimizing(maxiter=29)
+# vp_solution = pdfter.find_vp_optimizing(maxiter=29)
 #
-# dvp, jac, hess = pdfter.find_vp_response2(4)
+dvp, jac, hess, rho_conv, ep_conv = pdfter.find_vp_response2(1, beta=0.1)
 #%%
 # pdfter.get_energies()
 #%%
