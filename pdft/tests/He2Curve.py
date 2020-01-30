@@ -16,9 +16,9 @@ psi4.set_options({
 psi4.set_output_file("HeALL96")
 bindingenergy = []
 bindinglength = []
-for bondlength in range(7, 10):
+for bondlength in range(5, 10, 100):
     print("============%f==============" % bondlength)
-    Full_Molec =  psi4.geometry( """
+    Full_Molec =  psi4.geometry("""
     nocom
     noreorient
     He %f 0.0 0.00
@@ -56,7 +56,7 @@ for bondlength in range(7, 10):
     pdfter = pdft.U_Embedding([f1, f2], mol)
 
     # Run with vp = vp_all96
-    energy, vp_all96, vp_fock_all96 = pdfter.find_vp_all96(10, 1000, rtol=1e-5)
+    energy, vp_all96, vp_fock_all96 = pdfter.find_vp_all96(100, 1000, rtol=1e-2)
 
     # From Hartree to Ry
     energy = energy * 2.0
@@ -65,6 +65,18 @@ for bondlength in range(7, 10):
 
 x_HeHeccpvdz = (np.array(bindinglength).astype(float))
 y_HeHeccpvdz = np.array(bindingenergy)
+
+C6 = np.polynomial.polynomial.polyfit(x_HeHeccpvdz**-1, -y_HeHeccpvdz,[6], w=x_HeHeccpvdz**6)[-1]
+print("C6", C6)
+fig1, ax1 = plt.subplots(1, 1, figsize=(16, 12), dpi=160)
+ax1.plot(np.log(x_HeHeccpvdz), np.log(-y_HeHeccpvdz),'ro')
+ax1.plot(np.log(np.linspace(x_HeHeccpvdz[0], x_HeHeccpvdz[-1],num=100)),
+         -6*np.log(np.linspace(x_HeHeccpvdz[0], x_HeHeccpvdz[-1], num=100)) + np.log(C6))
+fig1.savefig("C6 fitting")
+
+fig2, ax2 = plt.subplots(1, 1, figsize=(16, 12), dpi=160)
+ax2.scatter(x_HeHeccpvdz, y_HeHeccpvdz)
+fig2.savefig("E ALL96")
 
 #%% Running SCF without any vp.
 # pdfter.fragments_scf(max_iter=1000)

@@ -1069,7 +1069,7 @@ class U_Embedding:
             # Initial vp_all96
             all96_e, vp_all96, vp_fock_all96 = self.vp_all96()
             print("Iteration % i, ALL96 E %.14f, ALL96 E difference %.14f" % (vp_step, all96_e, abs((all96_e_old - all96_e) / all96_e)))
-            if abs((all96_e_old - all96_e) / all96_e) < rtol and np.allclose(vp_fock_all96_old, vp_fock_all96, atol=0.0):
+            if abs((all96_e_old - all96_e) / all96_e) < rtol and np.linalg.norm(vp_fock_all96_old - vp_fock_all96) < rtol:
                 print("ALL96 Energy Converged:", all96_e)
                 break
             all96_e_old = all96_e
