@@ -64,14 +64,14 @@ psi4.set_options({'DFT_SPHERICAL_POINTS': 434,
                   'REFERENCE' : 'UKS'})
 
 #Make fragment calculations:
-f1  = pdft.U_Molecule(Monomer_2,  "cc-pvdz", "SVWN")
-f2  = pdft.U_Molecule(Monomer_1,  "cc-pvdz", "SVWN")
-mol = pdft.U_Molecule(Full_Molec, "cc-pvdz", "SVWN")
+f1  = pdft.U_Molecule(Monomer_2,  "sto-3g", "SVWN")
+f2  = pdft.U_Molecule(Monomer_1,  "sto-3g", "SVWN")
+mol = pdft.U_Molecule(Full_Molec, "sto-3g", "SVWN")
 
 #%%Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
 # rho_conv, ep_conv = pdfter.find_vp_response(maxiter=1000, beta=0.01, atol=1e-5)
-dvp, jac, hess, rho_conv, ep_conv = pdfter.find_vp_response2(210, beta=0.1)
+dvp, jac, hess, rho_conv, ep_conv = pdfter.find_vp_response2(10, beta=0.01)
 
 #%% Plotting
 # #Set the box lenght and grid fineness.

@@ -1330,11 +1330,11 @@ class U_Embedding:
             rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
             # Based on the naive hope, whenever the current lamdb does not improve the density, get a smaller one.
             if old_rho_conv < np.sum(np.abs(rho_fragment - rho_molecule) * w):
-                beta *= 0.9
+                beta *= 0.1
                 beta_lastupdate_iter = scf_step
             # If some lamdb has beed updating for a more than a long period, try to increase it to converge faster.
             elif (scf_step - beta_lastupdate_iter) > 3:
-                beta /= 0.8
+                beta /= 0.5
                 beta_lastupdate_iter = scf_step
 
             old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
@@ -1346,17 +1346,19 @@ class U_Embedding:
 
             hess = self.hess(self.vp[0].reshape(self.molecule.nbf**2))
             jac = self.jac(self.vp[0].reshape(self.molecule.nbf**2))
+
             # Solve the linear system by lstsq, because of singularity.
-            dvp = np.linalg.lstsq(hess, beta*jac, rcond=10-6)[0]
-            # hess_inv = np.linalg.pinv(hess, rcond=1e-6)
-            # dvp = hess_inv.dot(beta*jac)
+            # Solve by least square
+            # dvp = np.linalg.lstsq(hess, beta*jac, rcond=10-6)[0]
+            # Solve by SVD
+            hess_inv = np.linalg.pinv(hess, rcond=1e-6)
+            dvp = hess_inv.dot(beta*jac)
             print("Solved?", np.linalg.norm(np.dot(hess, dvp) - beta*jac))
             vp_change = np.linalg.norm(dvp, ord=1)
-            print("Improvement", vp_change)
+            print("vp norm", vp_change)
             dvp = -dvp.reshape(self.molecule.nbf, self.molecule.nbf)
-
+            dvp = 0.5 * (dvp + dvp.T)
             vp_total += dvp
-            # print(vp_total)
             self.vp = [vp_total, vp_total]
 
             dvpf = np.einsum('ijmn,mn->ij', self.four_overlap, dvp)
@@ -1369,7 +1371,7 @@ class U_Embedding:
             # Check for convergence
             for i in range(self.nfragments):
                 # print("Calcualte fragment %i with new vp" %i)
-                self.fragments[i].scf(vp_matrix=self.vp_fock, maxiter=30000, print_energies=False)
+                self.fragments[i].scf(vp_matrix=self.vp_fock, maxiter=300, print_energies=False)
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
             Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
             if vp_change < 1e-10: #np.isclose(Ep_convergence[-2], Ep_convergence[-1], atol=atol):
