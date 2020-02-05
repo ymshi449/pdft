@@ -533,6 +533,40 @@ class U_Molecule():
         plot = qc.models.Molecule.from_data(self.geometry.save_string_xyz())
         return plot
 
+    def two_gradtwo_grid(self, vpot=None):
+        """
+        Find \int phi_j*phi_n*dot(grad(phi_i), grad(phi_m)) to (ijmn)
+        :param vpot:
+        :return: twogradtwo (ijmn)
+        """
+        if vpot is None:
+            vpot = self.Vpot
+        points_func = vpot.properties()[0]
+        twogradtwo = np.zeros((self.nbf, self.nbf, self.nbf))
+        # Loop over the blocks
+        for b in range(vpot.nblocks()):
+            # Obtain block information
+            block = vpot.get_block(b)
+            points_func.compute_points(block)
+            npoints = block.npoints()
+            lpos = np.array(block.functions_local_to_global())
+            w = block.w()
+
+            # Compute phi!
+            phi = np.array(points_func.basis_values()["PHI"])[:npoints, :lpos.shape[0]]
+            phi_x = np.array(points_func.basis_values()["PHI_X"])[:npoints, :lpos.shape[0]]
+            phi_y = np.array(points_func.basis_values()["PHI_Y"])[:npoints, :lpos.shape[0]]
+            phi_z = np.array(points_func.basis_values()["PHI_Z"])[:npoints, :lpos.shape[0]]
+
+            inner = np.einsum("pa,pb->pab", phi_x, phi_x, optimize=True)
+            inner += np.einsum("pa,pb->pab", phi_y, phi_y, optimize=True)
+            inner += np.einsum("pa,pb->pab", phi_z, phi_z, optimize=True)
+
+            idx = np.ix_(lpos,lpos,lpos,lpos)
+
+            twogradtwo[idx] += np.einsum("pim,pj,pn,p->ijmn", inner, phi, phi, w, optimize=True)
+        return twogradtwo
+
     def to_grid(self, Duv, Duv_b=None, vpot=None):
         """
         For any function on double ao basis: f(r) = Duv*phi_u(r)*phi_v(r), e.g. the density.

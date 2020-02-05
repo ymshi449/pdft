@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="9296cb7c-98b5-4bb1-989c-3916221b2426" name="Default Changelist" comment="Merge branch 'master' of https://github.com/purduedft/pdft&#10;&#10;# Conflicts:&#10;#&#9;pdft/pdft.py">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pdft.py" beforeDir="false" afterPath="$PROJECT_DIR$/pdft.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -11,14 +12,14 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.6152615">
+    <splitter split-orientation="horizontal" split-proportion="0.63767344">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/pdft.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-1570">
-                  <caret line="1242" column="8" selection-start-line="1242" selection-start-column="8" selection-end-line="1242" selection-end-column="8" />
+                <state relative-caret-position="650">
+                  <caret line="566" column="96" selection-start-line="566" selection-start-column="96" selection-end-line="566" selection-end-column="96" />
                 </state>
               </provider>
             </entry>
@@ -66,8 +67,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/tests/H2P.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="460">
-                  <caret line="62" column="33" lean-forward="true" selection-start-line="62" selection-start-column="33" selection-end-line="62" selection-end-column="33" />
+                <state relative-caret-position="440">
+                  <caret line="61" lean-forward="true" selection-start-line="61" selection-end-line="61" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
                   </folding>
@@ -88,10 +89,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>matrix</find>
-      <find>psi4.core.Matrix</find>
-      <find>cube_info</find>
-      <find>get_de</find>
       <find>NORM</find>
       <find>vp</find>
       <find>omega</find>
@@ -118,6 +115,10 @@
       <find>sto-3g</find>
       <find>aug-</find>
       <find>heavy-aug-cc-pcv_dpd_z</find>
+      <find>fouroverlap</find>
+      <find>order</find>
+      <find>initialize</find>
+      <find>to_grid</find>
     </findStrings>
     <replaceStrings>
       <replace>i.Cb</replace>
@@ -397,10 +398,10 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="245316000" />
+    <option name="totallyTimeSpent" value="249780000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="-2" width="1920" height="1082" extended-state="7" />
+    <frame x="0" y="-2" width="1920" height="1082" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.20864461" />
@@ -543,8 +544,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/H2P.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="460">
-          <caret line="62" column="33" lean-forward="true" selection-start-line="62" selection-start-column="33" selection-end-line="62" selection-end-column="33" />
+        <state relative-caret-position="440">
+          <caret line="61" lean-forward="true" selection-start-line="61" selection-end-line="61" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
@@ -553,8 +554,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pdft.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1570">
-          <caret line="1242" column="8" selection-start-line="1242" selection-start-column="8" selection-end-line="1242" selection-end-column="8" />
+        <state relative-caret-position="650">
+          <caret line="566" column="96" selection-start-line="566" selection-start-column="96" selection-end-line="566" selection-end-column="96" />
         </state>
       </provider>
     </entry>
