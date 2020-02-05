@@ -51,16 +51,16 @@ psi4.set_options({
     'REFERENCE' : 'UKS'
 })
 #Make fragment calculations:
-f1  = pdft.U_Molecule(Monomer_2,  "sto-3g", "svwn", omega=0.5)
-f2  = pdft.U_Molecule(Monomer_1,  "sto-3g", "svwn", omega=0.5)
-mol = pdft.U_Molecule(Full_Molec, "sto-3g", "svwn")
+f1  = pdft.U_Molecule(Monomer_2,  "aug-cc-pvdz", "svwn", omega=0.5)
+f2  = pdft.U_Molecule(Monomer_1,  "aug-cc-pvdz", "svwn", omega=0.5)
+mol = pdft.U_Molecule(Full_Molec, "aug-cc-pvdz", "svwn")
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
 
-# vp_solution = pdfter.find_vp_optimizing(maxiter=29)
-#
-dvp, jac, hess, rho_conv, ep_conv = pdfter.find_vp_response2(100, beta=0.01)
+# vp_solution = pdfter.find_vp_optimizing(maxiter=210)
+
+dvp, jac, hess = pdfter.find_vp_response2(35, beta=0.1)
 #%%
 # pdfter.get_energies()
 #%%
@@ -73,13 +73,10 @@ dvp, jac, hess, rho_conv, ep_conv = pdfter.find_vp_response2(100, beta=0.01)
 # block, points, nxyz, npoints = libcubeprop.populate_grid(mol.wfn, O, N, D)
 # f, (ax1, ax2) = plt.subplots(1, 2)
 # vp_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, vp)
-
 #%%
+# vp_grid = mol.to_grid(pdfter.vp[0])
+# pdft.plot1d_x(vp_grid, mol.Vpot, title="vp", dimmer_length=bondlength)
 
-vp_grid = mol.to_grid(pdfter.vp[0])
-pdft.plot1d_x(vp_grid, mol.Vpot, title="vp", dimmer_length=bondlength)
-
-#
 # fig1 = plt.figure(num=1, figsize=(16, 12))
 # plt.plot(rho_conv, figure=fig1)
 # plt.xlabel(r"iteration")
@@ -94,4 +91,3 @@ pdft.plot1d_x(vp_grid, mol.Vpot, title="vp", dimmer_length=bondlength)
 # plt.title(r"$H2^+$ w/ response method ")
 # fig2.savefig("Ep")
 # plt.show()
-

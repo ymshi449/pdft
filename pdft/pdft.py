@@ -752,20 +752,7 @@ class U_Molecule():
                 if print_energies is True:
                     print(F'SCF Convergence: NUM_ITER = {SCF_ITER} dE = {abs(SCF_E - Eold)} dDIIS = {dRMS}')
 
-
-        # if print_energies is True:
-        #     print(F'\n')
-        #     print('Energy Contributions: ')
-        #     print('\n')
-        #     print(F'Core:                  {Core}')
-        #     print(F'Hartree:              {(Hartree_a + Hartree_b) * 0.5}')
-        #     print(F'Exchange Correlation:  {ks_e}')
-        #     print(F'Partition Energy:      {Partition}')
-        #     print(F'Nuclear Repulsion:     {self.Enuc}')
-        #     print(F'Total Energy           {SCF_E}')
-        #     print(F'\n')
-
-        energetics = {"Core":Core, "Hartree":(Hartree_a+Hartree_b)*0.5, "Exchange_Correlation":ks_e, "Nuclear":self.Enuc, "Total Energy":SCF_E}
+        energetics = {"Core": Core, "Hartree":(Hartree_a+Hartree_b)*0.5, "Exchange_Correlation": ks_e, "Nuclear": self.Enuc, "Total Energy":SCF_E}
 
         self.Da             = D_a
         self.Db             = D_b
@@ -826,6 +813,11 @@ class U_Embedding:
 
         self.four_overlap = None
         self.three_overlap = None
+
+        # convergence
+        self.drho_conv = []
+        self.ep_conv = []
+        self.lagrange = []
 
     def get_density_sum(self):
         sum_a = self.fragments[0].Da.np.copy() * self.fragments[0].omega
@@ -1093,6 +1085,7 @@ class U_Embedding:
         assert np.linalg.norm(hess - hess.T) < 1e-3, "hess not symmetry"
         hess = 0.5 * (hess + hess.T)
         print("Response", np.linalg.norm(hess))
+        # print(hess)
         return -hess
 
     def jac(self, vp_array):
@@ -1149,7 +1142,17 @@ class U_Embedding:
         L = Ef
         L += np.sum(self.vp_fock[0].np*(density_difference_a + density_difference_b))
 
-        print("L: ", L, "Ef: ", Ef, "Ep: ", Ep)
+        _, _, _, w = self.molecule.Vpot.get_np_xyzw()
+        rho_molecule = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
+        self.get_density_sum()
+        rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
+        rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
+
+        self.drho_conv.append(rho_conv)
+        self.ep_conv.append(Ep)
+        self.lagrange.append(-L)
+
+        print("-L:", -L, "Int_vp_drho:", L-Ef, "Ef:", Ef, "Ep: ", Ep, "drho:", rho_conv)
         return -L
 
     def find_vp_optimizing(self, maxiter=21, guess=None, opt_method="Newton-CG"):
@@ -1229,9 +1232,9 @@ class U_Embedding:
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
         opt = {
             "disp": True,
-            "maxiter": maxiter
+            "maxiter": maxiter,
+            "eps": 1e-7
         }
-
         # optimize using cipy, default as Newton-CG.
         vp_array = optimizer.minimize(self.lagrange_mul, self.vp[0].reshape(self.molecule.nbf**2),
                                       jac=self.jac, hess=self.hess, method=opt_method, options=opt)
@@ -1328,21 +1331,23 @@ class U_Embedding:
             #   Update rho and change beta
             self.get_density_sum()
             rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
-            # Based on the naive hope, whenever the current lamdb does not improve the density, get a smaller one.
-            if old_rho_conv < np.sum(np.abs(rho_fragment - rho_molecule) * w):
-                beta *= 0.1
-                beta_lastupdate_iter = scf_step
-            # If some lamdb has beed updating for a more than a long period, try to increase it to converge faster.
-            elif (scf_step - beta_lastupdate_iter) > 3:
-                beta /= 0.5
-                beta_lastupdate_iter = scf_step
+            # # Based on the naive hope, whenever the current lamdb does not improve the density, get a smaller one.
+            # if old_rho_conv < np.sum(np.abs(rho_fragment - rho_molecule) * w):
+            #     beta *= 1
+            #     beta_lastupdate_iter = scf_step
+            # # If some lamdb has beed updating for a more than a long period, try to increase it to converge faster.
+            # elif (scf_step - beta_lastupdate_iter) > 3:
+            #     beta /= 1
+            #     beta_lastupdate_iter = scf_step
+            # if scf_step%10 == 0:
+            #     beta *= 0.1
 
             old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
             rho_convergence.append(old_rho_conv)
 
             print(
                 F'Iter: {scf_step - 1} beta: {beta} dD: {np.linalg.norm(self.fragments_Da + self.fragments_Db - (self.molecule.Da.np + self.molecule.Db.np), ord=1)} '
-                F'd_rho: {old_rho_conv} Ef: {Ef} Ep: {Ep_convergence[-1]}')
+                F'Ef: {Ef} Ep: {Ep_convergence[-1]} d_rho: {old_rho_conv}')
 
             hess = self.hess(self.vp[0].reshape(self.molecule.nbf**2))
             jac = self.jac(self.vp[0].reshape(self.molecule.nbf**2))
@@ -1351,11 +1356,11 @@ class U_Embedding:
             # Solve by least square
             # dvp = np.linalg.lstsq(hess, beta*jac, rcond=10-6)[0]
             # Solve by SVD
-            hess_inv = np.linalg.pinv(hess, rcond=1e-6)
+            hess_inv = np.linalg.pinv(hess, rcond=1e-5)
             dvp = hess_inv.dot(beta*jac)
             print("Solved?", np.linalg.norm(np.dot(hess, dvp) - beta*jac))
             vp_change = np.linalg.norm(dvp, ord=1)
-            print("vp norm", vp_change)
+            print("dvp norm", vp_change)
             dvp = -dvp.reshape(self.molecule.nbf, self.molecule.nbf)
             dvp = 0.5 * (dvp + dvp.T)
             vp_total += dvp
@@ -1386,8 +1391,9 @@ class U_Embedding:
             elif scf_step == maxiter:
                 # raise Exception("Maximum number of SCF cycles exceeded for vp.")
                 print("Maximum number of SCF cycles exceeded for vp.")
-
-        return dvp, jac, hess, rho_convergence, Ep_convergence
+        self.drho_conv = rho_convergence
+        self.ep_conv = Ep_convergence
+        return dvp, jac, hess
 
     def find_vp_response(self, maxiter=21, beta=None, atol=1e-7, guess=None):
         """

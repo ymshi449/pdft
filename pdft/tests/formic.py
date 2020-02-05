@@ -64,30 +64,31 @@ psi4.set_options({'DFT_SPHERICAL_POINTS': 434,
                   'REFERENCE' : 'UKS'})
 
 #Make fragment calculations:
-f1  = pdft.U_Molecule(Monomer_2,  "sto-3g", "SVWN")
-f2  = pdft.U_Molecule(Monomer_1,  "sto-3g", "SVWN")
-mol = pdft.U_Molecule(Full_Molec, "sto-3g", "SVWN")
+f1  = pdft.U_Molecule(Monomer_2,  "cc-pvdz", "SVWN")
+f2  = pdft.U_Molecule(Monomer_1,  "cc-pvdz", "SVWN")
+mol = pdft.U_Molecule(Full_Molec, "cc-pvdz", "SVWN")
 
 #%%Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
 # rho_conv, ep_conv = pdfter.find_vp_response(maxiter=1000, beta=0.01, atol=1e-5)
-dvp, jac, hess, rho_conv, ep_conv = pdfter.find_vp_response2(10, beta=0.01)
+dvp, jac, hess, rho_conv, ep_conv = pdfter.find_vp_response2(1, beta=0.1)
 
 #%% Plotting
 # #Set the box lenght and grid fineness.
-# L = [8.0,  8.0, 8.0]
-# D = [0.2, 0.2, 0.2]
-# #%%
-# # Plot points
-# O, N =  libcubeprop.build_grid(mol.wfn, L, D)
-# block, points, nxyz, npoints = libcubeprop.populate_grid(mol.wfn, O, N, D)
-# fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 12), dpi=160)
-# # # Plot vp
-# vp_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, vp, "Large_vp")
+L = [2,  4.0, 4.0]
+D = [0.1, 0.1, 0.1]
+#%%
+# Plot points
+dvp_psi4 = psi4.core.Matrix.from_array(dvp)
+O, N =  libcubeprop.build_grid(mol.wfn, L, D)
+block, points, nxyz, npoints = libcubeprop.populate_grid(mol.wfn, O, N, D)
+fig, ax = plt.subplots(1, 1, figsize=(16, 12), dpi=160)
+vp_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, dvp_psi4)
 # # vp_cube, cube_info = libcubeprop.cube_to_array("Large_vp.cube")
-# pt1 = ax1.imshow(vp_cube[40, :, :], interpolation="bicubic")
-# fig.colorbar(pt1, ax=ax1)
-# ax1.set_title("vp")
+pt1 = ax.imshow(vp_cube[10, :, :], interpolation="bicubic", cmap='RdBu')
+fig.colorbar(pt1, ax=ax)
+ax.set_title("vp")
+fig.show()
 # # Plot density
 # density = psi4.core.Matrix.from_array(mol.Da.np + mol.Db.np)
 # rho_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, density, "Large_rho")
