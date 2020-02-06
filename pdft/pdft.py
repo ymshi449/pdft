@@ -1299,7 +1299,7 @@ class U_Embedding:
                                       jac=self.jac, hess=self.hess, method=opt_method, options=opt)
         return vp_array
 
-    def find_vp_response2(self, maxiter=21, regul_const = None,beta=None, atol=1e-7, guess=None):
+    def find_vp_response2(self, maxiter=21, regul_const = None, beta=None, svp_rcond=None, atol=1e-7, guess=None):
         """
         Using the inverse of static response function to update dvp from a dn.
         This version did inversion on xi_q =  psi_i*psi_j where psi is mo.
@@ -1309,9 +1309,12 @@ class U_Embedding:
         :param guess: initial guess. When guess is True, object will look for self stored vp as initial.
         :return:
         """
+        Ep_convergence = []
+
         if guess is None:
-            self.four_overlap, _, _, _ = fouroverlap(self.molecule.wfn, self.molecule.geometry,
-                                                     self.molecule.basis, self.molecule.mints)
+            if self.four_overlap is None:
+                self.four_overlap, _, _, _ = fouroverlap(self.molecule.wfn, self.molecule.geometry,
+                                                         self.molecule.basis, self.molecule.mints)
             self.molecule.scf(maxiter=1000, print_energies=True)
 
             vp_total = np.zeros_like(self.molecule.H.np)
@@ -1325,18 +1328,20 @@ class U_Embedding:
             for i in range(self.nfragments):
                 self.fragments[i].scf(maxiter=1000, print_energies=True)
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+            Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
 
-            # if note given, use the first density difference to be initial
+            # if guess not given, use the first density difference to be initial is probably a good idea.
+            Ef = 0.0
             self.get_density_sum()
-            vp_total = self.fragments_Da - self.molecule.Da + self.fragments_Db - self.molecule.Db
+            vp_total += beta*(self.fragments_Da - self.molecule.Da + self.fragments_Db - self.molecule.Db)
             self.vp = [vp_total, vp_total]
-            vp_totalfock.np[:] = np.einsum('ijmn,mn->ij', self.four_overlap, vp_total)
+            vp_totalfock.np[:] += np.einsum('ijmn,mn->ij', self.four_overlap, vp_total)
             self.vp_fock = [vp_totalfock, vp_totalfock]
             # And run the iteration
             for i in range(self.nfragments):
-                self.fragments[i].scf(maxiter=1000, print_energies=True)
+                self.fragments[i].scf(maxiter=1000, print_energies=True, vp_matrix=self.vp_fock)
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
-
+            Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
         elif guess is True:
 
             vp_total = self.vp[0]
@@ -1372,14 +1377,15 @@ class U_Embedding:
         beta_lastupdate_iter = 0
         rho_convergence = []
         rho_molecule = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
-        Ep_convergence = []
-        Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
 
         if beta is None:
             beta = 1.0
 
         if regul_const is not None:
             self.regul_const = regul_const
+
+        if svp_rcond is None:
+            svp_rcond = 1e-4
 
         print("<<<<<<<<<<<<<<<<<<<<<<Compute_Method_Response Method 2<<<<<<<<<<<<<<<<<<<")
         for scf_step in range(1, maxiter + 1):
@@ -1418,7 +1424,7 @@ class U_Embedding:
             # Solve by least square
             # dvp = np.linalg.lstsq(hess, beta*jac, rcond=10-6)[0]
             # Solve by SVD
-            hess_inv = np.linalg.pinv(hess, rcond=1e-4)
+            hess_inv = np.linalg.pinv(hess, rcond=svp_rcond)
             dvp = hess_inv.dot(beta*jac)
             print("Solved?", np.linalg.norm(np.dot(hess, dvp) - beta*jac))
             vp_change = np.linalg.norm(dvp, ord=1)
