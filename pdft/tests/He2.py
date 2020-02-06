@@ -5,6 +5,7 @@ import libcubeprop
 import numpy as np
 
 bondlength = 6
+psi4.set_output_file("He2")
 
 Full_Molec =  psi4.geometry( """
 nocom
@@ -44,7 +45,7 @@ Full_Molec.set_name("He2")
 #Psi4 Options:
 psi4.set_options({
     # 'DFT_SPHERICAL_POINTS': 110,
-    # 'DFT_RADIAL_POINTS':    5,
+    # 'DFT_RADIAL_POINTS':    5,, regul_const=1e-5,
     'REFERENCE' : 'UKS'
 })
 
@@ -63,7 +64,7 @@ pdfter = pdft.U_Embedding([f1, f2], mol)
 
 # vp_solution = pdfter.find_vp_optimizing(maxiter=29)
 #
-dvp, jac, hess, rho_conv, ep_conv = pdfter.find_vp_response2(210, beta=0.1)
+pdfter.find_vp_response2(21, beta=0.1)
 
 #%% Plotting Cubic
 # #Set the box lenght and grid fineness.

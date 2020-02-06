@@ -71,7 +71,7 @@ mol = pdft.U_Molecule(Full_Molec, "cc-pvdz", "SVWN")
 #%%Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
 # rho_conv, ep_conv = pdfter.find_vp_response(maxiter=1000, beta=0.01, atol=1e-5)
-dvp, jac, hess, rho_conv, ep_conv = pdfter.find_vp_response2(1, beta=0.1)
+pdfter.find_vp_response2(21, beta=0.1)
 
 #%% Plotting
 # #Set the box lenght and grid fineness.
@@ -79,7 +79,7 @@ L = [2,  4.0, 4.0]
 D = [0.1, 0.1, 0.1]
 #%%
 # Plot points
-dvp_psi4 = psi4.core.Matrix.from_array(dvp)
+dvp_psi4 = psi4.core.Matrix.from_array(pdfter.vp[0])
 O, N =  libcubeprop.build_grid(mol.wfn, L, D)
 block, points, nxyz, npoints = libcubeprop.populate_grid(mol.wfn, O, N, D)
 fig, ax = plt.subplots(1, 1, figsize=(16, 12), dpi=160)
@@ -104,15 +104,15 @@ fig.show()
 # # np.unravel_index(np.argmax(np.abs(h2o_cube), axis=None), np.abs(h2o_cube).shape)
 
 # #%%
-fig1 = plt.figure(num=None, figsize=(16, 12), dpi=160)
-plt.plot(rho_conv, figure=fig1)
-plt.xlabel(r"iteration")
-plt.ylabel(r"$\int |\rho_{whole} - \sum_{fragment} \rho|$")
-plt.title(r"Large Molecule (48 electrons) w/ density difference method ")
-fig1.savefig("rho")
-fig2 = plt.figure(num=None, figsize=(16, 12), dpi=160)
-plt.plot(ep_conv, figure=fig2)
-plt.xlabel(r"iteration")
-plt.ylabel(r"Ep")
-plt.title(r"Large w/ density difference method ")
-fig2.savefig("Ep")
+# fig1 = plt.figure(num=None, figsize=(16, 12), dpi=160)
+# plt.plot(rho_conv, figure=fig1)
+# plt.xlabel(r"iteration")
+# plt.ylabel(r"$\int |\rho_{whole} - \sum_{fragment} \rho|$")
+# plt.title(r"Large Molecule (48 electrons) w/ density difference method ")
+# fig1.savefig("rho")
+# fig2 = plt.figure(num=None, figsize=(16, 12), dpi=160)
+# plt.plot(ep_conv, figure=fig2)
+# plt.xlabel(r"iteration")
+# plt.ylabel(r"Ep")
+# plt.title(r"Large w/ density difference method ")
+# fig2.savefig("Ep")

@@ -453,6 +453,7 @@ class U_Molecule():
         #Psi4 objects
         self.wfn        = psi4.core.Wavefunction.build(self.geometry, self.basis)
         self.functional = psi4.driver.dft.build_superfunctional(method, restricted=False)[0]
+
         self.mints = mints if mints is not None else psi4.core.MintsHelper(self.wfn.basisset())
         self.Vpot       = psi4.core.VBase.build(self.wfn.basisset(), self.functional, "UV")
 
@@ -542,7 +543,8 @@ class U_Molecule():
         if vpot is None:
             vpot = self.Vpot
         points_func = vpot.properties()[0]
-        twogradtwo = np.zeros((self.nbf, self.nbf, self.nbf))
+        points_func.set_deriv(1)
+        twogradtwo = np.zeros((self.nbf, self.nbf, self.nbf, self.nbf))
         # Loop over the blocks
         for b in range(vpot.nblocks()):
             # Obtain block information
@@ -847,11 +849,15 @@ class U_Embedding:
 
         self.four_overlap = None
         self.three_overlap = None
+        self.twogradtwo = None
 
         # convergence
         self.drho_conv = []
         self.ep_conv = []
         self.lagrange = []
+
+        # Regularization Constant
+        self.regul_const = 0.0
 
     def get_density_sum(self):
         sum_a = self.fragments[0].Da.np.copy() * self.fragments[0].omega
@@ -1092,6 +1098,8 @@ class U_Embedding:
         if self.four_overlap is None:
             self.four_overlap = fouroverlap(self.molecule.wfn, self.molecule.geometry,
                                             self.molecule.basis, self.molecule.mints)[0]
+        if self.twogradtwo is None:
+            self.twogradtwo = self.molecule.two_gradtwo_grid()
 
         vp = vp_array.reshape(self.molecule.nbf, self.molecule.nbf)
         # If the vp stored is not the same as the vp we got, re-run scp calculations and update vp.
@@ -1116,8 +1124,14 @@ class U_Embedding:
             hess += i.omega*np.einsum('ai,bj,ci,dj,ij,amnb,cuvd -> mnuv', i.Cb.np[:, :i.nbeta], i.Cb.np[:, i.nbeta:],
                                       i.Cb.np[:, :i.nbeta], i.Cb.np[:, i.nbeta:], np.reciprocal(epsilon_b),
                                       self.four_overlap, self.four_overlap, optimize=True).reshape(self.molecule.nbf**2, self.molecule.nbf**2)
-        assert np.linalg.norm(hess - hess.T) < 1e-3, "hess not symmetry"
+        # assert np.linalg.norm(hess - hess.T) < 1e-3, "hess not symmetry"
         hess = 0.5 * (hess + hess.T)
+
+        # Regularization
+        T = self.twogradtwo.reshape(self.molecule.nbf**2, self.molecule.nbf**2)
+        T = 0.5 * (T + T.T)
+        hess -= 4*4*self.regul_const*T
+
         print("Response", np.linalg.norm(hess))
         # print(hess)
         return -hess
@@ -1148,6 +1162,12 @@ class U_Embedding:
 
         jac = np.einsum("u,ui->i", (density_difference_a + density_difference_b).reshape(self.molecule.nbf**2),
                         self.four_overlap.reshape(self.molecule.nbf**2, self.molecule.nbf**2), optimize=True)
+
+        # Regularization
+        T = self.twogradtwo.reshape(self.molecule.nbf**2, self.molecule.nbf**2)
+        T = 0.5 * (T + T.T)
+        jac -= 4*4*self.regul_const*np.dot(T, vp_array)
+
         print("Jac norm:", np.linalg.norm(jac))
         return -jac
 
@@ -1175,6 +1195,11 @@ class U_Embedding:
 
         L = Ef
         L += np.sum(self.vp_fock[0].np*(density_difference_a + density_difference_b))
+
+        # Regularization
+        T = self.twogradtwo.reshape(self.molecule.nbf**2, self.molecule.nbf**2)
+        T = 0.5 * (T + T.T)
+        T -= 4*4*self.regul_const*np.dot(np.dot(vp_array, T), vp_array)
 
         _, _, _, w = self.molecule.Vpot.get_np_xyzw()
         rho_molecule = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
@@ -1274,7 +1299,7 @@ class U_Embedding:
                                       jac=self.jac, hess=self.hess, method=opt_method, options=opt)
         return vp_array
 
-    def find_vp_response2(self, maxiter=21, beta=None, atol=1e-7, guess=None):
+    def find_vp_response2(self, maxiter=21, regul_const = None,beta=None, atol=1e-7, guess=None):
         """
         Using the inverse of static response function to update dvp from a dn.
         This version did inversion on xi_q =  psi_i*psi_j where psi is mo.
@@ -1353,6 +1378,9 @@ class U_Embedding:
         if beta is None:
             beta = 1.0
 
+        if regul_const is not None:
+            self.regul_const = regul_const
+
         print("<<<<<<<<<<<<<<<<<<<<<<Compute_Method_Response Method 2<<<<<<<<<<<<<<<<<<<")
         for scf_step in range(1, maxiter + 1):
             """
@@ -1390,7 +1418,7 @@ class U_Embedding:
             # Solve by least square
             # dvp = np.linalg.lstsq(hess, beta*jac, rcond=10-6)[0]
             # Solve by SVD
-            hess_inv = np.linalg.pinv(hess, rcond=1e-5)
+            hess_inv = np.linalg.pinv(hess, rcond=1e-4)
             dvp = hess_inv.dot(beta*jac)
             print("Solved?", np.linalg.norm(np.dot(hess, dvp) - beta*jac))
             vp_change = np.linalg.norm(dvp, ord=1)
@@ -1427,7 +1455,7 @@ class U_Embedding:
                 print("Maximum number of SCF cycles exceeded for vp.")
         self.drho_conv = rho_convergence
         self.ep_conv = Ep_convergence
-        return dvp, jac, hess
+        return
 
     def find_vp_response(self, maxiter=21, beta=None, atol=1e-7, guess=None):
         """

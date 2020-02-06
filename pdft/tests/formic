@@ -115,12 +115,3 @@
     atoms 2-3, 7-8  entry O          line   221 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz-jkfit.gbs 
     atoms 4-5, 9-10 entry H          line    51 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz-jkfit.gbs 
 
-   => Loading Basis Set <=
-
-    Name: CC-PVDZ
-    Role: ORBITAL
-    Keyword: BASIS
-    atoms 1, 6      entry C          line   138 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
-    atoms 2-3, 7-8  entry O          line   198 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
-    atoms 4-5, 9-10 entry H          line    22 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
-

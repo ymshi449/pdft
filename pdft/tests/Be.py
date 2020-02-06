@@ -8,7 +8,7 @@ bondlength = 4.522
 
 psi4.set_output_file("Be2")
 
-Full_Molec =  psi4.geometry( """
+Full_Molec =  psi4.geometry("""
 nocom
 noreorient
 Be %f 0.0 0.00
@@ -51,12 +51,12 @@ psi4.set_options({
 })
 
 #Make fragment calculations:
-f1  = pdft.U_Molecule(Monomer_2,  "aug-cc-pvdz", "SVWN")
-f2  = pdft.U_Molecule(Monomer_1,  "aug-cc-pvdz", "SVWN")
-mol = pdft.U_Molecule(Full_Molec, "aug-cc-pvdz", "SVWN")
+f1  = pdft.U_Molecule(Monomer_2,  "cc-pvdz", "SVWN")
+f2  = pdft.U_Molecule(Monomer_1,  "cc-pvdz", "SVWN")
+mol = pdft.U_Molecule(Full_Molec, "cc-pvdz", "SVWN")
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
 # vp_solution = pdfter.find_vp_optimizing(maxiter=29)
 
-dvp, jac, hess = pdfter.find_vp_response2(280, beta=0.1)
+pdfter.find_vp_response2(21, regul_const=1e-5, beta=0.1)

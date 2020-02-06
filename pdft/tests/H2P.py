@@ -60,7 +60,7 @@ pdfter = pdft.U_Embedding([f1, f2], mol)
 
 # vp_solution = pdfter.find_vp_optimizing(maxiter=210)
 
-dvp, jac, hess = pdfter.find_vp_response2(35, beta=0.1)
+pdfter.find_vp_response2(49, regul_const=1e-5, beta=0.1)
 #%%
 # pdfter.get_energies()
 #%%
