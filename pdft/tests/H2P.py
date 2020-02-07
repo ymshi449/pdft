@@ -60,7 +60,15 @@ pdfter = pdft.U_Embedding([f1, f2], mol)
 
 # vp_solution = pdfter.find_vp_optimizing(maxiter=210)
 
-pdfter.find_vp_response2(49, regul_const=1e-5, beta=0.1)
+for svd in np.linspace(1, 7, 20):
+    pdfter.find_vp_response2(28, svd_rcond=10**(-svd), beta=0.1, printflag=False)
+    vp_grid = mol.to_grid(pdfter.vp[0])
+    f, ax = plt.subplots(1,1,figsize=(16,12), dpi=160)
+    pdft.plot1d_x(vp_grid, mol.Vpot, title="%.14f, Ep:% f, drho:% f"
+                                           % (10 ** (-svd), pdfter.ep_conv[-1], pdfter.drho_conv[-1]),
+                  dimmer_length=bondlength, ax=ax)
+    f.savefig("VpH2+" + str(int(svd*100)))
+    print("===============================================svd_rcond=%f, Ep:% f, drho:% f" %(10**(-svd), pdfter.ep_conv[-1], pdfter.drho_conv[-1]))
 #%%
 # pdfter.get_energies()
 #%%

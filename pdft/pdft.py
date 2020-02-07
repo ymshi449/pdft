@@ -1132,7 +1132,7 @@ class U_Embedding:
         T = 0.5 * (T + T.T)
         hess -= 4*4*self.regul_const*T
 
-        print("Response", np.linalg.norm(hess))
+        # print("Response", np.linalg.norm(hess))
         # print(hess)
         return -hess
 
@@ -1168,7 +1168,7 @@ class U_Embedding:
         T = 0.5 * (T + T.T)
         jac -= 4*4*self.regul_const*np.dot(T, vp_array)
 
-        print("Jac norm:", np.linalg.norm(jac))
+        # print("Jac norm:", np.linalg.norm(jac))
         return -jac
 
     def lagrange_mul(self, vp_array):
@@ -1299,7 +1299,7 @@ class U_Embedding:
                                       jac=self.jac, hess=self.hess, method=opt_method, options=opt)
         return vp_array
 
-    def find_vp_response2(self, maxiter=21, regul_const = None, beta=None, svp_rcond=None, atol=1e-7, guess=None):
+    def find_vp_response2(self, maxiter=21, a_rho_var=1e-4, regul_const = None, beta=None, svd_rcond=None, printflag=True, guess=None):
         """
         Using the inverse of static response function to update dvp from a dn.
         This version did inversion on xi_q =  psi_i*psi_j where psi is mo.
@@ -1315,7 +1315,7 @@ class U_Embedding:
             if self.four_overlap is None:
                 self.four_overlap, _, _, _ = fouroverlap(self.molecule.wfn, self.molecule.geometry,
                                                          self.molecule.basis, self.molecule.mints)
-            self.molecule.scf(maxiter=1000, print_energies=True)
+            self.molecule.scf(maxiter=1000, print_energies=printflag)
 
             vp_total = np.zeros_like(self.molecule.H.np)
             self.vp = [vp_total, vp_total]
@@ -1326,7 +1326,7 @@ class U_Embedding:
             Ef = 0.0
             # Run the first iteration
             for i in range(self.nfragments):
-                self.fragments[i].scf(maxiter=1000, print_energies=True)
+                self.fragments[i].scf(maxiter=1000, print_energies=printflag)
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
             Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
 
@@ -1339,7 +1339,7 @@ class U_Embedding:
             self.vp_fock = [vp_totalfock, vp_totalfock]
             # And run the iteration
             for i in range(self.nfragments):
-                self.fragments[i].scf(maxiter=1000, print_energies=True, vp_matrix=self.vp_fock)
+                self.fragments[i].scf(maxiter=1000, print_energies=printflag, vp_matrix=self.vp_fock)
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
             Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
         elif guess is True:
@@ -1356,7 +1356,7 @@ class U_Embedding:
         else:
             self.four_overlap, _, _, _ = fouroverlap(self.molecule.wfn, self.molecule.geometry,
                                                      self.molecule.basis, self.molecule.mints)
-            self.molecule.scf(maxiter=1000, print_energies=True)
+            self.molecule.scf(maxiter=1000, print_energies=printflag)
 
             vp_total = guess[0]
             self.vp = guess
@@ -1367,7 +1367,7 @@ class U_Embedding:
             Ef = 0.0
             # Run the first iteration
             for i in range(self.nfragments):
-                self.fragments[i].scf(maxiter=1000, print_energies=True, vp_matrix=self.vp_fock)
+                self.fragments[i].scf(maxiter=1000, print_energies=printflag, vp_matrix=self.vp_fock)
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
 
         _, _, _, w = self.molecule.Vpot.get_np_xyzw()
@@ -1384,8 +1384,8 @@ class U_Embedding:
         if regul_const is not None:
             self.regul_const = regul_const
 
-        if svp_rcond is None:
-            svp_rcond = 1e-4
+        if svd_rcond is None:
+            svd_rcond = 1e-4
 
         print("<<<<<<<<<<<<<<<<<<<<<<Compute_Method_Response Method 2<<<<<<<<<<<<<<<<<<<")
         for scf_step in range(1, maxiter + 1):
@@ -1413,9 +1413,10 @@ class U_Embedding:
             old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
             rho_convergence.append(old_rho_conv)
 
-            print(
-                F'Iter: {scf_step - 1} beta: {beta} dD: {np.linalg.norm(self.fragments_Da + self.fragments_Db - (self.molecule.Da.np + self.molecule.Db.np), ord=1)} '
-                F'Ef: {Ef} Ep: {Ep_convergence[-1]} d_rho: {old_rho_conv}')
+            if printflag:
+                print(
+                    F'Iter: {scf_step - 1} beta: {beta} dD: {np.linalg.norm(self.fragments_Da + self.fragments_Db - (self.molecule.Da.np + self.molecule.Db.np), ord=1)} '
+                    F'Ef: {Ef} Ep: {Ep_convergence[-1]} d_rho: {old_rho_conv}')
 
             hess = self.hess(self.vp[0].reshape(self.molecule.nbf**2))
             jac = self.jac(self.vp[0].reshape(self.molecule.nbf**2))
@@ -1424,11 +1425,11 @@ class U_Embedding:
             # Solve by least square
             # dvp = np.linalg.lstsq(hess, beta*jac, rcond=10-6)[0]
             # Solve by SVD
-            hess_inv = np.linalg.pinv(hess, rcond=svp_rcond)
+            hess_inv = np.linalg.pinv(hess, rcond=svd_rcond)
             dvp = hess_inv.dot(beta*jac)
-            print("Solved?", np.linalg.norm(np.dot(hess, dvp) - beta*jac))
+            # print("Solved?", np.linalg.norm(np.dot(hess, dvp) - beta*jac))
             vp_change = np.linalg.norm(dvp, ord=1)
-            print("dvp norm", vp_change)
+            # print("dvp norm", vp_change)
             dvp = -dvp.reshape(self.molecule.nbf, self.molecule.nbf)
             dvp = 0.5 * (dvp + dvp.T)
             vp_total += dvp
@@ -1453,12 +1454,20 @@ class U_Embedding:
             elif beta < 1e-7:
                 print("Break because even small step length can not improve.")
                 break
+            elif rho_convergence.shape[0] > 5:
+                if np.var(rho_convergence[-4]) < a_rho_var:
+                    print("Break because rho does update for 5 iter")
+                    break
+            elif rho_convergence.shape[0] <= 5:
+                if np.var(rho_convergence) < a_rho_var:
+                    print("Break because rho does update")
+                    break
             elif old_rho_conv < 1e-4:
                 print("Break because rho difference (cost) is small.")
                 break
-            elif scf_step == maxiter:
+            # elif scf_step == maxiter:
                 # raise Exception("Maximum number of SCF cycles exceeded for vp.")
-                print("Maximum number of SCF cycles exceeded for vp.")
+                # print("Maximum number of SCF cycles exceeded for vp.")
         self.drho_conv = rho_convergence
         self.ep_conv = Ep_convergence
         return
@@ -1726,7 +1735,7 @@ class Embedding:
 
         return vp
 
-def plot1d_x(data, Vpot, dimmer_length=2.0, title=None, fignum= None):
+def plot1d_x(data, Vpot, dimmer_length=2.0, title=None, ax= None):
     """
     Plot on x direction
     :param data: Any f(r) on grid
@@ -1736,18 +1745,18 @@ def plot1d_x(data, Vpot, dimmer_length=2.0, title=None, fignum= None):
     mask = np.isclose(abs(y), 0, atol=1E-11)
     mask2 = np.isclose(abs(z), 0, atol=1E-11)
     order = np.argsort(x[mask & mask2])
-    if fignum is None:
+    if ax is None:
         # f1 = plt.figure(num=None, figsize=(16, 12), dpi=160)        
         f1 = plt.figure()
         plt.plot(x[mask & mask2][order], data[mask & mask2][order])
     else:
-        # f1 = plt.figure(num=fignum, figsize=(16, 12), dpi=160)        
-        f1 = plt.figure()
-        plt.plot(x[mask & mask2][order], data[mask & mask2][order])
+        ax.plot(x[mask & mask2][order], data[mask & mask2][order])
     plt.axvline(x=dimmer_length/2.0)
     plt.axvline(x=-dimmer_length/2.0)
     plt.xlabel("x-axis")
     if title is not None:
-        plt.ylabel(title)
-        plt.title(title + " plot on the X axis")
-    plt.show()
+        if ax is None:
+            plt.title(title)
+        else:
+            # f1 = plt.figure(num=fignum, figsize=(16, 12), dpi=160)
+            ax.set_title(title)

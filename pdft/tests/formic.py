@@ -71,7 +71,7 @@ mol = pdft.U_Molecule(Full_Molec, "cc-pvdz", "SVWN")
 #%%Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
 # rho_conv, ep_conv = pdfter.find_vp_response(maxiter=1000, beta=0.01, atol=1e-5)
-pdfter.find_vp_response2(21, beta=0.1)
+pdfter.find_vp_response2(0, beta=0.1)
 
 #%% Plotting
 # #Set the box lenght and grid fineness.
@@ -85,7 +85,7 @@ block, points, nxyz, npoints = libcubeprop.populate_grid(mol.wfn, O, N, D)
 fig, ax = plt.subplots(1, 1, figsize=(16, 12), dpi=160)
 vp_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, dvp_psi4)
 # # vp_cube, cube_info = libcubeprop.cube_to_array("Large_vp.cube")
-pt1 = ax.imshow(vp_cube[10, :, :], interpolation="bicubic", cmap='RdBu')
+pt1 = ax.imshow(vp_cube[11, :, :].T, interpolation="bicubic", cmap='RdBu')
 fig.colorbar(pt1, ax=ax)
 ax.set_title("vp")
 fig.show()
