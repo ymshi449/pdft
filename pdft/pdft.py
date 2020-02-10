@@ -864,8 +864,9 @@ class U_Embedding:
         sum_b = self.fragments[0].Db.np.copy() * self.fragments[0].omega
 
         for i in range(1, len(self.fragments)):
-            sum_a +=  self.fragments[i].Da.np * self.fragments[i].omega
-            sum_b +=  self.fragments[i].Db.np * self.fragments[i].omega
+
+            sum_a += self.fragments[i].Da.np * self.fragments[i].omega
+            sum_b += self.fragments[i].Db.np * self.fragments[i].omega
 
         self.fragments_Da = sum_a
         self.fragments_Db = sum_b
@@ -955,12 +956,12 @@ class U_Embedding:
 
         self.get_density_sum()
         return
-        
+
+
     def find_vp(self, beta, maxiter=21, guess=None, atol=2e-4):
         """
         Given a target function, finds vp_matrix to be added to each fragment
         ks matrix to match full molecule energy/density
-
         Parameters
         ----------
         beta: positive float
@@ -970,17 +971,17 @@ class U_Embedding:
         -------
         vp: psi4.core.Matrix
             Vp to be added to fragment ks matrix
-
         """
         # vp initialize
         # self.fragments[1].flip_spin()
         self.molecule.scf(maxiter=1000, print_energies=True)
-        S, _, _, _ = fouroverlap(self.molecule.wfn, self.molecule.geometry,
+
+        self.four_overlap, _, _, _ = fouroverlap(self.molecule.wfn, self.molecule.geometry,
                                            self.molecule.basis, self.molecule.mints)
         if guess is None:
-            vp_a = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
-            vp_b = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
-            vp_total = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
+            vp_a = np.zeros_like(self.molecule.H.np)
+            vp_b = np.zeros_like(self.molecule.H.np)
+            self.vp = [np.zeros_like(self.molecule.H.np),np.zeros_like(self.molecule.H.np)]
 
             vp_afock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
             vp_bfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
@@ -1014,12 +1015,11 @@ class U_Embedding:
             vp_total.np[:] += vp_a.np + vp_b.np
             self.vp = guess
 
-            vp_afock = np.einsum('ijmn,mn->ij', S, vp_a)
-            vp_bfock = np.einsum('ijmn,mn->ij', S, vp_b)
+            vp_afock = np.einsum('ijmn,mn->ij', self.four_overlap, vp_a)
+            vp_bfock = np.einsum('ijmn,mn->ij', self.four_overlap, vp_b)
             vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.Db.np))
             vp_totalfock.np[:] += vp_afock.np + vp_bfock.np
             self.vp_fock = [vp_totalfock, vp_totalfock]
-            flag_update_vpfock = True
             # Initialize
             Ef = 0.0
             # Run the first iteration
@@ -1383,9 +1383,11 @@ class U_Embedding:
 
         if regul_const is not None:
             self.regul_const = regul_const
+        else:
+            self.regul_const = 0.0
 
         if svd_rcond is None:
-            svd_rcond = 1e-4
+            svd_rcond = 1e-3
 
         print("<<<<<<<<<<<<<<<<<<<<<<Compute_Method_Response Method 2<<<<<<<<<<<<<<<<<<<")
         for scf_step in range(1, maxiter + 1):
@@ -1455,12 +1457,8 @@ class U_Embedding:
                 print("Break because even small step length can not improve.")
                 break
             elif rho_convergence.shape[0] > 5:
-                if np.var(rho_convergence[-4]) < a_rho_var:
+                if np.std(rho_convergence[-4]) < a_rho_var:
                     print("Break because rho does update for 5 iter")
-                    break
-            elif rho_convergence.shape[0] <= 5:
-                if np.var(rho_convergence) < a_rho_var:
-                    print("Break because rho does update")
                     break
             elif old_rho_conv < 1e-4:
                 print("Break because rho difference (cost) is small.")

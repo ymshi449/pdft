@@ -2,36 +2,41 @@ import psi4
 import pdft
 from cubeprop import Cube
 import matplotlib.pyplot as plt
-psi4.set_output_file("H2P")
+psi4.set_output_file("H2")
+bondlength = 1.446
+
+Full_Molec =  psi4.geometry( """
+nocom
+noreorient
+H %f 0.0 0.00
+@H 0.0 0.4 0.0
+@H 0.0 -0.4 0.0
+H -%f 0.0 0.00
+units bohr
+symmetry c1
+""" % (bondlength / 2, bondlength / 2))
+
 Monomer_1 =  psi4.geometry("""
 nocom
 noreorient
-@H  -1 0 0
-@H  0 0 0
-H  1 0 0
+H %f 0.0 0.00
+@H 0.0 0.4 0.0
+@H 0.0 -0.4 0.0
+@H -%f 0.0 0.00
 units bohr
 symmetry c1
-""")
+""" % (bondlength / 2, bondlength / 2))
 
 Monomer_2 =  psi4.geometry("""
 nocom
 noreorient
-H  -1 0 0
-@H  0 0 0
-@H  1 0 0
+@H %f 0.0 0.00
+@H 0.0 0.4 0.0
+@H 0.0 -0.4 0.0
+H -%f 0.0 0.00
 units bohr
 symmetry c1
-""")
-Full_Molec =  psi4.geometry("""
-1 2
-nocom
-noreorient
-H  -1 0 0
-@H  0 0 0
-H  1 0 0
-units bohr
-symmetry c1""")
-Full_Molec.set_name("H2P")
+""" % (bondlength / 2, bondlength / 2))
 
 #Psi4 Options:
 psi4.set_options({
@@ -41,8 +46,8 @@ psi4.set_options({
 })
 
 #Make fragment calculations:
-f1  = pdft.U_Molecule(Monomer_2,  "cc-pvdz", "SVWN", omega=0.5)
-f2  = pdft.U_Molecule(Monomer_1,  "cc-pvdz", "SVWN", omega=0.5)
+f1  = pdft.U_Molecule(Monomer_2,  "cc-pvdz", "SVWN")
+f2  = pdft.U_Molecule(Monomer_1,  "cc-pvdz", "SVWN")
 mol = pdft.U_Molecule(Full_Molec, "CC-PVDZ", "SVWN")
 
 #Start a pdft systemm, and perform calculation to find vp
@@ -62,13 +67,13 @@ fig1 = plt.figure(num=1, figsize=(16, 12), dpi=160)
 plt.plot(rho_conv, figure=fig1)
 plt.xlabel(r"iteration")
 plt.ylabel(r"$\int |\rho_{whole} - \sum_{fragment} \rho|$")
-plt.title(r"$H2^+$ w/ response method ")
+plt.title(r"$H2$ w/ response method ")
 fig1.savefig("rho")
 plt.show()
 fig2 = plt.figure(num=2, figsize=(16, 12), dpi=160)
 plt.plot(ep_conv, figure=fig2)
 plt.xlabel(r"iteration")
 plt.ylabel(r"Ep")
-plt.title(r"$H2^+$ w/ response method ")
+plt.title(r"$H2$ w/ response method ")
 fig2.savefig("Ep")
 plt.show()
