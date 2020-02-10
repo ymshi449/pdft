@@ -63,43 +63,43 @@ psi4.set_options({
     'REFERENCE' : 'UKS'})
 
 #Make fragment calculations:
-f1  = pdft.U_Molecule(Monomer_2,  "CC-PVDZ", "SVWN")
-f2  = pdft.U_Molecule(Monomer_1,  "CC-PVDZ", "SVWN")
-mol = pdft.U_Molecule(Full_Molec, "CC-PVDZ", "SVWN")
+f1  = pdft.U_Molecule(Monomer_2,  "cc-pvdz", "SVWN")
+f2  = pdft.U_Molecule(Monomer_1,  "cc-pvdz", "SVWN")
+mol = pdft.U_Molecule(Full_Molec, "cc-pvdz", "SVWN")
 
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
-rho_conv, ep_conv = pdfter.find_vp(maxiter=140, beta=3, atol=1e-5)
-#%%
-# pdfter.get_energies()
-#%%
-# vp_plot = Cube(mol.wfn)
-#%%
-# vp_plot.plot_matrix(vp, 2,60)
-fig1 = plt.figure(num=None, figsize=(16, 12), dpi=160)
-plt.plot(rho_conv, figure=fig1)
-plt.xlabel(r"iteration")
-plt.ylabel(r"$\int |\rho_{whole} - \sum_{fragment} \rho|$")
-plt.title(r"Large Molecule (48 electrons) w/ density difference method ")
-# fig1.savefig("tests/rho")
-fig2 = plt.figure(num=None, figsize=(16, 12), dpi=160)
-plt.plot(ep_conv, figure=fig2)
-plt.xlabel(r"iteration")
-plt.ylabel(r"Ep")
-plt.title(r"Large w/ density difference method ")
-# fig2.savefig("tests/Ep")
-
-#%%
-L = [5.0,  5.0, 4.0]
-D = [0.2, 0.2, 0.2]
+jac, hess= pdfter.find_vp_response2(maxiter=25, beta=0.1, svd_rcond=1e-4)
+# #%%
+# # pdfter.get_energies()
+# #%%
+# # vp_plot = Cube(mol.wfn)
+# #%%
+# # vp_plot.plot_matrix(vp, 2,60)
+# fig1 = plt.figure(num=None, figsize=(16, 12), dpi=160)
+# plt.plot(rho_conv, figure=fig1)
+# plt.xlabel(r"iteration")
+# plt.ylabel(r"$\int |\rho_{whole} - \sum_{fragment} \rho|$")
+# plt.title(r"Large Molecule (48 electrons) w/ density difference method ")
+# # fig1.savefig("tests/rho")
+# fig2 = plt.figure(num=None, figsize=(16, 12), dpi=160)
+# plt.plot(ep_conv, figure=fig2)
+# plt.xlabel(r"iteration")
+# plt.ylabel(r"Ep")
+# plt.title(r"Large w/ density difference method ")
+# # fig2.savefig("tests/Ep")
+#
+# #%%
+vp_psi4 = psi4.core.Matrix.from_array(pdfter.vp[0])
+L = [4.0, 4.0, 4.0]
+D = [0.05, 0.2, 0.2]
 # Plot file
 O, N = libcubeprop.build_grid(mol.wfn, L, D)
 block, points, nxyz, npoints = libcubeprop.populate_grid(mol.wfn, O, N, D)
-vp_psi4 = psi4.core.Matrix.from_array(pdfter.vp[0])
 vp_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, vp_psi4)
 f, ax = plt.subplots(1, 1, figsize=(16, 12), dpi=160)
-plt.imshow(vp_cube[25, :, :], interpolation="bicubic")
-plt.title("vpALL96 on basis.")
-plt.colorbar(fraction=0.040, pad=0.04)
-f.savefig("vp2D")
+p = ax.imshow(vp_cube[81, :, :], interpolation="bicubic")
+ax.set_title("vp svd_rond=1e-5")
+f.colorbar(p, ax=ax)
+f.show()

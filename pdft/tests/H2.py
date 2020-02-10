@@ -1,6 +1,5 @@
 import psi4
 import pdft
-from cubeprop import Cube
 import matplotlib.pyplot as plt
 psi4.set_output_file("H2")
 bondlength = 1.446
