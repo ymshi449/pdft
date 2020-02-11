@@ -5,6 +5,8 @@ import libcubeprop
 import numpy as np
 
 bondlength = 4.522
+functional = 'svwn'
+basis = 'cc-pvdz'
 
 psi4.set_output_file("Be2")
 
@@ -51,24 +53,18 @@ psi4.set_options({
 })
 
 #Make fragment calculations:
-f1  = pdft.U_Molecule(Monomer_2,  "6-311G", "SVWN")
-f2  = pdft.U_Molecule(Monomer_1,  "6-311G", "SVWN")
-mol = pdft.U_Molecule(Full_Molec, "6-311G", "SVWN")
+f1  = pdft.U_Molecule(Monomer_2,  basis, functional)
+f2  = pdft.U_Molecule(Monomer_1,  basis, functional)
+mol = pdft.U_Molecule(Full_Molec, basis, functional)
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
-pdfter.find_vp_response2(8, svd_rcond=1e-4, regul_const=1e-8, beta=0.1)
+pdfter.find_vp_response2(28, svd_rcond=1e-7, regul_const=1e-3, beta=0.1)
 # pdfter.find_vp_densitydifference_onbasis(28, 1)
 vp_grid = mol.to_grid(pdfter.vp[0])
-pdft.plot1d_x(vp_grid, mol.Vpot, dimmer_length=bondlength)
-# vp_solution = pdfter.find_vp_optimizing(maxiter=29)
-# for svd in np.linspace(1, 7, 2):
-#     pdfter.find_vp_response2(21, svd_rcond=10**(-svd), regul_const=1e-5, beta=0.1)
-#     vp_grid = mol.to_grid(pdfter.vp[0])
-#     f, ax = plt.subplots(1,1,figsize=(16,12), dpi=160)
-#     pdft.plot1d_x(vp_grid, mol.Vpot, title="%.14f, Ep:% f, drho:% f"
-#                                            %(10**(-svd), pdfter.ep_conv[-1], pdfter.drho_conv[-1]),
-#                   dimmer_length=bondlength, ax=ax)
-#     f.show()
-#     f.savefig("VpBe2" + str(int(svd*100)))
-#     print("===============================================svd_rcond=%.14f, Ep:% f, drho:% f" %(10**(-svd), pdfter.ep_conv[-1], pdfter.drho_conv[-1]))
+pdft.plot1d_x(vp_grid, mol.Vpot, title="Be2 svd: 1e-3 l: 1e-9" + basis + functional)
+
+pdfter.ep_conv = np.array(pdfter.ep_conv)
+plt.plot(np.log10(np.abs(pdfter.ep_conv[1:] - pdfter.ep_conv[:-1])), 'o')
+plt.title("log dEp")
+plt.show()

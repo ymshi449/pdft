@@ -1,26 +1,26 @@
    => Loading Basis Set <=
 
-    Name: 6-311G
+    Name: CC-PVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-4 entry BE         line    58 file /home/yuming/anaconda3/envs/work/share/psi4/basis/6-311g.gbs 
+    atoms 1-4 entry BE         line    75 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
 
   Using in-core PK algorithm.
    Calculation information:
       Number of atoms:                   4
-      Number of AO shells:              28
-      Number of primitives:             64
-      Number of atomic orbitals:        52
-      Number of basis functions:        52
+      Number of AO shells:              24
+      Number of primitives:            100
+      Number of atomic orbitals:        60
+      Number of basis functions:        56
 
       Integral cutoff                 1.00e-12
       Number of threads:                 3
 
   Performing in-core PK
-  Using 1900262 doubles for integral storage.
-  We computed 95057 shell quartets total.
-  Whereas there are 82621 unique shell quartets.
-    15.05 percent of shell quartets recomputed by reordering.
+  Using 2548812 doubles for integral storage.
+  We computed 52764 shell quartets total.
+  Whereas there are 45150 unique shell quartets.
+    16.86 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -34,27 +34,27 @@
 
    => Loading Basis Set <=
 
-    Name: 6-311G
+    Name: CC-PVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-4 entry BE         line    58 file /home/yuming/anaconda3/envs/work/share/psi4/basis/6-311g.gbs 
+    atoms 1-4 entry BE         line    75 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
 
   Using in-core PK algorithm.
    Calculation information:
       Number of atoms:                   4
-      Number of AO shells:              28
-      Number of primitives:             64
-      Number of atomic orbitals:        52
-      Number of basis functions:        52
+      Number of AO shells:              24
+      Number of primitives:            100
+      Number of atomic orbitals:        60
+      Number of basis functions:        56
 
       Integral cutoff                 1.00e-12
       Number of threads:                 3
 
   Performing in-core PK
-  Using 1900262 doubles for integral storage.
-  We computed 95057 shell quartets total.
-  Whereas there are 82621 unique shell quartets.
-    15.05 percent of shell quartets recomputed by reordering.
+  Using 2548812 doubles for integral storage.
+  We computed 52764 shell quartets total.
+  Whereas there are 45150 unique shell quartets.
+    16.86 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -68,27 +68,27 @@
 
    => Loading Basis Set <=
 
-    Name: 6-311G
+    Name: CC-PVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-4 entry BE         line    58 file /home/yuming/anaconda3/envs/work/share/psi4/basis/6-311g.gbs 
+    atoms 1-4 entry BE         line    75 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
 
   Using in-core PK algorithm.
    Calculation information:
       Number of atoms:                   4
-      Number of AO shells:              28
-      Number of primitives:             64
-      Number of atomic orbitals:        52
-      Number of basis functions:        52
+      Number of AO shells:              24
+      Number of primitives:            100
+      Number of atomic orbitals:        60
+      Number of basis functions:        56
 
       Integral cutoff                 1.00e-12
       Number of threads:                 3
 
   Performing in-core PK
-  Using 1900262 doubles for integral storage.
-  We computed 95057 shell quartets total.
-  Whereas there are 82621 unique shell quartets.
-    15.05 percent of shell quartets recomputed by reordering.
+  Using 2548812 doubles for integral storage.
+  We computed 52764 shell quartets total.
+  Whereas there are 45150 unique shell quartets.
+    16.86 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -102,7 +102,7 @@
 
    => Loading Basis Set <=
 
-    Name: (6-311G AUX)
+    Name: (CC-PVDZ AUX)
     Role: JKFIT
     Keyword: DF_BASIS_SCF
     atoms 1-4 entry BE         line   101 file /home/yuming/anaconda3/envs/work/share/psi4/basis/def2-qzvpp-jkfit.gbs 

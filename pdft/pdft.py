@@ -1337,7 +1337,7 @@ class U_Embedding:
         if self.four_overlap is None:
             self.four_overlap = fouroverlap(self.molecule.wfn, self.molecule.geometry,
                                             self.molecule.basis, self.molecule.mints)[0]
-        if self.twogradtwo is None:
+        if self.twogradtwo is None and self.regul_const is not None:
             self.twogradtwo = self.molecule.two_gradtwo_grid()
 
         vp = vp_array.reshape(self.molecule.nbf, self.molecule.nbf)
@@ -1367,11 +1367,12 @@ class U_Embedding:
         hess = 0.5 * (hess + hess.T)
 
         # Regularization
-        T = self.twogradtwo.reshape(self.molecule.nbf**2, self.molecule.nbf**2)
-        T = 0.5 * (T + T.T)
-        hess -= 4*4*self.regul_const*T
+        if self.regul_const is not None:
+            T = self.twogradtwo.reshape(self.molecule.nbf**2, self.molecule.nbf**2)
+            T = 0.5 * (T + T.T)
+            hess -= 4*4*self.regul_const*T
 
-        print("Response", np.linalg.norm(hess))
+        # print("Response", np.linalg.norm(hess))
         # print(hess)
         return -hess
 
@@ -1403,11 +1404,12 @@ class U_Embedding:
                         self.four_overlap.reshape(self.molecule.nbf**2, self.molecule.nbf**2), optimize=True)
 
         # Regularization
-        T = self.twogradtwo.reshape(self.molecule.nbf**2, self.molecule.nbf**2)
-        T = 0.5 * (T + T.T)
-        jac -= 4*4*self.regul_const*np.dot(T, vp_array)
+        if self.regul_const is not None:
+            T = self.twogradtwo.reshape(self.molecule.nbf**2, self.molecule.nbf**2)
+            T = 0.5 * (T + T.T)
+            jac -= 4*4*self.regul_const*np.dot(T, vp_array)
 
-        print("Jac norm:", np.linalg.norm(jac))
+        # print("Jac norm:", np.linalg.norm(jac))
         return -jac
 
     def lagrange_mul(self, vp_array):
@@ -1538,14 +1540,19 @@ class U_Embedding:
                                       jac=self.jac, hess=self.hess, method=opt_method, options=opt)
         return vp_array
 
-    def find_vp_response2(self, maxiter=21, a_rho_var=1e-4, regul_const = None, beta=None, svd_rcond=None, printflag=True, guess=None):
+    def find_vp_response2(self, maxiter=21, guess=None, beta=None, svd_rcond=None, regul_const=None, a_rho_var=1e-4, vp_norm_conv=1e-6, printflag=True):
         """
         Using the inverse of static response function to update dvp from a dn.
         This version did inversion on xi_q =  psi_i*psi_j where psi is mo.
-        See Jonathan's Thesis 5.4 5.5 5.6.
-        :param maxiter: maximum iterations
-        :param atol: convergence criteria
+        See Jonathan's Thesis 5.4 5.5 5.6. and WuYang's paper
+        :param maxiter: maximum vp update iterations
         :param guess: initial guess. When guess is True, object will look for self stored vp as initial.
+        :param beta: step length for Newton's method.
+        :param svd_rcond np.lingal.pinv rcond for hess psudo-inverse
+        :param regul_const regularization constant.
+        :param a_rho_var convergence threshold for last 5 drho std
+        :param vp_norm_conv convergence threshold vp coefficient norm
+        :param printflag printing flag
         :return:
         """
         Ep_convergence = []
@@ -1569,18 +1576,18 @@ class U_Embedding:
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
             Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
 
-            # # if guess not given, use the first density difference to be initial is probably a good idea.
-            # Ef = 0.0
-            # self.get_density_sum()
-            # vp_total += beta*(self.fragments_Da - self.molecule.Da + self.fragments_Db - self.molecule.Db)
-            # self.vp = [vp_total, vp_total]
-            # vp_totalfock.np[:] += np.einsum('ijmn,mn->ij', self.four_overlap, vp_total)
-            # self.vp_fock = [vp_totalfock, vp_totalfock]
-            # # And run the iteration
-            # for i in range(self.nfragments):
-            #     self.fragments[i].scf(maxiter=1000, print_energies=printflag, vp_matrix=self.vp_fock)
-            #     Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
-            # Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
+            # if guess not given, use the first density difference to be initial is probably a good idea.
+            Ef = 0.0
+            self.get_density_sum()
+            vp_total += beta*(self.fragments_Da - self.molecule.Da + self.fragments_Db - self.molecule.Db)
+            self.vp = [vp_total, vp_total]
+            vp_totalfock.np[:] += np.einsum('ijmn,mn->ij', self.four_overlap, vp_total)
+            self.vp_fock = [vp_totalfock, vp_totalfock]
+            # And run the iteration
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=1000, print_energies=printflag, vp_matrix=self.vp_fock)
+                Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+            Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
         elif guess is True:
 
             vp_total = self.vp[0]
@@ -1620,13 +1627,10 @@ class U_Embedding:
         if beta is None:
             beta = 1.0
 
-        if regul_const is not None:
-            self.regul_const = regul_const
-        else:
-            self.regul_const = 0.0
+        self.regul_const = regul_const
 
-        if svd_rcond is None:
-            svd_rcond = 1e-3
+        # if svd_rcond is None:
+        #     svd_rcond = 1e-3
 
         print("<<<<<<<<<<<<<<<<<<<<<<Compute_Method_Response Method 2<<<<<<<<<<<<<<<<<<<")
         for scf_step in range(1, maxiter + 1):
@@ -1665,9 +1669,10 @@ class U_Embedding:
             # Solve by SVD
             hess_inv = np.linalg.pinv(hess, rcond=svd_rcond)
             dvp = hess_inv.dot(beta*jac)
-            # print("Solved?", np.linalg.norm(np.dot(hess, dvp) - beta*jac))
             vp_change = np.linalg.norm(dvp, ord=1)
-            print("dvp norm", vp_change)
+            if printflag is True:
+                print("Solved?", np.linalg.norm(np.dot(hess, dvp) - beta*jac))
+                print("dvp norm", vp_change)
             dvp = -dvp.reshape(self.molecule.nbf, self.molecule.nbf)
             dvp = 0.5 * (dvp + dvp.T)
             vp_total += dvp
@@ -1690,7 +1695,7 @@ class U_Embedding:
                 print("Break because even small step length can not improve.")
                 break
             elif len(rho_convergence) >= 5:
-                if np.std(rho_convergence[-4:]) < a_rho_var and vp_change < 1e-2:
+                if np.std(rho_convergence[-4:]) < a_rho_var and vp_change < vp_norm_conv:
                     print("Break because rho and vp do not update for 5 iterations.")
                     break
             elif old_rho_conv < 1e-4:
@@ -1991,4 +1996,5 @@ def plot1d_x(data, Vpot, dimmer_length=2.0, title=None, ax= None):
         else:
             # f1 = plt.figure(num=fignum, figsize=(16, 12), dpi=160)
             ax.set_title(title)
-    plt.show()
+    if ax is None:
+        plt.show()

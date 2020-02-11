@@ -3,6 +3,10 @@ import pdft
 import matplotlib.pyplot as plt
 import libcubeprop
 
+psi4.core.set_output_file("formic")
+functional = 'svwn'
+basis = 'sto-3g'
+
 Full_Molec = psi4.geometry("""
 nocom
 noreorient
@@ -63,14 +67,14 @@ psi4.set_options({
     'REFERENCE' : 'UKS'})
 
 #Make fragment calculations:
-f1  = pdft.U_Molecule(Monomer_2,  "cc-pvdz", "SVWN")
-f2  = pdft.U_Molecule(Monomer_1,  "cc-pvdz", "SVWN")
-mol = pdft.U_Molecule(Full_Molec, "cc-pvdz", "SVWN")
+f1  = pdft.U_Molecule(Monomer_2,  basis, functional)
+f2  = pdft.U_Molecule(Monomer_1,  basis, functional)
+mol = pdft.U_Molecule(Full_Molec, basis, functional)
 
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
-jac, hess= pdfter.find_vp_response2(maxiter=25, beta=0.1, svd_rcond=1e-4)
+pdfter.find_vp_response2(maxiter=25, beta=0.1, svd_rcond=1e-4)
 # #%%
 # # pdfter.get_energies()
 # #%%
@@ -100,6 +104,6 @@ block, points, nxyz, npoints = libcubeprop.populate_grid(mol.wfn, O, N, D)
 vp_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, vp_psi4)
 f, ax = plt.subplots(1, 1, figsize=(16, 12), dpi=160)
 p = ax.imshow(vp_cube[81, :, :], interpolation="bicubic")
-ax.set_title("vp svd_rond=1e-5")
+ax.set_title("vp svd_rond=1e-5" + basis + functional)
 f.colorbar(p, ax=ax)
 f.show()
