@@ -59,10 +59,15 @@ mol = pdft.U_Molecule(Full_Molec, basis, functional)
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
-pdfter.find_vp_response2(28, svd_rcond=1e-7, regul_const=1e-3, beta=0.1)
-# pdfter.find_vp_densitydifference_onbasis(28, 1)
-vp_grid = mol.to_grid(pdfter.vp[0])
-pdft.plot1d_x(vp_grid, mol.Vpot, title="Be2 svd: 1e-3 l: 1e-9" + basis + functional)
+
+# pdfter.find_vp_response2(50, svd_rcond=1e-4, regul_const=1e-3, beta=0.1, a_rho_var=1e-7)
+jac, hess, dvp = pdfter.find_vp_response2_1basis(21, svd_rcond=1e-4, beta=0.1, a_rho_var=1e-7)
+# pdfter.find_vp_optimizing(maxiter=7, regul_const=1e-4)
+
+vp_grid = mol.to_grid_1basis(pdfter.vp[0])
+pdft.plot1d_x(vp_grid, mol.Vpot, title="Be2 scipy l: 1e-3" + basis + functional)
+# vp_grid = mol.to_grid(pdfter.vp[0])
+# pdft.plot1d_x(vp_grid, mol.Vpot, title="H2+ scipy l: 1e-4" + basis + functional)
 
 pdfter.ep_conv = np.array(pdfter.ep_conv)
 plt.plot(np.log10(np.abs(pdfter.ep_conv[1:] - pdfter.ep_conv[:-1])), 'o')

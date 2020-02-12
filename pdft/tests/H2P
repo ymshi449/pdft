@@ -102,8 +102,8 @@
 
    => Loading Basis Set <=
 
-    Name: (CC-PVDZ AUX)
-    Role: JKFIT
-    Keyword: DF_BASIS_SCF
-    atoms 1-4 entry H          line    51 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz-jkfit.gbs 
+    Name: CC-PVDZ
+    Role: ORBITAL
+    Keyword: BASIS
+    atoms 1-4 entry H          line    22 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
 
