@@ -217,7 +217,54 @@ def add_density(npoints, points, block, matrix):
         n_points = block[i].npoints()
         offset += n_points
         v[offset-n_points:offset] = 0.5 * rho.np[:n_points]
+    return v
 
+def add_density_1basis(npoints, points, block, array):
+    """
+    Computes density in new grid from a array.
+
+    Parameters
+    ----------
+
+    npoints: int
+        total number of points
+    points : psi4.core.RKSFunctions
+    block : list
+        Set of psi4.core.BlockOPoints for cube grid
+    matrix : psi4.core.Matrix
+        One-particle density matrix
+
+
+    Returns
+    -------
+
+    v : numpy array
+        Array with density values on the grid
+    """
+
+    v = np.zeros(int(npoints))
+    matrix = psi4.core.Matrix.from_array(np.zeros((array.shape[0], array.shape[0])))
+    points.set_pointers(matrix)
+    # points_func = vpot.properties()[0]
+    # print(points.point_values().keys())
+    # Loop over the blocks
+    offset = 0
+    for i in range(len(block)):
+        # Obtain block information
+        this_block = block[i]
+        points.compute_points(this_block)
+        n_points = this_block.npoints()
+        lpos = this_block.functions_local_to_global()
+        offset += n_points
+
+        # Compute phi!
+        phi = np.array(points.basis_values()["PHI"])[:n_points, :len(lpos)]
+
+        # Build a local slice of D
+        lD = array[lpos]
+
+        # Copmute rho
+        v[offset-n_points:offset] = np.einsum('pm,m->p', phi, lD)
     return v
 
 
@@ -333,6 +380,38 @@ def write_cube_file(wfn, O, N, D, nxyz, npoints, v, name, header):
 def compute_density(wfn, O, N, D, npoints, points, nxyz, block, matrix, name=None, write_file=False):
 
     v = add_density(npoints, points, block, matrix)
+    isocontour_range, threshold = compute_isocontour_range(v, npoints)
+
+    density_percent = 100.0 * threshold
+
+    header = F"""[e/a0^3]. Isocontour range for {density_percent} of the density ({format(isocontour_range[0], '1.5f')},{format(isocontour_range[1],'1.5f')}) \n"""
+
+    if write_file is False:
+        v2 = np.zeros_like(v)
+        offset = 0
+        for istart in range(0, int(N[0] + 1), nxyz):
+            ni = int(N[0]) - istart if istart + nxyz > N[0] else nxyz
+            for jstart in range(0, int(N[1] + 1), nxyz):
+                nj = int(N[1]) - jstart if jstart + nxyz > N[1] else nxyz
+                for kstart in range(0, int(N[2] + 1), nxyz):
+                    nk = int(N[2]) - kstart if kstart + nxyz > N[2] else nxyz
+
+                    for i in range(istart, istart + ni):
+                        for j in range(jstart, jstart + nj):
+                            for k in range(kstart, kstart + nk):
+                                index = i * (N[1]) * (N[2]) + j * (N[2]) + k
+                                v2[int(index)] = v[offset]
+                                offset += 1
+        return np.reshape(v2, (int(N[0]), int(N[1]), int(N[2])))
+    else:
+        if name is None:
+            write_cube_file(wfn, O, N, D, nxyz, npoints, v, "cube_file", header)
+        else:
+            write_cube_file(wfn, O, N, D, nxyz, npoints, v, name, header)
+
+def compute_density_1basis(wfn, O, N, D, npoints, points, nxyz, block, matrix, name=None, write_file=False):
+
+    v = add_density_1basis(npoints, points, block, matrix)
     isocontour_range, threshold = compute_isocontour_range(v, npoints)
 
     density_percent = 100.0 * threshold
