@@ -178,7 +178,6 @@ def populate_grid(wfn, O, N, D):
 
     points = psi4.core.RKSFunctions(basis, int(npoints), max_functions)
     points.set_ansatz(0)
-
     return block, points, nxyz, npoints
 
 
@@ -460,7 +459,7 @@ def _getline(cube):
 
     """
     l = cube.readline().strip().split()
-    return int(l[0]), map(float, l[1:])
+    return int(l[0]), np.array(list(map(float, l[1:])))
 
 def cube_to_array(fname):
     """
@@ -492,6 +491,23 @@ def cube_to_array(fname):
     data = np.reshape(data, (nx, ny, nz))
     cube.close()
     return data, meta
+
+def get_atoms(wfn, D, O):
+    """
+    To get the position of atoms on the grid.
+    :return: atoms, array atomic# * (x,y,z)
+    """
+    natom = wfn.molecule().natom()
+    geometry = wfn.molecule().full_geometry().np
+
+    atoms = np.zeros((natom, 4))
+
+    for k in range(3):
+        for i in range(natom):
+            atoms[i,0] = wfn.molecule().true_atomic_number(i)
+            atoms[i, 1:] = (geometry[i] - O)/D
+    return atoms
+
 
 # def get_density(wfn, Matrix, L, D, name=None, cube_file=False):
 #     vp_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, vp, "Large_vp")

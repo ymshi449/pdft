@@ -1491,7 +1491,7 @@ class U_Embedding:
         print("-L:", -L, "Int_vp_drho:", L-Ef, "Ef:", Ef, "Ep: ", Ep, "drho:", rho_conv)
         return -L
 
-    def find_vp_optimizing(self, maxiter=21, guess=None, regul_const=None, opt_method="Newton-CG"):
+    def find_vp_scipy(self, maxiter=21, guess=None, regul_const=None, opt_method="Newton-CG"):
         """
         Scipy Newton-CG
         :param maxiter:
@@ -1499,6 +1499,7 @@ class U_Embedding:
         :param guess:
         :return:
         """
+        # Ep = ep
         # Initial run
         self.four_overlap, _, _, _ = fouroverlap(self.molecule.wfn, self.molecule.geometry,
                                                  self.molecule.basis, self.molecule.mints)
@@ -1597,10 +1598,6 @@ class U_Embedding:
         :param printflag printing flag
         :return:
         """
-
-
-        Ep_convergence = []
-
         if guess is None:
             if self.four_overlap is None:
                 self.four_overlap, _, _, _ = fouroverlap(self.molecule.wfn, self.molecule.geometry,
@@ -1618,7 +1615,7 @@ class U_Embedding:
             for i in range(self.nfragments):
                 self.fragments[i].scf(maxiter=1000, print_energies=printflag)
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
-            Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
+            self.ep_conv.append(self.molecule.energy - self.molecule.Enuc - Ef)
 
             # if guess not given, use the first density difference to be initial is probably a good idea.
             Ef = 0.0
@@ -1631,7 +1628,7 @@ class U_Embedding:
             for i in range(self.nfragments):
                 self.fragments[i].scf(maxiter=1000, print_energies=printflag, vp_matrix=self.vp_fock)
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
-            Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
+            self.ep_conv.append(self.molecule.energy - self.molecule.Enuc - Ef)
         elif guess is True:
 
             vp_total = self.vp[0]
@@ -1665,7 +1662,6 @@ class U_Embedding:
         ## Tracking rho and changing beta
         old_rho_conv = np.inf
         beta_lastupdate_iter = 0
-        rho_convergence = []
         rho_molecule = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
 
         if beta is None:
@@ -1703,12 +1699,12 @@ class U_Embedding:
             #     beta *= 0.1
 
             old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
-            rho_convergence.append(old_rho_conv)
+            self.drho_conv.append(old_rho_conv)
 
             if printflag:
                 print(
                     F'Iter: {scf_step - 1} beta: {beta} dD: {np.linalg.norm(self.fragments_Da + self.fragments_Db - (self.molecule.Da.np + self.molecule.Db.np), ord=1)} '
-                    F'Ef: {Ef} Ep: {Ep_convergence[-1]} d_rho: {old_rho_conv}')
+                    F'Ef: {Ef} Ep: {self.ep_conv[-1]} d_rho: {old_rho_conv}')
 
             hess = self.hess(self.vp[0].reshape(self.molecule.nbf**2))
             jac = self.jac(self.vp[0].reshape(self.molecule.nbf**2))
@@ -1737,12 +1733,12 @@ class U_Embedding:
                 # print("Calcualte fragment %i with new vp" %i)
                 self.fragments[i].scf(vp_matrix=self.vp_fock, maxiter=300, print_energies=False)
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
-            Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
+            self.ep_conv.append(self.molecule.energy - self.molecule.Enuc - Ef)
             if beta < 1e-7:
                 print("Break because even small step length can not improve.")
                 break
-            elif len(rho_convergence) >= 5:
-                if np.std(rho_convergence[-4:]) < a_rho_var and vp_change < vp_norm_conv:
+            elif len(self.drho_conv) >= 5:
+                if np.std(self.drho_conv[-4:]) < a_rho_var and vp_change < vp_norm_conv:
                     print("Break because rho and vp do not update for 5 iterations.")
                     break
             elif old_rho_conv < 1e-4:
@@ -1751,8 +1747,6 @@ class U_Embedding:
             # elif scf_step == maxiter:
                 # raise Exception("Maximum number of SCF cycles exceeded for vp.")
                 # print("Maximum number of SCF cycles exceeded for vp.")
-        self.drho_conv = rho_convergence
-        self.ep_conv = Ep_convergence
         return
 
     def hess_1basis(self, vp):
@@ -1830,22 +1824,61 @@ class U_Embedding:
         # print("Jac norm:", np.linalg.norm(jac))
         return -jac
 
-    def find_vp_response_1basis(self, maxiter=21, guess=None, beta=None, svd_rcond=None, regul_const=None, a_rho_var=1e-4, vp_norm_conv=1e-6, printflag=True):
+    def lagrange_mul_1basis(self, vp):
         """
-        Using the inverse of static response function to update dvp from a dn.
-        This version describe vp = sum b_i*phi_i. phi is ao.
-        See Jonathan's Thesis 5.4 5.5 5.6. and WuYang's paper
-        :param maxiter: maximum vp update iterations
-        :param guess: initial guess. When guess is True, object will look for self stored vp as initial.
-        :param beta: step length for Newton's method.
-        :param svd_rcond np.lingal.pinv rcond for hess psudo-inverse
-        :param regul_const regularization constant.
-        :param a_rho_var convergence threshold for last 5 drho std
-        :param vp_norm_conv convergence threshold vp coefficient norm
-        :param printflag printing flag
+        Return Lagrange Multipliers (G) value. on 1 basis.
+        :return: L
+        """
+        if self.three_overlap is None:
+            self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap())
+
+        # If the vp stored is not the same as the vp we got, re-run scp calculations and update vp.
+        if not np.linalg.norm(vp - self.vp[0]) < 1e-7:
+            # update vp and vp fock
+            self.vp = [vp, vp]
+            self.fragments_scf_1basis(1000, vp=True)
+
+        Ef = 0.0
+        for i in range(self.nfragments):
+            # print("Calcualte fragment %i with new vp" %i)
+            Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+        Ep = self.molecule.energy - self.molecule.Enuc - Ef
+
+        self.get_density_sum()
+        density_difference_a = self.fragments_Da - self.molecule.Da.np
+        density_difference_b = self.fragments_Db - self.molecule.Db.np
+
+        L = Ef
+        L += np.sum(self.vp_fock[0].np*(density_difference_a + density_difference_b))
+
+        # Regularization
+        if self.regul_const is not None:
+            T = self.molecule.T.np
+            T = 0.5 * (T + T.T)
+            L -= 4*4*self.regul_const*np.dot(np.dot(vp, T), vp)
+
+        _, _, _, w = self.molecule.Vpot.get_np_xyzw()
+        rho_molecule = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
+        self.get_density_sum()
+        rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
+        rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
+
+        self.drho_conv.append(rho_conv)
+        self.ep_conv.append(Ep)
+        self.lagrange.append(-L)
+
+        print("-L:", -L, "Int_vp_drho:", L-Ef, "Ef:", Ef, "Ep: ", Ep, "drho:", rho_conv)
+        return -L
+
+    def find_vp_scipy_1basis(self, maxiter=21, guess=None, regul_const=None, opt_method="Newton-CG", printflag=False):
+        """
+        Scipy Newton-CG
+        :param maxiter:
+        :param atol:
+        :param guess:
         :return:
         """
-        Ep_convergence = []
+        self.regul_const = regul_const
 
         if guess is None:
             if self.three_overlap is None:
@@ -1863,7 +1896,76 @@ class U_Embedding:
             for i in range(self.nfragments):
                 self.fragments[i].scf(maxiter=1000, print_energies=printflag)
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
-            Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
+        elif guess is True:
+
+            vp_total = self.vp[0]
+
+            vp_afock = self.vp_fock[0]
+            vp_bfock = self.vp_fock[1]
+            vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
+            vp_totalfock.np[:] += vp_afock.np + vp_bfock.np
+            # Skip running the first iteration! When guess is True, everything is expected to be stored in this obj.
+        else:
+            if self.three_overlap is None:
+                self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap())
+            self.molecule.scf(maxiter=1000, print_energies=printflag)
+
+            vp_total = guess[0]
+            self.vp = guess
+
+            vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(np.einsum('ijm,m->ij', self.three_overlap, guess[0])))
+            self.vp_fock = [vp_totalfock, vp_totalfock]
+            # Initialize
+            Ef = 0.0
+            # Run the first iteration
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=1000, print_energies=printflag, vp_matrix=self.vp_fock)
+                Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+
+        print("<<<<<<<<<<<<<<<<<<<<<<WuYang 1 basis Scipy<<<<<<<<<<<<<<<<<<<")
+        opt = {
+            "disp": True,
+            "maxiter": maxiter,
+            "eps": 1e-7
+        }
+        # optimize using cipy, default as Newton-CG.
+        vp_array = optimizer.minimize(self.lagrange_mul_1basis, self.vp[0],
+                                      jac=self.jac_1basis, hess=self.hess_1basis, method=opt_method, options=opt)
+        return vp_array
+
+    def find_vp_response_1basis(self, maxiter=21, guess=None, beta=None, svd_rcond=None, regul_const=None, a_rho_var=1e-4, vp_norm_conv=1e-6, printflag=True):
+        """
+        Using the inverse of static response function to update dvp from a dn.
+        This version describe vp = sum b_i*phi_i. phi is ao.
+        See Jonathan's Thesis 5.4 5.5 5.6. and WuYang's paper
+        :param maxiter: maximum vp update iterations
+        :param guess: initial guess. When guess is True, object will look for self stored vp as initial.
+        :param beta: step length for Newton's method.
+        :param svd_rcond np.lingal.pinv rcond for hess psudo-inverse
+        :param regul_const regularization constant.
+        :param a_rho_var convergence threshold for last 5 drho std
+        :param vp_norm_conv convergence threshold vp coefficient norm
+        :param printflag printing flag
+        :return:
+        """
+
+        if guess is None:
+            if self.three_overlap is None:
+                self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap())
+            self.molecule.scf(maxiter=1000, print_energies=printflag)
+
+            vp_total = np.zeros(self.molecule.nbf)
+            self.vp = [vp_total, vp_total]
+
+            vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
+            self.vp_fock = [vp_totalfock, vp_totalfock]
+            # Initialize
+            Ef = 0.0
+            # Run the first iteration
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=1000, print_energies=printflag)
+                Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+            self.ep_conv.append(self.molecule.energy - self.molecule.Enuc - Ef)
         elif guess is True:
 
             vp_total = self.vp[0]
@@ -1897,7 +1999,6 @@ class U_Embedding:
         ## Tracking rho and changing beta
         old_rho_conv = np.inf
         beta_lastupdate_iter = 0
-        rho_convergence = []
         rho_molecule = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
 
         if beta is None:
@@ -1908,7 +2009,7 @@ class U_Embedding:
         if svd_rcond is None:
             svd_rcond = 1e-3
 
-        print("<<<<<<<<<<<<<<<<<<<<<<Compute_Method_Response Method 2<<<<<<<<<<<<<<<<<<<")
+        print("<<<<<<<<<<<<<<<<<<<<<<WuYang 1 basis manual Newton<<<<<<<<<<<<<<<<<<<")
         for scf_step in range(1, maxiter + 1):
             """
             For each fragment, v_p(r) = \sum_{alpha}C_{ij}dD_{mn}\phi_i(r)\phi_j(r)(ijmn) = C_{ij}dD_{mn}\phi_i(r)\phi_j(r)(Cij)(CD)^{-1}(Dmn)
@@ -1932,12 +2033,12 @@ class U_Embedding:
             #     beta *= 0.1
 
             old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
-            rho_convergence.append(old_rho_conv)
+            self.drho_conv.append(old_rho_conv)
 
             if printflag:
                 print(
                     F'Iter: {scf_step - 1} beta: {beta} dD: {np.linalg.norm(self.fragments_Da + self.fragments_Db - (self.molecule.Da.np + self.molecule.Db.np), ord=1)} '
-                    F'Ef: {Ef} Ep: {Ep_convergence[-1]} d_rho: {old_rho_conv}')
+                    F'Ef: {Ef} Ep: {self.ep_conv[-1]} d_rho: {old_rho_conv}')
 
             hess = self.hess_1basis(self.vp[0])
             jac = self.jac_1basis(self.vp[0])
@@ -1965,12 +2066,12 @@ class U_Embedding:
                 # print("Calcualte fragment %i with new vp" %i)
                 self.fragments[i].scf(vp_matrix=self.vp_fock, maxiter=300, print_energies=False)
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
-            Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
+            self.ep_conv.append(self.molecule.energy - self.molecule.Enuc - Ef)
             if beta < 1e-7:
                 print("Break because even small step length can not improve.")
                 break
-            elif len(rho_convergence) >= 5:
-                if np.std(rho_convergence[-4:]) < a_rho_var and vp_change < vp_norm_conv:
+            elif len(self.drho_conv) >= 5:
+                if np.std(self.drho_conv[-4:]) < a_rho_var and vp_change < vp_norm_conv:
                     print("Break because rho and vp do not update for 5 iterations.")
                     break
             elif old_rho_conv < 1e-4:
@@ -1979,12 +2080,11 @@ class U_Embedding:
             # elif scf_step == maxiter:
                 # raise Exception("Maximum number of SCF cycles exceeded for vp.")
                 # print("Maximum number of SCF cycles exceeded for vp.")
-        self.drho_conv = rho_convergence
-        self.ep_conv = Ep_convergence
         return
 
     def find_vp_response_crude(self, maxiter=21, beta=None, atol=1e-7, guess=None):
         """
+        This is a very initial and naive idea. It works to some extent but very not stable.
         Using the inverse of static response function to update dvp from a dn.
         This version did inversion on xi_q =  psi_i*psi_j where psi is mo.
         See Jonathan's Thesis 5.4 5.5 5.6.

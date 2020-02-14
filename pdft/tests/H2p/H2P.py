@@ -12,8 +12,8 @@ Monomer_1 =  psi4.geometry("""
 nocom
 noreorient
 @H  -1 0 0
-@H  0 0.5 0
-@H  0 -0.5 0
+@H   0 0.5 0
+@H   0 -0.5 0
 H  1 0 0
 units bohr
 symmetry c1
@@ -23,8 +23,8 @@ Monomer_2 =  psi4.geometry("""
 nocom
 noreorient
 H  -1 0 0
-@H  0 0.5 0
-@H  0 -0.5 0
+@H   0 0.5 0
+@H   0 -0.5 0
 @H  1 0 0
 units bohr
 symmetry c1
@@ -34,8 +34,8 @@ Full_Molec =  psi4.geometry("""
 nocom
 noreorient
 H  -1 0 0
-@H  0 0.5 0
-@H  0 -0.5 0
+@H   0 0.5 0
+@H   0 -0.5 0
 H  1 0 0
 units bohr
 symmetry c1""")
@@ -58,13 +58,28 @@ pdfter = pdft.U_Embedding([f1, f2], mol)
 
 
 # pdfter.find_vp_response(50, svd_rcond=1e-4, regul_const=1e-3, beta=0.1, a_rho_var=1e-7)
-pdfter.find_vp_response_1basis(1, svd_rcond=1e-3, beta=0.1, a_rho_var=1e-7)
-# pdfter.find_vp_optimizing(maxiter=7, regul_const=1e-4)
+pdfter.find_vp_response_1basis(21, svd_rcond=1e-2, regul_const=None, beta=0.1, a_rho_var=1e-7)
+# pdfter.find_vp_scipy(maxiter=7, regul_const=1e-4)
+# pdfter.find_vp_scipy_1basis(maxiter=21)
 
 vp_grid = mol.to_grid_1basis(pdfter.vp[0])
-pdft.plot1d_x(vp_grid, mol.Vpot, title="H2+ scipy l: 1e-4" + basis + functional)
-# vp_grid = mol.to_grid(pdfter.vp[0])
-# pdft.plot1d_x(vp_grid, mol.Vpot, title="H2+ scipy l: 1e-4" + basis + functional)
+pdft.plot1dx(vp_grid, mol.Vpot, title="H2+" + basis + functional)
+
+#%% 1 basis 2D plot
+L = [2.0, 2.0, 2.0]
+D = [0.05, 0.1, 0.1]
+# Plot file
+O, N = libcubeprop.build_grid(mol.wfn, L, D)
+block, points, nxyz, npoints = libcubeprop.populate_grid(mol.wfn, O, N, D)
+vp_cube = libcubeprop.compute_density_1basis(mol.wfn, O, N, D, npoints, points, nxyz, block, pdfter.vp[0])
+f, ax = plt.subplots(1, 1, figsize=(16, 12), dpi=160)
+p = ax.imshow(vp_cube[40, :, :], interpolation="bicubic", cmap="Spectral")
+atoms = libcubeprop.get_atoms(mol.wfn, D, O)
+ax.scatter(atoms[:,3], atoms[:,2])
+ax.set_title("vp H2p_svd1e-3_1b" + basis + functional)
+f.colorbar(p, ax=ax)
+f.show()
+# f.savefig("H2p_svd1e-3_1b")
 
 
 #%%

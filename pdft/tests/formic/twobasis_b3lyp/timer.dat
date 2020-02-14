@@ -1,0 +1,28 @@
+
+Host: halstead-a154.rcac.purdue.edu
+
+Timers On : Wed Feb 12 19:01:15 2020
+Timers Off: Thu Feb 13 15:55:27 2020
+
+Wall Time:    75252.21 seconds
+
+                                                       Time (seconds)
+Module                                       User      System        Wall        Calls
+Total PK formation time             :     78.617u      2.300s      6.288w      3 calls
+V: Grid                             :     49.850u      3.450s      1.902w     15 calls
+JK: D                               :     11.617u      1.017s      0.429w   5760 calls
+JK: USO2AO                          :      7.467u      0.783s      0.292w   5760 calls
+JK: JK                              :   4006.483u    358.717s    154.090w   5760 calls
+PK computes JK                      :   4003.233u    358.417s    153.975w   5760 calls
+JK: AO2USO                          :      1.400u      0.100s      0.060w   5760 calls
+
+--------------------------------------------------------------------------------------
+Total PK formation time             :     78.617u      2.300s      6.288w      3 calls
+V: Grid                             :     49.850u      3.450s      1.902w     15 calls
+JK: D                               :     11.617u      1.017s      0.429w   5760 calls
+JK: USO2AO                          :      7.467u      0.783s      0.292w   5760 calls
+JK: JK                              :   4006.483u    358.717s    154.090w   5760 calls
+| PK computes JK                    :   4003.233u    358.417s    153.975w   5760 calls
+JK: AO2USO                          :      1.400u      0.100s      0.060w   5760 calls
+
+**************************************************************************************
