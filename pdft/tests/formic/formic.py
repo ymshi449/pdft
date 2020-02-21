@@ -7,6 +7,9 @@ import libcubeprop
 psi4.core.set_output_file("formic.psi4")
 functional = 'b3lyp'
 basis = 'cc-pvdz'
+svdc = -4
+reguc = -5
+title = "formic Newton svdc%i reguc %i" %(svdc, reguc) + basis + functional
 
 Full_Molec = psi4.geometry("""
 nocom
@@ -77,8 +80,8 @@ mol = pdft.U_Molecule(Full_Molec, basis, functional)
 pdfter = pdft.U_Embedding([f1, f2], mol)
 
 # pdfter.find_vp_response(maxiter=25, beta=0.1, svd_rcond=1e-4)
-pdfter.find_vp_response_1basis(7, svd_rcond=1e-4, regul_const=1e-5, beta=0.1, a_rho_var=1e-7)
-# pdfter.find_vp_scipy_1basis(maxiter=21, regul_const=1e-4)
+pdfter.find_vp_response_1basis(14, svd_rcond=10**svdc, regul_const=10**reguc, beta=0.1, a_rho_var=1e-7)
+# pdfter.find_vp_scipy_1basis(maxiter=42, regul_const=1e-4, opt_method="trust-ncg")
 
 #%% 2 basis 2D plot
 # vp_psi4 = psi4.core.Matrix.from_array(pdfter.vp[0])
@@ -104,8 +107,19 @@ vp_cube = libcubeprop.compute_density_1basis(mol.wfn, O, N, D, npoints, points, 
 f, ax = plt.subplots(1, 1, figsize=(16, 12), dpi=160)
 p = ax.imshow(vp_cube[40, :, :], interpolation="bicubic", cmap="Spectral")
 atoms = libcubeprop.get_atoms(mol.wfn, D, O)
-ax.scatter(atoms[:,2], atoms[:,1])
-ax.set_title("vp svd_rond=1e-5" + basis + functional)
+ax.scatter(atoms[:,3], atoms[:,2])
+ax.set_title("vp" + title)
 f.colorbar(p, ax=ax)
 f.show()
-f.savefig("formic_scipy_svd1e-5_1b")
+f.savefig("vp" + title)
+
+dD = psi4.core.Matrix.from_array(pdfter.fragments_Da + pdfter.fragments_Db - mol.Da.np - mol.Db.np)
+dn_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, dD)
+f, ax = plt.subplots(1, 1, figsize=(16, 12), dpi=160)
+p = ax.imshow(dn_cube[40, :, :], interpolation="bicubic", cmap="Spectral")
+atoms = libcubeprop.get_atoms(mol.wfn, D, O)
+ax.scatter(atoms[:,3], atoms[:,2])
+ax.set_title("dn" + title)
+f.colorbar(p, ax=ax)
+f.show()
+f.savefig("dn" + title)

@@ -452,6 +452,8 @@ class U_Molecule():
 
         #Psi4 objects
         self.wfn        = psi4.core.Wavefunction.build(self.geometry, self.basis)
+        # replace UKS from mol wfn
+        self.wfn = psi4.driver.proc.scf_wavefunction_factory(self.method, self.wfn, "UKS")
         self.functional = psi4.driver.dft.build_superfunctional(method, restricted=False)[0]
 
         self.mints = mints if mints is not None else psi4.core.MintsHelper(self.wfn.basisset())
@@ -471,8 +473,7 @@ class U_Molecule():
         self.jk             = jk if jk is not None else self.form_JK()
         self.S              = self.mints.ao_overlap()
         self.A              = self.form_A()
-        self.H              = self.form_H()
-        self.T              = self.form_T()
+        self.H, self.T, self.V = self.form_H()
 
         #From SCF calculation
         self.Da             = None
@@ -488,6 +489,9 @@ class U_Molecule():
         self.Fb             = None
         self.Ca             = None
         self.Cb             = None
+
+        # esp calculator
+        self.esp_calculator = None
 
     def initialize(self):
         """
@@ -509,15 +513,7 @@ class U_Molecule():
         T = self.mints.ao_kinetic()
         H = T.clone()
         H.add(V)
-        return H
-
-    def form_T(self):
-        """
-        Form kinetic matrix
-        :return:
-        """
-        T = self.mints.ao_kinetic()
-        return T
+        return H, T, V
 
     def form_JK(self, K=False):
         """
@@ -609,6 +605,112 @@ class U_Molecule():
             # Copmute rho
             f_grid = np.append(f_grid, np.einsum('pm,m->p', phi, lD))
         return f_grid
+
+    def update_wfn_D(self):
+        """
+        Update wfn.Da and wfn.Db from self.Da and self.Db.
+        :return:
+        """
+        self.wfn.Da().np[:] = self.Da.np[:]
+        self.wfn.Db().np[:] = self.Db.np[:]
+        return
+
+    def esp_update(self, grid=None):
+        """
+        For given Da Db, get the esp on grid. Right now it does not work well. If you check
+        the potential on the grid, it is not smooth.
+        :param Da: np.array
+        :param Db: np.array
+        :return: esp
+        """
+        if self.esp_calculator is None:
+            self.esp_calculator = psi4.core.ESPPropCalc(self.wfn)
+        # Grid
+        if grid is None:
+            x, y, z, _ = self.Vpot.get_np_xyzw()
+            grid = np.array([x, y, z])
+            grid = psi4.core.Matrix.from_array(grid.T)
+            assert grid.shape[1] == 3, "Grid should be N*3 np.array"
+        else:
+            assert grid.shape[1] == 3, "Grid should be N*3 np.array"
+            grid = psi4.core.Matrix.from_array(grid)
+
+        self.update_wfn_D()
+        # Calculate esp
+        esp = self.esp_calculator.compute_esp_over_grid_in_memory(grid)
+        return esp
+
+    def vext_on_grid(self, grid=None, Vpot=None):
+        """
+        The value of v_ext(r) on grid points.
+        :param grid: N*3 np.array. If None, calculate the grid.
+        :param Vpot: for calculating grid. Will be ignored if grid is given.
+        :return:
+        """
+        natom = self.wfn.molecule().natom()
+        nuclear_xyz = self.wfn.molecule().full_geometry().np
+
+        Z = np.zeros(natom)
+        # index list of real atoms. To filter out ghosts.
+        zidx = []
+        for i in range(natom):
+            Z[i] = self.wfn.molecule().Z(i)
+            if Z[i] != 0:
+                zidx.append(i)
+
+        if grid is None:
+            if Vpot is None:
+                grid = np.array(self.Vpot.get_np_xyzw()[:-1]).T
+                grid = psi4.core.Matrix.from_array(grid)
+                assert grid.shape[1] == 3
+            else:
+                grid = np.array(Vpot.get_np_xyzw()[:-1]).T
+                grid = psi4.core.Matrix.from_array(grid)
+                assert grid.shape[1] == 3
+        vext = np.zeros(grid.shape[0])
+        # Go through all real atoms
+        for i in range(len(zidx)):
+            R = np.sqrt(np.sum((grid - nuclear_xyz[zidx[i], :])**2, axis=1))
+            vext += Z[zidx[i]]/R
+            vext[R < 1e-15] = 0
+
+        vext = -vext
+        return vext
+
+    def grid_to_fock(self, f):
+        """
+        Fock matrix integral on the grid.
+        :param f: function values on grid. np array
+        :return: V: f_fock matrix
+        """
+
+        V = np.zeros_like(self.Da.np)
+        points_func = self.Vpot.properties()[0]
+
+        i = 0
+        # Loop over the blocks
+        for b in range(self.Vpot.nblocks()):
+            # Obtain block information
+            block = self.Vpot.get_block(b)
+            points_func.compute_points(block)
+            npoints = block.npoints()
+            lpos = np.array(block.functions_local_to_global())
+
+            # Obtain the grid weight
+            w = np.array(block.w())
+
+            # Compute phi!
+            phi = np.array(points_func.basis_values()["PHI"])[:npoints, :lpos.shape[0]]
+
+            Vtmp = np.einsum('pb,p,p,pa->ab', phi, f[i:i+npoints], w, phi, optimize=True)
+
+            # Add the temporary back to the larger array by indexing, ensure it is symmetric
+            V[(lpos[:, None], lpos)] += 0.5 * (Vtmp + Vtmp.T)
+
+            i += npoints
+        assert i == f.shape[0], "Did not run through all the points. %i %i" %(i, f.shape[0])
+        return V
+
 
     def to_grid(self, Duv, Duv_b=None, vpot=None):
         """
@@ -900,6 +1002,9 @@ class U_Embedding:
         # Regularization Constant
         self.regul_const = 0.0
 
+        # nad parts of vp with local-Q
+        self.vp_ext_nad = None
+
     def get_density_sum(self):
         sum_a = self.fragments[0].Da.np.copy() * self.fragments[0].omega
         sum_b = self.fragments[0].Db.np.copy() * self.fragments[0].omega
@@ -998,7 +1103,7 @@ class U_Embedding:
         self.get_density_sum()
         return
 
-    def fragments_scf_1basis(self, max_iter, vp=None, vp_fock=None, printflag=False):
+    def fragments_scf_1basis(self, max_iter, vp=None, vp_fock=None, vpext_nad=False, printflag=False):
         """vp is now on 1 basis: vp = \sum b_i phi_i. In this case, only 3-overlap needed."""
         # Run the whole molecule SCF calculation if not calculated before.
         if self.molecule.Da is None:
@@ -1072,6 +1177,45 @@ class U_Embedding:
 
         self.get_density_sum()
         return
+
+    def local_Q_on_grid(self, Df="input"):
+        """
+        Function to get local Q for each fragments.
+        :param Df: if "input", using density of molecule. If "nf", use nf.
+        :return:
+        """
+        if Df is "input":
+            nf = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
+        elif Df is "nf":
+            self.get_density_sum()
+            nf = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
+
+        n_alpha = []
+        for i in self.fragments:
+            n_alpha.append(self.molecule.to_grid(i.Da.np, Duv_b=i.Db.np)
+                           * i.omega)
+
+        Q = []
+        for i in range(len(self.fragments)):
+            Qtemp = n_alpha[i]/nf
+            Qtemp[nf<1e-14] = 0
+            Q.append(Qtemp)
+        return Q
+
+    def get_vp_ext_nad(self):
+        """
+        Get the vp_ext_nad for each fragment with local Q approximation on grid.
+        :return: vp_ext_nad
+        """
+        Q = self.local_Q_on_grid(Df="nf")
+
+        # Entire system v_ext
+        mol_vext = self.molecule.vext_on_grid()
+
+        vp_ext_nad = np.zeros_like(Q[0])
+        for j in range(len(self.fragments)):
+            vp_ext_nad += (mol_vext - self.fragments[j].vext_on_grid(Vpot=self.molecule.Vpot))*Q[j]
+        return vp_ext_nad
 
     def find_vp_densitydifference(self, maxiter, beta, guess=None, atol=2e-4, printflag=False):
         """
@@ -1182,7 +1326,7 @@ class U_Embedding:
             old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule)*w)
             rho_convergence.append(old_rho_conv)
 
-            print(F'Iter: {scf_step-1} beta: {beta} dD: {np.linalg.norm(self.fragments_Da + self.fragments_Db - (self.molecule.Da.np + self.molecule.Db.np), ord=1)} d_rho: {old_rho_conv} Ep: {Ep_convergence[-1]}')
+            print(F'Iter: {scf_step-1} beta: {beta} dD: {np.linalg.norm(self.fragments_Da + self.fragments_Db - (self.molecule.Da.np + self.molecule.Db.np), ord=1)} Ep: {Ep_convergence[-1]} d_rho: {old_rho_conv}')
 
             delta_vp_a = beta * (self.fragments_Da - self.molecule.Da.np)
             delta_vp_b = beta * (self.fragments_Db - self.molecule.Db.np)
@@ -1598,6 +1742,7 @@ class U_Embedding:
         :param printflag printing flag
         :return:
         """
+
         if guess is None:
             if self.four_overlap is None:
                 self.four_overlap, _, _, _ = fouroverlap(self.molecule.wfn, self.molecule.geometry,
@@ -1617,18 +1762,18 @@ class U_Embedding:
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
             self.ep_conv.append(self.molecule.energy - self.molecule.Enuc - Ef)
 
-            # if guess not given, use the first density difference to be initial is probably a good idea.
-            Ef = 0.0
-            self.get_density_sum()
-            vp_total += beta*(self.fragments_Da - self.molecule.Da + self.fragments_Db - self.molecule.Db)
-            self.vp = [vp_total, vp_total]
-            vp_totalfock.np[:] += np.einsum('ijmn,mn->ij', self.four_overlap, vp_total)
-            self.vp_fock = [vp_totalfock, vp_totalfock]
-            # And run the iteration
-            for i in range(self.nfragments):
-                self.fragments[i].scf(maxiter=1000, print_energies=printflag, vp_matrix=self.vp_fock)
-                Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
-            self.ep_conv.append(self.molecule.energy - self.molecule.Enuc - Ef)
+            # # if guess not given, use the first density difference to be initial is probably a good idea.
+            # Ef = 0.0
+            # self.get_density_sum()
+            # vp_total += beta*(self.fragments_Da - self.molecule.Da + self.fragments_Db - self.molecule.Db)
+            # self.vp = [vp_total, vp_total]
+            # vp_totalfock.np[:] += np.einsum('ijmn,mn->ij', self.four_overlap, vp_total)
+            # self.vp_fock = [vp_totalfock, vp_totalfock]
+            # # And run the iteration
+            # for i in range(self.nfragments):
+            #     self.fragments[i].scf(maxiter=1000, print_energies=printflag, vp_matrix=self.vp_fock)
+            #     Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+            # self.ep_conv.append(self.molecule.energy - self.molecule.Enuc - Ef)
         elif guess is True:
 
             vp_total = self.vp[0]
@@ -1656,6 +1801,19 @@ class U_Embedding:
             for i in range(self.nfragments):
                 self.fragments[i].scf(maxiter=1000, print_energies=printflag, vp_matrix=self.vp_fock)
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+
+
+        self.vp_ext_nad = self.get_vp_ext_nad()
+        vp_ext_nad_fock = self.molecule.grid_to_fock(self.vp_ext_nad)
+        vp_totalfock.np[:] += vp_ext_nad_fock
+        self.vp_fock = [vp_totalfock, vp_totalfock]
+        # Initialize
+        Ef = 0.0
+        # Run the first iteration
+        for i in range(self.nfragments):
+            self.fragments[i].scf(maxiter=1000, print_energies=printflag)
+            Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+        self.ep_conv.append(self.molecule.energy - self.molecule.Enuc - Ef)
 
         _, _, _, w = self.molecule.Vpot.get_np_xyzw()
 
@@ -1695,8 +1853,14 @@ class U_Embedding:
             # elif (scf_step - beta_lastupdate_iter) > 3:
             #     beta /= 1
             #     beta_lastupdate_iter = scf_step
+
+            # Update vp_none_add from time to time
             # if scf_step%10 == 0:
-            #     beta *= 0.1
+            vp_totalfock.np[:] -= vp_ext_nad_fock
+            self.vp_ext_nad = self.get_vp_ext_nad()
+            vp_ext_nad_fock = self.molecule.grid_to_fock(self.vp_ext_nad)
+            vp_totalfock.np[:] += vp_ext_nad_fock
+            self.vp_fock = [vp_totalfock, vp_totalfock]
 
             old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
             self.drho_conv.append(old_rho_conv)
@@ -2029,8 +2193,8 @@ class U_Embedding:
             # elif (scf_step - beta_lastupdate_iter) > 3:
             #     beta /= 1
             #     beta_lastupdate_iter = scf_step
-            # if scf_step%10 == 0:
-            #     beta *= 0.1
+            if scf_step == 20:
+                beta = 1
 
             old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
             self.drho_conv.append(old_rho_conv)

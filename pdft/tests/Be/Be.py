@@ -7,6 +7,9 @@ import numpy as np
 bondlength = 4.522
 functional = 'svwn'
 basis = 'cc-pvdz'
+svdc = -4
+reguc = -5
+title = " Be WuYang1b 0ghost svdc%i reguc%i" %(svdc, reguc) + basis + functional
 
 psi4.set_output_file("Be2.psi4")
 
@@ -14,8 +17,6 @@ Full_Molec = psi4.geometry("""
 nocom
 noreorient
 Be %f 0.0 0.00
-@Be  0 1 0
-@Be  0 -1 0
 Be -%f 0.0 0.00
 units bohr
 symmetry c1
@@ -25,8 +26,6 @@ Monomer_1 =  psi4.geometry("""
 nocom
 noreorient
 Be %f 0.0 0.00
-@Be  0 1 0
-@Be  0 -1 0
 @Be -%f 0.0 0.00
 units bohr
 symmetry c1
@@ -36,8 +35,6 @@ Monomer_2 =  psi4.geometry("""
 nocom
 noreorient
 @Be %f 0.0 0.00
-@Be  0 1 0
-@Be  0 -1 0
 Be -%f 0.0 0.00
 units bohr
 symmetry c1
@@ -60,16 +57,38 @@ mol = pdft.U_Molecule(Full_Molec, basis, functional)
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
 
-# pdfter.find_vp_response(50, svd_rcond=1e-4, regul_const=1e-3, beta=0.1, a_rho_var=1e-7)
-pdfter.find_vp_response_1basis(21, svd_rcond=1e-4, beta=0.1, a_rho_var=1e-7)
-# pdfter.find_vp_optimizing(maxiter=7, regul_const=1e-4)
+pdfter.find_vp_response(2, svd_rcond=10**svdc, regul_const=10**reguc, beta=0.01, a_rho_var=1e-7)
+# pdfter.find_vp_response_1basis(21, svd_rcond=10**svdc, beta=0.1, a_rho_var=1e-7)
+# pdfter.find_vp_scipy_1basis(maxiter=7)
+# pdfter.find_vp_densitydifference(42, 1)
 
-vp_grid = mol.to_grid_1basis(pdfter.vp[0])
-pdft.plot1d_x(vp_grid, mol.Vpot, title="Be2 scipy l: 1e-3" + basis + functional)
-# vp_grid = mol.to_grid(pdfter.vp[0])
-# pdft.plot1d_x(vp_grid, mol.Vpot, title="H2+ scipy l: 1e-4" + basis + functional)
+vp_grid = mol.to_grid(pdfter.vp[0])
+pdft.plot1d_x(pdfter.vp_ext_nad + vp_grid, mol.Vpot, title=title, dimmer_length=bondlength)
 
-pdfter.ep_conv = np.array(pdfter.ep_conv)
-plt.plot(np.log10(np.abs(pdfter.ep_conv[1:] - pdfter.ep_conv[:-1])), 'o')
-plt.title("log dEp")
-plt.show()
+# #%% 1 basis 2D plot
+# L = [4.0, 4.0, 2.0]
+# D = [0.1, 0.1, 0.1]
+# # Plot file
+# O, N = libcubeprop.build_grid(mol.wfn, L, D)
+# block, points, nxyz, npoints = libcubeprop.populate_grid(mol.wfn, O, N, D)
+# vp_psi4 = psi4.core.Matrix.from_array(pdfter.vp[0])
+# vp_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, vp_psi4)
+# f, ax = plt.subplots(1, 1, dpi=160)
+# p = ax.imshow(vp_cube[:, :, 20], interpolation="bicubic", cmap="Spectral")
+# atoms = libcubeprop.get_atoms(mol.wfn, D, O)
+# ax.scatter(atoms[:,2], atoms[:,1])
+# ax.set_title("vp" + title)
+# f.colorbar(p, ax=ax)
+# f.show()
+# f.savefig("vp" + title)
+#
+# dD = psi4.core.Matrix.from_array(pdfter.fragments_Da + pdfter.fragments_Db - mol.Da.np - mol.Db.np)
+# dn_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, dD)
+# f, ax = plt.subplots(1, 1, dpi=160)
+# p = ax.imshow(dn_cube[:, :, 20], interpolation="bicubic", cmap="Spectral")
+# atoms = libcubeprop.get_atoms(mol.wfn, D, O)
+# ax.scatter(atoms[:,2], atoms[:,1])
+# ax.set_title("dn" + title)
+# f.colorbar(p, ax=ax)
+# f.show()
+# f.savefig("dn" + title)

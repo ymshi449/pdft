@@ -1888,3 +1888,35 @@ Module                                       User      System        Wall       
 --------------------------------------------------------------------------------------
 
 **************************************************************************************
+
+Host: PartitionStation
+
+Timers On : Fri Feb 14 09:15:39 2020
+Timers Off: Fri Feb 14 17:03:57 2020
+
+Wall Time:    28098.36 seconds
+
+                                                       Time (seconds)
+Module                                       User      System        Wall        Calls
+Total PK formation time             :     21.583u      0.200s      4.955w      2 calls
+
+--------------------------------------------------------------------------------------
+Total PK formation time             :     21.583u      0.200s      4.955w      2 calls
+
+**************************************************************************************
+
+Host: PartitionStation
+
+Timers On : Tue Feb 18 14:36:54 2020
+Timers Off: Tue Feb 18 17:10:24 2020
+
+Wall Time:     9209.15 seconds
+
+                                                       Time (seconds)
+Module                                       User      System        Wall        Calls
+Total PK formation time             :     10.850u      0.100s      2.503w      1 calls
+
+--------------------------------------------------------------------------------------
+Total PK formation time             :     10.850u      0.100s      2.503w      1 calls
+
+**************************************************************************************
