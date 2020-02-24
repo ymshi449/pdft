@@ -611,20 +611,20 @@ class U_Molecule():
         Update wfn.Da and wfn.Db from self.Da and self.Db.
         :return:
         """
-        self.wfn.Da().np[:] = self.Da.np
-        self.wfn.Db().np[:] = self.Db.np
-        self.wfn.Ca().np[:] = self.Ca.np
-        self.wfn.Cb().np[:] = self.Cb.np
-        self.wfn.epsilon_a().np[:] = self.eig_a.np
-        self.wfn.epsilon_b().np[:] = self.eig_b.np
+        self.wfn.Da().np[:] = self.Da.np * self.omega
+        self.wfn.Db().np[:] = self.Db.np * self.omega
+        # self.wfn.Ca().np[:] = self.Ca.np
+        # self.wfn.Cb().np[:] = self.Cb.np
+        # self.wfn.epsilon_a().np[:] = self.eig_a.np
+        # self.wfn.epsilon_b().np[:] = self.eig_b.np
         return
 
-    def esp_update(self, grid=None, Vpot=None):
+    def esp_on_grid(self, grid=None, Vpot=None):
         """
         For given Da Db, get the esp on grid. Right now it does not work well. If you check
-        the potential on the grid, it is not smooth.
-        :param Da: np.array
-        :param Db: np.array
+        the potential on the grid, it is not smooth. The density info should be in self.wfn.
+        :param grid: N*3 np.array. If None, calculate the grid.
+        :param Vpot: for calculating grid. Will be ignored if grid is given.
         :return: esp
         """
         # Breaks in multi-threading
@@ -651,9 +651,11 @@ class U_Molecule():
         self.update_wfn_info()
         # Calculate esp
         esp = self.esp_calculator.compute_esp_over_grid_in_memory(grid)
+        esp = -esp.np
 
         # Set threads back.
         psi4.set_num_threads(nthreads)
+
         return esp
 
     def vext_on_grid(self, grid=None, Vpot=None):
@@ -1020,6 +1022,7 @@ class U_Embedding:
 
         # nad parts of vp with local-Q
         self.vp_ext_nad = None
+        self.vp_Hext_nad = None
 
     def get_density_sum(self):
         sum_a = self.fragments[0].Da.np.copy() * self.fragments[0].omega
@@ -1218,6 +1221,26 @@ class U_Embedding:
             Q.append(Qtemp)
         return Q
 
+    def get_vp_Hext_nad(self):
+        """
+        Get the vp_ext_nad + vp_H_nad (or call it esp) for each fragment with local Q approximation on grid.
+        :return: vp_ext_nad
+        """
+        Q = self.local_Q_on_grid(Df="nf")
+
+        # v_Hext of all fragments
+        v_fragment_hext = []
+        v_fragment_hext_sum = np.zeros_like(Q[0])
+        for j in range(self.nfragments):
+            v_temp = self.fragments[j].esp_on_grid(Vpot=self.molecule.Vpot)
+            v_fragment_hext.append(v_temp)
+            v_fragment_hext_sum += v_temp
+
+        vp_hext_nad = np.zeros_like(Q[0])
+        for j in range(self.nfragments):
+            vp_hext_nad += (v_fragment_hext_sum - v_fragment_hext[j])*Q[j]
+        return vp_hext_nad
+
     def get_vp_ext_nad(self):
         """
         Get the vp_ext_nad for each fragment with local Q approximation on grid.
@@ -1229,7 +1252,7 @@ class U_Embedding:
         mol_vext = self.molecule.vext_on_grid()
 
         vp_ext_nad = np.zeros_like(Q[0])
-        for j in range(len(self.fragments)):
+        for j in range(self.nfragments):
             vp_ext_nad += (mol_vext - self.fragments[j].vext_on_grid(Vpot=self.molecule.Vpot))*Q[j]
         return vp_ext_nad
 
@@ -1742,7 +1765,7 @@ class U_Embedding:
                                       jac=self.jac, hess=self.hess, method=opt_method, options=opt)
         return vp_array
 
-    def find_vp_response(self, maxiter=21, guess=None, beta=None, svd_rcond=None, regul_const=None, a_rho_var=1e-4, vp_norm_conv=1e-6, printflag=True):
+    def find_vp_response(self, maxiter=21, guess=None, beta=None, vp_nad_component=True, vp_nad_iter=1, svd_rcond=None, regul_const=None, a_rho_var=1e-4, vp_norm_conv=1e-6, printflag=True):
         """
         Using the inverse of static response function to update dvp from a dn.
         This version describe vp = sum b_ij*phi_i*phi_j. phi is ao.
@@ -1751,6 +1774,8 @@ class U_Embedding:
         :param maxiter: maximum vp update iterations
         :param guess: initial guess. When guess is True, object will look for self stored vp as initial.
         :param beta: step length for Newton's method.
+        :param vp_nad_component: True. If False, will not calculate vp_Hext_nad.
+        :param vp_nad_iter: 1. The number of iterations vp_Hext will be updated
         :param svd_rcond np.lingal.pinv rcond for hess psudo-inverse
         :param regul_const regularization constant.
         :param a_rho_var convergence threshold for last 5 drho std
@@ -1818,7 +1843,6 @@ class U_Embedding:
                 self.fragments[i].scf(maxiter=1000, print_energies=printflag, vp_matrix=self.vp_fock)
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
 
-
         _, _, _, w = self.molecule.Vpot.get_np_xyzw()
         ## Tracking rho and changing beta
         old_rho_conv = np.inf
@@ -1828,20 +1852,17 @@ class U_Embedding:
         rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
         print("no vp drho:",np.sum(np.abs(rho_fragment - rho_molecule) * w))
 
-        self.vp_ext_nad = self.get_vp_ext_nad()
-        vp_ext_nad_fock = self.molecule.grid_to_fock(self.vp_ext_nad)
-        vp_totalfock.np[:] += vp_ext_nad_fock
-        self.vp_fock = [vp_totalfock, vp_totalfock]
-        Ef = 0.0
-        # Run the first iteration
-        for i in range(self.nfragments):
-            self.fragments[i].scf(vp_matrix=self.vp_fock, maxiter=1000, print_energies=printflag)
-            Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
-        self.ep_conv.append(self.molecule.energy - self.molecule.Enuc - Ef)
-
-        self.get_density_sum()
-        rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
-        print("vp_ext_nad drho:",np.sum(np.abs(rho_fragment - rho_molecule) * w))
+        if vp_nad_component:
+            self.vp_Hext_nad = self.get_vp_Hext_nad()
+            vp_Hext_nad_fock = self.molecule.grid_to_fock(self.vp_Hext_nad)
+            vp_totalfock.np[:] += vp_Hext_nad_fock
+            self.vp_fock = [vp_totalfock, vp_totalfock]
+            Ef = 0.0
+            # Run the first iteration
+            for i in range(self.nfragments):
+                self.fragments[i].scf(vp_matrix=self.vp_fock, maxiter=1000, print_energies=printflag)
+                Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+            self.ep_conv.append(self.molecule.energy - self.molecule.Enuc - Ef)
 
         if beta is None:
             beta = 1.0
@@ -1876,12 +1897,13 @@ class U_Embedding:
             #     beta_lastupdate_iter = scf_step
 
             # Update vp_none_add from time to time
-            # if scf_step%10 == 0:
-            # vp_totalfock.np[:] -= vp_ext_nad_fock
-            # self.vp_ext_nad = self.get_vp_ext_nad()
-            # vp_ext_nad_fock = self.molecule.grid_to_fock(self.vp_ext_nad)
-            # vp_totalfock.np[:] += vp_ext_nad_fock
-            # self.vp_fock = [vp_totalfock, vp_totalfock]
+            if vp_nad_component:
+                if scf_step%vp_nad_iter == 0:
+                    vp_totalfock.np[:] -= vp_Hext_nad_fock
+                    self.vp_Hext_nad = self.get_vp_Hext_nad()
+                    vp_Hext_nad_fock = self.molecule.grid_to_fock(self.vp_Hext_nad)
+                    vp_totalfock.np[:] += vp_Hext_nad_fock
+                    self.vp_fock = [vp_totalfock, vp_totalfock]
 
             old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
             self.drho_conv.append(old_rho_conv)
@@ -2118,7 +2140,7 @@ class U_Embedding:
                                       jac=self.jac_1basis, hess=self.hess_1basis, method=opt_method, options=opt)
         return vp_array
 
-    def find_vp_response_1basis(self, maxiter=21, guess=None, beta=None, svd_rcond=None, regul_const=None, a_rho_var=1e-4, vp_norm_conv=1e-6, printflag=True):
+    def find_vp_response_1basis(self, maxiter=21, guess=None, beta=None, vp_nad_component=True, vp_nad_iter=1, svd_rcond=None, regul_const=None, a_rho_var=1e-4, vp_norm_conv=1e-6, printflag=True):
         """
         Using the inverse of static response function to update dvp from a dn.
         This version describe vp = sum b_i*phi_i. phi is ao.
@@ -2126,6 +2148,8 @@ class U_Embedding:
         :param maxiter: maximum vp update iterations
         :param guess: initial guess. When guess is True, object will look for self stored vp as initial.
         :param beta: step length for Newton's method.
+        :param vp_nad_component: True. If False, will not calculate vp_Hext_nad.
+        :param vp_nad_iter: 1. The number of iterations vp_Hext will be updated
         :param svd_rcond np.lingal.pinv rcond for hess psudo-inverse
         :param regul_const regularization constant.
         :param a_rho_var convergence threshold for last 5 drho std
@@ -2180,11 +2204,25 @@ class U_Embedding:
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
 
         _, _, _, w = self.molecule.Vpot.get_np_xyzw()
-
         ## Tracking rho and changing beta
         old_rho_conv = np.inf
         beta_lastupdate_iter = 0
         rho_molecule = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
+        self.get_density_sum()
+        rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
+        print("no vp drho:",np.sum(np.abs(rho_fragment - rho_molecule) * w))
+
+        if vp_nad_component:
+            self.vp_Hext_nad = self.get_vp_Hext_nad()
+            vp_Hext_nad_fock = self.molecule.grid_to_fock(self.vp_Hext_nad)
+            vp_totalfock.np[:] += vp_Hext_nad_fock
+            self.vp_fock = [vp_totalfock, vp_totalfock]
+            Ef = 0.0
+            # Run the first iteration
+            for i in range(self.nfragments):
+                self.fragments[i].scf(vp_matrix=self.vp_fock, maxiter=1000, print_energies=printflag)
+                Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+            self.ep_conv.append(self.molecule.energy - self.molecule.Enuc - Ef)
 
         if beta is None:
             beta = 1.0
@@ -2214,8 +2252,14 @@ class U_Embedding:
             # elif (scf_step - beta_lastupdate_iter) > 3:
             #     beta /= 1
             #     beta_lastupdate_iter = scf_step
-            if scf_step == 20:
-                beta = 1
+            # Update vp_none_add from time to time
+            if vp_nad_component:
+                if scf_step%vp_nad_iter == 0:
+                    vp_totalfock.np[:] -= vp_Hext_nad_fock
+                    self.vp_Hext_nad = self.get_vp_Hext_nad()
+                    vp_Hext_nad_fock = self.molecule.grid_to_fock(self.vp_Hext_nad)
+                    vp_totalfock.np[:] += vp_Hext_nad_fock
+                    self.vp_fock = [vp_totalfock, vp_totalfock]
 
             old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
             self.drho_conv.append(old_rho_conv)
@@ -2542,8 +2586,8 @@ def plot1d_x(data, Vpot, dimmer_length=2.0, title=None, ax= None):
     mask2 = np.isclose(abs(z), 0, atol=1E-11)
     order = np.argsort(x[mask & mask2])
     if ax is None:
-        # f1 = plt.figure(num=None, figsize=(16, 12), dpi=160)        
-        f1 = plt.figure()
+        f1 = plt.figure(figsize=(16, 12), dpi=160)
+        # f1 = plt.figure()
         plt.plot(x[mask & mask2][order], data[mask & mask2][order])
     else:
         ax.plot(x[mask & mask2][order], data[mask & mask2][order])

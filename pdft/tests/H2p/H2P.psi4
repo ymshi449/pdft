@@ -407,3 +407,7 @@
     Keyword: DF_BASIS_SCF
     atoms 1-4 entry H          line    70 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz-jkfit.gbs 
 
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
