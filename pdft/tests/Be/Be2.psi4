@@ -386,3 +386,5 @@
     Keyword: DF_BASIS_SCF
     atoms 1-2 entry BE         line   101 file /home/yuming/anaconda3/envs/work/share/psi4/basis/def2-qzvpp-jkfit.gbs 
 
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.

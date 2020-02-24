@@ -1,9 +1,9 @@
    => Loading Basis Set <=
 
-    Name: CC-PVDZ
+    Name: AUG-CC-PVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-4 entry H          line    22 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
+    atoms 1-4 entry H          line    36 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz.gbs 
 
 
          ---------------------------------------------------------
@@ -53,11 +53,11 @@
 
   ==> Primary Basis <==
 
-  Basis Set: CC-PVDZ
-    Blend: CC-PVDZ
-    Number of shells: 12
-    Number of basis function: 20
-    Number of Cartesian functions: 20
+  Basis Set: AUG-CC-PVDZ
+    Blend: AUG-CC-PVDZ
+    Number of shells: 20
+    Number of basis function: 36
+    Number of Cartesian functions: 36
     Spherical Harmonics?: true
     Max angular momentum: 1
 
@@ -100,27 +100,27 @@
     Pruning alpha          =              1
     Radial Points          =             75
     Spherical Points       =            302
-    Total Points           =          89392
-    Total Blocks           =            737
+    Total Points           =          90600
+    Total Blocks           =            754
     Max Points             =            256
-    Max Functions          =             20
+    Max Functions          =             36
 
   Using in-core PK algorithm.
    Calculation information:
       Number of atoms:                   4
-      Number of AO shells:              12
-      Number of primitives:             20
-      Number of atomic orbitals:        20
-      Number of basis functions:        20
+      Number of AO shells:              20
+      Number of primitives:             28
+      Number of atomic orbitals:        36
+      Number of basis functions:        36
 
       Integral cutoff                 1.00e-12
       Number of threads:                 3
 
   Performing in-core PK
-  Using 44310 doubles for integral storage.
-  We computed 4065 shell quartets total.
-  Whereas there are 3081 unique shell quartets.
-    31.94 percent of shell quartets recomputed by reordering.
+  Using 444222 doubles for integral storage.
+  We computed 25651 shell quartets total.
+  Whereas there are 22155 unique shell quartets.
+    15.78 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -134,10 +134,10 @@
 
    => Loading Basis Set <=
 
-    Name: CC-PVDZ
+    Name: AUG-CC-PVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-4 entry H          line    22 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
+    atoms 1-4 entry H          line    36 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz.gbs 
 
 
          ---------------------------------------------------------
@@ -187,11 +187,11 @@
 
   ==> Primary Basis <==
 
-  Basis Set: CC-PVDZ
-    Blend: CC-PVDZ
-    Number of shells: 12
-    Number of basis function: 20
-    Number of Cartesian functions: 20
+  Basis Set: AUG-CC-PVDZ
+    Blend: AUG-CC-PVDZ
+    Number of shells: 20
+    Number of basis function: 36
+    Number of Cartesian functions: 36
     Spherical Harmonics?: true
     Max angular momentum: 1
 
@@ -234,27 +234,27 @@
     Pruning alpha          =              1
     Radial Points          =             75
     Spherical Points       =            302
-    Total Points           =          89392
-    Total Blocks           =            737
+    Total Points           =          90600
+    Total Blocks           =            754
     Max Points             =            256
-    Max Functions          =             20
+    Max Functions          =             36
 
   Using in-core PK algorithm.
    Calculation information:
       Number of atoms:                   4
-      Number of AO shells:              12
-      Number of primitives:             20
-      Number of atomic orbitals:        20
-      Number of basis functions:        20
+      Number of AO shells:              20
+      Number of primitives:             28
+      Number of atomic orbitals:        36
+      Number of basis functions:        36
 
       Integral cutoff                 1.00e-12
       Number of threads:                 3
 
   Performing in-core PK
-  Using 44310 doubles for integral storage.
-  We computed 4065 shell quartets total.
-  Whereas there are 3081 unique shell quartets.
-    31.94 percent of shell quartets recomputed by reordering.
+  Using 444222 doubles for integral storage.
+  We computed 25651 shell quartets total.
+  Whereas there are 22155 unique shell quartets.
+    15.78 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -268,10 +268,10 @@
 
    => Loading Basis Set <=
 
-    Name: CC-PVDZ
+    Name: AUG-CC-PVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-4 entry H          line    22 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
+    atoms 1-4 entry H          line    36 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz.gbs 
 
 
          ---------------------------------------------------------
@@ -321,11 +321,11 @@
 
   ==> Primary Basis <==
 
-  Basis Set: CC-PVDZ
-    Blend: CC-PVDZ
-    Number of shells: 12
-    Number of basis function: 20
-    Number of Cartesian functions: 20
+  Basis Set: AUG-CC-PVDZ
+    Blend: AUG-CC-PVDZ
+    Number of shells: 20
+    Number of basis function: 36
+    Number of Cartesian functions: 36
     Spherical Harmonics?: true
     Max angular momentum: 1
 
@@ -368,27 +368,27 @@
     Pruning alpha          =              1
     Radial Points          =             75
     Spherical Points       =            302
-    Total Points           =          89392
-    Total Blocks           =            737
+    Total Points           =          90600
+    Total Blocks           =            754
     Max Points             =            256
-    Max Functions          =             20
+    Max Functions          =             36
 
   Using in-core PK algorithm.
    Calculation information:
       Number of atoms:                   4
-      Number of AO shells:              12
-      Number of primitives:             20
-      Number of atomic orbitals:        20
-      Number of basis functions:        20
+      Number of AO shells:              20
+      Number of primitives:             28
+      Number of atomic orbitals:        36
+      Number of basis functions:        36
 
       Integral cutoff                 1.00e-12
       Number of threads:                 3
 
   Performing in-core PK
-  Using 44310 doubles for integral storage.
-  We computed 4065 shell quartets total.
-  Whereas there are 3081 unique shell quartets.
-    31.94 percent of shell quartets recomputed by reordering.
+  Using 444222 doubles for integral storage.
+  We computed 25651 shell quartets total.
+  Whereas there are 22155 unique shell quartets.
+    15.78 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -402,8 +402,8 @@
 
    => Loading Basis Set <=
 
-    Name: (CC-PVDZ AUX)
+    Name: (AUG-CC-PVDZ AUX)
     Role: JKFIT
     Keyword: DF_BASIS_SCF
-    atoms 1-4 entry H          line    51 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz-jkfit.gbs 
+    atoms 1-4 entry H          line    70 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz-jkfit.gbs 
 

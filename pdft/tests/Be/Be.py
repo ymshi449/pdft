@@ -7,7 +7,7 @@ import numpy as np
 bondlength = 4.522
 functional = 'svwn'
 basis = 'cc-pvdz'
-svdc = -4
+svdc = -3
 reguc = -5
 title = " Be WuYang1b 0ghost svdc%i reguc%i" %(svdc, reguc) + basis + functional
 
@@ -57,13 +57,13 @@ mol = pdft.U_Molecule(Full_Molec, basis, functional)
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
 
-pdfter.find_vp_response(2, svd_rcond=10**svdc, regul_const=10**reguc, beta=0.01, a_rho_var=1e-7)
+pdfter.find_vp_response(2, svd_rcond=10**svdc, beta=0.01, a_rho_var=1e-7)
 # pdfter.find_vp_response_1basis(21, svd_rcond=10**svdc, beta=0.1, a_rho_var=1e-7)
 # pdfter.find_vp_scipy_1basis(maxiter=7)
 # pdfter.find_vp_densitydifference(42, 1)
 
 vp_grid = mol.to_grid(pdfter.vp[0])
-pdft.plot1d_x(pdfter.vp_ext_nad + vp_grid, mol.Vpot, title=title, dimmer_length=bondlength)
+pdft.plot1d_x(vp_grid, mol.Vpot, title=title, dimmer_length=bondlength)
 
 # #%% 1 basis 2D plot
 # L = [4.0, 4.0, 2.0]

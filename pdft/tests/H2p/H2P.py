@@ -6,7 +6,7 @@ import libcubeprop
 
 psi4.set_output_file("H2P.psi4")
 functional = 'b3lyp'
-basis = 'cc-pvdz'
+basis = 'aug-cc-pvdz'
 svdc = -3
 reguc = -4
 title = "H2p WuYang1b 4ghosts svdc%i reguc %i" %(svdc, reguc) + basis + functional

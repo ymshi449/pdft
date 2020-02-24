@@ -457,7 +457,7 @@ class U_Molecule():
         self.functional = psi4.driver.dft.build_superfunctional(method, restricted=False)[0]
 
         self.mints = mints if mints is not None else psi4.core.MintsHelper(self.wfn.basisset())
-        self.Vpot       = psi4.core.VBase.build(self.wfn.basisset(), self.functional, "UV")
+        self.Vpot       = self.wfn.V_potential()
 
         #From psi4 objects
         self.nbf        = self.wfn.nso()
@@ -606,16 +606,20 @@ class U_Molecule():
             f_grid = np.append(f_grid, np.einsum('pm,m->p', phi, lD))
         return f_grid
 
-    def update_wfn_D(self):
+    def update_wfn_info(self):
         """
         Update wfn.Da and wfn.Db from self.Da and self.Db.
         :return:
         """
-        self.wfn.Da().np[:] = self.Da.np[:]
-        self.wfn.Db().np[:] = self.Db.np[:]
+        self.wfn.Da().np[:] = self.Da.np
+        self.wfn.Db().np[:] = self.Db.np
+        self.wfn.Ca().np[:] = self.Ca.np
+        self.wfn.Cb().np[:] = self.Cb.np
+        self.wfn.epsilon_a().np[:] = self.eig_a.np
+        self.wfn.epsilon_b().np[:] = self.eig_b.np
         return
 
-    def esp_update(self, grid=None):
+    def esp_update(self, grid=None, Vpot=None):
         """
         For given Da Db, get the esp on grid. Right now it does not work well. If you check
         the potential on the grid, it is not smooth.
@@ -623,21 +627,33 @@ class U_Molecule():
         :param Db: np.array
         :return: esp
         """
+        # Breaks in multi-threading
+        nthreads = psi4.get_num_threads()
+        psi4.set_num_threads(1)
         if self.esp_calculator is None:
             self.esp_calculator = psi4.core.ESPPropCalc(self.wfn)
         # Grid
         if grid is None:
-            x, y, z, _ = self.Vpot.get_np_xyzw()
-            grid = np.array([x, y, z])
-            grid = psi4.core.Matrix.from_array(grid.T)
-            assert grid.shape[1] == 3, "Grid should be N*3 np.array"
+            if Vpot is None:
+                x, y, z, _ = self.Vpot.get_np_xyzw()
+                grid = np.array([x, y, z])
+                grid = psi4.core.Matrix.from_array(grid.T)
+                assert grid.shape[1] == 3, "Grid should be N*3 np.array"
+            else:
+                x, y, z, _ = Vpot.get_np_xyzw()
+                grid = np.array([x, y, z])
+                grid = psi4.core.Matrix.from_array(grid.T)
+                assert grid.shape[1] == 3, "Grid should be N*3 np.array"
         else:
             assert grid.shape[1] == 3, "Grid should be N*3 np.array"
             grid = psi4.core.Matrix.from_array(grid)
 
-        self.update_wfn_D()
+        self.update_wfn_info()
         # Calculate esp
         esp = self.esp_calculator.compute_esp_over_grid_in_memory(grid)
+
+        # Set threads back.
+        psi4.set_num_threads(nthreads)
         return esp
 
     def vext_on_grid(self, grid=None, Vpot=None):
@@ -1803,24 +1819,29 @@ class U_Embedding:
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
 
 
-        self.vp_ext_nad = self.get_vp_ext_nad()
-        vp_ext_nad_fock = self.molecule.grid_to_fock(self.vp_ext_nad)
-        vp_totalfock.np[:] += vp_ext_nad_fock
-        self.vp_fock = [vp_totalfock, vp_totalfock]
-        # Initialize
-        Ef = 0.0
-        # Run the first iteration
-        for i in range(self.nfragments):
-            self.fragments[i].scf(maxiter=1000, print_energies=printflag)
-            Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
-        self.ep_conv.append(self.molecule.energy - self.molecule.Enuc - Ef)
-
         _, _, _, w = self.molecule.Vpot.get_np_xyzw()
-
         ## Tracking rho and changing beta
         old_rho_conv = np.inf
         beta_lastupdate_iter = 0
         rho_molecule = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
+        self.get_density_sum()
+        rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
+        print("no vp drho:",np.sum(np.abs(rho_fragment - rho_molecule) * w))
+
+        self.vp_ext_nad = self.get_vp_ext_nad()
+        vp_ext_nad_fock = self.molecule.grid_to_fock(self.vp_ext_nad)
+        vp_totalfock.np[:] += vp_ext_nad_fock
+        self.vp_fock = [vp_totalfock, vp_totalfock]
+        Ef = 0.0
+        # Run the first iteration
+        for i in range(self.nfragments):
+            self.fragments[i].scf(vp_matrix=self.vp_fock, maxiter=1000, print_energies=printflag)
+            Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+        self.ep_conv.append(self.molecule.energy - self.molecule.Enuc - Ef)
+
+        self.get_density_sum()
+        rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
+        print("vp_ext_nad drho:",np.sum(np.abs(rho_fragment - rho_molecule) * w))
 
         if beta is None:
             beta = 1.0
@@ -1856,11 +1877,11 @@ class U_Embedding:
 
             # Update vp_none_add from time to time
             # if scf_step%10 == 0:
-            vp_totalfock.np[:] -= vp_ext_nad_fock
-            self.vp_ext_nad = self.get_vp_ext_nad()
-            vp_ext_nad_fock = self.molecule.grid_to_fock(self.vp_ext_nad)
-            vp_totalfock.np[:] += vp_ext_nad_fock
-            self.vp_fock = [vp_totalfock, vp_totalfock]
+            # vp_totalfock.np[:] -= vp_ext_nad_fock
+            # self.vp_ext_nad = self.get_vp_ext_nad()
+            # vp_ext_nad_fock = self.molecule.grid_to_fock(self.vp_ext_nad)
+            # vp_totalfock.np[:] += vp_ext_nad_fock
+            # self.vp_fock = [vp_totalfock, vp_totalfock]
 
             old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
             self.drho_conv.append(old_rho_conv)
