@@ -7,6 +7,107 @@
     atoms 2-3, 7-8  entry O          line   198 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
     atoms 4-5, 9-10 entry H          line    22 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
 
+
+         ---------------------------------------------------------
+                                   SCF
+               by Justin Turney, Rob Parrish, Andy Simmonett
+                          and Daniel G. A. Smith
+                              UKS Reference
+                        3 Threads,    500 MiB Core
+         ---------------------------------------------------------
+
+  ==> Geometry <==
+
+    Molecular point group: c1
+    Full point group: Cs
+
+    Geometry (in Bohr), charge = 0, multiplicity = 1:
+
+       Center              X                  Y                   Z               Mass       
+    ------------   -----------------  -----------------  -----------------  -----------------
+         C            0.000000000000     0.192927200000    -1.903534000000    12.000000000000
+         O            0.000000000000     1.159521900000    -1.161623600000    15.994914619570
+         O            0.000000000000    -1.068066900000    -1.534987000000    15.994914619570
+         H            0.000000000000     0.294980200000    -2.994977600000     1.007825032230
+         H            0.000000000000    -1.140941400000    -0.539961400000     1.007825032230
+      Gh(C)           0.000000000000    -0.192927200000     1.903534000000    12.000000000000
+      Gh(O)           0.000000000000    -1.159521900000     1.161623600000    15.994914619570
+      Gh(O)           0.000000000000     1.068066900000     1.534987000000    15.994914619570
+      Gh(H)           0.000000000000    -0.294980200000     2.994977600000     1.007825032230
+      Gh(H)           0.000000000000     1.140941400000     0.539961400000     1.007825032230
+
+  Running in c1 symmetry.
+
+  Rotational constants: A =      0.72359  B =      0.26854  C =      0.19586 [cm^-1]
+  Rotational constants: A =  21692.76544  B =   8050.75259  C =   5871.63520 [MHz]
+  Nuclear repulsion =  132.563063441092993
+
+  Charge       = 0
+  Multiplicity = 1
+  Electrons    = 24
+  Nalpha       = 12
+  Nbeta        = 12
+
+  ==> Algorithm <==
+
+  SCF Algorithm Type is PK.
+  DIIS enabled.
+  MOM disabled.
+  Fractional occupation disabled.
+  Guess Type is AUTO.
+  Energy threshold   = 1.00e-06
+  Density threshold  = 1.00e-06
+  Integral threshold = 0.00e+00
+
+  ==> Primary Basis <==
+
+  Basis Set: CC-PVDZ
+    Blend: CC-PVDZ
+    Number of shells: 48
+    Number of basis function: 104
+    Number of Cartesian functions: 110
+    Spherical Harmonics?: true
+    Max angular momentum: 2
+
+  ==> DFT Potential <==
+
+   => Composite Functional: SVWN <= 
+
+    SVWN3 (RPA) LSDA Functional
+
+    Adamson et. al., J. Comput. Chem., 20(9), 921-927, 1999
+
+
+    Deriv               =              1
+    GGA                 =          FALSE
+    Meta                =          FALSE
+
+    Exchange Hybrid     =          FALSE
+    MP2 Hybrid          =          FALSE
+
+   => Exchange Functionals <=
+
+    1.0000         XC_LDA_X
+
+   => Correlation Functionals <=
+
+    1.0000   XC_LDA_C_VWN_RPA
+
+   => Molecular Quadrature <=
+
+    Radial Scheme          =       TREUTLER
+    Pruning Scheme         =           FLAT
+    Nuclear Scheme         =       TREUTLER
+
+    BS radius alpha        =              1
+    Pruning alpha          =              1
+    Radial Points          =             75
+    Spherical Points       =            302
+    Total Points           =         220160
+    Total Blocks           =           1678
+    Max Points             =            256
+    Max Functions          =            104
+
   Using in-core PK algorithm.
    Calculation information:
       Number of atoms:                  10
@@ -43,6 +144,107 @@
     atoms 2-3, 7-8  entry O          line   198 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
     atoms 4-5, 9-10 entry H          line    22 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
 
+
+         ---------------------------------------------------------
+                                   SCF
+               by Justin Turney, Rob Parrish, Andy Simmonett
+                          and Daniel G. A. Smith
+                              UKS Reference
+                        3 Threads,    500 MiB Core
+         ---------------------------------------------------------
+
+  ==> Geometry <==
+
+    Molecular point group: c1
+    Full point group: Cs
+
+    Geometry (in Bohr), charge = 0, multiplicity = 1:
+
+       Center              X                  Y                   Z               Mass       
+    ------------   -----------------  -----------------  -----------------  -----------------
+      Gh(C)           0.000000000000     0.192927200000    -1.903534000000    12.000000000000
+      Gh(O)           0.000000000000     1.159521900000    -1.161623600000    15.994914619570
+      Gh(O)           0.000000000000    -1.068066900000    -1.534987000000    15.994914619570
+      Gh(H)           0.000000000000     0.294980200000    -2.994977600000     1.007825032230
+      Gh(H)           0.000000000000    -1.140941400000    -0.539961400000     1.007825032230
+         C            0.000000000000    -0.192927200000     1.903534000000    12.000000000000
+         O            0.000000000000    -1.159521900000     1.161623600000    15.994914619570
+         O            0.000000000000     1.068066900000     1.534987000000    15.994914619570
+         H            0.000000000000    -0.294980200000     2.994977600000     1.007825032230
+         H            0.000000000000     1.140941400000     0.539961400000     1.007825032230
+
+  Running in c1 symmetry.
+
+  Rotational constants: A =      0.72359  B =      0.26854  C =      0.19586 [cm^-1]
+  Rotational constants: A =  21692.76544  B =   8050.75259  C =   5871.63520 [MHz]
+  Nuclear repulsion =  132.563063441092993
+
+  Charge       = 0
+  Multiplicity = 1
+  Electrons    = 24
+  Nalpha       = 12
+  Nbeta        = 12
+
+  ==> Algorithm <==
+
+  SCF Algorithm Type is PK.
+  DIIS enabled.
+  MOM disabled.
+  Fractional occupation disabled.
+  Guess Type is AUTO.
+  Energy threshold   = 1.00e-06
+  Density threshold  = 1.00e-06
+  Integral threshold = 0.00e+00
+
+  ==> Primary Basis <==
+
+  Basis Set: CC-PVDZ
+    Blend: CC-PVDZ
+    Number of shells: 48
+    Number of basis function: 104
+    Number of Cartesian functions: 110
+    Spherical Harmonics?: true
+    Max angular momentum: 2
+
+  ==> DFT Potential <==
+
+   => Composite Functional: SVWN <= 
+
+    SVWN3 (RPA) LSDA Functional
+
+    Adamson et. al., J. Comput. Chem., 20(9), 921-927, 1999
+
+
+    Deriv               =              1
+    GGA                 =          FALSE
+    Meta                =          FALSE
+
+    Exchange Hybrid     =          FALSE
+    MP2 Hybrid          =          FALSE
+
+   => Exchange Functionals <=
+
+    1.0000         XC_LDA_X
+
+   => Correlation Functionals <=
+
+    1.0000   XC_LDA_C_VWN_RPA
+
+   => Molecular Quadrature <=
+
+    Radial Scheme          =       TREUTLER
+    Pruning Scheme         =           FLAT
+    Nuclear Scheme         =       TREUTLER
+
+    BS radius alpha        =              1
+    Pruning alpha          =              1
+    Radial Points          =             75
+    Spherical Points       =            302
+    Total Points           =         220160
+    Total Blocks           =           1678
+    Max Points             =            256
+    Max Functions          =            104
+
   Using in-core PK algorithm.
    Calculation information:
       Number of atoms:                  10
@@ -79,6 +281,107 @@
     atoms 2-3, 7-8  entry O          line   198 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
     atoms 4-5, 9-10 entry H          line    22 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
 
+
+         ---------------------------------------------------------
+                                   SCF
+               by Justin Turney, Rob Parrish, Andy Simmonett
+                          and Daniel G. A. Smith
+                              UKS Reference
+                        3 Threads,    500 MiB Core
+         ---------------------------------------------------------
+
+  ==> Geometry <==
+
+    Molecular point group: c1
+    Full point group: C2h
+
+    Geometry (in Bohr), charge = 0, multiplicity = 1:
+
+       Center              X                  Y                   Z               Mass       
+    ------------   -----------------  -----------------  -----------------  -----------------
+         C            0.000000000000     0.192927200000    -1.903534000000    12.000000000000
+         O            0.000000000000     1.159521900000    -1.161623600000    15.994914619570
+         O            0.000000000000    -1.068066900000    -1.534987000000    15.994914619570
+         H            0.000000000000     0.294980200000    -2.994977600000     1.007825032230
+         H            0.000000000000    -1.140941400000    -0.539961400000     1.007825032230
+         C            0.000000000000    -0.192927200000     1.903534000000    12.000000000000
+         O            0.000000000000    -1.159521900000     1.161623600000    15.994914619570
+         O            0.000000000000     1.068066900000     1.534987000000    15.994914619570
+         H            0.000000000000    -0.294980200000     2.994977600000     1.007825032230
+         H            0.000000000000     1.140941400000     0.539961400000     1.007825032230
+
+  Running in c1 symmetry.
+
+  Rotational constants: A =      0.72359  B =      0.26854  C =      0.19586 [cm^-1]
+  Rotational constants: A =  21692.76544  B =   8050.75259  C =   5871.63520 [MHz]
+  Nuclear repulsion =  444.218885645742887
+
+  Charge       = 0
+  Multiplicity = 1
+  Electrons    = 48
+  Nalpha       = 24
+  Nbeta        = 24
+
+  ==> Algorithm <==
+
+  SCF Algorithm Type is PK.
+  DIIS enabled.
+  MOM disabled.
+  Fractional occupation disabled.
+  Guess Type is AUTO.
+  Energy threshold   = 1.00e-06
+  Density threshold  = 1.00e-06
+  Integral threshold = 0.00e+00
+
+  ==> Primary Basis <==
+
+  Basis Set: CC-PVDZ
+    Blend: CC-PVDZ
+    Number of shells: 48
+    Number of basis function: 104
+    Number of Cartesian functions: 110
+    Spherical Harmonics?: true
+    Max angular momentum: 2
+
+  ==> DFT Potential <==
+
+   => Composite Functional: SVWN <= 
+
+    SVWN3 (RPA) LSDA Functional
+
+    Adamson et. al., J. Comput. Chem., 20(9), 921-927, 1999
+
+
+    Deriv               =              1
+    GGA                 =          FALSE
+    Meta                =          FALSE
+
+    Exchange Hybrid     =          FALSE
+    MP2 Hybrid          =          FALSE
+
+   => Exchange Functionals <=
+
+    1.0000         XC_LDA_X
+
+   => Correlation Functionals <=
+
+    1.0000   XC_LDA_C_VWN_RPA
+
+   => Molecular Quadrature <=
+
+    Radial Scheme          =       TREUTLER
+    Pruning Scheme         =           FLAT
+    Nuclear Scheme         =       TREUTLER
+
+    BS radius alpha        =              1
+    Pruning alpha          =              1
+    Radial Points          =             75
+    Spherical Points       =            302
+    Total Points           =         220160
+    Total Blocks           =           1678
+    Max Points             =            256
+    Max Functions          =            104
+
   Using in-core PK algorithm.
    Calculation information:
       Number of atoms:                  10
@@ -106,12 +409,4 @@
 
     OpenMP threads:              3
 
-   => Loading Basis Set <=
-
-    Name: CC-PVDZ
-    Role: ORBITAL
-    Keyword: BASIS
-    atoms 1, 6      entry C          line   138 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
-    atoms 2-3, 7-8  entry O          line   198 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
-    atoms 4-5, 9-10 entry H          line    22 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
-
+  Threads set to 1 by Python driver.

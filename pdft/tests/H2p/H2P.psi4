@@ -1,9 +1,9 @@
    => Loading Basis Set <=
 
-    Name: AUG-CC-PVDZ
+    Name: CC-PVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-4 entry H          line    36 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz.gbs 
+    atoms 1-2 entry H          line    22 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
 
 
          ---------------------------------------------------------
@@ -17,21 +17,19 @@
   ==> Geometry <==
 
     Molecular point group: c1
-    Full point group: C2v
+    Full point group: C_inf_v
 
     Geometry (in Bohr), charge = 0, multiplicity = 2:
 
        Center              X                  Y                   Z               Mass       
     ------------   -----------------  -----------------  -----------------  -----------------
          H           -1.000000000000     0.000000000000     0.000000000000     1.007825032230
-      Gh(H)           0.000000000000     0.500000000000     0.000000000000     1.007825032230
-      Gh(H)           0.000000000000    -0.500000000000     0.000000000000     1.007825032230
       Gh(H)           1.000000000000     0.000000000000     0.000000000000     1.007825032230
 
   Running in c1 symmetry.
 
-  Rotational constants: A =    119.46456  B =     29.86614  C =     23.89291 [cm^-1]
-  Rotational constants: A = 3581457.38836  B = 895364.34709  C = 716291.47767 [MHz]
+  Rotational constants: A = ************  B =     29.86614  C =     29.86614 [cm^-1]
+  Rotational constants: A = ************  B = 895364.34709  C = 895364.34709 [MHz]
   Nuclear repulsion =    0.000000000000000
 
   Charge       = 0
@@ -53,11 +51,11 @@
 
   ==> Primary Basis <==
 
-  Basis Set: AUG-CC-PVDZ
-    Blend: AUG-CC-PVDZ
-    Number of shells: 20
-    Number of basis function: 36
-    Number of Cartesian functions: 36
+  Basis Set: CC-PVDZ
+    Blend: CC-PVDZ
+    Number of shells: 6
+    Number of basis function: 10
+    Number of Cartesian functions: 10
     Spherical Harmonics?: true
     Max angular momentum: 1
 
@@ -100,27 +98,27 @@
     Pruning alpha          =              1
     Radial Points          =             75
     Spherical Points       =            302
-    Total Points           =          90600
-    Total Blocks           =            754
+    Total Points           =          44696
+    Total Blocks           =            396
     Max Points             =            256
-    Max Functions          =             36
+    Max Functions          =             10
 
   Using in-core PK algorithm.
    Calculation information:
-      Number of atoms:                   4
-      Number of AO shells:              20
-      Number of primitives:             28
-      Number of atomic orbitals:        36
-      Number of basis functions:        36
+      Number of atoms:                   2
+      Number of AO shells:               6
+      Number of primitives:             10
+      Number of atomic orbitals:        10
+      Number of basis functions:        10
 
       Integral cutoff                 1.00e-12
       Number of threads:                 3
 
   Performing in-core PK
-  Using 444222 doubles for integral storage.
-  We computed 25651 shell quartets total.
-  Whereas there are 22155 unique shell quartets.
-    15.78 percent of shell quartets recomputed by reordering.
+  Using 3080 doubles for integral storage.
+  We computed 423 shell quartets total.
+  Whereas there are 231 unique shell quartets.
+    83.12 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -134,10 +132,10 @@
 
    => Loading Basis Set <=
 
-    Name: AUG-CC-PVDZ
+    Name: CC-PVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-4 entry H          line    36 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz.gbs 
+    atoms 1-2 entry H          line    22 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
 
 
          ---------------------------------------------------------
@@ -151,21 +149,19 @@
   ==> Geometry <==
 
     Molecular point group: c1
-    Full point group: C2v
+    Full point group: C_inf_v
 
     Geometry (in Bohr), charge = 0, multiplicity = 2:
 
        Center              X                  Y                   Z               Mass       
     ------------   -----------------  -----------------  -----------------  -----------------
       Gh(H)          -1.000000000000     0.000000000000     0.000000000000     1.007825032230
-      Gh(H)           0.000000000000     0.500000000000     0.000000000000     1.007825032230
-      Gh(H)           0.000000000000    -0.500000000000     0.000000000000     1.007825032230
          H            1.000000000000     0.000000000000     0.000000000000     1.007825032230
 
   Running in c1 symmetry.
 
-  Rotational constants: A =    119.46456  B =     29.86614  C =     23.89291 [cm^-1]
-  Rotational constants: A = 3581457.38836  B = 895364.34709  C = 716291.47767 [MHz]
+  Rotational constants: A = ************  B =     29.86614  C =     29.86614 [cm^-1]
+  Rotational constants: A = ************  B = 895364.34709  C = 895364.34709 [MHz]
   Nuclear repulsion =    0.000000000000000
 
   Charge       = 0
@@ -187,11 +183,11 @@
 
   ==> Primary Basis <==
 
-  Basis Set: AUG-CC-PVDZ
-    Blend: AUG-CC-PVDZ
-    Number of shells: 20
-    Number of basis function: 36
-    Number of Cartesian functions: 36
+  Basis Set: CC-PVDZ
+    Blend: CC-PVDZ
+    Number of shells: 6
+    Number of basis function: 10
+    Number of Cartesian functions: 10
     Spherical Harmonics?: true
     Max angular momentum: 1
 
@@ -234,27 +230,27 @@
     Pruning alpha          =              1
     Radial Points          =             75
     Spherical Points       =            302
-    Total Points           =          90600
-    Total Blocks           =            754
+    Total Points           =          44696
+    Total Blocks           =            396
     Max Points             =            256
-    Max Functions          =             36
+    Max Functions          =             10
 
   Using in-core PK algorithm.
    Calculation information:
-      Number of atoms:                   4
-      Number of AO shells:              20
-      Number of primitives:             28
-      Number of atomic orbitals:        36
-      Number of basis functions:        36
+      Number of atoms:                   2
+      Number of AO shells:               6
+      Number of primitives:             10
+      Number of atomic orbitals:        10
+      Number of basis functions:        10
 
       Integral cutoff                 1.00e-12
       Number of threads:                 3
 
   Performing in-core PK
-  Using 444222 doubles for integral storage.
-  We computed 25651 shell quartets total.
-  Whereas there are 22155 unique shell quartets.
-    15.78 percent of shell quartets recomputed by reordering.
+  Using 3080 doubles for integral storage.
+  We computed 423 shell quartets total.
+  Whereas there are 231 unique shell quartets.
+    83.12 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -268,10 +264,10 @@
 
    => Loading Basis Set <=
 
-    Name: AUG-CC-PVDZ
+    Name: CC-PVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-4 entry H          line    36 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz.gbs 
+    atoms 1-2 entry H          line    22 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
 
 
          ---------------------------------------------------------
@@ -285,21 +281,19 @@
   ==> Geometry <==
 
     Molecular point group: c1
-    Full point group: D2h
+    Full point group: D_inf_h
 
     Geometry (in Bohr), charge = 1, multiplicity = 2:
 
        Center              X                  Y                   Z               Mass       
     ------------   -----------------  -----------------  -----------------  -----------------
          H           -1.000000000000     0.000000000000     0.000000000000     1.007825032230
-      Gh(H)           0.000000000000     0.500000000000     0.000000000000     1.007825032230
-      Gh(H)           0.000000000000    -0.500000000000     0.000000000000     1.007825032230
          H            1.000000000000     0.000000000000     0.000000000000     1.007825032230
 
   Running in c1 symmetry.
 
-  Rotational constants: A =    119.46456  B =     29.86614  C =     23.89291 [cm^-1]
-  Rotational constants: A = 3581457.38836  B = 895364.34709  C = 716291.47767 [MHz]
+  Rotational constants: A = ************  B =     29.86614  C =     29.86614 [cm^-1]
+  Rotational constants: A = ************  B = 895364.34709  C = 895364.34709 [MHz]
   Nuclear repulsion =    0.500000000000000
 
   Charge       = 1
@@ -321,11 +315,11 @@
 
   ==> Primary Basis <==
 
-  Basis Set: AUG-CC-PVDZ
-    Blend: AUG-CC-PVDZ
-    Number of shells: 20
-    Number of basis function: 36
-    Number of Cartesian functions: 36
+  Basis Set: CC-PVDZ
+    Blend: CC-PVDZ
+    Number of shells: 6
+    Number of basis function: 10
+    Number of Cartesian functions: 10
     Spherical Harmonics?: true
     Max angular momentum: 1
 
@@ -368,27 +362,27 @@
     Pruning alpha          =              1
     Radial Points          =             75
     Spherical Points       =            302
-    Total Points           =          90600
-    Total Blocks           =            754
+    Total Points           =          44696
+    Total Blocks           =            396
     Max Points             =            256
-    Max Functions          =             36
+    Max Functions          =             10
 
   Using in-core PK algorithm.
    Calculation information:
-      Number of atoms:                   4
-      Number of AO shells:              20
-      Number of primitives:             28
-      Number of atomic orbitals:        36
-      Number of basis functions:        36
+      Number of atoms:                   2
+      Number of AO shells:               6
+      Number of primitives:             10
+      Number of atomic orbitals:        10
+      Number of basis functions:        10
 
       Integral cutoff                 1.00e-12
       Number of threads:                 3
 
   Performing in-core PK
-  Using 444222 doubles for integral storage.
-  We computed 25651 shell quartets total.
-  Whereas there are 22155 unique shell quartets.
-    15.78 percent of shell quartets recomputed by reordering.
+  Using 3080 doubles for integral storage.
+  We computed 423 shell quartets total.
+  Whereas there are 231 unique shell quartets.
+    83.12 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -400,13 +394,90 @@
 
     OpenMP threads:              3
 
-   => Loading Basis Set <=
-
-    Name: (AUG-CC-PVDZ AUX)
-    Role: JKFIT
-    Keyword: DF_BASIS_SCF
-    atoms 1-4 entry H          line    70 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz-jkfit.gbs 
-
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
   Threads set to 1 by Python driver.
   Threads set to 3 by Python driver.
   Threads set to 1 by Python driver.

@@ -32,22 +32,23 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.5410886">
+    <splitter split-orientation="horizontal" split-proportion="0.60032016">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/pdft.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="416">
-                  <caret line="2258" column="29" selection-start-line="2258" selection-start-column="29" selection-end-line="2258" selection-end-column="29" />
+                <state relative-caret-position="1228">
+                  <caret line="1245" column="39" lean-forward="true" selection-start-line="1245" selection-start-column="39" selection-end-line="1245" selection-end-column="39" />
                   <folding>
-                    <element signature="e#61833#63614#0" />
-                    <element signature="e#63719#67643#0" />
-                    <element signature="e#76945#79037#0" />
-                    <element signature="e#79077#80317#0" />
-                    <element signature="e#80366#82157#0" />
-                    <element signature="e#82286#84879#0" />
-                    <element signature="e#92055#102578#0" />
+                    <element signature="e#34985#38752#0" />
+                    <element signature="e#38865#42496#0" />
+                    <element signature="e#44747#52012#0" />
+                    <element signature="e#52126#59416#0" />
+                    <element signature="e#59456#61873#0" />
+                    <element signature="e#61912#63473#0" />
+                    <element signature="e#63521#65302#0" />
+                    <element signature="e#65407#69331#0" />
                   </folding>
                 </state>
               </provider>
@@ -57,11 +58,11 @@
       </split-first>
       <split-second>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file pinned="false" current-in-tab="true">
+          <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/tests/Be/Be.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="340">
-                  <caret line="68" column="63" selection-start-line="68" selection-start-column="63" selection-end-line="68" selection-end-column="63" />
+                <state relative-caret-position="540">
+                  <caret line="66" selection-start-line="66" selection-end-line="72" selection-end-column="8" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
                   </folding>
@@ -72,8 +73,8 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/tests/H2p/H2P.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="500">
-                  <caret line="70" column="63" selection-start-line="70" selection-start-column="63" selection-end-line="70" selection-end-column="63" />
+                <state relative-caret-position="580">
+                  <caret line="65" column="19" selection-start-line="65" selection-start-column="19" selection-end-line="65" selection-end-column="19" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
                   </folding>
@@ -81,11 +82,11 @@
               </provider>
             </entry>
           </file>
-          <file pinned="false" current-in-tab="false">
+          <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/tests/formic/formic.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-160">
-                  <caret line="67" selection-start-line="67" selection-end-line="70" selection-end-column="25" />
+                <state relative-caret-position="140">
+                  <caret line="7" column="18" selection-start-line="7" selection-start-column="18" selection-end-line="7" selection-end-column="18" />
                   <folding>
                     <element signature="e#0#18#0" expanded="true" />
                   </folding>
@@ -96,7 +97,7 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/libcubeprop.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="9960">
+                <state relative-caret-position="861">
                   <caret line="499" selection-start-line="499" selection-end-line="500" />
                 </state>
               </provider>
@@ -108,12 +109,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>response2</find>
-      <find>response(</find>
-      <find>true</find>
-      <find>scipy</find>
-      <find>epsilon</find>
-      <find>plot</find>
       <find>trust_ncg</find>
       <find>eta</find>
       <find>opti</find>
@@ -136,13 +131,22 @@
       <find>vp_hext</find>
       <find>esp_update</find>
       <find>vp_nad</find>
-      <find>1basis</find>
       <find>vp_</find>
+      <find>n_denot</find>
+      <find>n_deno</find>
+      <find>printf</find>
+      <find>printflag=T</find>
+      <find>U_xc</find>
+      <find>1basis</find>
+      <find>hext</find>
     </findStrings>
     <replaceStrings>
       <replace>response_crude(</replace>
       <replace>response</replace>
       <replace>esp_on_grid</replace>
+      <replace>DFT</replace>
+      <replace>dft</replace>
+      <replace>xc</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -152,19 +156,18 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/libcubeprop.py" />
-        <option value="$PROJECT_DIR$/tests/formic/formic.py" />
         <option value="$APPLICATION_CONFIG_DIR$/scratches/scratch.py" />
         <option value="$PROJECT_DIR$/pdft.py" />
         <option value="$PROJECT_DIR$/tests/H2p/H2P.py" />
         <option value="$PROJECT_DIR$/tests/Be/Be.py" />
+        <option value="$PROJECT_DIR$/tests/formic/formic.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="203" />
-    <option name="y" value="77" />
-    <option name="width" value="1717" />
-    <option name="height" value="965" />
+    <option name="y" value="25" />
+    <option name="width" value="1920" />
+    <option name="height" value="1055" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -215,11 +218,14 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.H2P">
+  <component name="RunManager" selected="Python.Be">
     <configuration name="Be" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="pdft" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/Be" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -239,6 +245,9 @@
       <module name="pdft" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/H2p" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -300,8 +309,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.H2P" />
         <item itemvalue="Python.Be" />
+        <item itemvalue="Python.H2P" />
         <item itemvalue="Python.formic" />
       </list>
     </recent_temporary>
@@ -321,12 +330,12 @@
       <workItem from="1581819330615" duration="41810000" />
       <workItem from="1582137539273" duration="9635000" />
       <workItem from="1582223568912" duration="31175000" />
-      <workItem from="1582551272501" duration="19369000" />
+      <workItem from="1582551272501" duration="35426000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="128324000" />
+    <option name="totallyTimeSpent" value="144381000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="-2" width="1920" height="1082" extended-state="6" />
@@ -347,11 +356,11 @@
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Terminal" order="11" />
-      <window_info anchor="bottom" x="1920" y="55" width="1920" height="1025" id="Python Console" maximized="true" order="12" type="WINDOWED" visible="true" weight="0.32948583" />
+      <window_info active="true" anchor="bottom" x="1920" y="55" width="1920" height="1025" id="Python Console" maximized="true" order="12" type="WINDOWED" visible="true" weight="0.32948583" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info active="true" anchor="right" x="0" y="546" width="1920" height="746" id="SciView" order="3" type="WINDOWED" visible="true" weight="0.32977587" />
+      <window_info anchor="right" x="0" y="239" width="1920" height="746" id="SciView" order="3" type="WINDOWED" visible="true" weight="0.32977587" />
       <window_info anchor="right" x="0" y="0" width="430" height="882" id="Documentation" order="4" side_tool="true" weight="0.32977587" />
       <window_info anchor="right" id="Database" order="5" />
     </layout>
@@ -410,49 +419,23 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/libcubeprop.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9960">
-          <caret line="499" selection-start-line="499" selection-end-line="500" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Large_vp.cube">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/Da.cube">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/formic/formic.py">
+    <entry file="file://$PROJECT_DIR$/libcubeprop.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-160">
-          <caret line="67" selection-start-line="67" selection-end-line="70" selection-end-column="25" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pdft.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="416">
-          <caret line="2258" column="29" selection-start-line="2258" selection-start-column="29" selection-end-line="2258" selection-end-column="29" />
-          <folding>
-            <element signature="e#61833#63614#0" />
-            <element signature="e#63719#67643#0" />
-            <element signature="e#76945#79037#0" />
-            <element signature="e#79077#80317#0" />
-            <element signature="e#80366#82157#0" />
-            <element signature="e#82286#84879#0" />
-            <element signature="e#92055#102578#0" />
-          </folding>
+        <state relative-caret-position="861">
+          <caret line="499" selection-start-line="499" selection-end-line="500" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/H2p/H2P.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="500">
-          <caret line="70" column="63" selection-start-line="70" selection-start-column="63" selection-end-line="70" selection-end-column="63" />
+        <state relative-caret-position="580">
+          <caret line="65" column="19" selection-start-line="65" selection-start-column="19" selection-end-line="65" selection-end-column="19" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
@@ -461,10 +444,37 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/Be/Be.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="68" column="63" selection-start-line="68" selection-start-column="63" selection-end-line="68" selection-end-column="63" />
+        <state relative-caret-position="540">
+          <caret line="66" selection-start-line="66" selection-end-line="72" selection-end-column="8" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pdft.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1228">
+          <caret line="1245" column="39" lean-forward="true" selection-start-line="1245" selection-start-column="39" selection-end-line="1245" selection-end-column="39" />
+          <folding>
+            <element signature="e#34985#38752#0" />
+            <element signature="e#38865#42496#0" />
+            <element signature="e#44747#52012#0" />
+            <element signature="e#52126#59416#0" />
+            <element signature="e#59456#61873#0" />
+            <element signature="e#61912#63473#0" />
+            <element signature="e#63521#65302#0" />
+            <element signature="e#65407#69331#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/formic/formic.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="140">
+          <caret line="7" column="18" selection-start-line="7" selection-start-column="18" selection-end-line="7" selection-end-column="18" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>

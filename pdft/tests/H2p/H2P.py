@@ -6,17 +6,15 @@ import libcubeprop
 
 psi4.set_output_file("H2P.psi4")
 functional = 'b3lyp'
-basis = 'aug-cc-pvdz'
-svdc = -3
+basis = 'cc-pvdz'
+svdc = -5
 reguc = -4
-title = "H2p WuYang1b 4ghosts svdc%i reguc %i" %(svdc, reguc) + basis + functional
-
+title = "H2p WuYang1b 4ghosts svdc%i reguc%i" %(svdc, reguc) + basis + functional
+print(title)
 Monomer_1 =  psi4.geometry("""
 nocom
 noreorient
 @H  -1 0 0
-@H  0 0.5 0
-@H  0 -0.5 0
 H  1 0 0
 units bohr
 symmetry c1
@@ -26,8 +24,6 @@ Monomer_2 =  psi4.geometry("""
 nocom
 noreorient
 H  -1 0 0
-@H  0 0.5 0
-@H  0 -0.5 0
 @H  1 0 0
 units bohr
 symmetry c1
@@ -37,8 +33,6 @@ nocom
 noreorient
 1 2
 H  -1 0 0
-@H  0 0.5 0
-@H  0 -0.5 0
 H  1 0 0
 units bohr
 symmetry c1""")
@@ -60,14 +54,14 @@ mol = pdft.U_Molecule(Full_Molec, basis, functional)
 pdfter = pdft.U_Embedding([f1, f2], mol)
 
 
-pdfter.find_vp_response(21, svd_rcond=10**svdc, regul_const=10**reguc, beta=0.1, a_rho_var=1e-7)
-# pdfter.find_vp_response_1basis(21, svd_rcond=10**svdc, regul_const=10**reguc, beta=0.1, a_rho_var=1e-7)
+# pdfter.find_vp_response(49, svd_rcond=10**svdc, regul_const=10**reguc, beta=0.1, a_rho_var=1e-7)
+pdfter.find_vp_response_1basis(21, svd_rcond=10**svdc, regul_const=10**reguc, beta=1, a_rho_var=1e-7)
 # pdfter.find_vp_scipy(maxiter=7, regul_const=1e-4)
 # pdfter.find_vp_scipy_1basis(maxiter=210, opt_method="trust-ncg")
 
 f,ax = plt.subplots(1,1)
-ax.set_ylim(-2,1)
-vp_grid = mol.to_grid(pdfter.vp[0])
+ax.set_ylim(-1.5,0.5)
+vp_grid = mol.to_grid_1basis(pdfter.vp[0])
 pdft.plot1d_x(pdfter.vp_Hext_nad, mol.Vpot, title=title, ax=ax)
 pdft.plot1d_x(vp_grid, mol.Vpot, title=title, ax=ax)
 pdft.plot1d_x(pdfter.vp_Hext_nad + vp_grid, mol.Vpot, title=title, ax=ax)
