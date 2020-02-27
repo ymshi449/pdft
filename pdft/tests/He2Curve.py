@@ -6,6 +6,7 @@ import pdft
 import matplotlib.pyplot as plt
 import libcubeprop
 import numpy as np
+import pickle
 
 # Psi4 Options:
 psi4.set_options({
@@ -16,7 +17,14 @@ psi4.set_options({
 psi4.set_output_file("HeALL96")
 bindingenergy = []
 bindinglength = []
-for bondlength in range(5, 10, 100):
+vp = []
+mol_energy = []
+f1_energy = []
+f2_energy = []
+ep = []
+nuclear_nad = []
+vp_svwn = []
+for bondlength in np.linspace(4, 20, 49):
     print("============%f==============" % bondlength)
     Full_Molec =  psi4.geometry("""
     nocom
@@ -48,23 +56,44 @@ for bondlength in range(5, 10, 100):
     Full_Molec.set_name("He2")
 
     #Make fragment calculations:
-    mol = pdft.U_Molecule(Full_Molec, "def2-qzvpp-jfit", "pbe")
-    f1  = pdft.U_Molecule(Monomer_2,  "def2-qzvpp-jfit", "pbe", jk=mol.jk)
-    f2  = pdft.U_Molecule(Monomer_1,  "def2-qzvpp-jfit", "pbe", jk=mol.jk)
+    mol = pdft.U_Molecule(Full_Molec, "aug-cc-pvdz", "svwn")
+    f1  = pdft.U_Molecule(Monomer_2,  "aug-cc-pvdz", "svwn", jk=mol.jk)
+    f2  = pdft.U_Molecule(Monomer_1,  "aug-cc-pvdz", "svwn", jk=mol.jk)
 
     #Start a pdft system
     pdfter = pdft.U_Embedding([f1, f2], mol)
 
     # Run with vp = vp_all96
-    energy, vp_all96, vp_fock_all96 = pdfter.find_vp_all96(100, 1000, rtol=1e-2)
-
+    energy, vp_all96, vp_fock_all96 = pdfter.find_vp_all96(100, 1000, rtol=1e-2, seperation_cutoff=bondlength/7.0)
     # From Hartree to Ry
     energy = energy * 2.0
+
+    # Append info
+    vp.append(vp_all96)
     bindingenergy.append(energy)
     bindinglength.append(bondlength)
+    mol_energy.append(mol.frag_energy*2)
+    f1_energy.append(f1.frag_energy*2)
+    f2_energy.append(f2.frag_energy*2)
+    ep.append(pdfter.ep_conv[-1]*2)
+    nuclear_nad.append(mol.Enuc - f1.Enuc - f2.Enuc)
+    vp_grid = mol.to_grid(pdfter.vp[0])
+    vp_svwn.append(vp)
 
 x_HeHeccpvdz = (np.array(bindinglength).astype(float))
 y_HeHeccpvdz = np.array(bindingenergy)
+
+data = {"x": x_HeHeccpvdz,
+        "y": y_HeHeccpvdz,
+        "vp": vp,
+        "mol_energy": mol_energy,
+        "f1_energy": f1_energy,
+        "f2_energy": f2_energy,
+        "ep": ep,
+        "nuclear_nad": nuclear_nad,
+        "vp_svwn": vp_svwn
+        }
+pickle.dump(data, open( "save.p", "wb" ))
 
 C6 = np.polynomial.polynomial.polyfit(x_HeHeccpvdz**-1, -y_HeHeccpvdz,[6], w=x_HeHeccpvdz**6)[-1]
 print("C6", C6)
@@ -75,8 +104,9 @@ ax1.plot(np.log(np.linspace(x_HeHeccpvdz[0], x_HeHeccpvdz[-1],num=100)),
 fig1.savefig("C6 fitting")
 
 fig2, ax2 = plt.subplots(1, 1, figsize=(16, 12), dpi=160)
-ax2.scatter(x_HeHeccpvdz, y_HeHeccpvdz)
-fig2.savefig("E ALL96")
+ax2.scatter(x_HeHeccpvdz, f1_energy + f2_energy + ep + y_HeHeccpvdz + nuclear_nad)
+fig2.savefig("Energy")
+
 
 #%% Running SCF without any vp.
 # pdfter.fragments_scf(max_iter=1000)
@@ -115,7 +145,7 @@ fig2.savefig("E ALL96")
 #     pdfter.four_overlap, _, _, _ = pdft.fouroverlap(pdfter.molecule.wfn, pdfter.molecule.geometry,
 #                                                     pdfter.molecule.basis, pdfter.molecule.mints)
 
-vp_basis_all96 = mol.to_basis(vp_all96)
+# vp_basis_all96 = mol.to_basis(vp_all96)
 
 # vp_fock_all96_1 = np.einsum("abcd, ab -> cd", pdfter.four_overlap, vp_basis_all96)
 # print("vp_all96 consists with vp_fock_all96?", np.allclose(vp_fock_all96_1, vp_fock_all96, atol=np.linalg.norm(vp_fock_all96)*0.1))
@@ -125,7 +155,6 @@ vp_basis_all96 = mol.to_basis(vp_all96)
 #     print("size of basis", mol.nbf)
 #     print("The difference is", np.linalg.norm(vp_all96_1 - vp_all96)/np.linalg.norm(vp_all96))
 #     pdft.plot1d_x(vp_all96_1, mol.Vpot, title="vp presented by the basis", fignum=5)
-
 
 #%% Plot vp_all96 on grid.
 # L = [5.0,  5.0, 4.0]

@@ -1,26 +1,26 @@
    => Loading Basis Set <=
 
-    Name: DEF2-QZVPP-JFIT
+    Name: CC-PVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-4 entry HE         line    37 file /home/yuming/anaconda3/envs/work/share/psi4/basis/def2-qzvpp-jfit.gbs 
+    atoms 1-2 entry HE         line    32 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
 
   Using in-core PK algorithm.
    Calculation information:
-      Number of atoms:                   4
-      Number of AO shells:              20
-      Number of primitives:             32
-      Number of atomic orbitals:        48
-      Number of basis functions:        44
+      Number of atoms:                   2
+      Number of AO shells:               6
+      Number of primitives:             10
+      Number of atomic orbitals:        10
+      Number of basis functions:        10
 
       Integral cutoff                 1.00e-12
       Number of threads:                 3
 
   Performing in-core PK
-  Using 981090 doubles for integral storage.
-  We computed 22685 shell quartets total.
-  Whereas there are 22155 unique shell quartets.
-     2.39 percent of shell quartets recomputed by reordering.
+  Using 3080 doubles for integral storage.
+  We computed 423 shell quartets total.
+  Whereas there are 231 unique shell quartets.
+    83.12 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -34,22 +34,29 @@
 
    => Loading Basis Set <=
 
-    Name: DEF2-QZVPP-JFIT
+    Name: CC-PVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-4 entry HE         line    37 file /home/yuming/anaconda3/envs/work/share/psi4/basis/def2-qzvpp-jfit.gbs 
+    atoms 1-2 entry HE         line    32 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
 
    => Loading Basis Set <=
 
-    Name: DEF2-QZVPP-JFIT
+    Name: CC-PVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-4 entry HE         line    37 file /home/yuming/anaconda3/envs/work/share/psi4/basis/def2-qzvpp-jfit.gbs 
+    atoms 1-2 entry HE         line    32 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
 
    => Loading Basis Set <=
 
-    Name: (DEF2-QZVPP-JFIT AUX)
+    Name: (CC-PVDZ AUX)
     Role: JKFIT
     Keyword: DF_BASIS_SCF
-    atoms 1-4 entry HE         line    39 file /home/yuming/anaconda3/envs/work/share/psi4/basis/def2-qzvpp-jkfit.gbs 
+    atoms 1-2 entry HE         line    39 file /home/yuming/anaconda3/envs/work/share/psi4/basis/def2-qzvpp-jkfit.gbs 
+
+   => Loading Basis Set <=
+
+    Name: CC-PVDZ
+    Role: ORBITAL
+    Keyword: BASIS
+    atoms 1-2 entry HE         line    32 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
 

@@ -533,6 +533,40 @@ class U_Molecule():
         plot = qc.models.Molecule.from_data(self.geometry.save_string_xyz())
         return plot
 
+    def grid_to_fock(self, f):
+        """
+        Fock matrix integral on the grid.
+        :param f: function values on grid. np array
+        :return: V: f_fock matrix
+        """
+
+        V = np.zeros_like(self.Da.np)
+        points_func = self.Vpot.properties()[0]
+
+        i = 0
+        # Loop over the blocks
+        for b in range(self.Vpot.nblocks()):
+            # Obtain block information
+            block = self.Vpot.get_block(b)
+            points_func.compute_points(block)
+            npoints = block.npoints()
+            lpos = np.array(block.functions_local_to_global())
+
+            # Obtain the grid weight
+            w = np.array(block.w())
+
+            # Compute phi!
+            phi = np.array(points_func.basis_values()["PHI"])[:npoints, :lpos.shape[0]]
+
+            Vtmp = np.einsum('pb,p,p,pa->ab', phi, f[i:i + npoints], w, phi, optimize=True)
+
+            # Add the temporary back to the larger array by indexing, ensure it is symmetric
+            V[(lpos[:, None], lpos)] += 0.5 * (Vtmp + Vtmp.T)
+
+            i += npoints
+        assert i == f.shape[0], "Did not run through all the points. %i %i" % (i, f.shape[0])
+        return V
+
     def to_basis(self, value, w=None):
         """
         For any function on integration grid points, get the coefficients on the basis set.
@@ -828,6 +862,9 @@ class U_Embedding:
 
         self.four_overlap = None
 
+        self.drho_conv = []
+        self.ep_conv = []
+
     def get_density_sum(self):
         sum_a = self.fragments[0].Da.np.copy() * self.fragments[0].omega
         sum_b = self.fragments[0].Db.np.copy() * self.fragments[0].omega
@@ -846,8 +883,8 @@ class U_Embedding:
             self.molecule.scf(maxiter=max_iter, print_energies=printflag)
         
         if vp is None and vp_fock is None:
-            # No vp is given.
-            # Run the scf
+            vp_fock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
+            self.vp_fock = [vp_fock, vp_fock]
             for i in range(self.nfragments):
                 self.fragments[i].scf(maxiter=max_iter, print_energies=printflag)
         
@@ -916,11 +953,10 @@ class U_Embedding:
         self.get_density_sum()
         return
 
-    def find_vp(self, beta, maxiter=21, guess=None, atol=2e-4):
+    def find_vp(self, beta, maxiter=21, guess=None, atol=2e-4, printflag=False):
         """
         Given a target function, finds vp_matrix to be added to each fragment
         ks matrix to match full molecule energy/density
-
         Parameters
         ----------
         beta: positive float
@@ -930,61 +966,75 @@ class U_Embedding:
         -------
         vp: psi4.core.Matrix
             Vp to be added to fragment ks matrix
-
         """
         # vp initialize
         # self.fragments[1].flip_spin()
         self.molecule.scf(maxiter=1000, print_energies=True)
-        S, _, _, _ = fouroverlap(self.molecule.wfn, self.molecule.geometry,
+
+        self.four_overlap, _, _, _ = fouroverlap(self.molecule.wfn, self.molecule.geometry,
                                            self.molecule.basis, self.molecule.mints)
+        Ep_convergence = []
         if guess is None:
-            vp_a = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
-            vp_b = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
-            vp_total = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
+            if self.four_overlap is None:
+                self.four_overlap, _, _, _ = fouroverlap(self.molecule.wfn, self.molecule.geometry,
+                                                         self.molecule.basis, self.molecule.mints)
+            self.molecule.scf(maxiter=1000, print_energies=printflag)
 
-            vp_afock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
-            vp_bfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
+            vp_total = np.zeros_like(self.molecule.H.np)
+            self.vp = [vp_total, vp_total]
+
             vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
-            # Initialize
-            Ef = 0.0
-            # Run the first iteration
-            for i in range(self.nfragments):
-                self.fragments[i].scf(maxiter=1000, print_energies=True)
-                Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
-        elif guess is True:
-            vp_a = self.vp[0]
-            vp_b = self.vp[1]
-            vp_total = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.Db.np))
-            vp_total.np[:] += vp_a.np + vp_b.np
-
-            vp_afock = self.vp_fock[0]
-            vp_bfock = self.vp_fock[1]
-            vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.Db.np))
-            vp_totalfock.np[:] += vp_afock.np + vp_bfock.np
-            # Initialize
-            Ef = 0.0
-            # Run the first iteration
-            for i in range(self.nfragments):
-                self.fragments[i].scf(maxiter=1000, print_energies=True, vp_matrix=self.vp_fock)
-                Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
-        else:
-            vp_a = guess[0]
-            vp_b = guess[1]
-            vp_total = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.Db.np))
-            vp_total.np[:] += vp_a.np + vp_b.np
-            self.vp = guess
-
-            vp_afock = np.einsum('ijmn,mn->ij', S, vp_a)
-            vp_bfock = np.einsum('ijmn,mn->ij', S, vp_b)
-            vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.Db.np))
-            vp_totalfock.np[:] += vp_afock.np + vp_bfock.np
             self.vp_fock = [vp_totalfock, vp_totalfock]
             # Initialize
             Ef = 0.0
             # Run the first iteration
             for i in range(self.nfragments):
-                self.fragments[i].scf(maxiter=1000, print_energies=True, vp_matrix=self.vp_fock)
+                self.fragments[i].scf(maxiter=1000, print_energies=printflag)
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+            Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
+
+            # if guess not given, use the first density difference to be initial is probably a good idea.
+            Ef = 0.0
+            self.get_density_sum()
+            vp_total += beta * (self.fragments_Da - self.molecule.Da + self.fragments_Db - self.molecule.Db)
+            self.vp = [vp_total, vp_total]
+            vp_totalfock.np[:] += np.einsum('ijmn,mn->ij', self.four_overlap, vp_total)
+            self.vp_fock = [vp_totalfock, vp_totalfock]
+            # And run the iteration
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=1000, print_energies=printflag, vp_matrix=self.vp_fock)
+                Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+            Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
+        elif guess is True:
+
+            vp_total = self.vp[0]
+
+            vp_afock = self.vp_fock[0]
+            vp_bfock = self.vp_fock[1]
+            vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
+            vp_totalfock.np[:] += vp_afock.np + vp_bfock.np
+            # Skip running the first iteration! When guess is True, everything is expected to be stored in this obj.
+            Ef = np.Inf
+
+        else:
+            self.four_overlap, _, _, _ = fouroverlap(self.molecule.wfn, self.molecule.geometry,
+                                                     self.molecule.basis, self.molecule.mints)
+            self.molecule.scf(maxiter=1000, print_energies=printflag)
+
+            vp_total = guess[0]
+            self.vp = guess
+
+            vp_totalfock = psi4.core.Matrix.from_array(
+                np.zeros_like(np.einsum('ijmn,mn->ij', self.four_overlap, guess[0])))
+            self.vp_fock = [vp_totalfock, vp_totalfock]
+            # Initialize
+            Ef = 0.0
+            # Run the first iteration
+            for i in range(self.nfragments):
+                self.fragments[i].scf(maxiter=1000, print_energies=printflag, vp_matrix=self.vp_fock)
+                Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+
+        _, _, _, w = self.molecule.Vpot.get_np_xyzw()
 
         _,_,_,w = self.molecule.Vpot.get_np_xyzw()
 
@@ -1012,23 +1062,19 @@ class U_Embedding:
             old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule)*w)
             rho_convergence.append(old_rho_conv)
 
-            print(F'Iter: {scf_step-1} beta: {beta} dD: {np.linalg.norm(self.fragments_Da + self.fragments_Db - (self.molecule.Da.np + self.molecule.Db.np), ord=1)} d_rho: {old_rho_conv} Ep: {Ep_convergence[-1]}')
+            print(F'Iter: {scf_step-1} beta: {beta} dD: {np.linalg.norm(self.fragments_Da + self.fragments_Db - (self.molecule.Da.np + self.molecule.Db.np), ord=1)} Ep: {Ep_convergence[-1]} d_rho: {old_rho_conv}')
 
             delta_vp_a = beta * (self.fragments_Da - self.molecule.Da.np)
             delta_vp_b = beta * (self.fragments_Db - self.molecule.Db.np)
             delta_vp_a = 0.5 * (delta_vp_a + delta_vp_a.T)
             delta_vp_b = 0.5 * (delta_vp_b + delta_vp_b.T)
 
-            vp_a += delta_vp_a
-            vp_b += delta_vp_b
             vp_total += delta_vp_a + delta_vp_b
             self.vp = [vp_total, vp_total]
 
-            delta_vp_a = np.einsum('ijmn,mn->ij', S, delta_vp_a)
-            delta_vp_b = np.einsum('ijmn,mn->ij', S, delta_vp_b)
+            delta_vp_a = np.einsum('ijmn,mn->ij', self.four_overlap, delta_vp_a)
+            delta_vp_b = np.einsum('ijmn,mn->ij', self.four_overlap, delta_vp_b)
 
-            vp_afock.np[:] += delta_vp_a
-            vp_bfock.np[:] += delta_vp_b
             vp_totalfock.np[:] += delta_vp_a + delta_vp_b
             self.vp_fock = [vp_totalfock, vp_totalfock] # Use total_vp instead of spin vp for calculation.
 
@@ -1037,19 +1083,25 @@ class U_Embedding:
                 self.fragments[i].scf(vp_matrix=self.vp_fock, maxiter=1000)
                 Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
             Ep_convergence.append(self.molecule.energy - self.molecule.Enuc - Ef)
-            if False: #np.isclose(Ep_convergence[-2], Ep_convergence[-1], atol=atol):
-                print("Break because Ep does not update")
-                break
-            elif beta < 1e-10:
+            if beta < 1e-7:
                 print("Break because even small step length can not improve.")
                 break
-            elif scf_step == maxiter:
-                # raise Exception("Maximum number of SCF cycles exceeded for vp.")
-                print("Maximum number of SCF cycles exceeded for vp.")
+            elif len(rho_convergence) >= 5:
+                if np.std(rho_convergence[-4:]) < 1e-5:
+                    print("Break because rho does update for 5 iter")
+                    break
+            elif old_rho_conv < 1e-4:
+                print("Break because rho difference (cost) is small.")
+                break
+            # elif scf_step == maxiter:
+            # raise Exception("Maximum number of SCF cycles exceeded for vp.")
+            # print("Maximum number of SCF cycles exceeded for vp.")
+        self.drho_conv = rho_convergence
+        self.ep_conv = Ep_convergence
 
-        return rho_convergence, Ep_convergence
+        return
 
-    def find_vp_all96(self, vp_maxiter, scf_maxiter, guess=None, rtol=1e-3):
+    def find_vp_all96(self, vp_maxiter, scf_maxiter, guess=None, rtol=1e-3, seperation_cutoff=None):
         """
         vp = vp_non-local = vp_all96. Total scf iteration max = vp_maxiter*scf_maxiter*num_fragments + entire system scf
 
@@ -1057,31 +1109,61 @@ class U_Embedding:
         :param vp_maxiter: maximum num of scf update iteration needed.
         :param guess: Initial guess of vp.
         :param rtol: Relative ALL96 energy difference as the convergence criteria.
+        :para seperation_cutoff: a very crude cutoff to avoid singularity: if a piece |r1-r2| is smaller than this value, 
+              it will be neglected in the integral. The reason is that Gaussian basis sets are bad around the nucleus. 
+              Thus the cutoff of one fragment will not kill the density around the other fragments' nucleus. 
+              I designed this hard cutoff to overcome this. A loose upper-bound for seperation_cutoff is the seperation between
+              the two nucleus.
         :return:
         """
-        # Run the initial
-        self.fragments_scf(scf_maxiter)
+        # Find some a vp with density difference method.
+        self.find_vp(1, maxiter=49)
+        # self.fragments_scf(100)
 
         all96_e_old = 0.0
         vp_fock_all96_old = 0.0
         for vp_step in range(1, vp_maxiter+1):
             self.get_density_sum()
             # Initial vp_all96
-            all96_e, vp_all96, vp_fock_all96 = self.vp_all96()
-            print("Iteration % i, ALL96 E %.14f, ALL96 E difference %.14f" % (vp_step, all96_e, abs((all96_e_old - all96_e) / all96_e)))
-            if abs((all96_e_old - all96_e) / all96_e) < rtol and np.linalg.norm(vp_fock_all96_old - vp_fock_all96) < rtol:
+            all96_e, vp_all96, vp_fock_all96 = self.vp_all96(seperation_cutoff=seperation_cutoff)
+
+            # Check if vp_all96 consists with vp_fock_all96
+            vp_fock_temp = self.molecule.grid_to_fock(vp_all96)
+
+            assert np.allclose(vp_fock_temp, vp_fock_all96), \
+                'vp_all96 does not consists with vp_fock_all96.'
+
+            vp_fock_total = self.vp_fock[0]
+            vp_fock_total.np[:] += vp_fock_all96
+            self.vp_fock = [vp_fock_total,vp_fock_total]
+
+            self.fragments_scf(scf_maxiter, vp_fock=self.vp_fock)
+
+            f, ax = plt.subplots(1, 1)
+            plot1d_x(vp_all96, self.molecule.Vpot, dimmer_length=4, ax=ax, title="He2 svwn sp2 " + str(int(seperation_cutoff*2*100)) + '-' + str(vp_step))
+            f.savefig("He2 svwn sp2 " + str(int(seperation_cutoff*2*100)) + '-' + str(vp_step))
+            plt.close(f)
+
+            if abs((all96_e_old - all96_e) / all96_e) < rtol \
+                    and \
+                    np.linalg.norm(vp_fock_all96_old - vp_fock_all96) < rtol:
                 print("ALL96 Energy Converged:", all96_e)
+                print("Iteration % i, ALL96 E %.14f, ALL96 E difference %.14f" % (
+                vp_step, all96_e, abs((all96_e_old - all96_e) / all96_e)))
                 break
+            print("Iteration % i, ALL96 E %.14f, ALL96 E difference %.14f" % (vp_step, all96_e, abs((all96_e_old - all96_e) / all96_e)))
             all96_e_old = all96_e
             vp_fock_all96_old = vp_fock_all96
-            vp_fock_psi4 = psi4.core.Matrix.from_array(vp_fock_all96)
-            self.fragments_scf(scf_maxiter, vp_fock=[vp_fock_psi4, vp_fock_psi4])
-
         return all96_e, vp_all96, vp_fock_all96
 
-    def vp_all96(self, beta=6):
+    def vp_all96(self, beta=6, seperation_cutoff=None):
         """
         Return vp on grid and vp_fock on the basis.
+        :para seperation_cutoff: a very crude cutoff to avoid singularity: if a piece |r1-r2| is smaller than this value, 
+        it will be neglected in the integral. The reason is that Gaussian basis sets are bad around the nucleus. 
+        Thus the cutoff of one fragment will not kill the density around the other fragments' nucleus. 
+        I designed this hard cutoff to overcome this. A loose upper-bound for seperation_cutoff is the seperation between
+        the two nucleus.
         """
 
         C = -6.0 / 4.0 / (4 * np.pi) ** 1.5
@@ -1090,6 +1172,8 @@ class U_Embedding:
         vp_fock = np.zeros_like(self.fragments[0].Da.np)
 
         points_func = self.molecule.Vpot.properties()[0]
+
+        points_func.set_deriv(2)
 
         w1_old = 0
 
@@ -1189,8 +1273,10 @@ class U_Embedding:
                 R2 += (l_y[:, None] - r_y) ** 2
                 R2 += (l_z[:, None] - r_z) ** 2
                 R2 += 1e-34
-                R6inv = R2 ** -3
-                np.fill_diagonal(R6inv, 0.0)
+                if seperation_cutoff is not None:
+                    R6inv = R2 ** -3 * (R2 >= seperation_cutoff**2)
+                else:
+                    R6inv = R2 ** -3                    
 
                 # vp calculation.
                 # Add vp for fragment 1
@@ -1199,10 +1285,6 @@ class U_Embedding:
                                 * R6inv * r_local_w * r_w, axis=1
                                 ) * np.sqrt(rho1) / (total_rho1 + 1e-34) * 0.5 * l_local_w
 
-                vp[w1_old:w1_old + l_npoints] += np.sum(rho2
-                                                        / (np.sqrt(rho1[:, None]) + np.sqrt(rho2) + 1e-34) ** 2
-                                                        * R6inv * r_local_w * r_w, axis=1
-                                                        ) * np.sqrt(rho1) / (total_rho1 + 1e-34) * 0.5 * l_local_w
                 # Add vp for fragment 2
                 dvp_r = np.sum(rho1[:, None]
                                / (np.sqrt(rho1[:, None]) + np.sqrt(rho2) + 1e-34) ** 2
@@ -1219,7 +1301,8 @@ class U_Embedding:
                                                                 r_phi, r_phi, optimize=True)
                 w2_old += r_npoints
 
-            #       Add vp_fock for fragment 1
+            vp[w1_old:w1_old + l_npoints] += dvp_l
+            # Add vp_fock for fragment 1
             vp_fock[(l_lpos[:, None], l_lpos)] += np.einsum("p,p,pa,pb->ab", l_w, dvp_l, l_phi,
                                                             l_phi, optimize=True)
             w1_old += l_npoints
@@ -1803,7 +1886,7 @@ class Embedding:
 
         return vp
 
-def plot1d_x(data, Vpot, dimmer_length=None, title=None, fignum= None):
+def plot1d_x(data, Vpot, dimmer_length=None, title=None, ax= None):
     """
     Plot on x direction
     :param data: Any f(r) on grid
@@ -1813,19 +1896,20 @@ def plot1d_x(data, Vpot, dimmer_length=None, title=None, fignum= None):
     mask = np.isclose(abs(y), 0, atol=1E-11)
     mask2 = np.isclose(abs(z), 0, atol=1E-11)
     order = np.argsort(x[mask & mask2])
-    if fignum is None:
-        # f1 = plt.figure(num=None, figsize=(16, 12), dpi=160)        
-        f1 = plt.figure()
+    if ax is None:
+        f1 = plt.figure(figsize=(16, 12), dpi=160)
+        # f1 = plt.figure()
         plt.plot(x[mask & mask2][order], data[mask & mask2][order])
     else:
-        # f1 = plt.figure(num=fignum, figsize=(16, 12), dpi=160)        
-        f1 = plt.figure()
-        plt.plot(x[mask & mask2][order], data[mask & mask2][order])
+        ax.plot(x[mask & mask2][order], data[mask & mask2][order])
     if dimmer_length is not None:
         plt.axvline(x=dimmer_length/2.0)
         plt.axvline(x=-dimmer_length/2.0)
-    plt.xlabel("x-axis")
     if title is not None:
-        plt.ylabel(title)
-        plt.title(title + " plot on the X axis")
-    plt.show()
+        if ax is None:
+            plt.title(title)
+        else:
+            # f1 = plt.figure(num=fignum, figsize=(16, 12), dpi=160)
+            ax.set_title(title)
+    if ax is None:
+        plt.show()

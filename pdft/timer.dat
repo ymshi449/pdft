@@ -2078,3 +2078,31 @@ HF: DIIS                            :      0.000u      0.000s      0.005w      9
 HF: Form C                          :      0.000u      0.000s      0.000w      9 calls
 
 **************************************************************************************
+
+Host: PartitionStation
+
+Timers On : Wed Feb 26 12:25:03 2020
+Timers Off: Wed Feb 26 16:28:26 2020
+
+Wall Time:    14603.43 seconds
+
+                                                       Time (seconds)
+Module                                       User      System        Wall        Calls
+Total PK formation time             :      0.200u      0.000s      0.122w      2 calls
+V: Grid                             :      0.333u      0.050s      0.071w      6 calls
+JK: D                               :      0.000u      0.000s      0.002w    375 calls
+JK: USO2AO                          :      0.000u      0.000s      0.002w    375 calls
+JK: JK                              :      0.017u      0.017s      0.015w    375 calls
+PK computes JK                      :      0.017u      0.017s      0.014w    375 calls
+JK: AO2USO                          :      0.000u      0.000s      0.001w    375 calls
+
+--------------------------------------------------------------------------------------
+Total PK formation time             :      0.200u      0.000s      0.122w      2 calls
+V: Grid                             :      0.333u      0.050s      0.071w      6 calls
+JK: D                               :      0.000u      0.000s      0.002w    375 calls
+JK: USO2AO                          :      0.000u      0.000s      0.002w    375 calls
+JK: JK                              :      0.017u      0.017s      0.015w    375 calls
+| PK computes JK                    :      0.017u      0.017s      0.014w    375 calls
+JK: AO2USO                          :      0.000u      0.000s      0.001w    375 calls
+
+**************************************************************************************
