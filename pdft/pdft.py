@@ -2392,6 +2392,220 @@ class U_Embedding:
 
         return rho_convergence, Ep_convergence
 
+    def find_vp_all96(self, vp_maxiter, scf_maxiter, guess=None, rtol=1e-3, seperation_cutoff=None):
+        """
+        vp = vp_non-local = vp_all96. Total scf iteration max = vp_maxiter*scf_maxiter*num_fragments + entire system scf
+        :param vp_maxiter: maximum num of vp update iteration needed.
+        :param vp_maxiter: maximum num of scf update iteration needed.
+        :param guess: Initial guess of vp.
+        :param rtol: Relative ALL96 energy difference as the convergence criteria.
+        :para seperation_cutoff: a very crude cutoff to avoid singularity: if a piece |r1-r2| is smaller than this value,
+              it will be neglected in the integral. The reason is that Gaussian basis sets are bad around the nucleus.
+              Thus the cutoff of one fragment will not kill the density around the other fragments' nucleus.
+              I designed this hard cutoff to overcome this. A loose upper-bound for seperation_cutoff is the seperation between
+              the two nucleus.
+        :return:
+        """
+        # Find some a vp with density difference method.
+        self.find_vp_densitydifference(49, 1)
+        # self.fragments_scf(100)
+
+        all96_e_old = 0.0
+        vp_fock_all96_old = 0.0
+        for vp_step in range(1, vp_maxiter+1):
+            self.get_density_sum()
+            # Initial vp_all96
+            all96_e, vp_all96, vp_fock_all96 = self.vp_all96(seperation_cutoff=seperation_cutoff)
+
+            # Check if vp_all96 consists with vp_fock_all96
+            vp_fock_temp = self.molecule.grid_to_fock(vp_all96)
+
+            assert np.allclose(vp_fock_temp, vp_fock_all96), \
+                'vp_all96 does not consists with vp_fock_all96.'
+
+            vp_fock_total = self.vp_fock[0]
+            vp_fock_total.np[:] += vp_fock_all96
+            self.vp_fock = [vp_fock_total,vp_fock_total]
+
+            self.fragments_scf(scf_maxiter, vp_fock=self.vp_fock)
+
+            f, ax = plt.subplots(1, 1)
+            plot1d_x(vp_all96, self.molecule.Vpot, dimmer_length=4, ax=ax, title="He2 svwn sp2 " + str(int(seperation_cutoff*2*100)) + '-' + str(vp_step))
+            f.savefig("He2 svwn sp2 " + str(int(seperation_cutoff*2*100)) + '-' + str(vp_step))
+            plt.close(f)
+
+            if abs((all96_e_old - all96_e) / all96_e) < rtol \
+                    and \
+                    np.linalg.norm(vp_fock_all96_old - vp_fock_all96) < rtol:
+                print("ALL96 Energy Converged:", all96_e)
+                print("Iteration % i, ALL96 E %.14f, ALL96 E difference %.14f" % (
+                vp_step, all96_e, abs((all96_e_old - all96_e) / all96_e)))
+                break
+            print("Iteration % i, ALL96 E %.14f, ALL96 E difference %.14f" % (vp_step, all96_e, abs((all96_e_old - all96_e) / all96_e)))
+            all96_e_old = all96_e
+            vp_fock_all96_old = vp_fock_all96
+        return all96_e, vp_all96, vp_fock_all96
+
+    def vp_all96(self, beta=6, seperation_cutoff=None):
+        """
+        Return vp on grid and vp_fock on the basis for a specific density.
+        :para seperation_cutoff: a very crude cutoff to avoid singularity: if a piece |r1-r2| is smaller than this value,
+        it will be neglected in the integral. The reason is that Gaussian basis sets are bad around the nucleus.
+        Thus the cutoff of one fragment will not kill the density around the other fragments' nucleus.
+        I designed this hard cutoff to overcome this. A loose upper-bound for seperation_cutoff is the seperation between
+        the two nucleus.
+        """
+
+        C = -6.0 / 4.0 / (4 * np.pi) ** 1.5
+
+        vp = np.zeros_like(self.molecule.Vpot.get_np_xyzw()[-1])
+        vp_fock = np.zeros_like(self.fragments[0].Da.np)
+
+        points_func = self.molecule.Vpot.properties()[0]
+
+        points_func.set_deriv(2)
+
+        w1_old = 0
+
+        all96_e = 0.0
+
+        # First loop over the outer set of blocks
+        for l_block in range(self.molecule.Vpot.nblocks()):
+            #     for l_block in range(70, Vpot.nblocks()):
+            # Obtain general grid information
+            l_grid = self.molecule.Vpot.get_block(l_block)
+            l_w = np.array(l_grid.w())
+            l_x = np.array(l_grid.x())
+            l_y = np.array(l_grid.y())
+            l_z = np.array(l_grid.z())
+            l_npoints = l_w.shape[0]
+
+            points_func.compute_points(l_grid)
+            l_lpos = np.array(l_grid.functions_local_to_global())
+
+            # Compute phi!
+            l_phi = np.array(points_func.basis_values()["PHI"])[:l_npoints, :l_lpos.shape[0]]
+            l_phi_x = np.array(points_func.basis_values()["PHI_X"])[:l_npoints, :l_lpos.shape[0]]
+            l_phi_y = np.array(points_func.basis_values()["PHI_Y"])[:l_npoints, :l_lpos.shape[0]]
+            l_phi_z = np.array(points_func.basis_values()["PHI_Z"])[:l_npoints, :l_lpos.shape[0]]
+            # Build a local slice of D
+            lD1 = self.fragments[0].Da.np[(l_lpos[:, None], l_lpos)]
+
+            # Copmute block-rho and block-gamma
+            rho1 = 2.0 * np.einsum('pm,mn,pn->p', l_phi, lD1, l_phi, optimize=True)
+
+            total_rho1 = 2.0 * np.einsum('pm,mn,pn->p', l_phi, lD1 + self.fragments[1].Da.np[(l_lpos[:, None], l_lpos)], l_phi,
+                                         optimize=True)
+
+            # 2.0 for Px D P + P D Px, 2.0 for non-spin Density
+            rho_x1 = 4.0 * np.einsum('pm,mn,pn->p', l_phi, lD1, l_phi_x, optimize=True)
+            rho_y1 = 4.0 * np.einsum('pm,mn,pn->p', l_phi, lD1, l_phi_y, optimize=True)
+            rho_z1 = 4.0 * np.einsum('pm,mn,pn->p', l_phi, lD1, l_phi_z, optimize=True)
+            gamma1 = rho_x1 ** 2 + rho_y1 ** 2 + rho_z1 ** 2
+
+            # The integral cutoff.
+            l_local_w_homo = gamma1 ** 0.5 <= 2 * beta * ((9 * np.pi) ** (-1.0 / 6.0)) * (rho1 ** (7.0 / 6.0))
+            l_local_w_rho = rho1 > 1e-17
+            l_local_w = l_local_w_homo * l_local_w_rho
+
+            if not np.any(l_local_w):
+                w1_old += l_npoints
+                continue
+
+            w2_old = 0
+            l_integrant = np.zeros_like(rho1)
+            dvp_l = np.zeros(l_npoints)
+            # Loop over the inner set of blocks
+            for r_block in range(self.molecule.Vpot.nblocks()):
+
+                r_grid = self.molecule.Vpot.get_block(r_block)
+                r_w = np.array(r_grid.w())
+                r_x = np.array(r_grid.x())
+                r_y = np.array(r_grid.y())
+                r_z = np.array(r_grid.z())
+                r_npoints = r_w.shape[0]
+
+                points_func.compute_points(r_grid)
+                r_lpos = np.array(r_grid.functions_local_to_global())
+
+                # Compute phi!
+                r_phi = np.array(points_func.basis_values()["PHI"])[:r_npoints, :r_lpos.shape[0]]
+                r_phi_x = np.array(points_func.basis_values()["PHI_X"])[:r_npoints, :r_lpos.shape[0]]
+                r_phi_y = np.array(points_func.basis_values()["PHI_Y"])[:r_npoints, :r_lpos.shape[0]]
+                r_phi_z = np.array(points_func.basis_values()["PHI_Z"])[:r_npoints, :r_lpos.shape[0]]
+
+                # Build a local slice of D
+                lD2 = self.fragments[1].Da.np[(r_lpos[:, None], r_lpos)]
+
+                total_rho2 = 2.0 * np.einsum('pm,mn,pn->p', r_phi, self.fragments[0].Da.np[(r_lpos[:, None], r_lpos)] + lD2, r_phi,
+                                             optimize=True)
+
+                # Copmute block-rho and block-gamma
+                rho2 = 2.0 * np.einsum('pm,mn,pn->p', r_phi, lD2, r_phi, optimize=True)
+                # 2.0 for Px D P + P D Px, 2.0 for non-spin Density
+                rho_x2 = 4.0 * np.einsum('pm,mn,pn->p', r_phi, lD2, r_phi_x, optimize=True)
+                rho_y2 = 4.0 * np.einsum('pm,mn,pn->p', r_phi, lD2, r_phi_y, optimize=True)
+                rho_z2 = 4.0 * np.einsum('pm,mn,pn->p', r_phi, lD2, r_phi_z, optimize=True)
+                gamma2 = rho_x2 ** 2 + rho_y2 ** 2 + rho_z2 ** 2
+
+                # The integrate cutoff.
+                r_local_w_homo = gamma2 ** 0.5 <= 2 * beta * ((9 * np.pi) ** (-1.0 / 6.0)) * (rho2 ** (7.0 / 6.0))
+                r_local_w_rho = rho2 > 1e-17
+                r_local_w = r_local_w_homo * r_local_w_rho
+                #           r_local_w = r_local_w_homo
+
+                if not np.any(r_local_w):
+                    w2_old += r_npoints
+                    continue
+
+                # Build the distnace matrix
+                R2 = (l_x[:, None] - r_x) ** 2
+                R2 += (l_y[:, None] - r_y) ** 2
+                R2 += (l_z[:, None] - r_z) ** 2
+                R2 += 1e-34
+                if seperation_cutoff is not None:
+                    R6inv = R2 ** -3 * (R2 >= seperation_cutoff**2)
+                else:
+                    R6inv = R2 ** -3
+
+                # vp calculation.
+                # Add vp for fragment 1
+                dvp_l += np.sum(rho2
+                                / (np.sqrt(rho1[:, None]) + np.sqrt(rho2) + 1e-34) ** 2
+                                * R6inv * r_local_w * r_w, axis=1
+                                ) * np.sqrt(rho1) / (total_rho1 + 1e-34) * 0.5 * l_local_w
+
+                # Add vp for fragment 2
+                dvp_r = np.sum(rho1[:, None]
+                               / (np.sqrt(rho1[:, None]) + np.sqrt(rho2) + 1e-34) ** 2
+                               * R6inv * l_local_w[:, None] * l_w[:, None], axis=0
+                               ) * np.sqrt(rho2) / (total_rho2 + 1e-34) * 0.5 * r_local_w
+                vp[w2_old:w2_old + r_npoints] += dvp_r
+
+                # E calculation
+                r_integrant = np.sqrt(rho1[:, None] * rho2) / (np.sqrt(rho1[:, None]) + np.sqrt(rho2) + 1e-34) * R6inv
+                l_integrant += np.sum(r_integrant * r_local_w * r_w, axis=1)
+
+                # Add vp_fock for fragment 2
+                vp_fock[(r_lpos[:, None], r_lpos)] += np.einsum("p,p,pa,pb->ab", r_w, dvp_r,
+                                                                r_phi, r_phi, optimize=True)
+                w2_old += r_npoints
+
+            vp[w1_old:w1_old + l_npoints] += dvp_l
+            # Add vp_fock for fragment 1
+            vp_fock[(l_lpos[:, None], l_lpos)] += np.einsum("p,p,pa,pb->ab", l_w, dvp_l, l_phi,
+                                                            l_phi, optimize=True)
+            w1_old += l_npoints
+            # E calculation
+            all96_e += C * np.sum(l_integrant * l_local_w * l_w)
+
+        vp_fock = 0.5 * (vp_fock + vp_fock.T)
+        vp *= C
+        vp_fock *= C
+        if np.any(np.abs(vp) > 1e3):
+            print("Singulartiy vp %f" % np.linalg.norm(vp))
+        return all96_e, vp, vp_fock
+
 class Embedding:
     def __init__(self, fragments, molecule):
         #basics
