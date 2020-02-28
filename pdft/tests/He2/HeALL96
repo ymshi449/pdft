@@ -3,261 +3,7 @@
     Name: AUG-CC-PVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-2 entry BE         line   103 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz.gbs 
-
-
-         ---------------------------------------------------------
-                                   SCF
-               by Justin Turney, Rob Parrish, Andy Simmonett
-                          and Daniel G. A. Smith
-                              UKS Reference
-                        3 Threads,    500 MiB Core
-         ---------------------------------------------------------
-
-  ==> Geometry <==
-
-    Molecular point group: c1
-    Full point group: C_inf_v
-
-    Geometry (in Bohr), charge = 0, multiplicity = 1:
-
-       Center              X                  Y                   Z               Mass       
-    ------------   -----------------  -----------------  -----------------  -----------------
-      Gh(BE)          2.261000000000     0.000000000000     0.000000000000     9.012183065000
-         BE          -2.261000000000     0.000000000000     0.000000000000     9.012183065000
-
-  Running in c1 symmetry.
-
-  Rotational constants: A = ************  B =      0.65333  C =      0.65333 [cm^-1]
-  Rotational constants: A = ************  B =  19586.36342  C =  19586.36342 [MHz]
-  Nuclear repulsion =    0.000000000000000
-
-  Charge       = 0
-  Multiplicity = 1
-  Electrons    = 4
-  Nalpha       = 2
-  Nbeta        = 2
-
-  ==> Algorithm <==
-
-  SCF Algorithm Type is PK.
-  DIIS enabled.
-  MOM disabled.
-  Fractional occupation disabled.
-  Guess Type is AUTO.
-  Energy threshold   = 1.00e-06
-  Density threshold  = 1.00e-06
-  Integral threshold = 0.00e+00
-
-  ==> Primary Basis <==
-
-  Basis Set: AUG-CC-PVDZ
-    Blend: AUG-CC-PVDZ
-    Number of shells: 18
-    Number of basis function: 46
-    Number of Cartesian functions: 50
-    Spherical Harmonics?: true
-    Max angular momentum: 2
-
-  ==> DFT Potential <==
-
-   => Composite Functional: SVWN <= 
-
-    SVWN3 (RPA) LSDA Functional
-
-    Adamson et. al., J. Comput. Chem., 20(9), 921-927, 1999
-
-
-    Deriv               =              1
-    GGA                 =          FALSE
-    Meta                =          FALSE
-
-    Exchange Hybrid     =          FALSE
-    MP2 Hybrid          =          FALSE
-
-   => Exchange Functionals <=
-
-    1.0000         XC_LDA_X
-
-   => Correlation Functionals <=
-
-    1.0000   XC_LDA_C_VWN_RPA
-
-   => Molecular Quadrature <=
-
-    Radial Scheme          =       TREUTLER
-    Pruning Scheme         =           FLAT
-    Nuclear Scheme         =       TREUTLER
-
-    BS radius alpha        =              1
-    Pruning alpha          =              1
-    Radial Points          =             75
-    Spherical Points       =            302
-    Total Points           =          45300
-    Total Blocks           =            420
-    Max Points             =            254
-    Max Functions          =             46
-
-  Using in-core PK algorithm.
-   Calculation information:
-      Number of atoms:                   2
-      Number of AO shells:              18
-      Number of primitives:             56
-      Number of atomic orbitals:        50
-      Number of basis functions:        46
-
-      Integral cutoff                 1.00e-12
-      Number of threads:                 3
-
-  Performing in-core PK
-  Using 1169642 doubles for integral storage.
-  We computed 18804 shell quartets total.
-  Whereas there are 14706 unique shell quartets.
-    27.87 percent of shell quartets recomputed by reordering.
-
-  ==> DiskJK: Disk-Based J/K Matrices <==
-
-    J tasked:                  Yes
-    K tasked:                   No
-    wK tasked:                  No
-    Memory [MiB]:              953
-    Schwarz Cutoff:          1E-12
-
-    OpenMP threads:              3
-
-   => Loading Basis Set <=
-
-    Name: AUG-CC-PVDZ
-    Role: ORBITAL
-    Keyword: BASIS
-    atoms 1-2 entry BE         line   103 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz.gbs 
-
-
-         ---------------------------------------------------------
-                                   SCF
-               by Justin Turney, Rob Parrish, Andy Simmonett
-                          and Daniel G. A. Smith
-                              UKS Reference
-                        3 Threads,    500 MiB Core
-         ---------------------------------------------------------
-
-  ==> Geometry <==
-
-    Molecular point group: c1
-    Full point group: C_inf_v
-
-    Geometry (in Bohr), charge = 0, multiplicity = 1:
-
-       Center              X                  Y                   Z               Mass       
-    ------------   -----------------  -----------------  -----------------  -----------------
-         BE           2.261000000000     0.000000000000     0.000000000000     9.012183065000
-      Gh(BE)         -2.261000000000     0.000000000000     0.000000000000     9.012183065000
-
-  Running in c1 symmetry.
-
-  Rotational constants: A = ************  B =      0.65333  C =      0.65333 [cm^-1]
-  Rotational constants: A = ************  B =  19586.36342  C =  19586.36342 [MHz]
-  Nuclear repulsion =    0.000000000000000
-
-  Charge       = 0
-  Multiplicity = 1
-  Electrons    = 4
-  Nalpha       = 2
-  Nbeta        = 2
-
-  ==> Algorithm <==
-
-  SCF Algorithm Type is PK.
-  DIIS enabled.
-  MOM disabled.
-  Fractional occupation disabled.
-  Guess Type is AUTO.
-  Energy threshold   = 1.00e-06
-  Density threshold  = 1.00e-06
-  Integral threshold = 0.00e+00
-
-  ==> Primary Basis <==
-
-  Basis Set: AUG-CC-PVDZ
-    Blend: AUG-CC-PVDZ
-    Number of shells: 18
-    Number of basis function: 46
-    Number of Cartesian functions: 50
-    Spherical Harmonics?: true
-    Max angular momentum: 2
-
-  ==> DFT Potential <==
-
-   => Composite Functional: SVWN <= 
-
-    SVWN3 (RPA) LSDA Functional
-
-    Adamson et. al., J. Comput. Chem., 20(9), 921-927, 1999
-
-
-    Deriv               =              1
-    GGA                 =          FALSE
-    Meta                =          FALSE
-
-    Exchange Hybrid     =          FALSE
-    MP2 Hybrid          =          FALSE
-
-   => Exchange Functionals <=
-
-    1.0000         XC_LDA_X
-
-   => Correlation Functionals <=
-
-    1.0000   XC_LDA_C_VWN_RPA
-
-   => Molecular Quadrature <=
-
-    Radial Scheme          =       TREUTLER
-    Pruning Scheme         =           FLAT
-    Nuclear Scheme         =       TREUTLER
-
-    BS radius alpha        =              1
-    Pruning alpha          =              1
-    Radial Points          =             75
-    Spherical Points       =            302
-    Total Points           =          45300
-    Total Blocks           =            420
-    Max Points             =            254
-    Max Functions          =             46
-
-  Using in-core PK algorithm.
-   Calculation information:
-      Number of atoms:                   2
-      Number of AO shells:              18
-      Number of primitives:             56
-      Number of atomic orbitals:        50
-      Number of basis functions:        46
-
-      Integral cutoff                 1.00e-12
-      Number of threads:                 3
-
-  Performing in-core PK
-  Using 1169642 doubles for integral storage.
-  We computed 18804 shell quartets total.
-  Whereas there are 14706 unique shell quartets.
-    27.87 percent of shell quartets recomputed by reordering.
-
-  ==> DiskJK: Disk-Based J/K Matrices <==
-
-    J tasked:                  Yes
-    K tasked:                   No
-    wK tasked:                  No
-    Memory [MiB]:              953
-    Schwarz Cutoff:          1E-12
-
-    OpenMP threads:              3
-
-   => Loading Basis Set <=
-
-    Name: AUG-CC-PVDZ
-    Role: ORBITAL
-    Keyword: BASIS
-    atoms 1-2 entry BE         line   103 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz.gbs 
+    atoms 1-2 entry HE         line    50 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz.gbs 
 
 
          ---------------------------------------------------------
@@ -277,20 +23,20 @@
 
        Center              X                  Y                   Z               Mass       
     ------------   -----------------  -----------------  -----------------  -----------------
-         BE           2.261000000000     0.000000000000     0.000000000000     9.012183065000
-         BE          -2.261000000000     0.000000000000     0.000000000000     9.012183065000
+         HE           2.000000000000     0.000000000000     0.000000000000     4.002603254130
+         HE          -2.000000000000     0.000000000000     0.000000000000     4.002603254130
 
   Running in c1 symmetry.
 
-  Rotational constants: A = ************  B =      0.65333  C =      0.65333 [cm^-1]
-  Rotational constants: A = ************  B =  19586.36342  C =  19586.36342 [MHz]
-  Nuclear repulsion =    3.538257408226448
+  Rotational constants: A = ************  B =      1.88002  C =      1.88002 [cm^-1]
+  Rotational constants: A = ************  B =  56361.48181  C =  56361.48181 [MHz]
+  Nuclear repulsion =    1.000000000000000
 
   Charge       = 0
   Multiplicity = 1
-  Electrons    = 8
-  Nalpha       = 4
-  Nbeta        = 4
+  Electrons    = 4
+  Nalpha       = 2
+  Nbeta        = 2
 
   ==> Algorithm <==
 
@@ -307,11 +53,11 @@
 
   Basis Set: AUG-CC-PVDZ
     Blend: AUG-CC-PVDZ
-    Number of shells: 18
-    Number of basis function: 46
-    Number of Cartesian functions: 50
+    Number of shells: 10
+    Number of basis function: 18
+    Number of Cartesian functions: 18
     Spherical Harmonics?: true
-    Max angular momentum: 2
+    Max angular momentum: 1
 
   ==> DFT Potential <==
 
@@ -348,26 +94,26 @@
     Radial Points          =             75
     Spherical Points       =            302
     Total Points           =          45300
-    Total Blocks           =            420
-    Max Points             =            254
-    Max Functions          =             46
+    Total Blocks           =            404
+    Max Points             =            248
+    Max Functions          =             18
 
   Using in-core PK algorithm.
    Calculation information:
       Number of atoms:                   2
-      Number of AO shells:              18
-      Number of primitives:             56
-      Number of atomic orbitals:        50
-      Number of basis functions:        46
+      Number of AO shells:              10
+      Number of primitives:             14
+      Number of atomic orbitals:        18
+      Number of basis functions:        18
 
       Integral cutoff                 1.00e-12
       Number of threads:                 3
 
   Performing in-core PK
-  Using 1169642 doubles for integral storage.
-  We computed 18804 shell quartets total.
-  Whereas there are 14706 unique shell quartets.
-    27.87 percent of shell quartets recomputed by reordering.
+  Using 29412 doubles for integral storage.
+  We computed 2265 shell quartets total.
+  Whereas there are 1540 unique shell quartets.
+    47.08 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -379,59 +125,210 @@
 
     OpenMP threads:              3
 
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
+   => Loading Basis Set <=
+
+    Name: AUG-CC-PVDZ
+    Role: ORBITAL
+    Keyword: BASIS
+    atoms 1-2 entry HE         line    50 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz.gbs 
+
+
+         ---------------------------------------------------------
+                                   SCF
+               by Justin Turney, Rob Parrish, Andy Simmonett
+                          and Daniel G. A. Smith
+                              UKS Reference
+                        3 Threads,    500 MiB Core
+         ---------------------------------------------------------
+
+  ==> Geometry <==
+
+    Molecular point group: c1
+    Full point group: C_inf_v
+
+    Geometry (in Bohr), charge = 0, multiplicity = 1:
+
+       Center              X                  Y                   Z               Mass       
+    ------------   -----------------  -----------------  -----------------  -----------------
+      Gh(HE)          2.000000000000     0.000000000000     0.000000000000     4.002603254130
+         HE          -2.000000000000     0.000000000000     0.000000000000     4.002603254130
+
+  Running in c1 symmetry.
+
+  Rotational constants: A = ************  B =      1.88002  C =      1.88002 [cm^-1]
+  Rotational constants: A = ************  B =  56361.48181  C =  56361.48181 [MHz]
+  Nuclear repulsion =    0.000000000000000
+
+  Charge       = 0
+  Multiplicity = 1
+  Electrons    = 2
+  Nalpha       = 1
+  Nbeta        = 1
+
+  ==> Algorithm <==
+
+  SCF Algorithm Type is PK.
+  DIIS enabled.
+  MOM disabled.
+  Fractional occupation disabled.
+  Guess Type is AUTO.
+  Energy threshold   = 1.00e-06
+  Density threshold  = 1.00e-06
+  Integral threshold = 0.00e+00
+
+  ==> Primary Basis <==
+
+  Basis Set: AUG-CC-PVDZ
+    Blend: AUG-CC-PVDZ
+    Number of shells: 10
+    Number of basis function: 18
+    Number of Cartesian functions: 18
+    Spherical Harmonics?: true
+    Max angular momentum: 1
+
+  ==> DFT Potential <==
+
+   => Composite Functional: SVWN <= 
+
+    SVWN3 (RPA) LSDA Functional
+
+    Adamson et. al., J. Comput. Chem., 20(9), 921-927, 1999
+
+
+    Deriv               =              1
+    GGA                 =          FALSE
+    Meta                =          FALSE
+
+    Exchange Hybrid     =          FALSE
+    MP2 Hybrid          =          FALSE
+
+   => Exchange Functionals <=
+
+    1.0000         XC_LDA_X
+
+   => Correlation Functionals <=
+
+    1.0000   XC_LDA_C_VWN_RPA
+
+   => Molecular Quadrature <=
+
+    Radial Scheme          =       TREUTLER
+    Pruning Scheme         =           FLAT
+    Nuclear Scheme         =       TREUTLER
+
+    BS radius alpha        =              1
+    Pruning alpha          =              1
+    Radial Points          =             75
+    Spherical Points       =            302
+    Total Points           =          45300
+    Total Blocks           =            404
+    Max Points             =            248
+    Max Functions          =             18
+
+   => Loading Basis Set <=
+
+    Name: AUG-CC-PVDZ
+    Role: ORBITAL
+    Keyword: BASIS
+    atoms 1-2 entry HE         line    50 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz.gbs 
+
+
+         ---------------------------------------------------------
+                                   SCF
+               by Justin Turney, Rob Parrish, Andy Simmonett
+                          and Daniel G. A. Smith
+                              UKS Reference
+                        3 Threads,    500 MiB Core
+         ---------------------------------------------------------
+
+  ==> Geometry <==
+
+    Molecular point group: c1
+    Full point group: C_inf_v
+
+    Geometry (in Bohr), charge = 0, multiplicity = 1:
+
+       Center              X                  Y                   Z               Mass       
+    ------------   -----------------  -----------------  -----------------  -----------------
+         HE           2.000000000000     0.000000000000     0.000000000000     4.002603254130
+      Gh(HE)         -2.000000000000     0.000000000000     0.000000000000     4.002603254130
+
+  Running in c1 symmetry.
+
+  Rotational constants: A = ************  B =      1.88002  C =      1.88002 [cm^-1]
+  Rotational constants: A = ************  B =  56361.48181  C =  56361.48181 [MHz]
+  Nuclear repulsion =    0.000000000000000
+
+  Charge       = 0
+  Multiplicity = 1
+  Electrons    = 2
+  Nalpha       = 1
+  Nbeta        = 1
+
+  ==> Algorithm <==
+
+  SCF Algorithm Type is PK.
+  DIIS enabled.
+  MOM disabled.
+  Fractional occupation disabled.
+  Guess Type is AUTO.
+  Energy threshold   = 1.00e-06
+  Density threshold  = 1.00e-06
+  Integral threshold = 0.00e+00
+
+  ==> Primary Basis <==
+
+  Basis Set: AUG-CC-PVDZ
+    Blend: AUG-CC-PVDZ
+    Number of shells: 10
+    Number of basis function: 18
+    Number of Cartesian functions: 18
+    Spherical Harmonics?: true
+    Max angular momentum: 1
+
+  ==> DFT Potential <==
+
+   => Composite Functional: SVWN <= 
+
+    SVWN3 (RPA) LSDA Functional
+
+    Adamson et. al., J. Comput. Chem., 20(9), 921-927, 1999
+
+
+    Deriv               =              1
+    GGA                 =          FALSE
+    Meta                =          FALSE
+
+    Exchange Hybrid     =          FALSE
+    MP2 Hybrid          =          FALSE
+
+   => Exchange Functionals <=
+
+    1.0000         XC_LDA_X
+
+   => Correlation Functionals <=
+
+    1.0000   XC_LDA_C_VWN_RPA
+
+   => Molecular Quadrature <=
+
+    Radial Scheme          =       TREUTLER
+    Pruning Scheme         =           FLAT
+    Nuclear Scheme         =       TREUTLER
+
+    BS radius alpha        =              1
+    Pruning alpha          =              1
+    Radial Points          =             75
+    Spherical Points       =            302
+    Total Points           =          45300
+    Total Blocks           =            404
+    Max Points             =            248
+    Max Functions          =             18
+
+   => Loading Basis Set <=
+
+    Name: (AUG-CC-PVDZ AUX)
+    Role: JKFIT
+    Keyword: DF_BASIS_SCF
+    atoms 1-2 entry HE         line    39 file /home/yuming/anaconda3/envs/work/share/psi4/basis/def2-qzvpp-jkfit.gbs 
+

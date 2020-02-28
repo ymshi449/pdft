@@ -2,11 +2,11 @@
 pDFT.py
 """
 import os
-os.environ["OMP_NUM_THREADS"] = "4" # export OMP_NUM_THREADS=4
-os.environ["OPENBLAS_NUM_THREADS"] = "5" # export OPENBLAS_NUM_THREADS=4
-os.environ["MKL_NUM_THREADS"] = "6" # export MKL_NUM_THREADS=6
-os.environ["VECLIB_MAXIMUM_THREADS"] = "7" # export VECLIB_MAXIMUM_THREADS=4
-os.environ["NUMEXPR_NUM_THREADS"] = "8" # export NUMEXPR_NUM_THREADS=6
+os.environ["OMP_NUM_THREADS"] = "3" # export OMP_NUM_THREADS=4
+os.environ["OPENBLAS_NUM_THREADS"] = "3" # export OPENBLAS_NUM_THREADS=4
+os.environ["MKL_NUM_THREADS"] = "3" # export MKL_NUM_THREADS=6
+os.environ["VECLIB_MAXIMUM_THREADS"] = "3" # export VECLIB_MAXIMUM_THREADS=4
+os.environ["NUMEXPR_NUM_THREADS"] = "3" # export NUMEXPR_NUM_THREADS=6
 
 import psi4
 import qcelemental as qc
@@ -1087,7 +1087,7 @@ class U_Embedding:
                 self.fragments[i].scf(maxiter=max_iter, print_energies=printflag, vp_matrix=self.vp_fock)
         elif vp is None and vp_fock is True:
             # Zero self.vp so self.vp_fock does not correspond to an old version.
-            self.vp = None
+            # self.vp = None
 
             # Run the scf
             for i in range(self.nfragments):
@@ -1105,7 +1105,7 @@ class U_Embedding:
                 self.fragments[i].scf(maxiter=max_iter, print_energies=printflag, vp_matrix=self.vp_fock)
         elif vp is None and (vp_fock is not None and vp_fock is not True):
             # Zero self.vp so self.vp_fock does not correspond to an old version.
-            self.vp = None
+            # self.vp = None
 
             self.vp_fock = vp_fock
             # Run the scf
@@ -1307,7 +1307,7 @@ class U_Embedding:
         self.vp_ext_nad = vp_ext_nad
         return
 
-    def find_vp_densitydifference(self, maxiter, beta, guess=None, atol=2e-4, printflag=False):
+    def find_vp_densitydifference(self, maxiter, beta, guess=None, rho_std=1e-5, printflag=False):
         """
         Given a target function, finds vp_matrix to be added to each fragment
         ks matrix to match full molecule energy/density
@@ -1373,7 +1373,7 @@ class U_Embedding:
             old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule)*w)
             rho_convergence.append(old_rho_conv)
 
-            print(F'Iter: {scf_step-1} beta: {beta} dD: {np.linalg.norm(self.fragments_Da + self.fragments_Db - (self.molecule.Da.np + self.molecule.Db.np), ord=1)} Ep: {Ep_convergence[-1]} d_rho: {old_rho_conv}')
+            print(F'Iter: {scf_step-1} beta: {beta} Ef: {self.ef_conv[-1]} Ep: {self.ep_conv[-1]} d_rho: {old_rho_conv}')
 
             delta_vp_a = beta * (self.fragments_Da - self.molecule.Da.np)
             delta_vp_b = beta * (self.fragments_Db - self.molecule.Db.np)
@@ -1395,10 +1395,10 @@ class U_Embedding:
                 print("Break because even small step length can not improve.")
                 break
             elif len(rho_convergence) >= 5:
-                if np.std(rho_convergence[-4:]) < 1e-4:
+                if np.std(rho_convergence[-4:]) < rho_std:
                     print("Break because rho does update for 5 iter")
                     break
-            elif old_rho_conv < 1e-4:
+            elif old_rho_conv < rho_std:
                 print("Break because rho difference (cost) is small.")
                 break
             # elif scf_step == maxiter:
@@ -1408,7 +1408,7 @@ class U_Embedding:
 
         return
 
-    def find_vp_densitydifference_onbasis(self, maxiter, beta, guess=None, atol=2e-4, printflag=False):
+    def find_vp_densitydifference_onbasis(self, maxiter, beta, guess=None, rho_std=1e-5, printflag=False):
         """
         Given a target function, finds vp_matrix to be added to each fragment
         ks matrix to match full molecule energy/density
@@ -1539,10 +1539,10 @@ class U_Embedding:
                 print("Break because even small step length can not improve.")
                 break
             elif len(rho_convergence) >= 5:
-                if np.std(rho_convergence[-4:]) < 1e-4:
+                if np.std(rho_convergence[-4:]) < rho_std:
                     print("Break because rho does update for 5 iter")
                     break
-            elif old_rho_conv < 1e-4:
+            elif old_rho_conv < rho_std:
                 print("Break because rho difference (cost) is small.")
                 break
             # elif scf_step == maxiter:
@@ -1721,7 +1721,7 @@ class U_Embedding:
                                       jac=self.jac, hess=self.hess, method=opt_method, options=opt)
         return vp_array
 
-    def find_vp_response(self, maxiter=21, guess=None, beta=None, vp_nad_component=True, vp_nad_iter=1,
+    def find_vp_response(self, maxiter=21, guess=None, beta=None, beta_update=None, vp_nad_component=True, vp_nad_iter=1,
                          svd_rcond=None, regul_const=None, a_rho_var=1e-4, vp_norm_conv=1e-6, printflag=False):
         """
         Using the inverse of static response function to update dvp from a dn.
@@ -1805,14 +1805,13 @@ class U_Embedding:
             #   Update rho and change beta
             self.get_density_sum()
             rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
-            # # Based on the naive hope, whenever the current lamdb does not improve the density, get a smaller one.
-            # if old_rho_conv < np.sum(np.abs(rho_fragment - rho_molecule) * w):
-            #     beta *= 1
-            #     beta_lastupdate_iter = scf_step
-            # # If some lamdb has beed updating for a more than a long period, try to increase it to converge faster.
-            # elif (scf_step - beta_lastupdate_iter) > 3:
-            #     beta /= 1
-            #     beta_lastupdate_iter = scf_step
+            if beta_update is not None:
+                L = self.lagrange_mul_1basis(self.vp[0])
+                # # Based on the naive hope, whenever the current lamdb does not improve the density, get a smaller one.
+                if L >= L_old:
+                    # print("\n L_old - L %.14f \n" %(L - L_old))
+                    beta *= beta_update
+                L_old = L
 
             # Update vp_none_add from time to time
             if vp_nad_component:
@@ -2048,7 +2047,9 @@ class U_Embedding:
                                       jac=self.jac_1basis, hess=self.hess_1basis, method=opt_method, options=opt)
         return vp_array
 
-    def find_vp_response_1basis(self, maxiter=21, guess=None, beta=None, vp_nad_component=True, vp_nad_iter=1, svd_rcond=None, regul_const=None, a_rho_var=1e-4, vp_norm_conv=1e-6, printflag=False):
+    def find_vp_response_1basis(self, maxiter=21, guess=None, beta=None, vp_nad_iter=1, svd_rcond=None,
+                                beta_update=None, regul_const=None, a_rho_var=1e-4,
+                                vp_norm_conv=1e-6, printflag=False):
         """
         Using the inverse of static response function to update dvp from a dn.
         This version describe vp = sum b_i*phi_i. phi is ao.
@@ -2056,9 +2057,9 @@ class U_Embedding:
         :param maxiter: maximum vp update iterations
         :param guess: initial guess. When guess is True, object will look for self stored vp as initial.
         :param beta: step length for Newton's method.
-        :param vp_nad_component: True. If False, will not calculate vp_Hext_nad.
-        :param vp_nad_iter: 1. The number of iterations vp_Hext will be updated
+        :param vp_nad_iter: 1. The number of iterations vp_Hext will be updated. If None, will not use vp_nad components.
         :param svd_rcond np.lingal.pinv rcond for hess psudo-inverse
+        :param beta_update: If not None, will update beta by beta *= beta_update when L increased compared to last iteration.
         :param regul_const regularization constant.
         :param a_rho_var convergence threshold for last 5 drho std
         :param vp_norm_conv convergence threshold vp coefficient norm
@@ -2096,11 +2097,10 @@ class U_Embedding:
 
         ## Tracking rho and changing beta
         L_old = np.inf
-        beta_lastupdate_iter = 0
 
         rho_molecule = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
 
-        if vp_nad_component:
+        if vp_nad_iter is not None:
             self.get_density_sum()
             rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
             print("no vp drho:", np.sum(np.abs(rho_fragment - rho_molecule) * w))
@@ -2131,23 +2131,16 @@ class U_Embedding:
             self.get_density_sum()
             rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
 
-            L = self.lagrange_mul_1basis(self.vp[0])
-
-            # # Based on the naive hope, whenever the current lamdb does not improve the density, get a smaller one.
-            if L >= L_old:
-                print("\n L_old - L %.14f \n" %(L - L_old))
-                beta *= 0.4
-                # svd_rcond *= 0.3
-                beta_lastupdate_iter = scf_step
-            # If some lamdb has beed updating for a more than a long period, try to increase it to converge faster.
-            elif (scf_step - beta_lastupdate_iter) > 5:
-                if beta <= 1:
-                    beta *= 1.2
-                    beta_lastupdate_iter = scf_step
-            L_old = L
+            if beta_update is not None:
+                L = self.lagrange_mul_1basis(self.vp[0])
+                # # Based on the naive hope, whenever the current lamdb does not improve the density, get a smaller one.
+                if L >= L_old:
+                    # print("\n L_old - L %.14f \n" %(L - L_old))
+                    beta *= beta_update
+                L_old = L
 
             # Update vp_none_add from time to time
-            if vp_nad_component:
+            if vp_nad_iter is not None:
                 if scf_step%vp_nad_iter == 0:
                     vp_totalfock.np[:] -= vp_Hext_nad_fock
                     self.get_vp_Hext_nad()
@@ -2410,7 +2403,7 @@ class U_Embedding:
         self.find_vp_densitydifference(49, 1)
         # self.fragments_scf(100)
 
-        all96_e_old = 0.0
+        all96_e_old = np.inf
         vp_fock_all96_old = 0.0
         for vp_step in range(1, vp_maxiter+1):
             self.get_density_sum()
@@ -2606,76 +2599,6 @@ class U_Embedding:
             print("Singulartiy vp %f" % np.linalg.norm(vp))
         return all96_e, vp, vp_fock
 
-class Embedding:
-    def __init__(self, fragments, molecule):
-        #basics
-        self.fragments = fragments
-        self.nfragments = len(fragments)
-        self.molecule = molecule
-
-        #from mehtods
-        self.fragment_densities = self.get_density_sum()
-
-    def get_density_sum(self):
-        sum = self.fragments[0].D.np.copy()
-        for i in range(1,len(self.fragments)):
-            sum +=  self.fragments[i].D.np
-        return sum
-
-    def find_vp(self, beta, guess=None, maxiter=10, atol=2e-4):
-        """
-        Given a target function, finds vp_matrix to be added to each fragment
-        ks matrix to match full molecule energy/density
-
-        Parameters
-        ----------
-        beta: positive float
-            Coefficient for delta_n = beta * (molecule_density  - sum_fragment_densities)
-
-        Returns
-        -------
-        vp: psi4.core.Matrix
-            Vp to be added to fragment ks matrix
-
-        """
-        if guess==None:
-            vp =  psi4.core.Matrix.from_array(np.zeros_like(self.molecule.D.np))
-        #else:
-        #    vp_guess
-
-        for scf_step in range(maxiter+1):
-
-            total_densities = np.zeros_like(self.molecule.D.np)
-            total_energies = 0.0
-            density_convergence = 0.0
-
-            for i in range(self.nfragments):
-
-                self.fragments[i].scf(vp_add=True, vp_matrix=vp)
-                
-                total_densities += self.fragments[i].D.np 
-                total_energies  += self.fragments[i].frag_energy
-
-            #if np.isclose( total_densities.sum(),self.molecule.D.sum(), atol=1e-5) :
-            if np.isclose(total_energies, self.molecule.energy, atol):
-                break
-
-            #if scf_step == maxiter:
-            #    raise Exception("Maximum number of SCF cycles exceeded for vp.")
-
-            print(F'Iteration: {scf_step} Delta_E = {total_energies - self.molecule.energy} Delta_D = {total_densities.sum() - self.molecule.D.np.sum()}')
-
-            delta_vp =  beta * (total_densities - self.molecule.D)  
-            #S, D_mnQ, S_pmn, Spq = fouroverlap(self.fragments[0].wfn, self.fragments[0].geometry, "STO-3G", self.fragments[0].mints)
-            #S_2, d_2, S_pmn_2, Spq_2 = fouroverlap(self.fragments[1].wfn, self.fragments[1].geometry, "STO-3G")
-
-            #delta_vp =  psi4.core.Matrix.from_array( np.einsum('ijmn,mn->ij', S, delta_vp))
-            delta_vp = psi4.core.Matrix.from_array(delta_vp)
-
-            vp.axpy(1.0, delta_vp)
-
-        return vp
-
 def plot1d_x(data, Vpot, dimmer_length=None, title=None, ax= None):
     """
     Plot on x direction
@@ -2692,7 +2615,7 @@ def plot1d_x(data, Vpot, dimmer_length=None, title=None, ax= None):
         plt.plot(x[mask & mask2][order], data[mask & mask2][order])
     else:
         ax.plot(x[mask & mask2][order], data[mask & mask2][order])
-    if dimmer_length is None:
+    if dimmer_length is not None:
         plt.axvline(x=dimmer_length/2.0)
         plt.axvline(x=-dimmer_length/2.0)
     if title is not None:

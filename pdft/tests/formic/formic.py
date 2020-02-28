@@ -7,7 +7,7 @@ import libcubeprop
 psi4.core.set_output_file("formic.psi4")
 functional = 'svwn'
 basis = 'cc-pvdz'
-svdc = -4
+svdc = -6
 reguc = -5
 title = "formic Newton svdc%i reguc %i" %(svdc, reguc) + basis + functional
 print(title)
@@ -81,7 +81,7 @@ mol = pdft.U_Molecule(Full_Molec, basis, functional)
 pdfter = pdft.U_Embedding([f1, f2], mol)
 
 # pdfter.find_vp_response(maxiter=25, beta=0.1, svd_rcond=1e-4)
-pdfter.find_vp_response_1basis(1, svd_rcond=10**svdc, regul_const=10**reguc, beta=0.1, a_rho_var=1e-7)
+pdfter.find_vp_response_1basis(49, svd_rcond=10**svdc, regul_const=10**reguc, beta=0.1, a_rho_var=1e-7)
 # pdfter.find_vp_scipy_1basis(maxiter=42, regul_const=1e-4, opt_method="trust-ncg")
 
 #%% 2 basis 2D plot

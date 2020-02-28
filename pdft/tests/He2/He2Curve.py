@@ -64,7 +64,7 @@ for bondlength in np.linspace(4, 20, 49):
     pdfter = pdft.U_Embedding([f1, f2], mol)
 
     # Run with vp = vp_all96
-    energy, vp_all96, vp_fock_all96 = pdfter.find_vp_all96(100, 1000, rtol=1e-2, seperation_cutoff=bondlength/7.0)
+    energy, vp_all96, vp_fock_all96 = pdfter.find_vp_all96(100, 1000, rtol=1e-2, seperation_cutoff=bondlength/2.0)
     # From Hartree to Ry
     energy = energy * 2.0
 
