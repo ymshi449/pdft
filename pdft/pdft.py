@@ -2385,14 +2385,18 @@ class U_Embedding:
 
         return rho_convergence, Ep_convergence
 
-    def find_vp_all96(self, vp_maxiter, scf_maxiter, guess=None, rtol=1e-3, seperation_cutoff=None):
+    def find_vp_all96(self, vp_maxiter, scf_maxiter, guess=None, rtol=1e-3, hard_cutoff=None):
         """
         vp = vp_non-local = vp_all96. Total scf iteration max = vp_maxiter*scf_maxiter*num_fragments + entire system scf
         :param vp_maxiter: maximum num of vp update iteration needed.
         :param vp_maxiter: maximum num of scf update iteration needed.
         :param guess: Initial guess of vp.
         :param rtol: Relative ALL96 energy difference as the convergence criteria.
-        :para seperation_cutoff: a very crude cutoff to avoid singularity: if a piece |r1-r2| is smaller than this value,
+        :para hard_cutoff: the main idea of this cutoff is that: the density and grad of density is not accurate on a basis
+              set around the nucleus. e.g. for two fragments systems, the usual cutoff given by ALL96 will be True for
+              fragmentB around the nucleus of fragmentA, which is of course not true. This will introduce singularities.
+              Right now if it is True, then there is a hard cutoff at the yz plane.
+              seperation_cutoff (removed): a very crude cutoff to avoid singularity: if a piece |r1-r2| is smaller than this value,
               it will be neglected in the integral. The reason is that Gaussian basis sets are bad around the nucleus.
               Thus the cutoff of one fragment will not kill the density around the other fragments' nucleus.
               I designed this hard cutoff to overcome this. A loose upper-bound for seperation_cutoff is the seperation between
@@ -2408,7 +2412,7 @@ class U_Embedding:
         for vp_step in range(1, vp_maxiter+1):
             self.get_density_sum()
             # Initial vp_all96
-            all96_e, vp_all96, vp_fock_all96 = self.vp_all96(seperation_cutoff=seperation_cutoff)
+            all96_e, vp_all96, vp_fock_all96 = self.vp_all96(hard_cutoff=hard_cutoff)
 
             # Check if vp_all96 consists with vp_fock_all96
             vp_fock_temp = self.molecule.grid_to_fock(vp_all96)
@@ -2423,8 +2427,8 @@ class U_Embedding:
             self.fragments_scf(scf_maxiter, vp_fock=self.vp_fock)
 
             f, ax = plt.subplots(1, 1)
-            plot1d_x(vp_all96, self.molecule.Vpot, dimmer_length=4, ax=ax, title="He2 svwn sp2 " + str(int(seperation_cutoff*2*100)) + '-' + str(vp_step))
-            f.savefig("He2 svwn sp2 " + str(int(seperation_cutoff*2*100)) + '-' + str(vp_step))
+            plot1d_x(vp_all96, self.molecule.Vpot, dimmer_length=4, ax=ax, title="He2 svwn sp2")
+            f.savefig("He2 svwn sp2")
             plt.close(f)
 
             if abs((all96_e_old - all96_e) / all96_e) < rtol \
@@ -2439,7 +2443,7 @@ class U_Embedding:
             vp_fock_all96_old = vp_fock_all96
         return all96_e, vp_all96, vp_fock_all96
 
-    def vp_all96(self, beta=6, seperation_cutoff=None):
+    def vp_all96(self, beta=6, hard_cutoff=None):
         """
         Return vp on grid and vp_fock on the basis for a specific density.
         :para seperation_cutoff: a very crude cutoff to avoid singularity: if a piece |r1-r2| is smaller than this value,
@@ -2518,6 +2522,10 @@ class U_Embedding:
                 r_z = np.array(r_grid.z())
                 r_npoints = r_w.shape[0]
 
+                if hard_cutoff is not None and np.all((l_x[:, None] * r_x) >= 0):
+                    w2_old += r_npoints
+                    continue
+
                 points_func.compute_points(r_grid)
                 r_lpos = np.array(r_grid.functions_local_to_global())
 
@@ -2556,8 +2564,9 @@ class U_Embedding:
                 R2 += (l_y[:, None] - r_y) ** 2
                 R2 += (l_z[:, None] - r_z) ** 2
                 R2 += 1e-34
-                if seperation_cutoff is not None:
-                    R6inv = R2 ** -3 * (R2 >= seperation_cutoff**2)
+                if hard_cutoff is not None:
+                    R_hard_cut = (l_x[:, None] * r_x) < 0
+                    R6inv = R2 ** -3 * R_hard_cut
                 else:
                     R6inv = R2 ** -3
 
