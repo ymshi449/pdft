@@ -1,0 +1,42 @@
+
+Host: PartitionStation
+
+Timers On : Mon Mar  2 13:11:18 2020
+Timers Off: Mon Mar  2 15:55:42 2020
+
+Wall Time:     9863.82 seconds
+
+                                                       Time (seconds)
+Module                                       User      System        Wall        Calls
+V: Grid                             :      3.933u      0.183s      0.817w     63 calls
+Total PK formation time             :      3.017u      0.100s      0.621w     11 calls
+JK: D                               :      0.033u      0.000s      0.002w    190 calls
+JK: USO2AO                          :      0.000u      0.000s      0.001w    190 calls
+JK: JK                              :      0.067u      0.000s      0.008w    190 calls
+PK computes JK                      :      0.067u      0.000s      0.008w    190 calls
+JK: AO2USO                          :      0.000u      0.000s      0.000w    190 calls
+
+--------------------------------------------------------------------------------------
+V: Grid                             :      3.933u      0.183s      0.817w     63 calls
+Total PK formation time             :      3.017u      0.100s      0.621w     11 calls
+JK: D                               :      0.033u      0.000s      0.002w    190 calls
+JK: USO2AO                          :      0.000u      0.000s      0.001w    190 calls
+JK: JK                              :      0.067u      0.000s      0.008w    190 calls
+| PK computes JK                    :      0.067u      0.000s      0.008w    190 calls
+JK: AO2USO                          :      0.000u      0.000s      0.000w    190 calls
+
+**************************************************************************************
+
+Host: PartitionStation
+
+Timers On : Tue Mar  3 17:20:02 2020
+Timers Off: Tue Mar  3 17:54:42 2020
+
+Wall Time:     2079.44 seconds
+
+                                                       Time (seconds)
+Module                                       User      System        Wall        Calls
+
+--------------------------------------------------------------------------------------
+
+**************************************************************************************

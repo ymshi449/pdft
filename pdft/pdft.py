@@ -1341,12 +1341,13 @@ class U_Embedding:
             vp_hext_nad -= temp_v_alpha_Hext_Q
             vp_xc_nad -= temp_v_alpha_xc_Q
             vp_kin_nad += temp_v_alpha_Hext_Q + temp_v_alpha_xc_Q
-        self.vp_kin_nad = vp_kin_nad
         self.vp_Hext_nad = vp_hext_nad
         self.vp_xc_nad = vp_xc_nad
+        # Only work for vp the same for all fragments!:
+        self.vp_kin_nad = vp_kin_nad + self.vp_grid
         return
 
-    def get_regularized_vp_nad(self, dvp=None, Qtype='nf', vp_Hext_decomposition=False):
+    def get_oueis_retularized_vp_nad(self, dvp=None, Qtype='nf', vp_Hext_decomposition=False):
         """
         Using the track introduced by Oueis and Wasserman 2018
         to try to regularize vp_kin_nad and vp_xc_nad.
@@ -1354,8 +1355,6 @@ class U_Embedding:
         vp_Hext_decomposition=False. If true, it means self.vp=vp - vp_Hext_nad.
         :return:
         """
-        self.get_vp_nad(Qtype=Qtype)
-
         if dvp is None:
             self.vp_grid = self.molecule.to_grid(self.vp[0])
         else:
@@ -1363,6 +1362,8 @@ class U_Embedding:
                 self.vp_grid += self.molecule.to_grid(dvp)
             else:
                 self.vp_grid = self.molecule.to_grid(dvp)
+
+        self.get_vp_nad(Qtype=Qtype)
 
         if not vp_Hext_decomposition:
             vp_kin_nad = self.vp_grid - self.vp_xc_nad - self.vp_Hext_nad
@@ -1375,14 +1376,14 @@ class U_Embedding:
         self.vp_xc_nad = vp_xc_nad
         return
 
-    def update_regulized_vp(self, dvp=None, vp_Hext_decomposition=False, Qtype='nf'):
+    def update_oueis_retularized_vp_nad(self, dvp=None, vp_Hext_decomposition=False, Qtype='nf'):
         """
         Using regulized vp to update vp and vp_fock.
         Using the track introduced by Oueis and Wasserman 2018
         to try to regularize vp_kin_nad and vp_xc_nad.
         :return:
         """
-        self.get_regularized_vp_nad(dvp=dvp, vp_Hext_decomposition=vp_Hext_decomposition, Qtype=Qtype)
+        self.get_oueis_retularized_vp_nad(dvp=dvp, vp_Hext_decomposition=vp_Hext_decomposition, Qtype=Qtype)
         self.vp_grid = self.vp_kin_nad + self.vp_xc_nad + self.vp_Hext_nad
         vp_fock = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(self.vp_grid))
         self.vp_fock = [vp_fock, vp_fock]
@@ -2217,6 +2218,8 @@ class U_Embedding:
             #   Update rho and change beta
             self.get_density_sum()
             rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
+            old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
+            self.drho_conv.append(old_rho_conv)
 
             if beta_update is not None:
                 L = self.lagrange_mul_1basis(self.vp[0])
@@ -2225,6 +2228,10 @@ class U_Embedding:
                     # print("\n L_old - L %.14f \n" %(L - L_old))
                     beta *= beta_update
                 L_old = L
+            if scf_step%10 == 0:
+                beta /= beta_update
+                if beta > 1:
+                    beta = 1
 
             # Update vp_none_add from time to time
             if vp_nad_iter is not None:
@@ -2234,9 +2241,6 @@ class U_Embedding:
                     vp_Hext_nad_fock = self.molecule.grid_to_fock(self.vp_Hext_nad)
                     vp_totalfock.np[:] += vp_Hext_nad_fock
                     self.vp_fock = [vp_totalfock, vp_totalfock]
-
-            old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
-            self.drho_conv.append(old_rho_conv)
 
             print(
                 F'Iter: {scf_step - 1} beta: {beta}'
@@ -2249,7 +2253,7 @@ class U_Embedding:
             hess_inv = np.linalg.pinv(hess, rcond=svd_rcond)
             dvp = -hess_inv.dot(beta*jac)
             vp_change = np.linalg.norm(dvp, ord=1)
-            if printflag is True:
+            if True:
                 print("Solved?", np.linalg.norm(np.dot(hess, dvp) - beta*jac))
                 print("dvp norm", vp_change)
             # vp_total += dvp
@@ -2261,7 +2265,17 @@ class U_Embedding:
             # vp_totalfock.np[:] += dvpf
             # self.vp_fock = [vp_totalfock, vp_totalfock]  # Use total_vp instead of spin vp for calculation.
             #
-            self.update_regulized_vp(dvp=dvp)
+            self.update_oueis_retularized_vp_nad(dvp=dvp)
+
+            # f, ax = plt.subplots(1, 1, dpi=210)
+            # ax.set_ylim(-0.5,0.2)
+            # plot1d_x(self.vp_grid, self.molecule.Vpot, ax=ax, label="vp", color="black", title=int(scf_step))
+            # plot1d_x(self.vp_Hext_nad, self.molecule.Vpot, dimmer_length=4.522, ax=ax, label="Hext", ls='--')
+            # plot1d_x(self.vp_xc_nad, self.molecule.Vpot, ax=ax, label="xc", ls='--')
+            # plot1d_x(self.vp_kin_nad, self.molecule.Vpot, ax=ax, label="kin", ls='--')
+            # ax.legend()
+            # f.show()
+            # plt.close(f)
 
             self.fragments_scf_1basis(1000, vp_fock=True)
 
@@ -2278,6 +2292,8 @@ class U_Embedding:
             # elif scf_step == maxiter:
                 # raise Exception("Maximum number of SCF cycles exceeded for vp.")
                 # print("Maximum number of SCF cycles exceeded for vp.")
+        # update current vp.
+        self.update_oueis_retularized_vp_nad(dvp=np.zeros_like(self.molecule.H.np))
         return
 
     def find_vp_response_crude(self, maxiter=21, beta=None, atol=1e-7, guess=None):
@@ -2698,7 +2714,8 @@ class U_Embedding:
             print("Singulartiy vp %f" % np.linalg.norm(vp))
         return all96_e, vp, vp_fock
 
-def plot1d_x(data, Vpot, dimmer_length=None, title=None, ax=None, label=None, color=None):
+def plot1d_x(data, Vpot, dimmer_length=None, title=None,
+             ax=None, label=None, color=None, ls=None, lw=None):
     """
     Plot on x direction
     :param data: Any f(r) on grid
@@ -2711,9 +2728,11 @@ def plot1d_x(data, Vpot, dimmer_length=None, title=None, ax=None, label=None, co
     if ax is None:
         f1 = plt.figure(figsize=(16, 12), dpi=160)
         # f1 = plt.figure()
-        plt.plot(x[mask & mask2][order], data[mask & mask2][order])
+        plt.plot(x[mask & mask2][order], data[mask & mask2][order],
+                 label=label, color=color, ls=ls, lw=lw)
     else:
-        ax.plot(x[mask & mask2][order], data[mask & mask2][order], label=label, color=color)
+        ax.plot(x[mask & mask2][order], data[mask & mask2][order],
+                label=label, color=color, ls=ls, lw=lw)
     if dimmer_length is not None:
         plt.axvline(x=dimmer_length/2.0, ls="--", lw=0.7, color='r')
         plt.axvline(x=-dimmer_length/2.0, ls="--", lw=0.7, color='r')

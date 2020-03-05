@@ -1,9 +1,9 @@
    => Loading Basis Set <=
 
-    Name: CC-PVDZ
+    Name: AUG-CC-PVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-2 entry HE         line    32 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
+    atoms 1-2 entry HE         line    50 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz.gbs 
 
 
          ---------------------------------------------------------
@@ -23,14 +23,14 @@
 
        Center              X                  Y                   Z               Mass       
     ------------   -----------------  -----------------  -----------------  -----------------
-         HE           2.000000000000     0.000000000000     0.000000000000     4.002603254130
-         HE          -2.000000000000     0.000000000000     0.000000000000     4.002603254130
+         HE           3.000000000000     0.000000000000     0.000000000000     4.002603254130
+         HE          -3.000000000000     0.000000000000     0.000000000000     4.002603254130
 
   Running in c1 symmetry.
 
-  Rotational constants: A = ************  B =      1.88002  C =      1.88002 [cm^-1]
-  Rotational constants: A = ************  B =  56361.48181  C =  56361.48181 [MHz]
-  Nuclear repulsion =    1.000000000000000
+  Rotational constants: A = ************  B =      0.83556  C =      0.83556 [cm^-1]
+  Rotational constants: A = ************  B =  25049.54747  C =  25049.54747 [MHz]
+  Nuclear repulsion =    0.666666666666667
 
   Charge       = 0
   Multiplicity = 1
@@ -51,11 +51,11 @@
 
   ==> Primary Basis <==
 
-  Basis Set: CC-PVDZ
-    Blend: CC-PVDZ
-    Number of shells: 6
-    Number of basis function: 10
-    Number of Cartesian functions: 10
+  Basis Set: AUG-CC-PVDZ
+    Blend: AUG-CC-PVDZ
+    Number of shells: 10
+    Number of basis function: 18
+    Number of Cartesian functions: 18
     Spherical Harmonics?: true
     Max angular momentum: 1
 
@@ -93,27 +93,27 @@
     Pruning alpha          =              1
     Radial Points          =             75
     Spherical Points       =            302
-    Total Points           =          42686
-    Total Blocks           =            384
-    Max Points             =            256
-    Max Functions          =             10
+    Total Points           =          45300
+    Total Blocks           =            414
+    Max Points             =            255
+    Max Functions          =             18
 
   Using in-core PK algorithm.
    Calculation information:
       Number of atoms:                   2
-      Number of AO shells:               6
-      Number of primitives:             10
-      Number of atomic orbitals:        10
-      Number of basis functions:        10
+      Number of AO shells:              10
+      Number of primitives:             14
+      Number of atomic orbitals:        18
+      Number of basis functions:        18
 
       Integral cutoff                 1.00e-12
       Number of threads:                 3
 
   Performing in-core PK
-  Using 3080 doubles for integral storage.
-  We computed 423 shell quartets total.
-  Whereas there are 231 unique shell quartets.
-    83.12 percent of shell quartets recomputed by reordering.
+  Using 29412 doubles for integral storage.
+  We computed 2218 shell quartets total.
+  Whereas there are 1540 unique shell quartets.
+    44.03 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -127,10 +127,10 @@
 
    => Loading Basis Set <=
 
-    Name: CC-PVDZ
+    Name: AUG-CC-PVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-2 entry HE         line    32 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
+    atoms 1-2 entry HE         line    50 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz.gbs 
 
 
          ---------------------------------------------------------
@@ -150,13 +150,13 @@
 
        Center              X                  Y                   Z               Mass       
     ------------   -----------------  -----------------  -----------------  -----------------
-      Gh(HE)          2.000000000000     0.000000000000     0.000000000000     4.002603254130
-         HE          -2.000000000000     0.000000000000     0.000000000000     4.002603254130
+      Gh(HE)          3.000000000000     0.000000000000     0.000000000000     4.002603254130
+         HE          -3.000000000000     0.000000000000     0.000000000000     4.002603254130
 
   Running in c1 symmetry.
 
-  Rotational constants: A = ************  B =      1.88002  C =      1.88002 [cm^-1]
-  Rotational constants: A = ************  B =  56361.48181  C =  56361.48181 [MHz]
+  Rotational constants: A = ************  B =      0.83556  C =      0.83556 [cm^-1]
+  Rotational constants: A = ************  B =  25049.54747  C =  25049.54747 [MHz]
   Nuclear repulsion =    0.000000000000000
 
   Charge       = 0
@@ -178,11 +178,11 @@
 
   ==> Primary Basis <==
 
-  Basis Set: CC-PVDZ
-    Blend: CC-PVDZ
-    Number of shells: 6
-    Number of basis function: 10
-    Number of Cartesian functions: 10
+  Basis Set: AUG-CC-PVDZ
+    Blend: AUG-CC-PVDZ
+    Number of shells: 10
+    Number of basis function: 18
+    Number of Cartesian functions: 18
     Spherical Harmonics?: true
     Max angular momentum: 1
 
@@ -220,17 +220,17 @@
     Pruning alpha          =              1
     Radial Points          =             75
     Spherical Points       =            302
-    Total Points           =          42686
-    Total Blocks           =            384
-    Max Points             =            256
-    Max Functions          =             10
+    Total Points           =          45300
+    Total Blocks           =            414
+    Max Points             =            255
+    Max Functions          =             18
 
    => Loading Basis Set <=
 
-    Name: CC-PVDZ
+    Name: AUG-CC-PVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-2 entry HE         line    32 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
+    atoms 1-2 entry HE         line    50 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz.gbs 
 
 
          ---------------------------------------------------------
@@ -250,13 +250,13 @@
 
        Center              X                  Y                   Z               Mass       
     ------------   -----------------  -----------------  -----------------  -----------------
-         HE           2.000000000000     0.000000000000     0.000000000000     4.002603254130
-      Gh(HE)         -2.000000000000     0.000000000000     0.000000000000     4.002603254130
+         HE           3.000000000000     0.000000000000     0.000000000000     4.002603254130
+      Gh(HE)         -3.000000000000     0.000000000000     0.000000000000     4.002603254130
 
   Running in c1 symmetry.
 
-  Rotational constants: A = ************  B =      1.88002  C =      1.88002 [cm^-1]
-  Rotational constants: A = ************  B =  56361.48181  C =  56361.48181 [MHz]
+  Rotational constants: A = ************  B =      0.83556  C =      0.83556 [cm^-1]
+  Rotational constants: A = ************  B =  25049.54747  C =  25049.54747 [MHz]
   Nuclear repulsion =    0.000000000000000
 
   Charge       = 0
@@ -278,11 +278,11 @@
 
   ==> Primary Basis <==
 
-  Basis Set: CC-PVDZ
-    Blend: CC-PVDZ
-    Number of shells: 6
-    Number of basis function: 10
-    Number of Cartesian functions: 10
+  Basis Set: AUG-CC-PVDZ
+    Blend: AUG-CC-PVDZ
+    Number of shells: 10
+    Number of basis function: 18
+    Number of Cartesian functions: 18
     Spherical Harmonics?: true
     Max angular momentum: 1
 
@@ -320,22 +320,15 @@
     Pruning alpha          =              1
     Radial Points          =             75
     Spherical Points       =            302
-    Total Points           =          42686
-    Total Blocks           =            384
-    Max Points             =            256
-    Max Functions          =             10
+    Total Points           =          45300
+    Total Blocks           =            414
+    Max Points             =            255
+    Max Functions          =             18
 
    => Loading Basis Set <=
 
-    Name: (CC-PVDZ AUX)
+    Name: (AUG-CC-PVDZ AUX)
     Role: JKFIT
     Keyword: DF_BASIS_SCF
     atoms 1-2 entry HE         line    39 file /home/yuming/anaconda3/envs/work/share/psi4/basis/def2-qzvpp-jkfit.gbs 
-
-   => Loading Basis Set <=
-
-    Name: CC-PVDZ
-    Role: ORBITAL
-    Keyword: BASIS
-    atoms 1-2 entry HE         line    32 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
 

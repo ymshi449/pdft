@@ -4,12 +4,12 @@ import matplotlib.pyplot as plt
 import libcubeprop
 import numpy as np
 
-bondlength = 4.522
+separation = 4.522
 functional = 'svwn'
-basis = '6-311G**'
+basis = 'cc-pvdz'
 svdc = -7
-reguc = -5
-title = "Be WuYang1b 0ghost svdc%i reguc%i" %(svdc, reguc) + basis + functional
+reguc = -3
+title = "Be WuYang1b 0ghost svdc%i reguc%i " %(svdc, reguc) + basis + functional
 print(title)
 
 psi4.set_output_file("Be2.psi4")
@@ -21,7 +21,7 @@ Be %f 0.0 0.00
 Be -%f 0.0 0.00
 units bohr
 symmetry c1
-""" % (bondlength / 2, bondlength / 2))
+""" % (separation / 2, separation / 2))
 
 Monomer_1 =  psi4.geometry("""
 nocom
@@ -30,7 +30,7 @@ Be %f 0.0 0.00
 @Be -%f 0.0 0.00
 units bohr
 symmetry c1
-""" % (bondlength / 2, bondlength / 2))
+""" % (separation / 2, separation / 2))
 
 Monomer_2 =  psi4.geometry("""
 nocom
@@ -39,7 +39,7 @@ noreorient
 Be -%f 0.0 0.00
 units bohr
 symmetry c1
-""" % (bondlength / 2, bondlength / 2))
+""" % (separation / 2, separation / 2))
 
 Full_Molec.set_name("Be2")
 
@@ -59,30 +59,30 @@ mol = pdft.U_Molecule(Full_Molec, basis, functional)
 pdfter = pdft.U_Embedding([f1, f2], mol)
 
 # pdfter.find_vp_response(21, svd_rcond=10**svdc, regul_const=10**reguc, beta=0.1, a_rho_var=1e-7)
-pdfter.find_vp_response_1basis(7, vp_nad_iter=None, beta_update=0.2,
-                               svd_rcond=10**svdc, regul_const=10**reguc,
-                               beta=0.1, a_rho_var=1e-7)
+pdfter.find_vp_response_1basis(49, vp_nad_iter=None, beta_update=0.2,
+                               svd_rcond=10**svdc, regul_const=None,
+                               beta=0.1, a_rho_var=1e-7, )
 # # pdfter.find_vp_scipy_1basis(maxiter=7)
 # # pdfter.find_vp_densitydifference(42, 1)
 #
-# vp_grid = mol.to_grid(pdfter.vp[0])
-# f,ax = plt.subplots(1,1, dpi=210)
-# ax.set_ylim(-1.5,1)
-# pdft.plot1d_x(pdfter.vp_grid, mol.Vpot, ax=ax, label="vp")
-# pdft.plot1d_x(pdfter.vp_Hext_nad, mol.Vpot, dimmer_length=bondlength, title=title, ax=ax, label="Hext")
-# pdft.plot1d_x(pdfter.vp_xc_nad, mol.Vpot, ax=ax, label="xc")
-# pdft.plot1d_x(pdfter.vp_kin_nad, mol.Vpot, ax=ax, label="kin")
-# ax.legend()
-# f.show()
-# plt.close(f)
+f,ax = plt.subplots(1,1, dpi=210)
+ax.set_ylim(-0.7,0.2)
+pdft.plot1d_x(pdfter.vp_grid, mol.Vpot, ax=ax, label="vp", color='black')
+pdft.plot1d_x(pdfter.vp_Hext_nad, mol.Vpot, dimmer_length=separation,
+              title=title, ax=ax, label="Hext", ls='--')
+pdft.plot1d_x(pdfter.vp_xc_nad, mol.Vpot, ax=ax, label="xc", ls='--')
+pdft.plot1d_x(pdfter.vp_kin_nad, mol.Vpot, ax=ax, label="kin", ls='--')
+ax.legend()
+f.show()
+plt.close(f)
 #
 # # 1D density differnece
 # nf = mol.to_grid(pdfter.fragments_Db + pdfter.fragments_Da)
 # nmol = mol.to_grid(mol.Da.np + mol.Db.np)
 # f,ax = plt.subplots(1,1)
-# # pdft.plot1d_x(nmol, mol.Vpot, dimmer_length=bondlength, ax=ax)
-# # pdft.plot1d_x(nf, mol.Vpot, dimmer_length=bondlength, ax=ax)
-# pdft.plot1d_x(nmol - nf, mol.Vpot, dimmer_length=bondlength, ax=ax)
+# # pdft.plot1d_x(nmol, mol.Vpot, dimmer_length=separation, ax=ax)
+# # pdft.plot1d_x(nf, mol.Vpot, dimmer_length=separation, ax=ax)
+# pdft.plot1d_x(nmol - nf, mol.Vpot, dimmer_length=separation, ax=ax)
 # f.show()
 # plt.close(f)
 

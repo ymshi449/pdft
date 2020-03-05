@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import libcubeprop
 import numpy as np
 
-bondlength = 4.0
+bondlength = 4.6
 psi4.set_output_file("He2")
 
 Full_Molec =  psi4.geometry( """
@@ -54,8 +54,9 @@ f2  = pdft.U_Molecule(Monomer_1,  "cc-pvdz", "svwn", jk=mol.jk)
 #Start a pdft systemm
 pdfter = pdft.U_Embedding([f1, f2], mol)
 
-energy, vp_all96, vp_fock_all96 = pdfter.find_vp_all96(100, 1000, rtol=1e-2, seperation_cutoff=bondlength/2.0)
+energy, vp_all96, vp_fock_all96 = pdfter.find_vp_all96(100, 1000, rtol=1e-2, hard_cutoff=True)
 
+pdft.plot1d_x(vp_all96, mol.Vpot)
 # #%% Running SCF without any vp.
 # pdfter.fragments_scf(max_iter=1000)
 # n_novp = mol.to_grid(pdfter.fragments_Da + pdfter.fragments_Db)
@@ -90,7 +91,7 @@ energy, vp_all96, vp_fock_all96 = pdfter.find_vp_all96(100, 1000, rtol=1e-2, sep
 # if pdfter.four_overlap is None:
 #     pdfter.four_overlap, _, _, _ = pdft.fouroverlap(pdfter.molecule.wfn, pdfter.molecule.geometry,
 #                                                     pdfter.molecule.basis, pdfter.molecule.mints)
-vp_basis_all96 = mol.to_basis(vp_all96)
+# vp_basis_all96 = mol.to_basis(vp_all96)
 # vp_fock_all96_1 = np.einsum("abcd, ab -> cd", pdfter.four_overlap, vp_basis_all96)
 # print("vp_all96 consists with vp_fock_all96?", np.allclose(vp_fock_all96_1, vp_fock_all96, atol=np.linalg.norm(vp_fock_all96)*0.1))
 # vp_all96_1 = mol.to_grid(vp_basis_all96)
@@ -101,14 +102,14 @@ vp_basis_all96 = mol.to_basis(vp_all96)
 #     pdft.plot1d_x(vp_all96_1, mol.Vpot, title="vp presented by the basis", fignum=5)
 
 # # %% Plot vp_all96 on grid.
-L = [3.0,  3.0, 3.0]
-D = [0.2, 0.2, 0.2]
-# Plot file
-O, N = libcubeprop.build_grid(mol.wfn, L, D)
-block, points, nxyz, npoints = libcubeprop.populate_grid(mol.wfn, O, N, D)
-vp_basis_all96_psi4 = psi4.core.Matrix.from_array(vp_basis_all96)
-vp_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, vp_basis_all96_psi4)
-rotated_img = scipy.ndimage.rotate(vp_cube[:, :, 19], -90)
-f, ax = plt.subplots(1, 1, figsize=(16, 12), dpi=160)
-p = ax.imshow(rotated_img, interpolation="bicubic")
-f.colorbar(p, ax=ax)
+# L = [3.0,  3.0, 3.0]
+# D = [0.2, 0.2, 0.2]
+# # Plot file
+# O, N = libcubeprop.build_grid(mol.wfn, L, D)
+# block, points, nxyz, npoints = libcubeprop.populate_grid(mol.wfn, O, N, D)
+# vp_basis_all96_psi4 = psi4.core.Matrix.from_array(vp_basis_all96)
+# vp_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, vp_basis_all96_psi4)
+# rotated_img = scipy.ndimage.rotate(vp_cube[:, :, 19], -90)
+# f, ax = plt.subplots(1, 1, figsize=(16, 12), dpi=160)
+# p = ax.imshow(rotated_img, interpolation="bicubic")
+# f.colorbar(p, ax=ax)

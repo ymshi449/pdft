@@ -7,8 +7,8 @@ import libcubeprop
 psi4.core.set_output_file("formic.psi4")
 functional = 'svwn'
 basis = 'cc-pvdz'
-svdc = -6
-reguc = -5
+svdc = -4
+reguc = -4
 title = "formic Newton svdc%i reguc %i" %(svdc, reguc) + basis + functional
 print(title)
 

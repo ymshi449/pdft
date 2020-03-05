@@ -1,9 +1,9 @@
    => Loading Basis Set <=
 
-    Name: AUG-CC-PVDZ
+    Name: CC-PVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-2 entry BE         line   103 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz.gbs 
+    atoms 1-2 entry BE         line    75 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
 
 
          ---------------------------------------------------------
@@ -51,11 +51,11 @@
 
   ==> Primary Basis <==
 
-  Basis Set: AUG-CC-PVDZ
-    Blend: AUG-CC-PVDZ
-    Number of shells: 18
-    Number of basis function: 46
-    Number of Cartesian functions: 50
+  Basis Set: CC-PVDZ
+    Blend: CC-PVDZ
+    Number of shells: 12
+    Number of basis function: 28
+    Number of Cartesian functions: 30
     Spherical Harmonics?: true
     Max angular momentum: 2
 
@@ -93,27 +93,27 @@
     Pruning alpha          =              1
     Radial Points          =             75
     Spherical Points       =            302
-    Total Points           =          45300
-    Total Blocks           =            420
-    Max Points             =            254
-    Max Functions          =             46
+    Total Points           =          44810
+    Total Blocks           =            416
+    Max Points             =            253
+    Max Functions          =             28
 
   Using in-core PK algorithm.
    Calculation information:
       Number of atoms:                   2
-      Number of AO shells:              18
-      Number of primitives:             56
-      Number of atomic orbitals:        50
-      Number of basis functions:        46
+      Number of AO shells:              12
+      Number of primitives:             50
+      Number of atomic orbitals:        30
+      Number of basis functions:        28
 
       Integral cutoff                 1.00e-12
       Number of threads:                 3
 
   Performing in-core PK
-  Using 1169642 doubles for integral storage.
-  We computed 18804 shell quartets total.
-  Whereas there are 14706 unique shell quartets.
-    27.87 percent of shell quartets recomputed by reordering.
+  Using 165242 doubles for integral storage.
+  We computed 4622 shell quartets total.
+  Whereas there are 3081 unique shell quartets.
+    50.02 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -127,10 +127,10 @@
 
    => Loading Basis Set <=
 
-    Name: AUG-CC-PVDZ
+    Name: CC-PVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-2 entry BE         line   103 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz.gbs 
+    atoms 1-2 entry BE         line    75 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
 
 
          ---------------------------------------------------------
@@ -178,11 +178,11 @@
 
   ==> Primary Basis <==
 
-  Basis Set: AUG-CC-PVDZ
-    Blend: AUG-CC-PVDZ
-    Number of shells: 18
-    Number of basis function: 46
-    Number of Cartesian functions: 50
+  Basis Set: CC-PVDZ
+    Blend: CC-PVDZ
+    Number of shells: 12
+    Number of basis function: 28
+    Number of Cartesian functions: 30
     Spherical Harmonics?: true
     Max angular momentum: 2
 
@@ -220,27 +220,27 @@
     Pruning alpha          =              1
     Radial Points          =             75
     Spherical Points       =            302
-    Total Points           =          45300
-    Total Blocks           =            420
-    Max Points             =            254
-    Max Functions          =             46
+    Total Points           =          44810
+    Total Blocks           =            416
+    Max Points             =            253
+    Max Functions          =             28
 
   Using in-core PK algorithm.
    Calculation information:
       Number of atoms:                   2
-      Number of AO shells:              18
-      Number of primitives:             56
-      Number of atomic orbitals:        50
-      Number of basis functions:        46
+      Number of AO shells:              12
+      Number of primitives:             50
+      Number of atomic orbitals:        30
+      Number of basis functions:        28
 
       Integral cutoff                 1.00e-12
       Number of threads:                 3
 
   Performing in-core PK
-  Using 1169642 doubles for integral storage.
-  We computed 18804 shell quartets total.
-  Whereas there are 14706 unique shell quartets.
-    27.87 percent of shell quartets recomputed by reordering.
+  Using 165242 doubles for integral storage.
+  We computed 4622 shell quartets total.
+  Whereas there are 3081 unique shell quartets.
+    50.02 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -254,10 +254,10 @@
 
    => Loading Basis Set <=
 
-    Name: AUG-CC-PVDZ
+    Name: CC-PVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-2 entry BE         line   103 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz.gbs 
+    atoms 1-2 entry BE         line    75 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
 
 
          ---------------------------------------------------------
@@ -305,11 +305,11 @@
 
   ==> Primary Basis <==
 
-  Basis Set: AUG-CC-PVDZ
-    Blend: AUG-CC-PVDZ
-    Number of shells: 18
-    Number of basis function: 46
-    Number of Cartesian functions: 50
+  Basis Set: CC-PVDZ
+    Blend: CC-PVDZ
+    Number of shells: 12
+    Number of basis function: 28
+    Number of Cartesian functions: 30
     Spherical Harmonics?: true
     Max angular momentum: 2
 
@@ -347,27 +347,27 @@
     Pruning alpha          =              1
     Radial Points          =             75
     Spherical Points       =            302
-    Total Points           =          45300
-    Total Blocks           =            420
-    Max Points             =            254
-    Max Functions          =             46
+    Total Points           =          44810
+    Total Blocks           =            416
+    Max Points             =            253
+    Max Functions          =             28
 
   Using in-core PK algorithm.
    Calculation information:
       Number of atoms:                   2
-      Number of AO shells:              18
-      Number of primitives:             56
-      Number of atomic orbitals:        50
-      Number of basis functions:        46
+      Number of AO shells:              12
+      Number of primitives:             50
+      Number of atomic orbitals:        30
+      Number of basis functions:        28
 
       Integral cutoff                 1.00e-12
       Number of threads:                 3
 
   Performing in-core PK
-  Using 1169642 doubles for integral storage.
-  We computed 18804 shell quartets total.
-  Whereas there are 14706 unique shell quartets.
-    27.87 percent of shell quartets recomputed by reordering.
+  Using 165242 doubles for integral storage.
+  We computed 4622 shell quartets total.
+  Whereas there are 3081 unique shell quartets.
+    50.02 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -379,6 +379,244 @@
 
     OpenMP threads:              3
 
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 3 by Python driver.
   Threads set to 1 by Python driver.
   Threads set to 3 by Python driver.
   Threads set to 1 by Python driver.

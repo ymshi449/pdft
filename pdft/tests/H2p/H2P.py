@@ -55,18 +55,23 @@ pdfter = pdft.U_Embedding([f1, f2], mol)
 
 
 # pdfter.find_vp_response(49, svd_rcond=10**svdc, regul_const=10**reguc, beta=0.1, a_rho_var=1e-7)
-pdfter.find_vp_response_1basis(147, vp_nad_component=False, svd_rcond=10**svdc, regul_const=10**reguc, beta=1, a_rho_var=1e-7)
-# pdfter.find_vp_scipy(maxiter=7, regul_const=1e-4)
-# pdfter.find_vp_scipy_1basis(maxiter=210, opt_method="trust-ncg")
-
-f,ax = plt.subplots(1,1)
-ax.set_ylim(-1.5, 0.5)
-vp_grid = mol.to_grid_1basis(pdfter.vp[0])
-# pdft.plot1d_x(pdfter.vp_Hext_nad, mol.Vpot, title=title, ax=ax)
-pdft.plot1d_x(vp_grid, mol.Vpot, title=title, ax=ax)
-# pdft.plot1d_x(pdfter.vp_Hext_nad + vp_grid, mol.Vpot, title=title, ax=ax)
+pdfter.find_vp_response_1basis(81, vp_nad_iter=None, beta_update=0.2,
+                               svd_rcond=10**svdc, regul_const=10**reguc,
+                               beta=0.1, a_rho_var=1e-7, )
+# # pdfter.find_vp_scipy_1basis(maxiter=7)
+# # pdfter.find_vp_densitydifference(42, 1)
+#
+f,ax = plt.subplots(1,1, dpi=210)
+ax.set_ylim(-2,0.2)
+pdft.plot1d_x(pdfter.vp_grid, mol.Vpot, ax=ax, label="vp")
+pdft.plot1d_x(pdfter.vp_Hext_nad, mol.Vpot, dimmer_length=2,
+              title=title, ax=ax, label="Hext", ls='--')
+pdft.plot1d_x(pdfter.vp_xc_nad, mol.Vpot, ax=ax, label="xc", ls='--')
+pdft.plot1d_x(pdfter.vp_kin_nad, mol.Vpot, ax=ax, label="kin", ls='--')
+ax.legend()
 f.show()
 plt.close(f)
+
 # #%% 1 basis 2D plot
 # L = [2.0, 2.0, 2.0]
 # D = [0.1, 0.1, 0.1]
@@ -96,11 +101,12 @@ plt.close(f)
 
 
 #%%
-pdfter.ep_conv = np.array(pdfter.ep_conv)
-plt.plot(np.log10(np.abs(pdfter.ep_conv[1:] - pdfter.ep_conv[:-1])), 'o')
-plt.title("log dEp")
-plt.show()
-#
+# pdfter.ep_conv = np.array(pdfter.ep_conv)
+# plt.plot(np.log10(np.abs(pdfter.ep_conv[1:] - pdfter.ep_conv[:-1])), 'o')
+# plt.title("log dEp")
+# plt.show()
+
+
 # for svd in np.linspace(1, 7, 20):
 #     pdfter.find_vp_response(163, svd_rcond=1e-4, regul_const=10**(-svd), beta=0.1)
 #     vp_grid = mol.to_grid(pdfter.vp[0])

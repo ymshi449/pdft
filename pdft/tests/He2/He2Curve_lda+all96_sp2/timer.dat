@@ -1,0 +1,158 @@
+
+Host: halstead-a427.rcac.purdue.edu
+
+Timers On : Fri Feb 28 11:06:46 2020
+Timers Off: Fri Feb 28 12:48:27 2020
+
+Wall Time:     6100.29 seconds
+
+                                                       Time (seconds)
+Module                                       User      System        Wall        Calls
+Total PK formation time             :      0.300u      0.167s      0.304w      1 calls
+V: Grid                             :      0.400u      1.067s      0.878w      4 calls
+JK: D                               :      0.000u      0.000s      0.002w    202 calls
+JK: USO2AO                          :      0.000u      0.000s      0.002w    202 calls
+JK: JK                              :      0.050u      0.050s      0.068w    202 calls
+PK computes JK                      :      0.050u      0.050s      0.068w    202 calls
+JK: AO2USO                          :      0.000u      0.000s      0.000w    202 calls
+
+--------------------------------------------------------------------------------------
+Total PK formation time             :      0.300u      0.167s      0.304w      1 calls
+V: Grid                             :      0.400u      1.067s      0.878w      4 calls
+JK: D                               :      0.000u      0.000s      0.002w    202 calls
+JK: USO2AO                          :      0.000u      0.000s      0.002w    202 calls
+JK: JK                              :      0.050u      0.050s      0.068w    202 calls
+| PK computes JK                    :      0.050u      0.050s      0.068w    202 calls
+JK: AO2USO                          :      0.000u      0.000s      0.000w    202 calls
+
+**************************************************************************************
+
+Host: halstead-a269.rcac.purdue.edu
+
+Timers On : Fri Feb 28 15:13:29 2020
+Timers Off: Fri Feb 28 16:56:50 2020
+
+Wall Time:     6200.53 seconds
+
+                                                       Time (seconds)
+Module                                       User      System        Wall        Calls
+V: Grid                             :      0.550u      1.783s      1.408w      4 calls
+Total PK formation time             :      0.350u      0.217s      0.345w      1 calls
+JK: D                               :      0.017u      0.000s      0.003w    214 calls
+JK: USO2AO                          :      0.000u      0.000s      0.002w    214 calls
+JK: JK                              :      0.017u      0.050s      0.040w    214 calls
+PK computes JK                      :      0.017u      0.050s      0.039w    214 calls
+JK: AO2USO                          :      0.000u      0.000s      0.000w    214 calls
+
+--------------------------------------------------------------------------------------
+V: Grid                             :      0.550u      1.783s      1.408w      4 calls
+Total PK formation time             :      0.350u      0.217s      0.345w      1 calls
+JK: D                               :      0.017u      0.000s      0.003w    214 calls
+JK: USO2AO                          :      0.000u      0.000s      0.002w    214 calls
+JK: JK                              :      0.017u      0.050s      0.040w    214 calls
+| PK computes JK                    :      0.017u      0.050s      0.039w    214 calls
+JK: AO2USO                          :      0.000u      0.000s      0.000w    214 calls
+
+**************************************************************************************
+
+Host: halstead-a240.rcac.purdue.edu
+
+Timers On : Sat Feb 29 21:52:37 2020
+Timers Off: Mon Mar  2 15:21:33 2020
+
+Wall Time:   149336.21 seconds
+
+                                                       Time (seconds)
+Module                                       User      System        Wall        Calls
+V: Grid                             :     39.283u     84.083s     73.894w    196 calls
+Total PK formation time             :     18.450u     12.350s     18.678w     49 calls
+JK: D                               :      0.017u      0.033s      0.031w   3197 calls
+JK: USO2AO                          :      0.017u      0.033s      0.027w   3197 calls
+JK: JK                              :      0.117u      0.400s      0.245w   3197 calls
+PK computes JK                      :      0.100u      0.367s      0.216w   3197 calls
+JK: AO2USO                          :      0.000u      0.000s      0.006w   3197 calls
+
+--------------------------------------------------------------------------------------
+V: Grid                             :     39.283u     84.083s     73.894w    196 calls
+Total PK formation time             :     18.450u     12.350s     18.678w     49 calls
+JK: D                               :      0.017u      0.033s      0.031w   3197 calls
+JK: USO2AO                          :      0.017u      0.033s      0.027w   3197 calls
+JK: JK                              :      0.117u      0.400s      0.245w   3197 calls
+| PK computes JK                    :      0.100u      0.367s      0.216w   3197 calls
+JK: AO2USO                          :      0.000u      0.000s      0.006w   3197 calls
+
+**************************************************************************************
+
+Host: PartitionStation
+
+Timers On : Tue Mar  3 17:20:21 2020
+Timers Off: Tue Mar  3 17:54:38 2020
+
+Wall Time:     2056.92 seconds
+
+                                                       Time (seconds)
+Module                                       User      System        Wall        Calls
+V: Grid                             :     17.083u     21.300s      2.919w     98 calls
+DFH: sparsity prep                  :      2.867u      0.050s      1.779w     98 calls
+DFH: initialize()                   :    158.950u    160.900s     25.048w     98 calls
+DFH: AO Construction                :      0.717u      0.850s      0.117w     98 calls
+DFH: AO-Met. Contraction            :      0.100u      0.067s      0.014w     98 calls
+HF: Form core H                     :      1.383u      2.300s      0.275w     98 calls
+HF: Form S/X                        :      0.150u      0.300s      0.040w     98 calls
+HF: Guess                           :    188.983u    199.533s     34.473w     98 calls
+SAD Guess                           :    176.783u    183.300s     32.311w     98 calls
+HF: Form G                          :    524.733u    256.133s     59.564w    490 calls
+UV: Form V                          :    522.633u    254.867s     59.309w    490 calls
+Properties                          :    166.933u     59.867s     17.199w 210860 calls
+Functional                          :    222.250u    123.467s     26.662w 210860 calls
+V_xc                                :    110.167u     54.950s     12.696w 210860 calls
+JK: D                               :      0.117u      0.050s      0.011w    490 calls
+JK: USO2AO                          :      0.050u      0.000s      0.005w    490 calls
+JK: JK                              :      0.817u      0.567s      0.096w    490 calls
+DFH: compute_JK()                   :      0.767u      0.533s      0.092w    490 calls
+DFH: Grabbing AOs                   :      0.000u      0.000s      0.001w    490 calls
+DFH: compute_J                      :      0.483u      0.317s      0.054w    490 calls
+JK: AO2USO                          :      0.017u      0.000s      0.001w    490 calls
+HF: Form F                          :      0.817u      0.883s      0.128w    490 calls
+HF: Form D                          :      0.750u      1.000s      0.135w    490 calls
+HF: DIIS                            :      3.667u      3.900s      0.578w    392 calls
+DIISManager::add_entry              :      0.633u      0.883s      0.138w    392 calls
+DIISManager::extrapolate            :      0.367u      0.317s      0.059w    392 calls
+bMatrix setup                       :      0.100u      0.083s      0.018w    392 calls
+bMatrix pseudoinverse               :      0.167u      0.150s      0.023w    392 calls
+New vector                          :      0.067u      0.033s      0.013w    392 calls
+HF: Form C                          :      0.317u      0.600s      0.073w    392 calls
+
+--------------------------------------------------------------------------------------
+V: Grid                             :     17.083u     21.300s      2.919w     98 calls
+DFH: sparsity prep                  :      2.867u      0.050s      1.779w     98 calls
+DFH: initialize()                   :    158.950u    160.900s     25.048w     98 calls
+| DFH: AO Construction              :      0.717u      0.850s      0.117w     98 calls
+| DFH: AO-Met. Contraction          :      0.100u      0.067s      0.014w     98 calls
+HF: Form core H                     :      1.383u      2.300s      0.275w     98 calls
+HF: Form S/X                        :      0.150u      0.300s      0.040w     98 calls
+HF: Guess                           :    188.983u    199.533s     34.473w     98 calls
+| SAD Guess                         :    176.783u    183.300s     32.311w     98 calls
+HF: Form G                          :    524.733u    256.133s     59.564w    490 calls
+| UV: Form V                        :    522.633u    254.867s     59.309w    490 calls
+| | Properties                      :    166.933u     59.867s     17.199w 210860 calls
+| | Functional                      :    222.250u    123.467s     26.662w 210860 calls
+| | V_xc                            :    110.167u     54.950s     12.696w 210860 calls
+| JK: D                             :      0.117u      0.050s      0.011w    490 calls
+| JK: USO2AO                        :      0.050u      0.000s      0.005w    490 calls
+| JK: JK                            :      0.817u      0.567s      0.096w    490 calls
+| | DFH: compute_JK()               :      0.767u      0.533s      0.092w    490 calls
+| | | DFH: Grabbing AOs             :      0.000u      0.000s      0.001w    490 calls
+| | | DFH: compute_J                :      0.483u      0.317s      0.054w    490 calls
+| JK: AO2USO                        :      0.017u      0.000s      0.001w    490 calls
+HF: Form F                          :      0.817u      0.883s      0.128w    490 calls
+HF: Form D                          :      0.750u      1.000s      0.135w    490 calls
+HF: DIIS                            :      3.667u      3.900s      0.578w    392 calls
+| DIISManager::add_entry            :      0.633u      0.883s      0.138w    392 calls
+| DIISManager::extrapolate          :      0.367u      0.317s      0.059w    392 calls
+| | bMatrix setup                   :      0.100u      0.083s      0.018w    392 calls
+| | bMatrix pseudoinverse           :      0.167u      0.150s      0.023w    392 calls
+| | New vector                      :      0.067u      0.033s      0.013w    392 calls
+HF: Form C                          :      0.317u      0.600s      0.073w    392 calls
+
+**************************************************************************************
