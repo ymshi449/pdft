@@ -2228,10 +2228,10 @@ class U_Embedding:
                     # print("\n L_old - L %.14f \n" %(L - L_old))
                     beta *= beta_update
                 L_old = L
-            if scf_step%10 == 0:
-                beta /= beta_update
-                if beta > 1:
-                    beta = 1
+                if scf_step%10 == 0:
+                    beta /= beta_update
+                    if beta > 1:
+                        beta = 1
 
             # Update vp_none_add from time to time
             if vp_nad_iter is not None:
