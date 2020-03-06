@@ -1182,8 +1182,6 @@ class U_Embedding:
                 self.fragments[i].scf(maxiter=max_iter, print_energies=printflag, vp_matrix=self.vp_fock)
         elif vp is None and (vp_fock is not None and vp_fock is not True):
             # Zero self.vp so self.vp_fock does not correspond to an old version.
-            self.vp = None
-
             self.vp_fock = vp_fock
             # Run the scf
             for i in range(self.nfragments):
@@ -1372,9 +1370,9 @@ class U_Embedding:
             vp_kin_nad = self.vp_grid - self.vp_xc_nad
             vp_xc_nad = self.vp_grid - self.vp_kin_nad
 
-        self.vp_kin_nad = vp_kin_nad
-        self.vp_xc_nad = vp_xc_nad
-        return
+        # self.vp_kin_nad = vp_kin_nad
+        # self.vp_xc_nad = vp_xc_nad
+        return vp_kin_nad, vp_xc_nad
 
     def update_oueis_retularized_vp_nad(self, dvp=None, vp_Hext_decomposition=False, Qtype='nf'):
         """
@@ -1383,11 +1381,11 @@ class U_Embedding:
         to try to regularize vp_kin_nad and vp_xc_nad.
         :return:
         """
-        self.get_oueis_retularized_vp_nad(dvp=dvp, vp_Hext_decomposition=vp_Hext_decomposition, Qtype=Qtype)
-        self.vp_grid = self.vp_kin_nad + self.vp_xc_nad + self.vp_Hext_nad
+        vp_kin_nad, vp_xc_nad = self.get_oueis_retularized_vp_nad(dvp=dvp, vp_Hext_decomposition=vp_Hext_decomposition, Qtype=Qtype)
+        vp_grid = vp_kin_nad + vp_xc_nad + self.vp_Hext_nad
         vp_fock = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(self.vp_grid))
-        self.vp_fock = [vp_fock, vp_fock]
-        return
+        vp_fock = [vp_fock, vp_fock]
+        return vp_kin_nad, vp_xc_nad, vp_grid, vp_fock
 
 
     def find_vp_densitydifference(self, maxiter, beta, guess=None, rho_std=1e-5, printflag=False):
@@ -2135,7 +2133,7 @@ class U_Embedding:
                                       jac=self.jac_1basis, hess=self.hess_1basis, method=opt_method, options=opt)
         return vp_array
 
-    def find_vp_response_1basis(self, maxiter=21, guess=None, beta=None, vp_nad_iter=None, svd_rcond=None,
+    def find_vp_response_1basis(self, maxiter=21, guess=None, mu=0.999, vp_nad_iter=None, svd_rcond=None,
                                 beta_update=None, regul_const=None, a_rho_var=1e-4,
                                 vp_norm_conv=1e-6, printflag=False):
         """
@@ -2184,7 +2182,8 @@ class U_Embedding:
         _, _, _, w = self.molecule.Vpot.get_np_xyzw()
 
         ## Tracking rho and changing beta
-        L_old = np.inf
+        old_rho_conv = np.inf
+        self.drho_conv.append(old_rho_conv)
 
         rho_molecule = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
 
@@ -2198,8 +2197,8 @@ class U_Embedding:
             self.vp_fock = [vp_totalfock, vp_totalfock]
             self.fragments_scf_1basis(1000, vp_fock=True)
 
-        if beta is None:
-            beta = 1.0
+        if mu is None:
+            mu = 1 - 1e-4
 
         self.regul_const = regul_const
 
@@ -2211,73 +2210,51 @@ class U_Embedding:
             """
             For each fragment, v_p(r) = \sum_{alpha}C_{ij}dD_{mn}\phi_i(r)\phi_j(r)(ijmn) = C_{ij}dD_{mn}\phi_i(r)\phi_j(r)(Cij)(CD)^{-1}(Dmn)
             v_{p,uv} = \sum_{alpha}C_{ij}dD_{mn}(Aij)(AB)^{-1}(Buv)(Cij)(CD)^{-1}(Dmn)
-
+            
             1) Un-orthogonalized
             2) I did not use alpha and beta wave functions to update Kai inverse. I should.
             """
-            #   Update rho and change beta
-            self.get_density_sum()
-            rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
-            old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
-            self.drho_conv.append(old_rho_conv)
-
-            if beta_update is not None:
-                L = self.lagrange_mul_1basis(self.vp[0])
-                # # Based on the naive hope, whenever the current lamdb does not improve the density, get a smaller one.
-                if L >= L_old:
-                    # print("\n L_old - L %.14f \n" %(L - L_old))
-                    beta *= beta_update
-                L_old = L
-                if scf_step%10 == 0:
-                    beta /= beta_update
-                    if beta > 1:
-                        beta = 1
-
-            # Update vp_none_add from time to time
-            if vp_nad_iter is not None:
-                if scf_step%vp_nad_iter == 0:
-                    vp_totalfock.np[:] -= vp_Hext_nad_fock
-                    self.get_vp_Hext_nad()
-                    vp_Hext_nad_fock = self.molecule.grid_to_fock(self.vp_Hext_nad)
-                    vp_totalfock.np[:] += vp_Hext_nad_fock
-                    self.vp_fock = [vp_totalfock, vp_totalfock]
-
-            print(
-                F'Iter: {scf_step - 1} beta: {beta}'
-                F' Ef: {self.ef_conv[-1]} Ep: {self.ep_conv[-1]} d_rho: {old_rho_conv}')
 
             hess = self.hess_1basis(self.vp[0])
             jac = self.jac_1basis(self.vp[0])
 
+            beta = 2
+
             # Solve by SVD
             hess_inv = np.linalg.pinv(hess, rcond=svd_rcond)
-            dvp = -hess_inv.dot(beta*jac)
+            dvp = -hess_inv.dot(jac)
             vp_change = np.linalg.norm(dvp, ord=1)
-            if True:
+            if printflag:
                 print("Solved?", np.linalg.norm(np.dot(hess, dvp) - beta*jac))
                 print("dvp norm", vp_change)
-            # vp_total += dvp
-            # self.vp = [vp_total, vp_total]
-            #
-            # dvpf = np.einsum('ijm,m->ij', self.three_overlap, dvp)
-            # dvpf = 0.5 * (dvpf + dvpf.T)
-            #
-            # vp_totalfock.np[:] += dvpf
-            # self.vp_fock = [vp_totalfock, vp_totalfock]  # Use total_vp instead of spin vp for calculation.
-            #
-            self.update_oueis_retularized_vp_nad(dvp=dvp)
 
-            # f, ax = plt.subplots(1, 1, dpi=210)
-            # ax.set_ylim(-0.5,0.2)
-            # plot1d_x(self.vp_grid, self.molecule.Vpot, ax=ax, label="vp", color="black", title=int(scf_step))
-            # plot1d_x(self.vp_Hext_nad, self.molecule.Vpot, dimmer_length=4.522, ax=ax, label="Hext", ls='--')
-            # plot1d_x(self.vp_xc_nad, self.molecule.Vpot, ax=ax, label="xc", ls='--')
-            # plot1d_x(self.vp_kin_nad, self.molecule.Vpot, ax=ax, label="kin", ls='--')
-            # ax.legend()
-            # f.show()
-            # plt.close(f)
+            while True:
+                beta *= 0.5
+                print(beta)
+                vp_kin_nad, vp_xc_nad, vp_grid, vp_fock = self.update_oueis_retularized_vp_nad(dvp=beta*dvp)
+                self.fragments_scf_1basis(1000, vp_fock=vp_fock)
+                # Instead of considering minimizing L, try minimize rho
+                #   Update rho and change beta
+                rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
+                now_drho = np.sum(np.abs(rho_fragment - rho_molecule) * w)
+                if now_drho - self.drho_conv[-1] >= mu*beta*np.sum(mu*beta*np.sum((rho_fragment - rho_molecule)
+                                                                                  * (vp_grid - self.vp_grid)) * w):
+                    print(now_drho - self.drho_conv[-1])
+                    print(mu*beta*np.sum(((rho_fragment - rho_molecule) * (vp_grid - self.vp_grid)) * w))
+                    continue
+                else:
+                    self.vp_grid = vp_grid
+                    self.vp_fock = vp_fock
+                    self.vp_kin_nad = vp_kin_nad
+                    self.vp_xc_nad = vp_xc_nad
+                    old_rho_conv = now_drho
+                    self.drho_conv.append(old_rho_conv)
+                    last_beta = beta
+                    break
 
-            self.fragments_scf_1basis(1000, vp_fock=True)
+            print(
+                F'Iter: {scf_step} beta: {last_beta}'
+                F' Ef: {self.ef_conv[-1]} Ep: {self.ep_conv[-1]} d_rho: {old_rho_conv}')
 
             if beta < 1e-7:
                 print("Break because even small step length can not improve.")

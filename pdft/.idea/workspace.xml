@@ -4,6 +4,7 @@
     <list default="true" id="295c1b98-c97b-4f68-8e97-b43fcc4eaef6" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/pdft.py" beforeDir="false" afterPath="$PROJECT_DIR$/pdft.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/H2p/H2P.psi4" beforeDir="false" afterPath="$PROJECT_DIR$/tests/H2p/H2P.psi4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/H2p/H2P.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/H2p/H2P.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -26,14 +27,27 @@
     <select />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.5613661">
+    <splitter split-orientation="horizontal" split-proportion="0.69210243">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/pdft.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="710">
-                  <caret line="2233" column="32" lean-forward="true" selection-start-line="2233" selection-start-column="32" selection-end-line="2233" selection-end-column="32" />
+                <state relative-caret-position="290">
+                  <caret line="2237" column="81" selection-start-line="2237" selection-start-column="81" selection-end-line="2237" selection-end-column="81" />
+                  <folding>
+                    <element signature="e#49715#54236#0" />
+                    <element signature="e#54353#61649#0" />
+                    <element signature="e#61689#64106#0" />
+                    <element signature="e#64145#65706#0" />
+                    <element signature="e#65754#67293#0" />
+                    <element signature="e#67398#69264#0" />
+                    <element signature="e#69557#76268#0" />
+                    <element signature="e#76220#78312#0" />
+                    <element signature="e#78352#79592#0" />
+                    <element signature="e#79641#81218#0" />
+                    <element signature="e#81347#83940#0" />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -66,8 +80,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/tests/H2p/H2P.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="507">
-                  <caret line="102" selection-start-line="102" selection-end-line="106" selection-end-column="12" />
+                <state relative-caret-position="300">
+                  <caret line="59" column="31" selection-start-line="59" selection-start-column="31" selection-end-line="59" selection-end-column="31" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
                   </folding>
@@ -169,7 +183,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="y" value="25" />
     <option name="width" value="1920" />
     <option name="height" value="1055" />
@@ -241,7 +255,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.Be">
+  <component name="RunManager" selected="Python.H2P">
     <configuration name="Be" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="pdft" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -370,8 +384,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.Be" />
         <item itemvalue="Python.H2P" />
+        <item itemvalue="Python.Be" />
         <item itemvalue="Python.He2" />
         <item itemvalue="Python.He2all96" />
         <item itemvalue="Python.formic" />
@@ -399,12 +413,12 @@
       <workItem from="1583154962881" duration="11395000" />
       <workItem from="1583249853619" duration="7857000" />
       <workItem from="1583327922990" duration="21651000" />
-      <workItem from="1583419692925" duration="8996000" />
+      <workItem from="1583419692925" duration="14598000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="227857000" />
+    <option name="totallyTimeSpent" value="233459000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="-2" width="1920" height="1082" extended-state="6" />
@@ -533,8 +547,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/H2p/H2P.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="507">
-          <caret line="102" selection-start-line="102" selection-end-line="106" selection-end-column="12" />
+        <state relative-caret-position="300">
+          <caret line="59" column="31" selection-start-line="59" selection-start-column="31" selection-end-line="59" selection-end-column="31" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
@@ -543,8 +557,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pdft.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="710">
-          <caret line="2233" column="32" lean-forward="true" selection-start-line="2233" selection-start-column="32" selection-end-line="2233" selection-end-column="32" />
+        <state relative-caret-position="290">
+          <caret line="2237" column="81" selection-start-line="2237" selection-start-column="81" selection-end-line="2237" selection-end-column="81" />
+          <folding>
+            <element signature="e#49715#54236#0" />
+            <element signature="e#54353#61649#0" />
+            <element signature="e#61689#64106#0" />
+            <element signature="e#64145#65706#0" />
+            <element signature="e#65754#67293#0" />
+            <element signature="e#67398#69264#0" />
+            <element signature="e#69557#76268#0" />
+            <element signature="e#76220#78312#0" />
+            <element signature="e#78352#79592#0" />
+            <element signature="e#79641#81218#0" />
+            <element signature="e#81347#83940#0" />
+          </folding>
         </state>
       </provider>
     </entry>
