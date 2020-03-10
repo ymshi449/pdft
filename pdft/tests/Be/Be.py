@@ -7,9 +7,10 @@ import numpy as np
 separation = 4.522
 functional = 'svwn'
 basis = 'cc-pvdz'
-svdc = -7
+svdc = -4
 reguc = -3
-title = "Be WuYang1b 0ghost svdc%i reguc%i " %(svdc, reguc) + basis + functional
+# title = "Be WuYang1b Yan Q[nf] v[nf] svdc%i reguc%i " %(svdc, reguc) + basis + functional
+title = "Be DD + WuYang " + basis + functional
 print(title)
 
 psi4.set_output_file("Be2.psi4")
@@ -57,16 +58,15 @@ mol = pdft.U_Molecule(Full_Molec, basis, functional)
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
-
+pdfter.find_vp_densitydifference(32, 4)
 # pdfter.find_vp_response(21, svd_rcond=10**svdc, regul_const=10**reguc, beta=0.1, a_rho_var=1e-7)
-pdfter.find_vp_response_1basis(49, vp_nad_iter=None, beta_update=0.2,
-                               svd_rcond=10**svdc, regul_const=None,
-                               beta=0.1, a_rho_var=1e-7, )
+pdfter.find_vp_response_1basis(42, guess=True,
+                               beta=1, beta_update=0.2, a_rho_var=1e-7, printflag=True,
+                               Qtype="nf")
 # # pdfter.find_vp_scipy_1basis(maxiter=7)
-# # pdfter.find_vp_densitydifference(42, 1)
 #
 f,ax = plt.subplots(1,1, dpi=210)
-ax.set_ylim(-0.7,0.2)
+ax.set_ylim(-0.9, 0.2)
 pdft.plot1d_x(pdfter.vp_grid, mol.Vpot, ax=ax, label="vp", color='black')
 pdft.plot1d_x(pdfter.vp_Hext_nad, mol.Vpot, dimmer_length=separation,
               title=title, ax=ax, label="Hext", ls='--')
@@ -74,6 +74,7 @@ pdft.plot1d_x(pdfter.vp_xc_nad, mol.Vpot, ax=ax, label="xc", ls='--')
 pdft.plot1d_x(pdfter.vp_kin_nad, mol.Vpot, ax=ax, label="kin", ls='--')
 ax.legend()
 f.show()
+f.savefig(title)
 plt.close(f)
 #
 # # 1D density differnece

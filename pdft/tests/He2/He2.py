@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import libcubeprop
 import numpy as np
 
-bondlength = 6.0
+separation = 6.0
 functional = 'svwn'
 basis = 'aug-cc-pvdz'
 svdc = -5
@@ -24,7 +24,7 @@ He %f 0.0 0.00
 He -%f 0.0 0.00
 units bohr
 symmetry c1
-""" % (bondlength / 2, bondlength / 2))
+""" % (separation / 2, separation / 2))
 
 Monomer_1 =  psi4.geometry("""
 nocom
@@ -33,7 +33,7 @@ He %f 0.0 0.00
 @He -%f 0.0 0.00
 units bohr
 symmetry c1
-""" % (bondlength / 2, bondlength / 2))
+""" % (separation / 2, separation / 2))
 
 Monomer_2 =  psi4.geometry("""
 nocom
@@ -42,7 +42,7 @@ noreorient
 He -%f 0.0 0.00
 units bohr
 symmetry c1
-""" % (bondlength / 2, bondlength / 2))
+""" % (separation / 2, separation / 2))
 
 Full_Molec.set_name("He2")
 
@@ -67,28 +67,29 @@ f2  = pdft.U_Molecule(Monomer_1,  basis, functional, jk=mol.jk)
 pdfter = pdft.U_Embedding([f1, f2], mol)
 
 #%% Running SCF with svwn
-pdfter.find_vp_response(35, svd_rcond=10**svdc, regul_const=10**reguc, beta_update=0.5,
-                               beta=0.7, a_rho_var=1e-8)
+pdfter.find_vp_response_1basis(49, vp_nad_iter=None, beta_update=0.2,
+                               # svd_rcond=10**svdc, regul_const=None,
+                               beta=0.1, a_rho_var=1e-7)
 
-vp_grid = mol.to_grid(pdfter.vp[0])
-f,ax = plt.subplots(1,1)
-# ax.set_ylim(-1,0.5)
-# pdft.plot1d_x(pdfter.vp_Hext_nad, mol.Vpot, dimmer_length=bondlength, title=title, ax=ax)
-pdft.plot1d_x(vp_grid, mol.Vpot, dimmer_length=bondlength, title=title, ax=ax)
-# pdft.plot1d_x(pdfter.vp_Hext_nad + vp_grid, mol.Vpot, dimmer_length=bondlength, title=title, ax=ax)
+f,ax = plt.subplots(1,1, dpi=210)
+pdft.plot1d_x(pdfter.vp_grid, mol.Vpot, ax=ax, label="vp", color='black')
+pdft.plot1d_x(pdfter.vp_Hext_nad, mol.Vpot, dimmer_length=separation,
+              title=title, ax=ax, label="Hext", ls='--')
+pdft.plot1d_x(pdfter.vp_xc_nad, mol.Vpot, ax=ax, label="xc", ls='--')
+pdft.plot1d_x(pdfter.vp_kin_nad, mol.Vpot, ax=ax, label="kin", ls='--')
+ax.legend()
 f.show()
 plt.close(f)
-
 # #%% Get vp_all96
 # vp_all96, vp_fock_all96 = pdfter.vp_all96()
 # print("vp all96", vp_fock_all96)
-# pdft.plot1d_x(vp_all96, mol.Vpot, title="vp all96:" + str(bondlength), fignum=2)
+# pdft.plot1d_x(vp_all96, mol.Vpot, title="vp all96:" + str(separation), fignum=2)
 # #%% Running SCF with vp_all96
 # vp_fock_psi4 = psi4.core.Matrix.from_array(vp_fock_all96)
 # pdfter.fragments_scf(max_iter=1000, vp=True, vp_fock=[vp_fock_psi4, vp_fock_psi4])
 # n_all96 = mol.to_grid(pdfter.fragments_Da + pdfter.fragments_Db)
-# pdft.plot1d_x(n_all96 - n_novp, mol.Vpot, title="density difference all96 - novp" + str(bondlength), fignum=3)
-# pdft.plot1d_x(n_all96 - n_svwn, mol.Vpot, title="density difference all96 - svwn" + str(bondlength), fignum=4)
+# pdft.plot1d_x(n_all96 - n_novp, mol.Vpot, title="density difference all96 - novp" + str(separation), fignum=3)
+# pdft.plot1d_x(n_all96 - n_svwn, mol.Vpot, title="density difference all96 - svwn" + str(separation), fignum=4)
 # #%% Campare density difference
 # w = mol.Vpot.get_np_xyzw()[-1]
 # print("==========DENSITY DIFFERENCE==========")
