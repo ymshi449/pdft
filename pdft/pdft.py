@@ -2030,19 +2030,13 @@ class U_Embedding:
         # print("Jac norm:", np.linalg.norm(jac))
         return -jac
 
-    def lagrange_mul_1basis(self, vp):
+    def lagrange_mul_1basis(self, vp, vp_fock):
         """
         Return Lagrange Multipliers (G) value. on 1 basis.
         :return: L
         """
         if self.three_overlap is None:
             self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap())
-
-        # If the vp stored is not the same as the vp we got, re-run scp calculations and update vp.
-        if not np.linalg.norm(vp - self.vp[0]) < 1e-7:
-            # update vp and vp fock
-            self.vp = [vp, vp]
-            self.fragments_scf_1basis(1000, vp=True)
 
         Ef = self.ef_conv[-1]
         Ep = self.ep_conv[-1]
@@ -2052,8 +2046,7 @@ class U_Embedding:
         density_difference_b = self.fragments_Db - self.molecule.Db.np
 
         L = Ef
-        L += np.sum(self.vp_fock[0].np*(density_difference_a + density_difference_b))
-
+        L += np.sum(vp_fock*(density_difference_a + density_difference_b))
 
         # Regularization
         if self.regul_const is not None:
@@ -2070,7 +2063,6 @@ class U_Embedding:
         self.drho_conv.append(rho_conv)
         # self.ep_conv.append(Ep)
         self.lagrange.append(-L)
-
         # print("-L:", -L, "Int_vp_drho:", L-Ef, "Ef:", Ef, "Ep: ", Ep, "drho:", rho_conv)
         return -L
 
@@ -2190,6 +2182,7 @@ class U_Embedding:
         old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
         print("Initial dn:", old_rho_conv)
         self.drho_conv.append(old_rho_conv)
+        L_old = self.lagrange_mul_1basis(self.vp[0], self.vp_fock[0].np)
 
         self.vp_grid = 0
 
@@ -2204,6 +2197,7 @@ class U_Embedding:
         #     self.fragments_scf_1basis(1000, vp_fock=True)
 
         self.regul_const = regul_const
+
 
         print("<<<<<<<<<<<<<<<<<<<<<<WuYang 1 basis manual Newton<<<<<<<<<<<<<<<<<<<")
         for scf_step in range(1, maxiter + 1):
@@ -2272,43 +2266,36 @@ class U_Embedding:
             #         self.drho_conv.append(old_rho_conv)
             #         last_beta = beta
             #         break
-
             if svd_rcond is not None:
                 hess_inv = np.linalg.pinv(hess, rcond=svd_rcond)
                 dvp = - hess_inv.dot(jac)
-                vp_change = np.linalg.norm(dvp, ord=1)
-                if printflag:
-                    print("Solved?", np.linalg.norm(np.dot(hess, dvp) - beta * jac))
-                    print("dvp norm", vp_change)
                 beta = 2
                 while True:
                     beta *= 0.5
                     if beta < 1e-7:
-                        print("No beta will work.")
                         return
-                    print(beta)
-                    # Traditional WuYang
 
+                    vp_temp = self.vp[0] + beta * dvp
                     dvpf = np.einsum('ijm,m->ij', self.three_overlap, beta * dvp)
                     dvpf = 0.5 * (dvpf + dvpf.T)
                     vp_fock_temp = psi4.core.Matrix.from_array(self.vp_fock[0].np + dvpf)
                     self.fragments_scf_1basis(300, vp_fock=[vp_fock_temp, vp_fock_temp])
-                    # Instead of considering minimizing L, try minimize rho
-                    #   Update rho and change beta
+
+                    L = self.lagrange_mul_1basis(vp_temp, vp_fock_temp.np)
                     rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
-                    now_drho = np.sum(np.abs(rho_fragment - rho_molecule) * w)
 
                     dvp_grid = self.molecule.to_grid(beta * dvp)
 
-                    if now_drho - self.drho_conv[-1] <= mu * beta * np.sum(
+                    if L - L_old <= mu * beta * np.sum(
                             (rho_fragment - rho_molecule) * dvp_grid * w) and np.sum(
                             (rho_fragment - rho_molecule) * dvp_grid * w) < 0:
-                        print(now_drho - self.drho_conv[-1])
-                        print(mu * beta * np.sum(((rho_fragment - rho_molecule) * dvp_grid) * w))
-                        self.vp = [vp_total + beta * dvp, vp_total + beta * dvp]
+
+                        L_old = L
+                        self.vp = [vp_temp, vp_temp]
                         self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
-                        old_rho_conv = now_drho
-                        self.drho_conv.append(old_rho_conv)
+                        rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
+                        now_drho = np.sum(np.abs(rho_fragment - rho_molecule) * w)
+                        self.drho_conv.append(now_drho)
                         break
             else:
                 # Loop for SVD
@@ -2325,34 +2312,29 @@ class U_Embedding:
                             svd_flag = False
                             break
                         # Traditional WuYang
+                        vp_temp = self.vp[0] + beta * dvp
                         dvpf = np.einsum('ijm,m->ij', self.three_overlap, beta * dvp)
                         dvpf = 0.5 * (dvpf + dvpf.T)
                         vp_fock_temp = psi4.core.Matrix.from_array(self.vp_fock[0].np + dvpf)
                         self.fragments_scf_1basis(300, vp_fock=[vp_fock_temp, vp_fock_temp])
-                        # Instead of considering minimizing L, try minimize rho
-                        #   Update rho and change beta
+                        vp_temp = self.vp[0] + beta * dvp
+                        L = self.lagrange_mul_1basis(vp_temp, vp_fock_temp.np)
                         rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
-                        now_drho = np.sum(np.abs(rho_fragment - rho_molecule) * w)
 
                         dvp_grid = self.molecule.to_grid(beta * dvp)
-
-                        if now_drho - self.drho_conv[-1] <= mu * beta * np.sum(
+                        print("dL", L - L_old)
+                        print(np.sum(
+                                (rho_fragment - rho_molecule) * dvp_grid * w))
+                        if L - L_old <= mu * beta * np.sum(
                                 (rho_fragment - rho_molecule) * dvp_grid * w) and np.sum((rho_fragment -
                                                                                           rho_molecule) * dvp_grid * w) < 0:
-                            # print(now_drho - self.drho_conv[-1])
-                            # print(mu * beta * np.sum(((rho_fragment - rho_molecule) * dvp_grid) * w))
-                            self.vp = [self.vp[0] + beta * dvp, self.vp[1] + beta * dvp]
-                            # vp_grid = self.molecule.to_grid(self.vp[0])
+                            L_old = L
+                            self.vp = [vp_temp, vp_temp]
                             self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
-                            # print("Max vp_grid:", np.max(np.abs(vp_grid)), "Norm vp:", np.linalg.norm(self.vp[0]),
-                            #       "Norm vp fock:", np.linalg.norm(self.vp_fock[0].np))
-
-                            old_rho_conv = now_drho
-                            self.drho_conv.append(old_rho_conv)
+                            now_drho = np.sum(np.abs(rho_fragment - rho_molecule) * w)
+                            self.drho_conv.append(now_drho)
                             svd_flag = True
                             break
-                        else:
-                            continue
                     if svd_flag:
                         break
                     elif i == 8:
@@ -2364,7 +2346,7 @@ class U_Embedding:
 
             print(
                 F'Iter: {scf_step} beta: {beta} SVD: {10 ** -i}'
-                F' Ef: {self.ef_conv[-1]} Ep: {self.ep_conv[-1]} d_rho: {old_rho_conv}')
+                F' Ef: {self.ef_conv[-1]} Ep: {self.ep_conv[-1]} d_rho: {self.drho_conv[-1]}')
 
             if beta < 1e-7:
                 print("Break because even small step length can not improve.")

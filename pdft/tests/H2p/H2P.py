@@ -8,8 +8,8 @@ psi4.set_output_file("H2P.psi4")
 functional = 'svwn'
 basis = 'cc-pvtz'
 svdc = -4
-reguc = -4
-title = "H2p svd_step lower svdc%i reguc%i" %(svdc, reguc) + basis + functional
+reguc = -7
+title = "H2p BT" + basis + functional
 print(title)
 Monomer_1 =  psi4.geometry("""
 nocom
@@ -58,9 +58,8 @@ pdfter = pdft.U_Embedding([f1, f2], mol)
 
 # pdfter.find_vp_densitydifference(32, 4)
 # pdfter.find_vp_response(21, svd_rcond=10**svdc, regul_const=10**reguc, beta=0.1, a_rho_var=1e-7)
-pdfter.find_vp_response_1basis(42,
-                               beta=1, beta_update=0.2, a_rho_var=1e-7, printflag=True,
-                               Qtype="nf")
+pdfter.find_vp_response_1basis(42, regul_const=10**reguc,
+                               beta=1, a_rho_var=1e-7, printflag=True)
 # # pdfter.find_vp_scipy_1basis(maxiter=7)
 # # pdfter.find_vp_densitydifference(42, 1)
 #
