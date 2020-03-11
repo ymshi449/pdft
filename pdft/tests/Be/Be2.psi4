@@ -11,7 +11,7 @@
                by Justin Turney, Rob Parrish, Andy Simmonett
                           and Daniel G. A. Smith
                               UKS Reference
-                        3 Threads,    500 MiB Core
+                        2 Threads,    500 MiB Core
          ---------------------------------------------------------
 
   ==> Geometry <==
@@ -107,13 +107,13 @@
       Number of basis functions:        28
 
       Integral cutoff                 1.00e-12
-      Number of threads:                 3
+      Number of threads:                 2
 
   Performing in-core PK
   Using 165242 doubles for integral storage.
-  We computed 4622 shell quartets total.
+  We computed 3774 shell quartets total.
   Whereas there are 3081 unique shell quartets.
-    50.02 percent of shell quartets recomputed by reordering.
+    22.49 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -123,7 +123,7 @@
     Memory [MiB]:              953
     Schwarz Cutoff:          1E-12
 
-    OpenMP threads:              3
+    OpenMP threads:              2
 
    => Loading Basis Set <=
 
@@ -138,7 +138,7 @@
                by Justin Turney, Rob Parrish, Andy Simmonett
                           and Daniel G. A. Smith
                               UKS Reference
-                        3 Threads,    500 MiB Core
+                        2 Threads,    500 MiB Core
          ---------------------------------------------------------
 
   ==> Geometry <==
@@ -234,13 +234,13 @@
       Number of basis functions:        28
 
       Integral cutoff                 1.00e-12
-      Number of threads:                 3
+      Number of threads:                 2
 
   Performing in-core PK
   Using 165242 doubles for integral storage.
-  We computed 4622 shell quartets total.
+  We computed 3774 shell quartets total.
   Whereas there are 3081 unique shell quartets.
-    50.02 percent of shell quartets recomputed by reordering.
+    22.49 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -250,7 +250,7 @@
     Memory [MiB]:              953
     Schwarz Cutoff:          1E-12
 
-    OpenMP threads:              3
+    OpenMP threads:              2
 
    => Loading Basis Set <=
 
@@ -265,7 +265,7 @@
                by Justin Turney, Rob Parrish, Andy Simmonett
                           and Daniel G. A. Smith
                               UKS Reference
-                        3 Threads,    500 MiB Core
+                        2 Threads,    500 MiB Core
          ---------------------------------------------------------
 
   ==> Geometry <==
@@ -361,13 +361,13 @@
       Number of basis functions:        28
 
       Integral cutoff                 1.00e-12
-      Number of threads:                 3
+      Number of threads:                 2
 
   Performing in-core PK
   Using 165242 doubles for integral storage.
-  We computed 4622 shell quartets total.
+  We computed 3774 shell quartets total.
   Whereas there are 3081 unique shell quartets.
-    50.02 percent of shell quartets recomputed by reordering.
+    22.49 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -377,299 +377,12 @@
     Memory [MiB]:              953
     Schwarz Cutoff:          1E-12
 
-    OpenMP threads:              3
+    OpenMP threads:              2
 
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 3 by Python driver.
+   => Loading Basis Set <=
+
+    Name: (CC-PVDZ AUX)
+    Role: JKFIT
+    Keyword: DF_BASIS_SCF
+    atoms 1-2 entry BE         line   101 file /home/yuming/anaconda3/envs/work/share/psi4/basis/def2-qzvpp-jkfit.gbs 
+

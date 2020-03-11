@@ -5,11 +5,11 @@ import numpy as np
 import libcubeprop
 
 psi4.set_output_file("H2P.psi4")
-functional = 'b3lyp'
-basis = 'cc-pvdz'
-svdc = -5
+functional = 'svwn'
+basis = 'cc-pvtz'
+svdc = -4
 reguc = -4
-title = "H2p WuYang1b svdc%i reguc%i" %(svdc, reguc) + basis + functional
+title = "H2p svd_step lower svdc%i reguc%i" %(svdc, reguc) + basis + functional
 print(title)
 Monomer_1 =  psi4.geometry("""
 nocom
@@ -55,22 +55,25 @@ pdfter = pdft.U_Embedding([f1, f2], mol)
 
 
 # pdfter.find_vp_response(49, svd_rcond=10**svdc, regul_const=10**reguc, beta=0.1, a_rho_var=1e-7)
-pdfter.find_vp_response_1basis(81, vp_nad_iter=None, beta_update=0.2,
-                               svd_rcond=10**svdc, regul_const=10**reguc,
-                               a_rho_var=1e-7, )
+
+# pdfter.find_vp_densitydifference(32, 4)
+# pdfter.find_vp_response(21, svd_rcond=10**svdc, regul_const=10**reguc, beta=0.1, a_rho_var=1e-7)
+pdfter.find_vp_response_1basis(42,
+                               beta=1, beta_update=0.2, a_rho_var=1e-7, printflag=True,
+                               Qtype="nf")
 # # pdfter.find_vp_scipy_1basis(maxiter=7)
 # # pdfter.find_vp_densitydifference(42, 1)
 #
-f,ax = plt.subplots(1,1, dpi=210)
-ax.set_ylim(-2,0.2)
-pdft.plot1d_x(pdfter.vp_grid, mol.Vpot, ax=ax, label="vp")
-pdft.plot1d_x(pdfter.vp_Hext_nad, mol.Vpot, dimmer_length=2,
-              title=title, ax=ax, label="Hext", ls='--')
-pdft.plot1d_x(pdfter.vp_xc_nad, mol.Vpot, ax=ax, label="xc", ls='--')
-pdft.plot1d_x(pdfter.vp_kin_nad, mol.Vpot, ax=ax, label="kin", ls='--')
-ax.legend()
-f.show()
-plt.close(f)
+# f,ax = plt.subplots(1,1, dpi=210)
+# ax.set_ylim(-2,0.2)
+# pdft.plot1d_x(pdfter.vp_grid, mol.Vpot, ax=ax, label="vp")
+# pdft.plot1d_x(pdfter.vp_Hext_nad, mol.Vpot, dimmer_length=2,
+#               title=title, ax=ax, label="Hext", ls='--')
+# pdft.plot1d_x(pdfter.vp_xc_nad, mol.Vpot, ax=ax, label="xc", ls='--')
+# pdft.plot1d_x(pdfter.vp_kin_nad, mol.Vpot, ax=ax, label="kin", ls='--')
+# ax.legend()
+# f.show()
+# plt.close(f)
 
 # #%% 1 basis 2D plot
 # L = [2.0, 2.0, 2.0]
