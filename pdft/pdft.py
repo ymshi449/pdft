@@ -2132,7 +2132,7 @@ class U_Embedding:
 
     def find_vp_response_1basis(self, maxiter=21, guess=None, beta=None, vp_nad_iter=None, Qtype='nf', vstype='nf',
                                 svd_rcond=None, mu=1e-4,
-                                beta_update=None, regul_const=None, a_rho_var=1e-4,
+                                beta_BackTracking=None, regul_const=None, a_rho_var=1e-4,
                                 vp_norm_conv=1e-6, printflag=False):
         """
         Using the inverse of static response function to update dvp from a dn.
@@ -2231,121 +2231,163 @@ class U_Embedding:
             # With Yan's trick bu updating dvp
             # self.update_oueis_retularized_vp_nad(dvp=dvp)
 
-            # f, ax = plt.subplots(1, 1, dpi=210)
-            # ax.set_ylim(-2,0.2)
-            # plot1d_x(self.vp_grid, self.molecule.Vpot, ax=ax, label="vp", color="black", title=str(int(scf_step))+ '-')
-            # plot1d_x(self.vp_Hext_nad, self.molecule.Vpot, dimmer_length=4.522, ax=ax, label="Hext", ls='--')
-            # plot1d_x(self.vp_xc_nad, self.molecule.Vpot, ax=ax, label="xc", ls='--')
-            # plot1d_x(self.vp_kin_nad, self.molecule.Vpot, ax=ax, label="kin", ls='--')
-            # ax.legend()
-            # f.savefig("H2p svd_step vs[" + vstype + "]Q["+Qtype+"]""-" + str(int(scf_step)))
-            # plt.close(f)
-
-            # while True:
-            #     beta *= 0.5
-            #     print(beta)
-            #     vp_kin_nad, vp_xc_nad, vp_grid, vp_fock = self.update_oueis_retularized_vp_nad(dvp=beta*dvp)
-            #     self.fragments_scf_1basis(1000, vp_fock=vp_fock)
-            #     # Instead of considering minimizing L, try minimize rho
-            #     #   Update rho and change beta
-            #     rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
-            #     now_drho = np.sum(np.abs(rho_fragment - rho_molecule) * w)
-            #     if now_drho - self.drho_conv[-1] > mu*beta*np.sum(mu*beta*np.sum((rho_fragment - rho_molecule)
-            #                                                                       * (vp_grid - self.vp_grid)) * w):
-            #         print(now_drho - self.drho_conv[-1])
-            #         print(mu*beta*np.sum(((rho_fragment - rho_molecule) * (vp_grid - self.vp_grid)) * w))
-            #         continue
-            #     else:
-            #         print(now_drho - self.drho_conv[-1])
-            #         print(mu*beta*np.sum(((rho_fragment - rho_molecule) * (vp_grid - self.vp_grid)) * w))
-            #         self.vp_grid = vp_grid
-            #         self.vp_fock = vp_fock
-            #         self.vp_kin_nad = vp_kin_nad
-            #         self.vp_xc_nad = vp_xc_nad
-            #         old_rho_conv = now_drho
-            #         self.drho_conv.append(old_rho_conv)
-            #         last_beta = beta
-            #         break
+            # Solve by SVD
             if svd_rcond is not None:
                 hess_inv = np.linalg.pinv(hess, rcond=svd_rcond)
-                dvp = - hess_inv.dot(jac)
-                beta = 2
-                while True:
-                    beta *= 0.5
-                    if beta < 1e-7:
-                        return
-
-                    vp_temp = self.vp[0] + beta * dvp
-                    dvpf = np.einsum('ijm,m->ij', self.three_overlap, beta * dvp)
-                    dvpf = 0.5 * (dvpf + dvpf.T)
-                    vp_fock_temp = psi4.core.Matrix.from_array(self.vp_fock[0].np + dvpf)
-                    self.fragments_scf_1basis(300, vp_fock=[vp_fock_temp, vp_fock_temp])
-
-                    L = self.lagrange_mul_1basis(vp_temp, vp_fock_temp.np)
-                    rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
-
-                    dvp_grid = self.molecule.to_grid(beta * dvp)
-
-                    if L - L_old <= mu * beta * np.sum(
-                            (rho_fragment - rho_molecule) * dvp_grid * w) and np.sum(
-                            (rho_fragment - rho_molecule) * dvp_grid * w) < 0:
-
-                        L_old = L
-                        self.vp = [vp_temp, vp_temp]
-                        self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
-                        rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
-                        now_drho = np.sum(np.abs(rho_fragment - rho_molecule) * w)
-                        self.drho_conv.append(now_drho)
-                        break
+                dvp = -hess_inv.dot(jac)
+                vp_change = np.linalg.norm(dvp, ord=1)
             else:
-                # Loop for SVD
-                for i in range(2, 9):
+                vp_change_last = 1e7
+                for i in np.linspace(1, 10, 20):
                     # Solve by SVD
                     hess_inv = np.linalg.pinv(hess, rcond=10 ** -i)
-                    dvp = - hess_inv.dot(jac)
-                    vp_change = np.linalg.norm(dvp, ord=1)
-                    beta = 2
-                    while True:
-                        beta *= 0.5
-                        if beta < 1e-3:
-                            # print("No beta will work for this svd:", i)
-                            svd_flag = False
-                            break
-                        # Traditional WuYang
-                        vp_temp = self.vp[0] + beta * dvp
-                        dvpf = np.einsum('ijm,m->ij', self.three_overlap, beta * dvp)
-                        dvpf = 0.5 * (dvpf + dvpf.T)
-                        vp_fock_temp = psi4.core.Matrix.from_array(self.vp_fock[0].np + dvpf)
-                        self.fragments_scf_1basis(300, vp_fock=[vp_fock_temp, vp_fock_temp])
-                        vp_temp = self.vp[0] + beta * dvp
-                        L = self.lagrange_mul_1basis(vp_temp, vp_fock_temp.np)
-                        rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
-
-                        dvp_grid = self.molecule.to_grid(beta * dvp)
-                        print("dL", L - L_old)
-                        print(np.sum(
-                                (rho_fragment - rho_molecule) * dvp_grid * w))
-                        if L - L_old <= mu * beta * np.sum(
-                                (rho_fragment - rho_molecule) * dvp_grid * w) and np.sum((rho_fragment -
-                                                                                          rho_molecule) * dvp_grid * w) < 0:
-                            L_old = L
-                            self.vp = [vp_temp, vp_temp]
-                            self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
-                            now_drho = np.sum(np.abs(rho_fragment - rho_molecule) * w)
-                            self.drho_conv.append(now_drho)
-                            svd_flag = True
-                            break
-                    if svd_flag:
+                    dvp_temp = -hess_inv.dot(jac)
+                    vp_change = np.linalg.norm(dvp_temp, ord=1)
+                    if vp_change/vp_change_last > 10 and i > 1:
+                        dvp = dvp_last
                         break
-                    elif i == 8:
-                        print("NO SVD AND BETA WORK.")
-                        self.update_oueis_retularized_vp_nad(Qtype=Qtype, vstype=vstype,
-                                                             vp_Hext_decomposition=False if (
-                                                                         vp_nad_iter is None) else True)
-                        return
+                    dvp_last = dvp_temp
+                    vp_change_last = vp_change
+
+            # # BT for beta with L
+            # beta = 2.0
+            # while True:
+            #     beta *= 0.5
+            #     if beta < 1e-7:
+            #         print("No beta will work for this svd:")
+            #         self.update_oueis_retularized_vp_nad(Qtype=Qtype, vstype=vstype,
+            #                                              vp_Hext_decomposition=False if (vp_nad_iter is None) else True)
+            #         return
+            #     # Traditional WuYang
+            #     vp_temp = self.vp[0] + beta * dvp
+            #     dvpf = np.einsum('ijm,m->ij', self.three_overlap, beta * dvp)
+            #     dvpf = 0.5 * (dvpf + dvpf.T)
+            #     vp_fock_temp = psi4.core.Matrix.from_array(self.vp_fock[0].np + dvpf)
+            #     self.fragments_scf_1basis(300, vp_fock=[vp_fock_temp, vp_fock_temp])
+            #     vp_temp = self.vp[0] + beta * dvp
+            #     L = self.lagrange_mul_1basis(vp_temp, vp_fock_temp.np)
+            #     rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
+            #
+            #     dvp_grid = self.molecule.to_grid(beta * dvp)
+            #     if L - L_old <= mu * beta * np.sum(
+            #             (rho_fragment - rho_molecule) * dvp_grid * w) and np.sum((rho_fragment -
+            #                                                                       rho_molecule) * dvp_grid * w) < 0:
+            #         L_old = L
+            #         self.vp = [vp_temp, vp_temp]
+            #         self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
+            #         now_drho = np.sum(np.abs(rho_fragment - rho_molecule) * w)
+            #         self.drho_conv.append(now_drho)
+            #         break
+
+            # BT for beta with dn
+            beta = 2.0
+            while True:
+                beta *= 0.5
+                print(beta)
+                vp_kin_nad, vp_xc_nad, vp_grid, vp_fock = self.update_oueis_retularized_vp_nad(dvp=beta*dvp)
+                self.fragments_scf_1basis(1000, vp_fock=vp_fock)
+                # Instead of considering minimizing L, try minimize rho
+                #   Update rho and change beta
+                rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
+                now_drho = np.sum(np.abs(rho_fragment - rho_molecule) * w)
+                if now_drho - self.drho_conv[-1] > mu*beta*np.sum(mu*beta*np.sum((rho_fragment - rho_molecule)
+                                                                                  * (vp_grid - self.vp_grid)) * w):
+                    print(now_drho - self.drho_conv[-1])
+                    print(mu*beta*np.sum(((rho_fragment - rho_molecule) * (vp_grid - self.vp_grid)) * w))
+                    continue
+                else:
+                    print(now_drho - self.drho_conv[-1])
+                    print(mu*beta*np.sum(((rho_fragment - rho_molecule) * (vp_grid - self.vp_grid)) * w))
+                    self.vp_grid = vp_grid
+                    self.vp_fock = vp_fock
+                    self.vp_kin_nad = vp_kin_nad
+                    self.vp_xc_nad = vp_xc_nad
+                    old_rho_conv = now_drho
+                    self.drho_conv.append(old_rho_conv)
+                    last_beta = beta
+                    break
+
+            # BT for svd and beta
+            # if svd_rcond is not None:
+            #     hess_inv = np.linalg.pinv(hess, rcond=svd_rcond)
+            #     dvp = - hess_inv.dot(jac)
+            #     beta = 2
+            #     while True:
+            #         beta *= 0.5
+            #         if beta < 1e-7:
+            #             return
+            #
+            #         vp_temp = self.vp[0] + beta * dvp
+            #         dvpf = np.einsum('ijm,m->ij', self.three_overlap, beta * dvp)
+            #         dvpf = 0.5 * (dvpf + dvpf.T)
+            #         vp_fock_temp = psi4.core.Matrix.from_array(self.vp_fock[0].np + dvpf)
+            #         self.fragments_scf_1basis(300, vp_fock=[vp_fock_temp, vp_fock_temp])
+            #
+            #         L = self.lagrange_mul_1basis(vp_temp, vp_fock_temp.np)
+            #         rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
+            #
+            #         dvp_grid = self.molecule.to_grid(beta * dvp)
+            #
+            #         if L - L_old <= mu * beta * np.sum(
+            #                 (rho_fragment - rho_molecule) * dvp_grid * w) and np.sum(
+            #                 (rho_fragment - rho_molecule) * dvp_grid * w) < 0:
+            #
+            #             L_old = L
+            #             self.vp = [vp_temp, vp_temp]
+            #             self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
+            #             rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
+            #             now_drho = np.sum(np.abs(rho_fragment - rho_molecule) * w)
+            #             self.drho_conv.append(now_drho)
+            #             break
+            # else:
+            #     # Loop for SVD
+            #     for i in range(2, 9):
+            #         # Solve by SVD
+            #         hess_inv = np.linalg.pinv(hess, rcond=10 ** -i)
+            #         dvp = - hess_inv.dot(jac)
+            #         vp_change = np.linalg.norm(dvp, ord=1)
+            #         beta = 2
+            #         while True:
+            #             beta *= 0.5
+            #             if beta < 1e-3:
+            #                 # print("No beta will work for this svd:", i)
+            #                 svd_flag = False
+            #                 break
+            #             # Traditional WuYang
+            #             vp_temp = self.vp[0] + beta * dvp
+            #             dvpf = np.einsum('ijm,m->ij', self.three_overlap, beta * dvp)
+            #             dvpf = 0.5 * (dvpf + dvpf.T)
+            #             vp_fock_temp = psi4.core.Matrix.from_array(self.vp_fock[0].np + dvpf)
+            #             self.fragments_scf_1basis(300, vp_fock=[vp_fock_temp, vp_fock_temp])
+            #             vp_temp = self.vp[0] + beta * dvp
+            #             L = self.lagrange_mul_1basis(vp_temp, vp_fock_temp.np)
+            #             rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
+            #
+            #             dvp_grid = self.molecule.to_grid(beta * dvp)
+            #             print("dL", L - L_old)
+            #             print(np.sum(
+            #                     (rho_fragment - rho_molecule) * dvp_grid * w))
+            #             if L - L_old <= mu * beta * np.sum(
+            #                     (rho_fragment - rho_molecule) * dvp_grid * w) and np.sum((rho_fragment -
+            #                                                                               rho_molecule) * dvp_grid * w) < 0:
+            #                 L_old = L
+            #                 self.vp = [vp_temp, vp_temp]
+            #                 self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
+            #                 now_drho = np.sum(np.abs(rho_fragment - rho_molecule) * w)
+            #                 self.drho_conv.append(now_drho)
+            #                 svd_flag = True
+            #                 break
+            #         if svd_flag:
+            #             break
+            #         elif i == 8:
+            #             print("NO SVD AND BETA WORK.")
+            #             self.update_oueis_retularized_vp_nad(Qtype=Qtype, vstype=vstype,
+            #                                                  vp_Hext_decomposition=False if (
+            #                                                              vp_nad_iter is None) else True)
+            #             return
 
             print(
-                F'Iter: {scf_step} beta: {beta} SVD: {10 ** -i}'
+                F'Iter: {scf_step} beta: {beta} SVD: {svd_rcond}'
                 F' Ef: {self.ef_conv[-1]} Ep: {self.ep_conv[-1]} d_rho: {self.drho_conv[-1]}')
 
             if beta < 1e-7:
@@ -2814,3 +2856,14 @@ def plot1d_x(data, Vpot, dimmer_length=None, title=None,
             ax.set_title(title)
     if ax is None:
         plt.show()
+
+def inv_pinv(a, rcond):
+    u, s, vt = np.linalg.svd(a, full_matrices=False, hermitian=False)
+
+    # discard small singular values
+    cutoff = rcond * np.amax(s, axis=-1, keepdims=True)
+    large = s < cutoff
+    s = np.divide(1, s, where=large, out=s)
+    s[~large] = 0
+    res = np.matmul(np.transpose(vt), np.multiply(s[..., None], np.transpose(u)))
+    return res
