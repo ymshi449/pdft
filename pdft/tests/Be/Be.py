@@ -60,7 +60,7 @@ mol = pdft.U_Molecule(Full_Molec, basis, functional)
 pdfter = pdft.U_Embedding([f1, f2], mol)
 # pdfter.find_vp_densitydifference(15, 4)
 # pdfter.find_vp_response(21, guess=True, svd_rcond=10**svdc, beta=0.1, a_rho_var=1e-7)
-pdfter.find_vp_response_1basis(42, svd_rcond=10**svdc, beta=1, a_rho_var=1e-5, printflag=True)
+pdfter.find_vp_response_1basis(42, svd_rcond=10**svdc, beta_method=1, a_rho_var=1e-5, printflag=True)
 # # pdfter.find_vp_scipy_1basis(maxiter=7)
 #
 f,ax = plt.subplots(1,1, dpi=210)

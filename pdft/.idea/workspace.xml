@@ -10,9 +10,11 @@
       <change beforePath="$PROJECT_DIR$/tests/H2p/H2P.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/H2p/H2P.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/He2/He2" beforeDir="false" afterPath="$PROJECT_DIR$/tests/He2/He2" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/He2/He2.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/He2/He2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/He2/He2Curve.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/.ipynb_checkpoints/Fitting-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/.ipynb_checkpoints/Fitting-checkpoint.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/Fitting.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/Fitting.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/timer.dat" beforeDir="false" afterPath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/timer.dat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/HeALL96" beforeDir="false" afterPath="$PROJECT_DIR$/tests/He2/HeALL96" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -21,27 +23,17 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.6456777">
+    <splitter split-orientation="horizontal" split-proportion="0.423159">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/pdft.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="250">
-                  <caret line="2242" column="48" selection-start-line="2242" selection-start-column="48" selection-end-line="2242" selection-end-column="48" />
+                <state relative-caret-position="380">
+                  <caret line="2142" column="26" selection-start-line="2142" selection-start-column="26" selection-end-line="2142" selection-end-column="26" />
                   <folding>
-                    <element signature="e#96372#106895#0" />
-                    <element signature="e#107000#110142#0" />
+                    <element signature="e#98549#109072#0" />
                   </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$USER_HOME$/anaconda3/envs/work/lib/python3.7/site-packages/numpy/linalg/linalg.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="501">
-                  <caret line="1977" column="12" selection-start-line="1977" selection-start-column="12" selection-end-line="1977" selection-end-column="12" />
                 </state>
               </provider>
             </entry>
@@ -65,11 +57,29 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/tests/Be/Be.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="280">
-                  <caret line="14" selection-start-line="14" selection-end-line="14" />
+                <state relative-caret-position="420">
+                  <caret line="57" selection-start-line="57" selection-end-line="57" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
                   </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/tests/He2/He2Curve.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="-120">
+                  <caret line="54" selection-start-line="54" selection-end-line="54" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/tests/He2/He2all96.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="1420">
+                  <caret line="71" selection-start-line="71" selection-end-line="71" />
                 </state>
               </provider>
             </entry>
@@ -94,22 +104,24 @@
       <list>
         <option value="$PROJECT_DIR$/tests/H2p/H2P.py" />
         <option value="$USER_HOME$/anaconda3/envs/work/lib/python3.7/site-packages/numpy/linalg/linalg.py" />
-        <option value="$PROJECT_DIR$/tests/Be/Be.py" />
+        <option value="$PROJECT_DIR$/tests/He2/He2Curve.py" />
         <option value="$PROJECT_DIR$/pdft.py" />
+        <option value="$PROJECT_DIR$/tests/Be/Be.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
-    <option name="x" value="41" />
-    <option name="y" value="110" />
-    <option name="width" value="1717" />
-    <option name="height" value="943" />
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="1920" />
+    <option name="y" value="169" />
+    <option name="width" value="1920" />
+    <option name="height" value="911" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -126,19 +138,18 @@
               <item name="pdft" type="b2602c69:ProjectViewProjectNode" />
               <item name="pdft" type="462c0819:PsiDirectoryNode" />
               <item name="tests" type="462c0819:PsiDirectoryNode" />
-              <item name="Be" type="462c0819:PsiDirectoryNode" />
+              <item name="H2p" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="pdft" type="b2602c69:ProjectViewProjectNode" />
               <item name="pdft" type="462c0819:PsiDirectoryNode" />
               <item name="tests" type="462c0819:PsiDirectoryNode" />
-              <item name="H2p" type="462c0819:PsiDirectoryNode" />
+              <item name="He2" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -165,11 +176,14 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.Be">
+  <component name="RunManager" selected="Python.He2Curve">
     <configuration name="Be" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="pdft" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/Be" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -207,6 +221,25 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="He2Curve" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="pdft" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/He2" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tests/He2/He2Curve.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="pdft" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -231,6 +264,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.He2Curve" />
         <item itemvalue="Python.Be" />
         <item itemvalue="Python.H2P" />
       </list>
@@ -250,15 +284,15 @@
       <workItem from="1583941233698" duration="12875000" />
       <workItem from="1584021953078" duration="609000" />
       <workItem from="1584039618814" duration="5730000" />
+      <workItem from="1584288039578" duration="3389000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="20065000" />
+    <option name="totallyTimeSpent" value="23454000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="-2" width="1920" height="1082" extended-state="6" />
-    <editor active="true" />
+    <frame x="1920" y="-2" width="1920" height="1082" extended-state="6" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.2497332" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -275,11 +309,11 @@
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Terminal" order="11" />
-      <window_info anchor="bottom" x="1920" y="57" width="1920" height="1023" id="Python Console" order="12" type="WINDOWED" weight="0.32948583" />
+      <window_info anchor="bottom" x="0" y="157" width="1920" height="1025" id="Python Console" maximized="true" order="12" type="WINDOWED" weight="0.32948583" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" x="-137" y="118" width="1717" height="935" id="SciView" maximized="true" order="3" type="WINDOWED" visible="true" weight="0.32977587" />
+      <window_info anchor="right" x="-137" y="118" width="1717" height="935" id="SciView" maximized="true" order="3" type="WINDOWED" weight="0.32977587" />
       <window_info anchor="right" x="0" y="0" width="430" height="882" id="Documentation" order="4" side_tool="true" weight="0.32977587" />
       <window_info anchor="right" id="Database" order="5" />
     </layout>
@@ -288,16 +322,6 @@
     <option name="version" value="1" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/tests/H2p/H2P.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1120">
-          <caret line="60" column="56" selection-start-line="60" selection-start-column="56" selection-end-line="60" selection-end-column="56" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/anaconda3/envs/work/lib/python3.7/site-packages/IPython/core/interactiveshell.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="308">
@@ -326,6 +350,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/tests/H2p/H2P.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1120">
+          <caret line="60" column="56" selection-start-line="60" selection-start-column="56" selection-end-line="60" selection-end-column="56" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$USER_HOME$/anaconda3/envs/work/lib/python3.7/site-packages/numpy/linalg/linalg.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="501">
@@ -333,23 +367,36 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/Be/Be.py">
+    <entry file="file://$PROJECT_DIR$/tests/He2/He2all96.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="280">
-          <caret line="14" selection-start-line="14" selection-end-line="14" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="1420">
+          <caret line="71" selection-start-line="71" selection-end-line="71" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/He2/He2Curve.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-120">
+          <caret line="54" selection-start-line="54" selection-end-line="54" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pdft.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="250">
-          <caret line="2242" column="48" selection-start-line="2242" selection-start-column="48" selection-end-line="2242" selection-end-column="48" />
+        <state relative-caret-position="380">
+          <caret line="2142" column="26" selection-start-line="2142" selection-start-column="26" selection-end-line="2142" selection-end-column="26" />
           <folding>
-            <element signature="e#96372#106895#0" />
-            <element signature="e#107000#110142#0" />
+            <element signature="e#98549#109072#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/Be/Be.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="420">
+          <caret line="57" selection-start-line="57" selection-end-line="57" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
           </folding>
         </state>
       </provider>

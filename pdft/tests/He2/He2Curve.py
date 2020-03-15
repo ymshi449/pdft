@@ -24,7 +24,7 @@ f2_energy = []
 ep = []
 nuclear_nad = []
 vp_svwn = []
-for bondlength in np.linspace(4, 20, 49):
+for bondlength in np.linspace(4, 20, 10):
     print("============%f==============" % bondlength)
     Full_Molec =  psi4.geometry("""
     nocom
@@ -64,7 +64,7 @@ for bondlength in np.linspace(4, 20, 49):
     pdfter = pdft.U_Embedding([f1, f2], mol)
 
     # Run with vp = vp_all96
-    energy, vp_all96, vp_fock_all96 = pdfter.find_vp_all96(100, 1000, rtol=1e-2, seperation_cutoff=bondlength/2.0)
+    energy, vp_all96, vp_fock_all96 = pdfter.find_vp_all96(100, 1000, rtol=1e-2, separation_cutoff=bondlength/2.0)
     # From Hartree to Ry
     energy = energy * 2.0
 
