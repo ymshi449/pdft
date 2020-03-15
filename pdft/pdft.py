@@ -1102,11 +1102,10 @@ class U_Embedding:
         elif vp is None and (vp_fock is not None and vp_fock is not True):
             # Zero self.vp so self.vp_fock does not correspond to an old version.
             # self.vp = None
-
-            self.vp_fock = vp_fock
+            # self.vp_fock = vp_fock
             # Run the scf
             for i in range(self.nfragments):
-                self.fragments[i].scf(maxiter=max_iter, print_energies=printflag, vp_matrix=self.vp_fock)
+                self.fragments[i].scf(maxiter=max_iter, print_energies=printflag, vp_matrix=vp_fock)
 
         elif vp is True and (vp_fock is not None and vp_fock is not True):
             self.vp_fock = vp_fock
@@ -1397,7 +1396,7 @@ class U_Embedding:
         return vp_kin_nad, vp_xc_nad, vp_grid, vp_fock
 
 
-    def find_vp_densitydifference(self, maxiter, beta, guess=None, rho_std=1e-5, printflag=False):
+    def find_vp_densitydifference(self, maxiter, beta_method="Density", guess=None, mu=1e-4, rho_std=1e-5, printflag=False):
         """
         Given a target function, finds vp_matrix to be added to each fragment
         ks matrix to match full molecule energy/density
@@ -1446,40 +1445,90 @@ class U_Embedding:
         beta_lastupdate_iter = 0
         rho_convergence = []
         rho_molecule = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
+        rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
+        old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
+        print("Initial dn:", old_rho_conv)
+        self.drho_conv.append(old_rho_conv)
+        if beta_method == "Lagrangian":
+            L_old = self.lagrange_mul(self.vp[0])
+        self.vp_grid = 0
 
         ## vp update start
         for scf_step in range(1,maxiter+1):
-            self.get_density_sum()
-            ## Tracking rho and changing beta
-            rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
-            # Based on a naive hope, whenever the current beta does not improve the density, get a smaller one.
-            if old_rho_conv < np.sum(np.abs(rho_fragment - rho_molecule)*w):
-                beta *= 0.7
-                beta_lastupdate_iter = scf_step
-            # If some beta has beed used for a more than a long period, try to increase it to converge faster.
-            elif (scf_step - beta_lastupdate_iter) > 3:
-                beta /= 0.8
-                beta_lastupdate_iter = scf_step
-            old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule)*w)
-            rho_convergence.append(old_rho_conv)
+            dvp_a = self.fragments_Da - self.molecule.Da.np
+            dvp_b = self.fragments_Db - self.molecule.Db.np
 
-            print(F'Iter: {scf_step-1} beta: {beta} Ef: {self.ef_conv[-1]} Ep: {self.ep_conv[-1]} d_rho: {old_rho_conv}')
+            dvp = dvp_a + dvp_b
+            dvp = 0.5 * (dvp + dvp.T)
 
-            delta_vp_a = beta * (self.fragments_Da - self.molecule.Da.np)
-            delta_vp_b = beta * (self.fragments_Db - self.molecule.Db.np)
-            delta_vp_a = 0.5 * (delta_vp_a + delta_vp_a.T)
-            delta_vp_b = 0.5 * (delta_vp_b + delta_vp_b.T)
+            dvp_a_fock = np.einsum('ijmn,mn->ij', self.four_overlap, dvp_a)
+            dvp_b_fock = np.einsum('ijmn,mn->ij', self.four_overlap, dvp_b)
 
-            vp_total += delta_vp_a + delta_vp_b
-            self.vp = [vp_total, vp_total]
+            dvpf = dvp_a_fock + dvp_b_fock
+            dvpf = 0.5 * (dvpf + dvpf.T)
 
-            delta_vp_a = np.einsum('ijmn,mn->ij', self.four_overlap, delta_vp_a)
-            delta_vp_b = np.einsum('ijmn,mn->ij', self.four_overlap, delta_vp_b)
+            if type(beta_method) is int or type(beta_method) is float:
+                beta = beta_method
+                # Traditional WuYang
+                vp_total += beta * dvp
+                self.vp = [vp_total, vp_total]
+                vp_totalfock.np[:] += beta * dvpf
+                self.vp_fock = [vp_totalfock, vp_totalfock]  # Use total_vp instead of spin vp for calculation.
+                self.fragments_scf(300, vp_fock=self.vp_fock)
+            elif beta_method == "Lagrangian":
+                # BT for beta with L
+                beta = 2.0
+                while True:
+                    beta *= 0.5
+                    print(beta)
+                    if beta < 1e-7:
+                        print("No beta %e will work" % beta)
+                        return
+                    # Traditional WuYang
+                    vp_temp = self.vp[0] + beta * dvp
+                    vp_fock_temp = psi4.core.Matrix.from_array(self.vp_fock[0].np + beta * dvpf)
+                    self.fragments_scf(300, vp_fock=[vp_fock_temp, vp_fock_temp])
+                    L = self.lagrange_mul(vp_temp)
+                    rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
 
-            vp_totalfock.np[:] += delta_vp_a + delta_vp_b
-            self.vp_fock = [vp_totalfock, vp_totalfock] # Use total_vp instead of spin vp for calculation.
+                    dvp_grid = self.molecule.to_grid(beta * dvp)
+                    if L - L_old <= mu * beta * np.sum(
+                            (rho_molecule - rho_fragment) * dvp_grid * w) and np.sum((rho_molecule -
+                                                                                      rho_fragment) * dvp_grid * w) < 0:
+                        L_old = L
+                        self.vp = [vp_temp, vp_temp]
+                        self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
+                        now_drho = np.sum(np.abs(rho_fragment - rho_molecule) * w)
+                        self.drho_conv.append(now_drho)
+                        break
+            elif beta_method == "Density":
+                # BT for beta with dn
+                beta = 2.0
+                while True:
+                    beta *= 0.5
+                    print(beta)
+                    if beta < 1e-7:
+                        print("No beta %e will work" % beta)
+                        return
+                    vp_temp = self.vp[0] + beta * dvp
+                    vp_fock_temp = psi4.core.Matrix.from_array(self.vp_fock[0].np + beta * dvpf)
+                    self.fragments_scf(300, vp_fock=[vp_fock_temp, vp_fock_temp])
+                    rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
+                    now_drho = np.sum(np.abs(rho_fragment - rho_molecule) * w)
+                    dvp_grid = self.molecule.to_grid(beta * dvp)
+                    print(now_drho - self.drho_conv[-1])
+                    print(mu * beta * np.sum((rho_fragment - rho_molecule) * dvp_grid * w))
+                    if now_drho - self.drho_conv[-1] <= mu * beta * np.sum((rho_molecule - rho_fragment)
+                                                                            * dvp_grid * w) and np.sum((rho_molecule -
+                                                                                                        rho_fragment) * dvp_grid * w) < 0:
+                        self.vp = [vp_temp, vp_temp]
+                        self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
+                        self.drho_conv.append(now_drho)
+                        break
+            else:
+                NameError("No BackTracking method named " + str(beta_method))
 
-            self.fragments_scf(1000, vp=True, vp_fock=True)
+            print(F'Iter: {scf_step} beta: {beta} Ef: {self.ef_conv[-1]} Ep: {self.ep_conv[-1]} d_rho: {self.drho_conv[-1]}')
 
             if beta < 1e-7:
                 print("Break because even small step length can not improve.")
@@ -1488,9 +1537,6 @@ class U_Embedding:
                 if np.std(rho_convergence[-4:]) < rho_std:
                     print("Break because rho does update for 5 iter")
                     break
-            elif (self.ep_conv[-1] - self.ep_conv[-2])/self.ep_conv[-2] < 1e-5:
-                print("Ep converged.")
-                break
             elif old_rho_conv < rho_std:
                 print("Break because rho difference (cost) is small.")
                 break
@@ -2251,9 +2297,9 @@ class U_Embedding:
             if type(beta_method) is int or type(beta_method) is float:
                 beta = beta_method
                 # Traditional WuYang
-                vp_total += dvp
+                vp_total += beta * dvp
                 self.vp = [vp_total, vp_total]
-                dvpf = np.einsum('ijm,m->ij', self.three_overlap, dvp)
+                dvpf = np.einsum('ijm,m->ij', self.three_overlap, beta * dvp)
                 dvpf = 0.5 * (dvpf + dvpf.T)
                 vp_totalfock.np[:] += dvpf
                 self.vp_fock = [vp_totalfock, vp_totalfock]  # Use total_vp instead of spin vp for calculation.
@@ -2272,7 +2318,7 @@ class U_Embedding:
                 while True:
                     beta *= 0.5
                     if beta < 1e-7:
-                        print("No beta %f will work for this svd" % beta)
+                        print("No beta %e will work for this svd" % beta)
                         self.update_oueis_retularized_vp_nad(Qtype=Qtype, vstype=vstype,
                                                              vp_Hext_decomposition=False if (vp_nad_iter is None) else True)
                         return
@@ -2301,7 +2347,7 @@ class U_Embedding:
                 while True:
                     beta *= 0.5
                     if beta < 1e-7:
-                        print("No beta %f will work for this svd" % beta)
+                        print("No beta %e will work for this svd" % beta)
                         self.update_oueis_retularized_vp_nad(Qtype=Qtype, vstype=vstype,
                                                              vp_Hext_decomposition=False if (vp_nad_iter is None) else True)
                         return

@@ -58,21 +58,34 @@ mol = pdft.U_Molecule(Full_Molec, basis, functional)
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
-# pdfter.find_vp_densitydifference(15, 4)
+pdfter.find_vp_densitydifference(42)
 # pdfter.find_vp_response(21, guess=True, svd_rcond=10**svdc, beta=0.1, a_rho_var=1e-7)
-pdfter.find_vp_response_1basis(42, beta_method="Density", a_rho_var=1e-5)
+pdfter.find_vp_response_1basis(42, guess=True, beta_method="Density", a_rho_var=1e-5)
 # # pdfter.find_vp_scipy_1basis(maxiter=7)
 #
 f,ax = plt.subplots(1,1, dpi=210)
 ax.set_ylim(-1.2, 0.2)
 pdft.plot1d_x(pdfter.vp_grid, mol.Vpot, ax=ax, label="vp", color='black')
 pdft.plot1d_x(pdfter.vp_Hext_nad, mol.Vpot, dimmer_length=separation,
-              title=title + str(pdfter.drho_conv[-1]), ax=ax, label="Hext", ls='--')
+              title="vp" + title + str(pdfter.drho_conv[-1]), ax=ax, label="Hext", ls='--')
 pdft.plot1d_x(pdfter.vp_xc_nad, mol.Vpot, ax=ax, label="xc", ls='--')
 pdft.plot1d_x(pdfter.vp_kin_nad, mol.Vpot, ax=ax, label="kin", ls='--')
 ax.legend()
 f.show()
-f.savefig(title)
+f.savefig("vp" + title)
+plt.close(f)
+
+vp_grid_DD = mol.to_grid(pdfter.vp_last[0])
+vp_grid_WY = mol.to_grid(pdfter.vp[0])
+f,ax = plt.subplots(1,1, dpi=210)
+ax.set_ylim(-1.2, 0.2)
+pdft.plot1d_x(pdfter.vp_grid, mol.Vpot, ax=ax, label="vp", color='black')
+pdft.plot1d_x(vp_grid_DD, mol.Vpot, ax=ax, label="vp_DD")
+pdft.plot1d_x(vp_grid_WY, mol.Vpot, dimmer_length=separation,
+              title="vpDD+WY" + title + str(pdfter.drho_conv[-1]), ax=ax, label="vp_WY")
+ax.legend()
+f.show()
+f.savefig("vpDD+WY" + title)
 plt.close(f)
 #
 # # 1D density differnece
