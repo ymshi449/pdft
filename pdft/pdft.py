@@ -2602,7 +2602,7 @@ class U_Embedding:
 
         return rho_convergence, Ep_convergence
 
-    def find_vp_all96(self, vp_maxiter, scf_maxiter, guess=None, rtol=1e-3, hard_cutoff=None):
+    def find_vp_all96(self, vp_maxiter, scf_maxiter, guess=None, rtol=1e-3, separation_cutoff=None, hard_cutoff=None):
         """
         vp = vp_non-local = vp_all96. Total scf iteration max = vp_maxiter*scf_maxiter*num_fragments + entire system scf
         :param vp_maxiter: maximum num of vp update iteration needed.
@@ -2621,15 +2621,15 @@ class U_Embedding:
         :return:
         """
         # Find some a vp with density difference method.
-        self.find_vp_response(49, beta=0.1, svd_rcond=1e-4)
+        self.find_vp_densitydifference(49, 2)
         # self.fragments_scf(100)
 
         all96_e_old = np.inf
         vp_fock_all96_old = 0.0
-        for vp_step in range(1, vp_maxiter+1):
+        for vp_step in range(1, vp_maxiter + 1):
             self.get_density_sum()
             # Initial vp_all96
-            all96_e, vp_all96, vp_fock_all96 = self.vp_all96(hard_cutoff=hard_cutoff)
+            all96_e, vp_all96, vp_fock_all96 = self.vp_all96(separation_cutoff=separation_cutoff)
 
             # Check if vp_all96 consists with vp_fock_all96
             vp_fock_temp = self.molecule.grid_to_fock(vp_all96)
@@ -2639,7 +2639,7 @@ class U_Embedding:
 
             vp_fock_total = self.vp_fock[0]
             vp_fock_total.np[:] += vp_fock_all96
-            self.vp_fock = [vp_fock_total,vp_fock_total]
+            self.vp_fock = [vp_fock_total, vp_fock_total]
 
             self.fragments_scf(scf_maxiter, vp_fock=self.vp_fock)
 
@@ -2653,14 +2653,19 @@ class U_Embedding:
                     np.linalg.norm(vp_fock_all96_old - vp_fock_all96) < rtol:
                 print("ALL96 Energy Converged:", all96_e)
                 print("Iteration % i, ALL96 E %.14f, ALL96 E difference %.14f" % (
-                vp_step, all96_e, abs((all96_e_old - all96_e) / all96_e)))
+                    vp_step, all96_e, abs((all96_e_old - all96_e) / all96_e)))
                 break
-            print("Iteration % i, ALL96 E %.14f, ALL96 E difference %.14f" % (vp_step, all96_e, abs((all96_e_old - all96_e) / all96_e)))
+            print("Iteration % i, ALL96 E %.14f, ALL96 E difference %.14f" % (
+            vp_step, all96_e, abs((all96_e_old - all96_e) / all96_e)))
             all96_e_old = all96_e
             vp_fock_all96_old = vp_fock_all96
+        f, ax = plt.subplots(1, 1)
+        plot1d_x(vp_all96, self.molecule.Vpot, dimmer_length=4, ax=ax, title="He2 svwn sp2 ")
+        # f.savefig("He2 svwn sp2 " + str(int(seperation_cutoff*2*100)))
+        plt.close(f)
         return all96_e, vp_all96, vp_fock_all96
 
-    def vp_all96(self, beta=6, hard_cutoff=None):
+    def vp_all96(self, beta=6, separation_cutoff=None, hard_cutoff=None):
         """
         Return vp on grid and vp_fock on the basis for a specific density.
         :para seperation_cutoff: a very crude cutoff to avoid singularity: if a piece |r1-r2| is smaller than this value,
@@ -2708,7 +2713,8 @@ class U_Embedding:
             # Copmute block-rho and block-gamma
             rho1 = 2.0 * np.einsum('pm,mn,pn->p', l_phi, lD1, l_phi, optimize=True)
 
-            total_rho1 = 2.0 * np.einsum('pm,mn,pn->p', l_phi, lD1 + self.fragments[1].Da.np[(l_lpos[:, None], l_lpos)], l_phi,
+            total_rho1 = 2.0 * np.einsum('pm,mn,pn->p', l_phi, lD1 + self.fragments[1].Da.np[(l_lpos[:, None], l_lpos)],
+                                         l_phi,
                                          optimize=True)
 
             # 2.0 for Px D P + P D Px, 2.0 for non-spin Density
@@ -2731,7 +2737,6 @@ class U_Embedding:
             dvp_l = np.zeros(l_npoints)
             # Loop over the inner set of blocks
             for r_block in range(self.molecule.Vpot.nblocks()):
-
                 r_grid = self.molecule.Vpot.get_block(r_block)
                 r_w = np.array(r_grid.w())
                 r_x = np.array(r_grid.x())
@@ -2739,9 +2744,9 @@ class U_Embedding:
                 r_z = np.array(r_grid.z())
                 r_npoints = r_w.shape[0]
 
-                # if hard_cutoff is not None and np.all((l_x[:, None] * r_x) >= 0):
-                #     w2_old += r_npoints
-                #     continue
+                if hard_cutoff is not None and np.all((l_x[:, None] * r_x) >= 0):
+                    w2_old += r_npoints
+                    continue
 
                 points_func.compute_points(r_grid)
                 r_lpos = np.array(r_grid.functions_local_to_global())
@@ -2755,7 +2760,8 @@ class U_Embedding:
                 # Build a local slice of D
                 lD2 = self.fragments[1].Da.np[(r_lpos[:, None], r_lpos)]
 
-                total_rho2 = 2.0 * np.einsum('pm,mn,pn->p', r_phi, self.fragments[0].Da.np[(r_lpos[:, None], r_lpos)] + lD2, r_phi,
+                total_rho2 = 2.0 * np.einsum('pm,mn,pn->p', r_phi,
+                                             self.fragments[0].Da.np[(r_lpos[:, None], r_lpos)] + lD2, r_phi,
                                              optimize=True)
 
                 # Copmute block-rho and block-gamma
@@ -2784,7 +2790,9 @@ class U_Embedding:
                 if hard_cutoff is not None:
                     R_hard_cut = (l_x[:, None] * r_x) < 0
                     # R6inv = R2 ** -3 * R_hard_cut
-                    R6inv = R2 ** -3 * (R2 > 4.6/4)
+                    R6inv = R2 ** -3 * R_hard_cut
+                elif separation_cutoff is not None:
+                    R6inv = R2 ** -3 * (R2 > separation_cutoff ** 2)
                 else:
                     R6inv = R2 ** -3
 
