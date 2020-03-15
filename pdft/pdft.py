@@ -1003,6 +1003,9 @@ class U_Embedding:
         # vp
         self.vp_fock = None
         self.vp      = None  # Real function on basis
+        # Used to store vp from last method when switch between 1basis and 2basis.
+        # Remember to plot this part.
+        self.vp_last = None
         self.vp_grid = None
 
         self.four_overlap = None
@@ -1358,6 +1361,8 @@ class U_Embedding:
         """
         if dvp is None:
             self.vp_grid = self.molecule.to_grid(self.vp[0])
+            if self.vp_last is not None:
+                self.vp_grid += self.molecule.to_grid(self.vp_last[0])
         else:
             if self.vp_grid is not None:
                 self.vp_grid += self.molecule.to_grid(dvp)
@@ -1483,6 +1488,9 @@ class U_Embedding:
                 if np.std(rho_convergence[-4:]) < rho_std:
                     print("Break because rho does update for 5 iter")
                     break
+            elif (self.ep_conv[-1] - self.ep_conv[-2])/self.ep_conv[-2] < 1e-5:
+                print("Ep converged.")
+                break
             elif old_rho_conv < rho_std:
                 print("Break because rho difference (cost) is small.")
                 break
@@ -2164,7 +2172,12 @@ class U_Embedding:
 
             self.fragments_scf_1basis(1000, vp=True, vp_fock=True)
         elif guess is True:
-            vp_total = self.vp[0]
+            if self.vp[0].ndim == 2:
+                self.vp_last = self.vp
+                vp_total = np.zeros(self.molecule.H.np.shape[0])
+                self.vp = [vp_total, vp_total]
+            elif self.vp[0].ndim == 1:
+                vp_total = self.vp
             vp_totalfock = self.vp_fock[0]
         else:
             vp_total = guess[0]
@@ -2229,7 +2242,7 @@ class U_Embedding:
                     vp_change = np.linalg.norm(dvp_temp, ord=1)
                     if vp_change/vp_change_last > 10 and i > 1:
                         dvp = dvp_last
-                        print(i)
+                        # print(i)
                         break
                     dvp_last = dvp_temp
                     vp_change_last = vp_change
