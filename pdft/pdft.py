@@ -2183,8 +2183,8 @@ class U_Embedding:
         old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
         print("Initial dn:", old_rho_conv)
         self.drho_conv.append(old_rho_conv)
-        L_old = self.lagrange_mul_1basis(self.vp[0], self.vp_fock[0].np)
-
+        if beta_method == "Lagrangian":
+            L_old = self.lagrange_mul_1basis(self.vp[0], self.vp_fock[0].np)
         self.vp_grid = 0
 
         # if vp_nad_iter is not None:
@@ -2213,11 +2213,9 @@ class U_Embedding:
 
             hess = self.hess_1basis(self.vp[0])
             jac = self.jac_1basis(self.vp[0])
-            # Solve by SVD
 
-
-
-            # Solve by SVD
+            # Get a good svd parameter from the step-function-shape graph of |vp| vs svdc.
+            # But I don't really understand how to interprate this.
             if svd_rcond is not None:
                 hess_inv = np.linalg.pinv(hess, rcond=svd_rcond)
                 dvp = -hess_inv.dot(jac)
@@ -2231,6 +2229,7 @@ class U_Embedding:
                     vp_change = np.linalg.norm(dvp_temp, ord=1)
                     if vp_change/vp_change_last > 10 and i > 1:
                         dvp = dvp_last
+                        print(i)
                         break
                     dvp_last = dvp_temp
                     vp_change_last = vp_change
@@ -2260,7 +2259,7 @@ class U_Embedding:
                 while True:
                     beta *= 0.5
                     if beta < 1e-7:
-                        print("No beta will work for this svd:")
+                        print("No beta %f will work for this svd" % beta)
                         self.update_oueis_retularized_vp_nad(Qtype=Qtype, vstype=vstype,
                                                              vp_Hext_decomposition=False if (vp_nad_iter is None) else True)
                         return
@@ -2270,7 +2269,6 @@ class U_Embedding:
                     dvpf = 0.5 * (dvpf + dvpf.T)
                     vp_fock_temp = psi4.core.Matrix.from_array(self.vp_fock[0].np + dvpf)
                     self.fragments_scf_1basis(300, vp_fock=[vp_fock_temp, vp_fock_temp])
-                    vp_temp = self.vp[0] + beta * dvp
                     L = self.lagrange_mul_1basis(vp_temp, vp_fock_temp.np)
                     rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
 
@@ -2289,31 +2287,29 @@ class U_Embedding:
                 beta = 2.0
                 while True:
                     beta *= 0.5
-                    print(beta)
-                    vp_kin_nad, vp_xc_nad, vp_grid, vp_fock = self.update_oueis_retularized_vp_nad(dvp=beta*dvp)
-                    self.fragments_scf_1basis(1000, vp_fock=vp_fock)
-                    # Instead of considering minimizing L, try minimize rho
-                    #   Update rho and change beta
+                    if beta < 1e-7:
+                        print("No beta %f will work for this svd" % beta)
+                        self.update_oueis_retularized_vp_nad(Qtype=Qtype, vstype=vstype,
+                                                             vp_Hext_decomposition=False if (vp_nad_iter is None) else True)
+                        return
+                    # Traditional WuYang
+                    vp_temp = self.vp[0] + beta * dvp
+                    dvpf = np.einsum('ijm,m->ij', self.three_overlap, beta * dvp)
+                    dvpf = 0.5 * (dvpf + dvpf.T)
+                    vp_fock_temp = psi4.core.Matrix.from_array(self.vp_fock[0].np + dvpf)
+                    self.fragments_scf_1basis(300, vp_fock=[vp_fock_temp, vp_fock_temp])
                     rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
                     now_drho = np.sum(np.abs(rho_fragment - rho_molecule) * w)
-                    if now_drho - self.drho_conv[-1] > mu*beta*np.sum(mu*beta*np.sum((rho_fragment - rho_molecule)
-                                                                                      * (vp_grid - self.vp_grid)) * w):
-                        print(now_drho - self.drho_conv[-1])
-                        print(mu*beta*np.sum(((rho_fragment - rho_molecule) * (vp_grid - self.vp_grid)) * w))
-                        continue
-                    else:
-                        print(now_drho - self.drho_conv[-1])
-                        print(mu*beta*np.sum(((rho_fragment - rho_molecule) * (vp_grid - self.vp_grid)) * w))
-                        self.vp_grid = vp_grid
-                        self.vp_fock = vp_fock
-                        self.vp_kin_nad = vp_kin_nad
-                        self.vp_xc_nad = vp_xc_nad
-                        old_rho_conv = now_drho
-                        self.drho_conv.append(old_rho_conv)
-                        last_beta = beta
+                    dvp_grid = self.molecule.to_grid(beta * dvp)
+                    if now_drho - self.drho_conv[-1] <= mu * beta * np.sum((rho_fragment - rho_molecule)
+                                                                            * dvp_grid * w) and np.sum((rho_fragment -rho_molecule)
+                                                                                                        * dvp_grid * w) < 0:
+                        self.vp = [vp_temp, vp_temp]
+                        self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
+                        self.drho_conv.append(now_drho)
                         break
-                else:
-                    NameError("No BackTracking method named " + str(beta_BackTracking))
+            else:
+                NameError("No BackTracking method named " + str(beta_method))
 
             # Here I tested using BT to search for SVDc and beta at the same time.
             # But I dont think searching SVDc from a small number is a good idea.
