@@ -23,14 +23,14 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.8185699">
+    <splitter split-orientation="horizontal" split-proportion="0.72785485">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/pdft.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="560">
-                  <caret line="1700" column="73" selection-start-line="1700" selection-start-column="73" selection-end-line="1700" selection-end-column="73" />
+                <state relative-caret-position="-60">
+                  <caret line="2297" lean-forward="true" selection-start-line="2297" selection-end-line="2297" />
                   <folding>
                     <element signature="e#54564#61860#0" />
                     <element signature="e#98549#109072#0" />
@@ -58,8 +58,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/tests/Be/Be.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="180">
-                  <caret line="60" column="19" selection-start-line="60" selection-start-column="19" selection-end-line="60" selection-end-column="19" />
+                <state relative-caret-position="660">
+                  <caret line="87" column="25" lean-forward="true" selection-start-line="87" selection-start-column="25" selection-end-line="87" selection-end-column="25" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
                   </folding>
@@ -105,7 +105,11 @@
       <find>.dim</find>
       <find>beta_method</find>
       <find>vp_re</find>
+      <find>rho_fragment - rho_molecule</find>
     </findStrings>
+    <replaceStrings>
+      <replace>rho_molecule - rho_fragment</replace>
+    </replaceStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -116,8 +120,8 @@
         <option value="$PROJECT_DIR$/tests/H2p/H2P.py" />
         <option value="$USER_HOME$/anaconda3/envs/work/lib/python3.7/site-packages/numpy/linalg/linalg.py" />
         <option value="$PROJECT_DIR$/tests/He2/He2Curve.py" />
-        <option value="$PROJECT_DIR$/tests/Be/Be.py" />
         <option value="$PROJECT_DIR$/pdft.py" />
+        <option value="$PROJECT_DIR$/tests/Be/Be.py" />
       </list>
     </option>
   </component>
@@ -300,10 +304,10 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="35566000" />
+    <option name="totallyTimeSpent" value="43692000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1920" y="-2" width="1920" height="1082" extended-state="6" />
+    <frame x="1920" y="-2" width="1920" height="1082" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.2497332" />
@@ -395,8 +399,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/Be/Be.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="60" column="19" selection-start-line="60" selection-start-column="19" selection-end-line="60" selection-end-column="19" />
+        <state relative-caret-position="660">
+          <caret line="87" column="25" lean-forward="true" selection-start-line="87" selection-start-column="25" selection-end-line="87" selection-end-column="25" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
@@ -405,8 +409,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pdft.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="560">
-          <caret line="1700" column="73" selection-start-line="1700" selection-start-column="73" selection-end-line="1700" selection-end-column="73" />
+        <state relative-caret-position="-60">
+          <caret line="2297" lean-forward="true" selection-start-line="2297" selection-end-line="2297" />
           <folding>
             <element signature="e#54564#61860#0" />
             <element signature="e#98549#109072#0" />

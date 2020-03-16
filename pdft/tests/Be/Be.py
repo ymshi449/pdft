@@ -7,8 +7,8 @@ import numpy as np
 separation = 4.522
 functional = 'svwn'
 basis = 'cc-pvdz'
-svdc = -6
-reguc = -4
+svdc = -2
+reguc = -7
 # title = "Be WuYang1b Yan Q[nf] v[nf] svdc%i reguc%i " %(svdc, reguc) + basis + functional
 title = "Be WuYang inv-svd dnBT: %i" %svdc + basis + functional
 print(title)
@@ -58,10 +58,10 @@ mol = pdft.U_Molecule(Full_Molec, basis, functional)
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
-pdfter.find_vp_densitydifference(42)
+pdfter.find_vp_densitydifference(140)
 # pdfter.find_vp_response(21, guess=True, svd_rcond=10**svdc, beta=0.1, a_rho_var=1e-7)
-pdfter.find_vp_response_1basis(42, guess=True, beta_method="Density", a_rho_var=1e-5)
-# # pdfter.find_vp_scipy_1basis(maxiter=7)
+pdfter.find_vp_response_1basis(42, guess=True, a_rho_var=1e-5, mu=1e-5)
+# pdfter.find_vp_scipy_1basis(maxiter=7)
 #
 f,ax = plt.subplots(1,1, dpi=210)
 ax.set_ylim(-1.2, 0.2)
