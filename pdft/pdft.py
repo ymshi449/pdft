@@ -1506,7 +1506,6 @@ class U_Embedding:
                 beta = 2.0
                 while True:
                     beta *= 0.5
-                    print(beta)
                     if beta < 1e-7:
                         print("No beta %e will work" % beta)
                         return
@@ -1725,7 +1724,8 @@ class U_Embedding:
                                       i.Cb.np[:, :i.nbeta], i.Cb.np[:, i.nbeta:], np.reciprocal(epsilon_b),
                                       self.four_overlap, self.four_overlap, optimize=True).reshape(self.molecule.nbf**2, self.molecule.nbf**2)
         # assert np.linalg.norm(hess - hess.T) < 1e-3, "hess not symmetry"
-        hess = 0.5 * (hess + hess.T)
+        # There is a min because it's -dnf/dvp
+        hess = - 0.5 * (hess + hess.T)
 
         # Regularization
         if self.regul_const is not None:
@@ -1735,7 +1735,7 @@ class U_Embedding:
 
         # print("Response", np.linalg.norm(hess))
         # print(hess)
-        return -hess
+        return hess
 
     def jac(self, vp_array):
         """
@@ -1758,8 +1758,8 @@ class U_Embedding:
                                             self.molecule.basis, self.molecule.mints)[0]
 
         self.get_density_sum()
-        density_difference_a = self.fragments_Da - self.molecule.Da.np
-        density_difference_b = self.fragments_Db - self.molecule.Db.np
+        density_difference_a = self.molecule.Da.np - self.fragments_Da
+        density_difference_b = self.molecule.Db.np - self.fragments_Db
 
         jac = np.einsum("u,ui->i", (density_difference_a + density_difference_b).reshape(self.molecule.nbf**2),
                         self.four_overlap.reshape(self.molecule.nbf**2, self.molecule.nbf**2), optimize=True)
@@ -1771,7 +1771,7 @@ class U_Embedding:
             jac -= 4*4*self.regul_const*np.dot(T, vp_array)
 
         # print("Jac norm:", np.linalg.norm(jac))
-        return -jac
+        return jac
 
     def lagrange_mul(self, vp_array):
         """
@@ -1785,8 +1785,8 @@ class U_Embedding:
             self.vp = [vp, vp]
             self.fragments_scf(1000, vp=True)
 
-        density_difference_a = self.fragments_Da - self.molecule.Da.np
-        density_difference_b = self.fragments_Db - self.molecule.Db.np
+        density_difference_a = self.molecule.Da.np - self.fragments_Da
+        density_difference_b = self.molecule.Db.np - self.fragments_Db
 
         Ef = self.ef_conv[-1]
         Ep = self.ep_conv[-1]
@@ -1808,10 +1808,10 @@ class U_Embedding:
         rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
 
         self.drho_conv.append(rho_conv)
-        self.lagrange.append(-L)
+        self.lagrange.append(L)
 
-        print("-L:", -L, "Int_vp_drho:", L-Ef, "Ef:", Ef, "Ep: ", Ep, "drho:", rho_conv)
-        return -L
+        print("L:", L, "Int_vp_drho:", L-Ef, "Ef:", Ef, "Ep: ", Ep, "drho:", rho_conv)
+        return L
 
     def find_vp_scipy(self, maxiter=21, guess=None, regul_const=None, opt_method="Newton-CG"):
         """
@@ -2040,7 +2040,7 @@ class U_Embedding:
                                       i.Cb.np[:, :i.nbeta], i.Cb.np[:, i.nbeta:], np.reciprocal(epsilon_b),
                                       self.three_overlap, self.three_overlap, optimize=True)
         # assert np.linalg.norm(hess - hess.T) < 1e-3, "hess not symmetry"
-        hess = 0.5 * (hess + hess.T)
+        hess = - 0.5 * (hess + hess.T)
 
         # Regularization
         if self.regul_const is not None:
@@ -2050,7 +2050,7 @@ class U_Embedding:
 
         # print("Response", np.linalg.norm(hess))
         # print(hess)
-        return -hess
+        return hess
 
     def jac_1basis(self, vp):
         """
@@ -2070,8 +2070,8 @@ class U_Embedding:
             self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap())
 
         self.get_density_sum()
-        density_difference_a = self.fragments_Da - self.molecule.Da.np
-        density_difference_b = self.fragments_Db - self.molecule.Db.np
+        density_difference_a = self.molecule.Da.np - self.fragments_Da
+        density_difference_b = self.molecule.Db.np - self.fragments_Db
 
         jac = np.einsum("uv,uiv->i", (density_difference_a + density_difference_b), self.three_overlap, optimize=True)
 
@@ -2082,7 +2082,7 @@ class U_Embedding:
             jac -= 4*4*self.regul_const*np.dot(T, vp)
 
         # print("Jac norm:", np.linalg.norm(jac))
-        return -jac
+        return jac
 
     def lagrange_mul_1basis(self, vp, vp_fock):
         """
@@ -2096,8 +2096,8 @@ class U_Embedding:
         Ep = self.ep_conv[-1]
 
         self.get_density_sum()
-        density_difference_a = self.fragments_Da - self.molecule.Da.np
-        density_difference_b = self.fragments_Db - self.molecule.Db.np
+        density_difference_a = self.molecule.Da.np - self.fragments_Da
+        density_difference_b = self.molecule.Db.np - self.fragments_Db
 
         L = Ef
         L += np.sum(vp_fock*(density_difference_a + density_difference_b))
@@ -2117,8 +2117,8 @@ class U_Embedding:
         self.drho_conv.append(rho_conv)
         # self.ep_conv.append(Ep)
         self.lagrange.append(-L)
-        # print("-L:", -L, "Int_vp_drho:", L-Ef, "Ef:", Ef, "Ep: ", Ep, "drho:", rho_conv)
-        return -L
+        # print("L:", L, "Int_vp_drho:", L-Ef, "Ef:", Ef, "Ep: ", Ep, "drho:", rho_conv)
+        return L
 
     def find_vp_scipy_1basis(self, maxiter=21, guess=None, regul_const=None, opt_method="Newton-CG", printflag=False):
         """
@@ -2184,7 +2184,7 @@ class U_Embedding:
         return vp_array
 
 
-    def find_vp_response_1basis(self, maxiter=21, guess=None, beta_method=None, vp_nad_iter=None, Qtype='nf', vstype='nf',
+    def find_vp_response_1basis(self, maxiter=21, guess=None, beta_method="Density", vp_nad_iter=None, Qtype='nf', vstype='nf',
                                 svd_rcond=None, mu=1e-4,
                                 regul_const=None, a_rho_var=1e-4,
                                 vp_norm_conv=1e-6, printflag=False):
@@ -2286,12 +2286,15 @@ class U_Embedding:
                     hess_inv = np.linalg.pinv(hess, rcond=10 ** -i)
                     dvp_temp = -hess_inv.dot(jac)
                     vp_change = np.linalg.norm(dvp_temp, ord=1)
-                    if vp_change/vp_change_last > 10 and i > 1:
+                    print(i, vp_change)
+                    if vp_change/vp_change_last > 7 and i > 1:
                         dvp = dvp_last
-                        # print(i)
+                        # dvp = dvp_temp
                         break
-                    dvp_last = dvp_temp
-                    vp_change_last = vp_change
+                    else:
+                        dvp_last = dvp_temp
+                        vp_change_last = vp_change
+                        continue
 
             # I have two ways to BT. One based on minimizing L one minimizing.
             if type(beta_method) is int or type(beta_method) is float:
@@ -2330,15 +2333,13 @@ class U_Embedding:
                     self.fragments_scf_1basis(300, vp_fock=[vp_fock_temp, vp_fock_temp])
                     L = self.lagrange_mul_1basis(vp_temp, vp_fock_temp.np)
                     rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
-
                     dvp_grid = self.molecule.to_grid(beta * dvp)
                     if L - L_old <= mu * beta * np.sum(
-                            (rho_fragment - rho_molecule) * dvp_grid * w) and np.sum((rho_fragment -
-                                                                                      rho_molecule) * dvp_grid * w) < 0:
+                            (rho_molecule - rho_fragment) * dvp_grid * w) and np.sum((rho_molecule - rho_fragment) * dvp_grid * w) < 0:
                         L_old = L
                         self.vp = [vp_temp, vp_temp]
                         self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
-                        now_drho = np.sum(np.abs(rho_fragment - rho_molecule) * w)
+                        now_drho = np.sum(np.abs(rho_molecule - rho_fragment) * w)
                         self.drho_conv.append(now_drho)
                         break
             elif beta_method == "Density":
@@ -2358,9 +2359,9 @@ class U_Embedding:
                     vp_fock_temp = psi4.core.Matrix.from_array(self.vp_fock[0].np + dvpf)
                     self.fragments_scf_1basis(300, vp_fock=[vp_fock_temp, vp_fock_temp])
                     rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
-                    now_drho = np.sum(np.abs(rho_fragment - rho_molecule) * w)
+                    now_drho = np.sum(np.abs(rho_molecule - rho_fragment) * w)
                     dvp_grid = self.molecule.to_grid(beta * dvp)
-                    if now_drho - self.drho_conv[-1] <= mu * beta * np.sum((rho_fragment - rho_molecule)
+                    if now_drho - self.drho_conv[-1] <= mu * beta * np.sum((rho_molecule - rho_fragment)
                                                                             * dvp_grid * w) and np.sum((rho_fragment -rho_molecule)
                                                                                                         * dvp_grid * w) < 0:
                         self.vp = [vp_temp, vp_temp]
@@ -2394,14 +2395,14 @@ class U_Embedding:
             #         dvp_grid = self.molecule.to_grid(beta * dvp)
             #
             #         if L - L_old <= mu * beta * np.sum(
-            #                 (rho_fragment - rho_molecule) * dvp_grid * w) and np.sum(
-            #                 (rho_fragment - rho_molecule) * dvp_grid * w) < 0:
+            #                 (rho_molecule - rho_fragment) * dvp_grid * w) and np.sum(
+            #                 (rho_molecule - rho_fragment) * dvp_grid * w) < 0:
             #
             #             L_old = L
             #             self.vp = [vp_temp, vp_temp]
             #             self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
             #             rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
-            #             now_drho = np.sum(np.abs(rho_fragment - rho_molecule) * w)
+            #             now_drho = np.sum(np.abs(rho_molecule - rho_fragment) * w)
             #             self.drho_conv.append(now_drho)
             #             break
             # else:
@@ -2431,14 +2432,14 @@ class U_Embedding:
             #             dvp_grid = self.molecule.to_grid(beta * dvp)
             #             print("dL", L - L_old)
             #             print(np.sum(
-            #                     (rho_fragment - rho_molecule) * dvp_grid * w))
+            #                     (rho_molecule - rho_fragment) * dvp_grid * w))
             #             if L - L_old <= mu * beta * np.sum(
-            #                     (rho_fragment - rho_molecule) * dvp_grid * w) and np.sum((rho_fragment -
+            #                     (rho_molecule - rho_fragment) * dvp_grid * w) and np.sum((rho_fragment -
             #                                                                               rho_molecule) * dvp_grid * w) < 0:
             #                 L_old = L
             #                 self.vp = [vp_temp, vp_temp]
             #                 self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
-            #                 now_drho = np.sum(np.abs(rho_fragment - rho_molecule) * w)
+            #                 now_drho = np.sum(np.abs(rho_molecule - rho_fragment) * w)
             #                 self.drho_conv.append(now_drho)
             #                 svd_flag = True
             #                 break
@@ -2572,7 +2573,7 @@ class U_Embedding:
             self.get_density_sum()
             rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
             # Based on the naive hope, whenever the current lamdb does not improve the density, get a smaller one.
-            if old_rho_conv < np.sum(np.abs(rho_fragment - rho_molecule) * w):
+            if old_rho_conv < np.sum(np.abs(rho_molecule - rho_fragment) * w):
                 beta *= 0.7
                 beta_lastupdate_iter = scf_step
             # If some lamdb has beed updating for a more than a long period, try to increase it to converge faster.
@@ -2580,7 +2581,7 @@ class U_Embedding:
                 beta /= 0.8
                 beta_lastupdate_iter = scf_step
 
-            old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
+            old_rho_conv = np.sum(np.abs(rho_molecule - rho_fragment) * w)
             rho_convergence.append(old_rho_conv)
 
             print(
