@@ -2084,13 +2084,16 @@ class U_Embedding:
         # print("Jac norm:", np.linalg.norm(jac))
         return jac
 
-    def lagrange_mul_1basis(self, vp, vp_fock):
+    def lagrange_mul_1basis(self, vp, vp_fock=None):
         """
         Return Lagrange Multipliers (G) value. on 1 basis.
         :return: L
         """
         if self.three_overlap is None:
             self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap())
+
+        if vp_fock is None:
+            vp_fock = self.vp_fock[0].np
 
         Ef = self.ef_conv[-1]
         Ep = self.ep_conv[-1]
@@ -2117,7 +2120,7 @@ class U_Embedding:
         self.drho_conv.append(rho_conv)
         # self.ep_conv.append(Ep)
         self.lagrange.append(-L)
-        # print("L:", L, "Int_vp_drho:", L-Ef, "Ef:", Ef, "Ep: ", Ep, "drho:", rho_conv)
+        print("L:", L, "Int_vp_drho:", L-Ef, "Ef:", Ef, "Ep: ", Ep, "drho:", rho_conv)
         return L
 
     def find_vp_scipy_1basis(self, maxiter=21, guess=None, regul_const=None, opt_method="Newton-CG", printflag=False):
@@ -2140,12 +2143,7 @@ class U_Embedding:
 
             vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
             self.vp_fock = [vp_totalfock, vp_totalfock]
-            # Initialize
-            Ef = 0.0
-            # Run the first iteration
-            for i in range(self.nfragments):
-                self.fragments[i].scf(maxiter=1000, print_energies=printflag)
-                Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+            self.fragments_scf_1basis(100, vp_fock=True)
         elif guess is True:
 
             vp_total = self.vp[0]

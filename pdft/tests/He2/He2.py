@@ -10,7 +10,7 @@ import numpy as np
 separation = 6.0
 functional = 'svwn'
 basis = 'aug-cc-pvdz'
-svdc = -5
+svdc = -7
 reguc = -2
 title = "He2 WuYang1b svd%i regu%i" %(svdc, reguc) + basis + functional
 print(title)
@@ -67,9 +67,10 @@ f2  = pdft.U_Molecule(Monomer_1,  basis, functional, jk=mol.jk)
 pdfter = pdft.U_Embedding([f1, f2], mol)
 
 #%% Running SCF with svwn
-pdfter.find_vp_response_1basis(49, vp_nad_iter=None, beta_update=0.2,
-                               # svd_rcond=10**svdc, regul_const=None,
-                               beta=0.1, a_rho_var=1e-7)
+pdfter.find_vp_response_1basis(49, vp_nad_iter=None,
+                               svd_rcond=10**svdc,
+                               # regul_const=None,
+                               a_rho_var=1e-7)
 
 f,ax = plt.subplots(1,1, dpi=210)
 pdft.plot1d_x(pdfter.vp_grid, mol.Vpot, ax=ax, label="vp", color='black')

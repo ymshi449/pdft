@@ -1,9 +1,9 @@
    => Loading Basis Set <=
 
-    Name: AUG-CC-PVDZ
+    Name: CC-PVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-2 entry HE         line    50 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz.gbs 
+    atoms 1-4 entry H          line    22 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
 
 
          ---------------------------------------------------------
@@ -17,26 +17,28 @@
   ==> Geometry <==
 
     Molecular point group: c1
-    Full point group: D_inf_h
+    Full point group: C2v
 
-    Geometry (in Bohr), charge = 0, multiplicity = 1:
+    Geometry (in Bohr), charge = 0, multiplicity = 2:
 
        Center              X                  Y                   Z               Mass       
     ------------   -----------------  -----------------  -----------------  -----------------
-         HE           3.000000000000     0.000000000000     0.000000000000     4.002603254130
-         HE          -3.000000000000     0.000000000000     0.000000000000     4.002603254130
+      Gh(H)           0.723000000000     0.000000000000     0.000000000000     1.007825032230
+      Gh(H)           0.000000000000     0.400000000000     0.000000000000     1.007825032230
+      Gh(H)           0.000000000000    -0.400000000000     0.000000000000     1.007825032230
+         H           -0.723000000000     0.000000000000     0.000000000000     1.007825032230
 
   Running in c1 symmetry.
 
-  Rotational constants: A = ************  B =      0.83556  C =      0.83556 [cm^-1]
-  Rotational constants: A = ************  B =  25049.54747  C =  25049.54747 [MHz]
-  Nuclear repulsion =    0.666666666666667
+  Rotational constants: A =    186.66337  B =     57.13504  C =     43.74523 [cm^-1]
+  Rotational constants: A = 5596027.16932  B = 1712865.26497  C = 1311449.12123 [MHz]
+  Nuclear repulsion =    0.000000000000000
 
   Charge       = 0
-  Multiplicity = 1
-  Electrons    = 4
-  Nalpha       = 2
-  Nbeta        = 2
+  Multiplicity = 2
+  Electrons    = 1
+  Nalpha       = 1
+  Nbeta        = 0
 
   ==> Algorithm <==
 
@@ -51,11 +53,11 @@
 
   ==> Primary Basis <==
 
-  Basis Set: AUG-CC-PVDZ
-    Blend: AUG-CC-PVDZ
-    Number of shells: 10
-    Number of basis function: 18
-    Number of Cartesian functions: 18
+  Basis Set: CC-PVDZ
+    Blend: CC-PVDZ
+    Number of shells: 12
+    Number of basis function: 20
+    Number of Cartesian functions: 20
     Spherical Harmonics?: true
     Max angular momentum: 1
 
@@ -93,27 +95,27 @@
     Pruning alpha          =              1
     Radial Points          =             75
     Spherical Points       =            302
-    Total Points           =          45300
-    Total Blocks           =            414
-    Max Points             =            255
-    Max Functions          =             18
+    Total Points           =          89392
+    Total Blocks           =            741
+    Max Points             =            256
+    Max Functions          =             20
 
   Using in-core PK algorithm.
    Calculation information:
-      Number of atoms:                   2
-      Number of AO shells:              10
-      Number of primitives:             14
-      Number of atomic orbitals:        18
-      Number of basis functions:        18
+      Number of atoms:                   4
+      Number of AO shells:              12
+      Number of primitives:             20
+      Number of atomic orbitals:        20
+      Number of basis functions:        20
 
       Integral cutoff                 1.00e-12
       Number of threads:                 2
 
   Performing in-core PK
-  Using 29412 doubles for integral storage.
-  We computed 1601 shell quartets total.
-  Whereas there are 1540 unique shell quartets.
-     3.96 percent of shell quartets recomputed by reordering.
+  Using 44310 doubles for integral storage.
+  We computed 3409 shell quartets total.
+  Whereas there are 3081 unique shell quartets.
+    10.65 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -127,10 +129,10 @@
 
    => Loading Basis Set <=
 
-    Name: AUG-CC-PVDZ
+    Name: CC-PVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-2 entry HE         line    50 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz.gbs 
+    atoms 1-4 entry H          line    22 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
 
 
          ---------------------------------------------------------
@@ -144,26 +146,28 @@
   ==> Geometry <==
 
     Molecular point group: c1
-    Full point group: C_inf_v
+    Full point group: C2v
 
-    Geometry (in Bohr), charge = 0, multiplicity = 1:
+    Geometry (in Bohr), charge = 0, multiplicity = 2:
 
        Center              X                  Y                   Z               Mass       
     ------------   -----------------  -----------------  -----------------  -----------------
-      Gh(HE)          3.000000000000     0.000000000000     0.000000000000     4.002603254130
-         HE          -3.000000000000     0.000000000000     0.000000000000     4.002603254130
+         H            0.723000000000     0.000000000000     0.000000000000     1.007825032230
+      Gh(H)           0.000000000000     0.400000000000     0.000000000000     1.007825032230
+      Gh(H)           0.000000000000    -0.400000000000     0.000000000000     1.007825032230
+      Gh(H)          -0.723000000000     0.000000000000     0.000000000000     1.007825032230
 
   Running in c1 symmetry.
 
-  Rotational constants: A = ************  B =      0.83556  C =      0.83556 [cm^-1]
-  Rotational constants: A = ************  B =  25049.54747  C =  25049.54747 [MHz]
+  Rotational constants: A =    186.66337  B =     57.13504  C =     43.74523 [cm^-1]
+  Rotational constants: A = 5596027.16932  B = 1712865.26497  C = 1311449.12123 [MHz]
   Nuclear repulsion =    0.000000000000000
 
   Charge       = 0
-  Multiplicity = 1
-  Electrons    = 2
+  Multiplicity = 2
+  Electrons    = 1
   Nalpha       = 1
-  Nbeta        = 1
+  Nbeta        = 0
 
   ==> Algorithm <==
 
@@ -178,11 +182,11 @@
 
   ==> Primary Basis <==
 
-  Basis Set: AUG-CC-PVDZ
-    Blend: AUG-CC-PVDZ
-    Number of shells: 10
-    Number of basis function: 18
-    Number of Cartesian functions: 18
+  Basis Set: CC-PVDZ
+    Blend: CC-PVDZ
+    Number of shells: 12
+    Number of basis function: 20
+    Number of Cartesian functions: 20
     Spherical Harmonics?: true
     Max angular momentum: 1
 
@@ -220,17 +224,44 @@
     Pruning alpha          =              1
     Radial Points          =             75
     Spherical Points       =            302
-    Total Points           =          45300
-    Total Blocks           =            414
-    Max Points             =            255
-    Max Functions          =             18
+    Total Points           =          89392
+    Total Blocks           =            741
+    Max Points             =            256
+    Max Functions          =             20
+
+  Using in-core PK algorithm.
+   Calculation information:
+      Number of atoms:                   4
+      Number of AO shells:              12
+      Number of primitives:             20
+      Number of atomic orbitals:        20
+      Number of basis functions:        20
+
+      Integral cutoff                 1.00e-12
+      Number of threads:                 2
+
+  Performing in-core PK
+  Using 44310 doubles for integral storage.
+  We computed 3409 shell quartets total.
+  Whereas there are 3081 unique shell quartets.
+    10.65 percent of shell quartets recomputed by reordering.
+
+  ==> DiskJK: Disk-Based J/K Matrices <==
+
+    J tasked:                  Yes
+    K tasked:                   No
+    wK tasked:                  No
+    Memory [MiB]:              953
+    Schwarz Cutoff:          1E-12
+
+    OpenMP threads:              2
 
    => Loading Basis Set <=
 
-    Name: AUG-CC-PVDZ
+    Name: CC-PVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-2 entry HE         line    50 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz.gbs 
+    atoms 1-4 entry H          line    22 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
 
 
          ---------------------------------------------------------
@@ -244,20 +275,22 @@
   ==> Geometry <==
 
     Molecular point group: c1
-    Full point group: C_inf_v
+    Full point group: D2h
 
     Geometry (in Bohr), charge = 0, multiplicity = 1:
 
        Center              X                  Y                   Z               Mass       
     ------------   -----------------  -----------------  -----------------  -----------------
-         HE           3.000000000000     0.000000000000     0.000000000000     4.002603254130
-      Gh(HE)         -3.000000000000     0.000000000000     0.000000000000     4.002603254130
+         H            0.723000000000     0.000000000000     0.000000000000     1.007825032230
+      Gh(H)           0.000000000000     0.400000000000     0.000000000000     1.007825032230
+      Gh(H)           0.000000000000    -0.400000000000     0.000000000000     1.007825032230
+         H           -0.723000000000     0.000000000000     0.000000000000     1.007825032230
 
   Running in c1 symmetry.
 
-  Rotational constants: A = ************  B =      0.83556  C =      0.83556 [cm^-1]
-  Rotational constants: A = ************  B =  25049.54747  C =  25049.54747 [MHz]
-  Nuclear repulsion =    0.000000000000000
+  Rotational constants: A =    186.66337  B =     57.13504  C =     43.74523 [cm^-1]
+  Rotational constants: A = 5596027.16932  B = 1712865.26497  C = 1311449.12123 [MHz]
+  Nuclear repulsion =    0.691562932226833
 
   Charge       = 0
   Multiplicity = 1
@@ -278,11 +311,11 @@
 
   ==> Primary Basis <==
 
-  Basis Set: AUG-CC-PVDZ
-    Blend: AUG-CC-PVDZ
-    Number of shells: 10
-    Number of basis function: 18
-    Number of Cartesian functions: 18
+  Basis Set: CC-PVDZ
+    Blend: CC-PVDZ
+    Number of shells: 12
+    Number of basis function: 20
+    Number of Cartesian functions: 20
     Spherical Harmonics?: true
     Max angular momentum: 1
 
@@ -320,14 +353,35 @@
     Pruning alpha          =              1
     Radial Points          =             75
     Spherical Points       =            302
-    Total Points           =          45300
-    Total Blocks           =            414
-    Max Points             =            255
-    Max Functions          =             18
+    Total Points           =          89392
+    Total Blocks           =            741
+    Max Points             =            256
+    Max Functions          =             20
 
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
+  Using in-core PK algorithm.
+   Calculation information:
+      Number of atoms:                   4
+      Number of AO shells:              12
+      Number of primitives:             20
+      Number of atomic orbitals:        20
+      Number of basis functions:        20
+
+      Integral cutoff                 1.00e-12
+      Number of threads:                 2
+
+  Performing in-core PK
+  Using 44310 doubles for integral storage.
+  We computed 3409 shell quartets total.
+  Whereas there are 3081 unique shell quartets.
+    10.65 percent of shell quartets recomputed by reordering.
+
+  ==> DiskJK: Disk-Based J/K Matrices <==
+
+    J tasked:                  Yes
+    K tasked:                   No
+    wK tasked:                  No
+    Memory [MiB]:              953
+    Schwarz Cutoff:          1E-12
+
+    OpenMP threads:              2
+
