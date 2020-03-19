@@ -53,7 +53,6 @@ mol = pdft.U_Molecule(Full_Molec, basis, functional)
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
 
-
 # pdfter.find_vp_response(49, svd_rcond=10**svdc, regul_const=10**reguc, beta=0.1, a_rho_var=1e-7)
 
 # pdfter.find_vp_densitydifference(32, 4)
@@ -62,17 +61,27 @@ pdfter = pdft.U_Embedding([f1, f2], mol)
 #                                beta=1, a_rho_var=1e-7, printflag=True)
 # # pdfter.find_vp_scipy_1basis(maxiter=7)
 # # pdfter.find_vp_densitydifference(42, 1)
-#
-# f,ax = plt.subplots(1,1, dpi=210)
-# ax.set_ylim(-2,0.2)
-# pdft.plot1d_x(pdfter.vp_grid, mol.Vpot, ax=ax, label="vp")
-# pdft.plot1d_x(pdfter.vp_Hext_nad, mol.Vpot, dimmer_length=2,
-#               title=title, ax=ax, label="Hext", ls='--')
-# pdft.plot1d_x(pdfter.vp_xc_nad, mol.Vpot, ax=ax, label="xc", ls='--')
-# pdft.plot1d_x(pdfter.vp_kin_nad, mol.Vpot, ax=ax, label="kin", ls='--')
-# ax.legend()
-# f.show()
-# plt.close(f)
+pdfter.find_vp_projection(42)
+
+n1 = pdfter.molecule.to_grid(f1.Da.np + f1.Db.np)
+n2 = pdfter.molecule.to_grid(f2.Da.np + f2.Db.np)
+nf = mol.to_grid(pdfter.fragments_Db+pdfter.fragments_Da)
+n_mol = mol.to_grid(mol.Da.np+mol.Db.np)
+f,ax = plt.subplots(1,1, dpi=210)
+ax.set_ylim(-1.5, 1)
+pdft.plot1d_x(pdfter.vp_Hext_nad + pdfter.vp_xc_nad, pdfter.molecule.Vpot, dimmer_length=2,
+         ax=ax, label="vp", color="black")
+pdft.plot1d_x(nf, pdfter.molecule.Vpot, ax=ax, label="nf")
+pdft.plot1d_x(n_mol, pdfter.molecule.Vpot, ax=ax, label="n1", ls="dotted")
+pdft.plot1d_x(n1*0.5, pdfter.molecule.Vpot, ax=ax, label="n2", ls="dotted")
+pdft.plot1d_x(n2*0.5, pdfter.molecule.Vpot, ax=ax, label="nmol")
+pdft.plot1d_x(pdfter.vp_Hext_nad, pdfter.molecule.Vpot,
+         ax=ax, label="vpHext", ls='--')
+pdft.plot1d_x(pdfter.vp_xc_nad, pdfter.molecule.Vpot,
+         ax=ax, label="vpxc", ls='--')
+ax.legend()
+f.show()
+plt.close(f)
 
 # #%% 1 basis 2D plot
 # L = [2.0, 2.0, 2.0]

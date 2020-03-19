@@ -1,0 +1,16 @@
+The following modules were not unloaded:
+  (Use "module --force purge" to unload all):
+
+  1) xalt
+-------------------------------------------------------------------------------
+There are messages associated with the following module(s):
+-------------------------------------------------------------------------------
+
+anaconda/5.1.0-py27:
+   Python 2 will reach End-of-Life (EOL) on January 1, 2020. Existing
+   Anaconda modules that have Python 2 as their base will not be removed.
+   You will still be able to create Python 2 environments. No new Python 2
+   modules will be created in the future.
+
+-------------------------------------------------------------------------------
+
