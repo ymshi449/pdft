@@ -24,14 +24,14 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.70117396">
+    <splitter split-orientation="horizontal" split-proportion="0.6419424">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/pdft.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="454">
-                  <caret line="1483" column="32" lean-forward="true" selection-start-line="1483" selection-start-column="32" selection-end-line="1483" selection-end-column="32" />
+                <state relative-caret-position="281">
+                  <caret line="890" column="22" selection-start-line="890" selection-start-column="22" selection-end-line="890" selection-end-column="22" />
                 </state>
               </provider>
             </entry>
@@ -40,11 +40,11 @@
       </split-first>
       <split-second>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file pinned="false" current-in-tab="true">
+          <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/tests/H2p/H2P.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="510">
-                  <caret line="83" column="12" selection-start-line="83" selection-start-column="12" selection-end-line="83" selection-end-column="12" />
+                <state relative-caret-position="474">
+                  <caret line="130" selection-start-line="130" selection-end-line="130" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
                   </folding>
@@ -55,8 +55,8 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/tests/Be/Be.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="287">
-                  <caret line="64" column="28" selection-start-line="64" selection-start-column="28" selection-end-line="64" selection-end-column="28" />
+                <state relative-caret-position="274">
+                  <caret line="17" selection-start-line="17" selection-end-line="42" selection-end-column="39" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
                   </folding>
@@ -64,32 +64,11 @@
               </provider>
             </entry>
           </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/tests/He2/He2.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="280">
-                  <caret line="74" selection-start-line="74" selection-end-line="82" selection-end-column="12" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
+          <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/tests/Projection_test.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="400">
-                  <caret line="83" selection-start-line="83" selection-end-line="84" selection-end-column="35" />
-                  <folding>
-                    <element signature="e#0#11#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/tests/H2.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="328">
-                  <caret line="41" column="17" lean-forward="true" selection-start-line="41" selection-start-column="17" selection-end-line="41" selection-end-column="17" />
+                <state relative-caret-position="-480">
+                  <caret line="27" column="10" lean-forward="true" selection-start-line="27" selection-start-column="10" selection-end-line="27" selection-end-column="10" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
                   </folding>
@@ -138,12 +117,15 @@
       <find>d</find>
       <find>bondlength</find>
       <find>def sc</find>
+      <find>pdfter.fragments[0]</find>
+      <find>+ title</find>
     </findStrings>
     <replaceStrings>
       <replace>rho_molecule - rho_fragment</replace>
       <replace>'</replace>
       <replace>mu_max</replace>
       <replace>separation</replace>
+      <replace>f1</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -156,19 +138,19 @@
         <option value="$PROJECT_DIR$/tests/He2/He2Curve.py" />
         <option value="$PROJECT_DIR$/tests/He2/He2.py" />
         <option value="$PROJECT_DIR$/tests/He2/test.py" />
-        <option value="$PROJECT_DIR$/tests/Projection_test.py" />
-        <option value="$PROJECT_DIR$/tests/Be/Be.py" />
         <option value="$PROJECT_DIR$/tests/H2.py" />
+        <option value="$PROJECT_DIR$/tests/Be/Be.py" />
         <option value="$PROJECT_DIR$/pdft.py" />
         <option value="$PROJECT_DIR$/tests/H2p/H2P.py" />
+        <option value="$PROJECT_DIR$/tests/Projection_test.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="1920" />
-    <option name="y" value="25" />
+    <option name="y" value="-2" />
     <option name="width" value="1920" />
-    <option name="height" value="1055" />
+    <option name="height" value="1082" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -205,11 +187,14 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.H2P">
+  <component name="RunManager" selected="Python.test">
     <configuration name="Be" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="pdft" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/Be" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -331,9 +316,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.test" />
         <item itemvalue="Python.H2P" />
         <item itemvalue="Python.Be" />
-        <item itemvalue="Python.test" />
         <item itemvalue="Python.H2" />
         <item itemvalue="Python.He2" />
       </list>
@@ -355,16 +340,17 @@
       <workItem from="1584039618814" duration="5730000" />
       <workItem from="1584288039578" duration="3389000" />
       <workItem from="1584365041005" duration="33470000" />
-      <workItem from="1584541733617" duration="12527000" />
+      <workItem from="1584541733617" duration="13130000" />
+      <workItem from="1584628416637" duration="14397000" />
+      <workItem from="1584712643676" duration="17125000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="90417000" />
+    <option name="totallyTimeSpent" value="122542000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1920" y="25" width="1920" height="1055" extended-state="6" />
-    <editor active="true" />
+    <frame x="1920" y="25" width="1920" height="1055" extended-state="7" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.2497332" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -381,11 +367,11 @@
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Terminal" order="11" />
-      <window_info active="true" anchor="bottom" x="2092" y="96" width="1717" height="935" id="Python Console" order="12" visible="true" weight="0.16522679" />
+      <window_info active="true" anchor="bottom" x="0" y="130" width="1920" height="1052" id="Python Console" maximized="true" order="12" type="WINDOWED" visible="true" weight="0.1648707" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" x="1920" y="55" width="1920" height="1025" id="SciView" maximized="true" order="3" type="WINDOWED" visible="true" weight="0.32977587" />
+      <window_info anchor="right" x="0" y="130" width="1920" height="1052" id="SciView" maximized="true" order="3" type="WINDOWED" visible="true" weight="0.32977587" />
       <window_info anchor="right" x="0" y="0" width="430" height="882" id="Documentation" order="4" side_tool="true" weight="0.32977587" />
       <window_info anchor="right" id="Database" order="5" />
     </layout>
@@ -450,47 +436,17 @@
     <entry file="file://$PROJECT_DIR$/tests/He2/8e+09.png" />
     <entry file="file://$PROJECT_DIR$/tests/He2/3e+06.png" />
     <entry file="file://$PROJECT_DIR$/tests/He2/3e+00.png" />
-    <entry file="file://$PROJECT_DIR$/tests/Projection_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="400">
-          <caret line="83" selection-start-line="83" selection-end-line="84" selection-end-column="35" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/He2/He2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="280">
+        <state relative-caret-position="1480">
           <caret line="74" selection-start-line="74" selection-end-line="82" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/Be/Be.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="287">
-          <caret line="64" column="28" selection-start-line="64" selection-start-column="28" selection-end-line="64" selection-end-column="28" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/H2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="328">
-          <caret line="41" column="17" lean-forward="true" selection-start-line="41" selection-start-column="17" selection-end-line="41" selection-end-column="17" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/H2p/H2P.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="510">
-          <caret line="83" column="12" selection-start-line="83" selection-start-column="12" selection-end-line="83" selection-end-column="12" />
+        <state relative-caret-position="780">
+          <caret line="41" column="17" selection-start-line="41" selection-start-column="17" selection-end-line="41" selection-end-column="17" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
@@ -499,8 +455,38 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pdft.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="454">
-          <caret line="1483" column="32" lean-forward="true" selection-start-line="1483" selection-start-column="32" selection-end-line="1483" selection-end-column="32" />
+        <state relative-caret-position="281">
+          <caret line="890" column="22" selection-start-line="890" selection-start-column="22" selection-end-line="890" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/H2p/H2P.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="474">
+          <caret line="130" selection-start-line="130" selection-end-line="130" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/Be/Be.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="274">
+          <caret line="17" selection-start-line="17" selection-end-line="42" selection-end-column="39" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/Projection_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-480">
+          <caret line="27" column="10" lean-forward="true" selection-start-line="27" selection-start-column="10" selection-end-line="27" selection-end-column="10" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

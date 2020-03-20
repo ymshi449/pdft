@@ -17,7 +17,7 @@ import scipy.optimize as optimizer
 psi4.set_num_threads(2)
 
 
-def build_orbitals(diag, A, ndocc):
+def build_orbitals(diag, A, ndocc, skip=None):
     """
     Diagonalizes matrix
 
@@ -55,9 +55,12 @@ def build_orbitals(diag, A, ndocc):
 
     C = psi4.core.doublet(A, Cp, False, False)
 
-    Cocc = psi4.core.Matrix(nbf, ndocc)
-    Cocc.np[:] = C.np[:, :ndocc]
-
+    if skip is None:
+        Cocc = psi4.core.Matrix(nbf, ndocc)
+        Cocc.np[:] = C.np[:, :ndocc]
+    else:
+        Cocc = psi4.core.Matrix(nbf, ndocc)
+        Cocc.np[:] = C.np[:, skip:skip+ndocc]
     D = psi4.core.doublet(Cocc, Cocc, False, True)
     return C, Cocc, D, eigvecs
 
@@ -798,7 +801,7 @@ class U_Molecule():
         Da = 0.5 * (Da + Da.T)
         return Da
 
-    def scf(self, maxiter=30, vp_matrix=None, print_energies=False, projection=None, mu_max=-np.inf):
+    def scf(self, maxiter=30, vp_matrix=None, print_energies=False, skip=None,projection=None, mu_max=-np.inf):
         """
         Performs scf calculation to find energy and density
         Parameters
@@ -808,6 +811,8 @@ class U_Molecule():
 
         vp_matrix: psi4.core.Matrix
             Vp_matrix to be added to KS matrix
+
+        skip: the number of eigenvalues to skip from the bottom.
 
         Returns
         -------
@@ -883,11 +888,24 @@ class U_Molecule():
             F_a.axpy(1.0, vp_a)
             F_b.axpy(1.0, vp_b)
             if projection is not None:
-                mu = mu_init * 10**(SCF_ITER)
-                if mu > mu_max:
-                    mu = mu_max
-                F_a.axpy(mu_max, projection)
-                F_b.axpy(mu_max, projection)
+                Pa = -(np.dot(F_a.np, projection[0]) + np.dot(projection[0].T, F_a.np))
+                Pa += -(np.dot(F_a.np, projection[1]) + np.dot(projection[1].T, F_a.np))
+                Pb = -(np.dot(F_b.np, projection[0]) + np.dot(projection[0].T, F_b.np))
+                Pb += -(np.dot(F_b.np, projection[1]) + np.dot(projection[1].T, F_b.np))
+                # print("|F_before|", np.linalg.norm(F_a.np), np.linalg.norm(F_b.np))
+                F_a.np[:] += Pa
+                F_b.np[:] += Pb
+                # print("|F_after|", np.linalg.norm(F_a.np), np.linalg.norm(F_b.np))
+                # print("|P|", np.linalg.norm(Pa)/np.linalg.norm(F_a.np),
+                #       np.linalg.norm(Pb)/np.linalg.norm(F_b.np))
+            # if projection is not None:
+            #     # mu = mu_init * 10**(SCF_ITER)
+            #     # if mu > mu_max:
+            #     #     mu = mu_max
+            #     F_a.axpy(mu_max, projection[0])
+            #     F_a.axpy(mu_max, projection[1])
+            #     F_b.axpy(mu_max, projection[0])
+            #     F_b.axpy(mu_max, projection[1])
 
             Vks_a = self.mints.ao_potential()
             Vks_a.axpy(0.5, self.jk.J()[0])  # why there is a 0.5
@@ -926,6 +944,10 @@ class U_Molecule():
             SCF_E += Partition
             SCF_E += Exchange_Correlation            
             SCF_E += self.Enuc
+            # if projection is not None:
+            #     print("PE",np.trace(D_a.np.dot(Pa)), np.trace(D_b.np.dot(Pb)))
+            #     SCF_E += np.trace(D_a.np.dot(Pa))
+            #     SCF_E += np.trace(D_b.np.dot(Pb))
 
             #print('SCF Iter%3d: % 18.14f   % 11.7f   % 1.5E   %1.5E'
             #       % (SCF_ITER, SCF_E, ks_e, (SCF_E - Eold), dRMS))
@@ -948,8 +970,12 @@ class U_Molecule():
             F_b = diisb_obj.extrapolate()
 
             #Diagonalize Fock matrix
-            C_a, Cocc_a, D_a, eigs_a = build_orbitals(F_a, self.A, self.nalpha)
-            C_b, Cocc_b, D_b, eigs_b = build_orbitals(F_b, self.A, self.nbeta)
+            if skip is None:
+                C_a, Cocc_a, D_a, eigs_a = build_orbitals(F_a, self.A, self.nalpha)
+                C_b, Cocc_b, D_b, eigs_b = build_orbitals(F_b, self.A, self.nbeta)
+            else:
+                C_a, Cocc_a, D_a, eigs_a = build_orbitals(F_a, self.A, self.nalpha, skip=skip)
+                C_b, Cocc_b, D_b, eigs_b = build_orbitals(F_b, self.A, self.nbeta, skip=skip)
 
             if SCF_ITER == maxiter:
                 # raise Exception("Maximum number of SCF cycles exceeded.")
@@ -1415,11 +1441,29 @@ class U_Embedding:
 
     def get_projection(self):
         S = self.molecule.S
-        P1 = np.dot(S, np.dot(self.fragments[1].Da.np + self.fragments[1].Db.np, S))
-        P2 = np.dot(S, np.dot(self.fragments[0].Da.np + self.fragments[0].Db.np, S))
-        P1psi = psi4.core.Matrix.from_array(P1)
-        P2psi = psi4.core.Matrix.from_array(P2)
-        return P1psi, P2psi
+        P1a = np.dot(S, np.dot(self.fragments[1].Da.np, S))
+        P1b = np.dot(S, np.dot(self.fragments[1].Db.np, S))
+        P2a = np.dot(S, np.dot(self.fragments[0].Da.np, S))
+        P2b = np.dot(S, np.dot(self.fragments[0].Db.np, S))
+        P1a_psi = psi4.core.Matrix.from_array(P1a)
+        P1b_psi = psi4.core.Matrix.from_array(P1b)
+        P2a_psi = psi4.core.Matrix.from_array(P2a)
+        P2b_psi = psi4.core.Matrix.from_array(P2b)
+        return [P1a_psi, P1b_psi], [P2a_psi, P2b_psi]
+
+    def orthogonal_scf(self, mu_max, maxiter, vp_matrix=None, printflag=False):
+        mu = np.min(np.abs(self.molecule.eig_a.np))
+        step = np.exp(np.log(mu_max / mu) / maxiter)
+        while True:
+            print("------mu=%e-------"%(mu))
+            mu *= step
+            P1,P2 = self.get_projection()
+            self.fragments[0].scf(maxiter=1000, vp_matrix=vp_matrix, print_energies=printflag, projection=P1, mu_max=mu)
+            self.fragments[1].scf(maxiter=1000, vp_matrix=vp_matrix, print_energies=printflag, projection=P2, mu_max=mu)
+            self.get_density_sum()
+            if mu >= mu_max:
+                break
+        return
 
     def find_vp_projection(self, maxiter, proj_mu=1e7, rho_std=1e-5, printflag=False):
         """
@@ -1462,54 +1506,55 @@ class U_Embedding:
         print("Orthogonality", np.trace(np.dot(self.fragments[1].Da.np + self.fragments[1].Db.np, S).dot(np.dot(self.fragments[0].Da.np + self.fragments[0].Db.np, S))))
         self.drho_conv.append(old_rho_conv)
 
-        mu = np.min(np.abs(self.molecule.eig_a.np))
-        step = np.exp(np.log(proj_mu / mu) / maxiter)
-
-        P1,P2 = self.get_projection()
-        self.fragments[0].scf(maxiter=1000, print_energies=printflag, projection=P1, mu_max=mu)
-        self.fragments[1].scf(maxiter=1000, print_energies=printflag, projection=P2, mu_max=mu)
-        self.get_density_sum()
+        self.orthogonal_scf(proj_mu, 21, printflag=printflag)
 
         rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
         old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
+        orho = [np.trace(np.dot(self.fragments[1].Da.np, S).dot(np.dot(self.fragments[0].Da.np, S))),
+                np.trace(np.dot(self.fragments[1].Db.np, S).dot(np.dot(self.fragments[0].Db.np, S))),
+                np.trace(np.dot(self.fragments[1].Da.np, S).dot(np.dot(self.fragments[0].Db.np, S))),
+                np.trace(np.dot(self.fragments[1].Db.np, S).dot(np.dot(self.fragments[0].Da.np, S)))]
+
         print("After projection dn:", old_rho_conv)
-        print("Orthogonality", np.trace(np.dot(self.fragments[1].Da.np + self.fragments[1].Db.np, S).dot(np.dot(self.fragments[0].Da.np + self.fragments[0].Db.np, S))))
+        print("Orthogonality", orho)
         self.drho_conv.append(old_rho_conv)
 
         ## vp update start
         print("<<<<<<<<<<<<<<<<<<<<<<Projection<<<<<<<<<<<<<<<<<<")
         for scf_step in range(1,maxiter+1):
-            mu *= step
             self.get_vp_Hext_nad()
             self.get_vp_xc_nad()
             vp_fock = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(self.vp_Hext_nad))
             self.vp_fock = [vp_fock, vp_fock]
 
-            P1, P2 = self.get_projection()
-            self.fragments[0].scf(maxiter=1000, print_energies=printflag, vp_matrix=self.vp_fock, projection=P1, mu_max=mu)
-            self.fragments[1].scf(maxiter=1000, print_energies=printflag, vp_matrix=self.vp_fock, projection=P2, mu_max=mu)
-            self.get_density_sum()
+            self.orthogonal_scf(proj_mu, 21, printflag=printflag, vp_matrix=self.vp_fock)
 
             rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
+
+            assert np.isclose(np.sum(rho_fragment*w), 1), np.sum(rho_fragment*w)
+
             old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
             self.drho_conv.append(old_rho_conv)
 
-            # f,ax = plt.subplots(1,1, dpi=210)
-            # ax.set_ylim(-1.5, 1)
-            # plot1d_x(self.vp_Hext_nad + self.vp_xc_nad, self.molecule.Vpot, dimmer_length=2,
-            #          ax=ax, label="vp", color="black", title=scf_step)
-            # plot1d_x(rho_fragment - rho_molecule, self.molecule.Vpot, ax=ax, label="dn")
-            # plot1d_x(self.vp_Hext_nad, self.molecule.Vpot,
-            #          ax=ax, label="vpHext", ls='--')
-            # plot1d_x(self.vp_xc_nad, self.molecule.Vpot,
-            #          ax=ax, label="vpxc", ls='--')
-            # ax.legend()
-            # f.show()
-            # f.savefig(str(scf_step))
-            # plt.close(f)
+            f,ax = plt.subplots(1,1, dpi=210)
+            ax.set_ylim(-1, 0.5)
+            plot1d_x(self.vp_Hext_nad + self.vp_xc_nad, self.molecule.Vpot, dimmer_length=2,
+                     ax=ax, label="vp", color="black", title=scf_step)
+            plot1d_x(rho_fragment, self.molecule.Vpot, ax=ax, label="nf")
+            plot1d_x(rho_molecule, self.molecule.Vpot, ax=ax, label="nmol")
+            plot1d_x(self.vp_Hext_nad, self.molecule.Vpot,
+                     ax=ax, label="vpHext", ls='--')
+            plot1d_x(self.vp_xc_nad, self.molecule.Vpot,
+                     ax=ax, label="vpxc", ls='--')
+            ax.legend()
+            f.show()
+            f.savefig(str(scf_step))
+            plt.close(f)
 
-            orho = np.trace(np.dot(self.fragments[1].Da.np + self.fragments[1].Db.np, S).dot(np.dot(self.fragments[0].Da.np + self.fragments[0].Db.np, S)))
-
+            orho = [np.trace(np.dot(self.fragments[1].Da.np, S).dot(np.dot(self.fragments[0].Da.np, S))),
+                    np.trace(np.dot(self.fragments[1].Db.np, S).dot(np.dot(self.fragments[0].Db.np, S))),
+                    np.trace(np.dot(self.fragments[1].Da.np, S).dot(np.dot(self.fragments[0].Db.np, S))),
+                    np.trace(np.dot(self.fragments[1].Db.np, S).dot(np.dot(self.fragments[0].Da.np, S)))]
             print(F'Iter: {scf_step} d_rho: {self.drho_conv[-1]} orthogonality: {orho}')
             if len(rho_convergence) >= 5:
                 if np.std(rho_convergence[-4:]) < rho_std:
