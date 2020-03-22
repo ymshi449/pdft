@@ -146,8 +146,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
-    <option name="x" value="1920" />
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="y" value="-2" />
     <option name="width" value="1920" />
     <option name="height" value="1082" />
@@ -342,15 +341,15 @@
       <workItem from="1584365041005" duration="33470000" />
       <workItem from="1584541733617" duration="13130000" />
       <workItem from="1584628416637" duration="14397000" />
-      <workItem from="1584712643676" duration="17125000" />
+      <workItem from="1584712643676" duration="17265000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="122542000" />
+    <option name="totallyTimeSpent" value="122682000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1920" y="25" width="1920" height="1055" extended-state="7" />
+    <frame x="0" y="25" width="1920" height="1055" extended-state="6" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.2497332" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -367,11 +366,11 @@
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Terminal" order="11" />
-      <window_info active="true" anchor="bottom" x="0" y="130" width="1920" height="1052" id="Python Console" maximized="true" order="12" type="WINDOWED" visible="true" weight="0.1648707" />
+      <window_info anchor="bottom" x="0" y="55" width="1920" height="1025" id="Python Console" maximized="true" order="12" type="WINDOWED" weight="0.1648707" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" x="0" y="130" width="1920" height="1052" id="SciView" maximized="true" order="3" type="WINDOWED" visible="true" weight="0.32977587" />
+      <window_info anchor="right" x="0" y="55" width="1920" height="1025" id="SciView" maximized="true" order="3" type="WINDOWED" visible="true" weight="0.32977587" />
       <window_info anchor="right" x="0" y="0" width="430" height="882" id="Documentation" order="4" side_tool="true" weight="0.32977587" />
       <window_info anchor="right" id="Database" order="5" />
     </layout>
