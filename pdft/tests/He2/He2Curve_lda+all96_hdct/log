@@ -1,5 +1,0 @@
-Mon Mar  2 14:26:28 EST 2020ME}_lda+all96_hdct
-pdw: /home/shi449/pdft/vdw/tests/He2Curve_lda+all96_hdct
-Test He2 binding curve with lda.
-Using a hard cutoff: yz plane. I started from 4.6 because for <4.6 there are singularites from the overlap in the middle.
-Job done at Thu Mar  5 08:22:16 EST 2020

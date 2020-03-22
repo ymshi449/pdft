@@ -1,0 +1,413 @@
+/home/shi449/pdft/vdw/tests/He2Curve_sptest_lda+all96
+  Threads set to 3 by Python driver.
+For this one I used hard radius instead of relative radius.
+============4.000000==============
+Iteration  1, ALL96 E -0.00071157393438, ALL96 E difference inf
+ALL96 Energy Converged: -0.0007116426923458164
+Iteration  2, ALL96 E -0.00071164269235, ALL96 E difference 0.00009661866256
+============4.222222==============
+Iteration  1, ALL96 E -0.00064926289972, ALL96 E difference inf
+ALL96 Energy Converged: -0.0006493327583925714
+Iteration  2, ALL96 E -0.00064933275839, ALL96 E difference 0.00010758532019
+============4.444444==============
+Iteration  1, ALL96 E -0.00057395186202, ALL96 E difference inf
+ALL96 Energy Converged: -0.0005740159458877703
+Iteration  2, ALL96 E -0.00057401594589, ALL96 E difference 0.00011164127210
+============4.666667==============
+Iteration  1, ALL96 E -0.00050528887561, ALL96 E difference inf
+ALL96 Energy Converged: -0.0005053474189660791
+Iteration  2, ALL96 E -0.00050534741897, ALL96 E difference 0.00011584773559
+============4.888889==============
+Iteration  1, ALL96 E -0.00043349269164, ALL96 E difference inf
+ALL96 Energy Converged: -0.0004335416909688784
+Iteration  2, ALL96 E -0.00043354169097, ALL96 E difference 0.00011302101967
+============5.111111==============
+Iteration  1, ALL96 E -0.00036747154763, ALL96 E difference inf
+ALL96 Energy Converged: -0.00036751137684413456
+Iteration  2, ALL96 E -0.00036751137684, ALL96 E difference 0.00010837544594
+============5.333333==============
+Iteration  1, ALL96 E -0.00030782721828, ALL96 E difference inf
+ALL96 Energy Converged: -0.0003078581766698777
+Iteration  2, ALL96 E -0.00030785817667, ALL96 E difference 0.00010056057059
+============5.555556==============
+Iteration  1, ALL96 E -0.00025188321624, ALL96 E difference inf
+ALL96 Energy Converged: -0.00025190531828431093
+Iteration  2, ALL96 E -0.00025190531828, ALL96 E difference 0.00008773948302
+============5.777778==============
+Iteration  1, ALL96 E -0.00020525972742, ALL96 E difference inf
+ALL96 Energy Converged: -0.0002052753531683791
+Iteration  2, ALL96 E -0.00020527535317, ALL96 E difference 0.00007612090405
+============6.000000==============
+Iteration  1, ALL96 E -0.00016475135706, ALL96 E difference inf
+ALL96 Energy Converged: -0.0001647633668673367
+Iteration  2, ALL96 E -0.00016476336687, ALL96 E difference 0.00007289126717
+C6 11.704808063473472
+============4.000000==============
+Iteration  1, ALL96 E -0.00040644221009, ALL96 E difference inf
+ALL96 Energy Converged: -0.00040645596780252227
+Iteration  2, ALL96 E -0.00040645596780, ALL96 E difference 0.00003384798860
+============4.222222==============
+Iteration  1, ALL96 E -0.00038800321177, ALL96 E difference inf
+ALL96 Energy Converged: -0.00038801798316056717
+Iteration  2, ALL96 E -0.00038801798316, ALL96 E difference 0.00003806884029
+============4.444444==============
+Iteration  1, ALL96 E -0.00036176569149, ALL96 E difference inf
+ALL96 Energy Converged: -0.00036178103746117575
+Iteration  2, ALL96 E -0.00036178103746, ALL96 E difference 0.00004241784071
+============4.666667==============
+Iteration  1, ALL96 E -0.00033185206629, ALL96 E difference inf
+ALL96 Energy Converged: -0.00033186759786816807
+Iteration  2, ALL96 E -0.00033186759787, ALL96 E difference 0.00004680051437
+============4.888889==============
+Iteration  1, ALL96 E -0.00029940928693, ALL96 E difference inf
+ALL96 Energy Converged: -0.0002994243357790736
+Iteration  2, ALL96 E -0.00029942433578, ALL96 E difference 0.00005025928034
+============5.111111==============
+Iteration  1, ALL96 E -0.00026430701941, ALL96 E difference inf
+ALL96 Energy Converged: -0.00026432067397798797
+Iteration  2, ALL96 E -0.00026432067398, ALL96 E difference 0.00005165910790
+============5.333333==============
+Iteration  1, ALL96 E -0.00023155689905, ALL96 E difference inf
+ALL96 Energy Converged: -0.00023156901017073867
+Iteration  2, ALL96 E -0.00023156901017, ALL96 E difference 0.00005230027265
+============5.555556==============
+Iteration  1, ALL96 E -0.00019825850197, ALL96 E difference inf
+ALL96 Energy Converged: -0.00019827020298645068
+Iteration  2, ALL96 E -0.00019827020299, ALL96 E difference 0.00005901548296
+============5.777778==============
+Iteration  1, ALL96 E -0.00016850114507, ALL96 E difference inf
+ALL96 Energy Converged: -0.00016851041569240628
+Iteration  2, ALL96 E -0.00016851041569, ALL96 E difference 0.00005501512283
+============6.000000==============
+Iteration  1, ALL96 E -0.00014094153618, ALL96 E difference inf
+ALL96 Energy Converged: -0.00014094847139057803
+Iteration  2, ALL96 E -0.00014094847139, ALL96 E difference 0.00004920388660
+C6 8.576709809120219
+============4.000000==============
+Iteration  1, ALL96 E -0.00022187504723, ALL96 E difference inf
+ALL96 Energy Converged: -0.00022187994760017614
+Iteration  2, ALL96 E -0.00022187994760, ALL96 E difference 0.00002208568055
+============4.222222==============
+Iteration  1, ALL96 E -0.00022265644262, ALL96 E difference inf
+ALL96 Energy Converged: -0.0002226612511723962
+Iteration  2, ALL96 E -0.00022266125117, ALL96 E difference 0.00002159583628
+============4.444444==============
+Iteration  1, ALL96 E -0.00021797833981, ALL96 E difference inf
+ALL96 Energy Converged: -0.00021798316475481666
+Iteration  2, ALL96 E -0.00021798316475, ALL96 E difference 0.00002213449128
+============4.666667==============
+Iteration  1, ALL96 E -0.00020987110215, ALL96 E difference inf
+ALL96 Energy Converged: -0.00020987610635705967
+Iteration  2, ALL96 E -0.00020987610636, ALL96 E difference 0.00002384361493
+============4.888889==============
+Iteration  1, ALL96 E -0.00019782238906, ALL96 E difference inf
+ALL96 Energy Converged: -0.00019782750938239515
+Iteration  2, ALL96 E -0.00019782750938, ALL96 E difference 0.00002588275818
+============5.111111==============
+Iteration  1, ALL96 E -0.00018274525094, ALL96 E difference inf
+ALL96 Energy Converged: -0.00018275033012334248
+Iteration  2, ALL96 E -0.00018275033012, ALL96 E difference 0.00002779299381
+============5.333333==============
+Iteration  1, ALL96 E -0.00016669660620, ALL96 E difference inf
+ALL96 Energy Converged: -0.00016670153629255323
+Iteration  2, ALL96 E -0.00016670153629, ALL96 E difference 0.00002957437741
+============5.555556==============
+Iteration  1, ALL96 E -0.00014924647724, ALL96 E difference inf
+ALL96 Energy Converged: -0.0001492510057134185
+Iteration  2, ALL96 E -0.00014925100571, ALL96 E difference 0.00003034134582
+============5.777778==============
+Iteration  1, ALL96 E -0.00013190789479, ALL96 E difference inf
+ALL96 Energy Converged: -0.00013191190107970092
+Iteration  2, ALL96 E -0.00013191190108, ALL96 E difference 0.00003037096441
+============6.000000==============
+Iteration  1, ALL96 E -0.00011493824391, ALL96 E difference inf
+ALL96 Energy Converged: -0.00011494162775786888
+Iteration  2, ALL96 E -0.00011494162776, ALL96 E difference 0.00002943971364
+C6 6.094396030434435
+============4.000000==============
+Iteration  1, ALL96 E -0.00011458090114, ALL96 E difference inf
+ALL96 Energy Converged: -0.00011458256962521662
+Iteration  2, ALL96 E -0.00011458256963, ALL96 E difference 0.00001456141408
+============4.222222==============
+Iteration  1, ALL96 E -0.00012079481691, ALL96 E difference inf
+ALL96 Energy Converged: -0.00012079635617454373
+Iteration  2, ALL96 E -0.00012079635617, ALL96 E difference 0.00001274266092
+============4.444444==============
+Iteration  1, ALL96 E -0.00012436865506, ALL96 E difference inf
+ALL96 Energy Converged: -0.00012437007446588992
+Iteration  2, ALL96 E -0.00012437007447, ALL96 E difference 0.00001141276522
+============4.666667==============
+Iteration  1, ALL96 E -0.00012580363096, ALL96 E difference inf
+ALL96 Energy Converged: -0.00012580499526379705
+Iteration  2, ALL96 E -0.00012580499526, ALL96 E difference 0.00001084455794
+============4.888889==============
+Iteration  1, ALL96 E -0.00012430441138, ALL96 E difference inf
+ALL96 Energy Converged: -0.00012430576731658525
+Iteration  2, ALL96 E -0.00012430576732, ALL96 E difference 0.00001090806438
+============5.111111==============
+Iteration  1, ALL96 E -0.00012023547801, ALL96 E difference inf
+ALL96 Energy Converged: -0.0001202368574702831
+Iteration  2, ALL96 E -0.00012023685747, ALL96 E difference 0.00001147285924
+============5.333333==============
+Iteration  1, ALL96 E -0.00011452315088, ALL96 E difference inf
+ALL96 Energy Converged: -0.00011452458472830343
+Iteration  2, ALL96 E -0.00011452458473, ALL96 E difference 0.00001252000225
+============5.555556==============
+Iteration  1, ALL96 E -0.00010703866309, ALL96 E difference inf
+ALL96 Energy Converged: -0.00010704011842053985
+Iteration  2, ALL96 E -0.00010704011842, ALL96 E difference 0.00001359616243
+============5.777778==============
+Iteration  1, ALL96 E -0.00009847950406, ALL96 E difference inf
+ALL96 Energy Converged: -9.848093800400795e-05
+Iteration  2, ALL96 E -0.00009848093800, ALL96 E difference 0.00001456060580
+============6.000000==============
+Iteration  1, ALL96 E -0.00008918125428, ALL96 E difference inf
+ALL96 Energy Converged: -8.918260708116443e-05
+Iteration  2, ALL96 E -0.00008918260708, ALL96 E difference 0.00001516886335
+C6 4.171965807236027
+============4.000000==============
+Iteration  1, ALL96 E -0.00005561357413, ALL96 E difference inf
+ALL96 Energy Converged: -5.561413573515639e-05
+Iteration  2, ALL96 E -0.00005561413574, ALL96 E difference 0.00001009819852
+============4.222222==============
+Iteration  1, ALL96 E -0.00006158802620, ALL96 E difference inf
+ALL96 Energy Converged: -6.15885764181278e-05
+Iteration  2, ALL96 E -0.00006158857642, ALL96 E difference 0.00000893384736
+============4.444444==============
+Iteration  1, ALL96 E -0.00006667350828, ALL96 E difference inf
+ALL96 Energy Converged: -6.667402134157257e-05
+Iteration  2, ALL96 E -0.00006667402134, ALL96 E difference 0.00000769505701
+============4.666667==============
+Iteration  1, ALL96 E -0.00007077778587, ALL96 E difference inf
+ALL96 Energy Converged: -7.077825045333244e-05
+Iteration  2, ALL96 E -0.00007077825045, ALL96 E difference 0.00000656399229
+============4.888889==============
+Iteration  1, ALL96 E -0.00007352898737, ALL96 E difference inf
+ALL96 Energy Converged: -7.352940677071712e-05
+Iteration  2, ALL96 E -0.00007352940677, ALL96 E difference 0.00000570388780
+============5.111111==============
+Iteration  1, ALL96 E -0.00007459881383, ALL96 E difference inf
+ALL96 Energy Converged: -7.459920034365076e-05
+Iteration  2, ALL96 E -0.00007459920034, ALL96 E difference 0.00000518115710
+============5.333333==============
+Iteration  1, ALL96 E -0.00007441232148, ALL96 E difference inf
+ALL96 Energy Converged: -7.441270170535415e-05
+Iteration  2, ALL96 E -0.00007441270171, ALL96 E difference 0.00000510968653
+============5.555556==============
+Iteration  1, ALL96 E -0.00007271984316, ALL96 E difference inf
+ALL96 Energy Converged: -7.272023376512582e-05
+Iteration  2, ALL96 E -0.00007272023377, ALL96 E difference 0.00000537128249
+============5.777778==============
+Iteration  1, ALL96 E -0.00006981094291, ALL96 E difference inf
+ALL96 Energy Converged: -6.981135395400449e-05
+Iteration  2, ALL96 E -0.00006981135395, ALL96 E difference 0.00000588791164
+============6.000000==============
+Iteration  1, ALL96 E -0.00006578409690, ALL96 E difference inf
+ALL96 Energy Converged: -6.578452332399143e-05
+Iteration  2, ALL96 E -0.00006578452332, ALL96 E difference 0.00000648209829
+C6 2.7344999035882833
+============4.000000==============
+Iteration  1, ALL96 E -0.00002516964159, ALL96 E difference inf
+ALL96 Energy Converged: -2.5169785879824784e-05
+Iteration  2, ALL96 E -0.00002516978588, ALL96 E difference 0.00000573280536
+============4.222222==============
+Iteration  1, ALL96 E -0.00002934823458, ALL96 E difference inf
+ALL96 Energy Converged: -2.9348396437276128e-05
+Iteration  2, ALL96 E -0.00002934839644, ALL96 E difference 0.00000551509728
+============4.444444==============
+Iteration  1, ALL96 E -0.00003340154904, ALL96 E difference inf
+ALL96 Energy Converged: -3.3401717665675044e-05
+Iteration  2, ALL96 E -0.00003340171767, ALL96 E difference 0.00000504839135
+============4.666667==============
+Iteration  1, ALL96 E -0.00003724683263, ALL96 E difference inf
+ALL96 Energy Converged: -3.724699692950046e-05
+Iteration  2, ALL96 E -0.00003724699693, ALL96 E difference 0.00000441110747
+============4.888889==============
+Iteration  1, ALL96 E -0.00004065309396, ALL96 E difference inf
+ALL96 Energy Converged: -4.0653244173553635e-05
+Iteration  2, ALL96 E -0.00004065324417, ALL96 E difference 0.00000369488184
+============5.111111==============
+Iteration  1, ALL96 E -0.00004328755180, ALL96 E difference inf
+ALL96 Energy Converged: -4.3287681547518455e-05
+Iteration  2, ALL96 E -0.00004328768155, ALL96 E difference 0.00000299740673
+============5.333333==============
+Iteration  1, ALL96 E -0.00004530718374, ALL96 E difference inf
+ALL96 Energy Converged: -4.53072946515711e-05
+Iteration  2, ALL96 E -0.00004530729465, ALL96 E difference 0.00000244805065
+============5.555556==============
+Iteration  1, ALL96 E -0.00004641345723, ALL96 E difference inf
+ALL96 Energy Converged: -4.6413554451397905e-05
+Iteration  2, ALL96 E -0.00004641355445, ALL96 E difference 0.00000209464872
+============5.777778==============
+Iteration  1, ALL96 E -0.00004660236727, ALL96 E difference inf
+ALL96 Energy Converged: -4.66024592734491e-05
+Iteration  2, ALL96 E -0.00004660245927, ALL96 E difference 0.00000197421808
+============6.000000==============
+Iteration  1, ALL96 E -0.00004586480354, ALL96 E difference inf
+ALL96 Energy Converged: -4.5864898811649884e-05
+Iteration  2, ALL96 E -0.00004586489881, ALL96 E difference 0.00000207725339
+C6 1.7038405442794176
+============4.000000==============
+Iteration  1, ALL96 E -0.00001044420429, ALL96 E difference inf
+ALL96 Energy Converged: -1.0444222432826342e-05
+Iteration  2, ALL96 E -0.00001044422243, ALL96 E difference 0.00000173719515
+============4.222222==============
+Iteration  1, ALL96 E -0.00001291384975, ALL96 E difference inf
+ALL96 Energy Converged: -1.2913876582279302e-05
+Iteration  2, ALL96 E -0.00001291387658, ALL96 E difference 0.00000207806120
+============4.444444==============
+Iteration  1, ALL96 E -0.00001552734928, ALL96 E difference inf
+ALL96 Energy Converged: -1.5527383944711218e-05
+Iteration  2, ALL96 E -0.00001552738394, ALL96 E difference 0.00000223257387
+============4.666667==============
+Iteration  1, ALL96 E -0.00001823863938, ALL96 E difference inf
+ALL96 Energy Converged: -1.8238679647563445e-05
+Iteration  2, ALL96 E -0.00001823867965, ALL96 E difference 0.00000220806029
+============4.888889==============
+Iteration  1, ALL96 E -0.00002091190757, ALL96 E difference inf
+ALL96 Energy Converged: -2.091194967031818e-05
+Iteration  2, ALL96 E -0.00002091194967, ALL96 E difference 0.00000201301532
+============5.111111==============
+Iteration  1, ALL96 E -0.00002341081214, ALL96 E difference inf
+ALL96 Energy Converged: -2.341085176612246e-05
+Iteration  2, ALL96 E -0.00002341085177, ALL96 E difference 0.00000169274419
+============5.333333==============
+Iteration  1, ALL96 E -0.00002570421671, ALL96 E difference inf
+ALL96 Energy Converged: -2.5704250156112482e-05
+Iteration  2, ALL96 E -0.00002570425016, ALL96 E difference 0.00000130103288
+============5.555556==============
+Iteration  1, ALL96 E -0.00002762007535, ALL96 E difference inf
+ALL96 Energy Converged: -2.762009993289808e-05
+Iteration  2, ALL96 E -0.00002762009993, ALL96 E difference 0.00000089008142
+============5.777778==============
+Iteration  1, ALL96 E -0.00002906711236, ALL96 E difference inf
+ALL96 Energy Converged: -2.9067127679658453e-05
+Iteration  2, ALL96 E -0.00002906712768, ALL96 E difference 0.00000052706565
+============6.000000==============
+Iteration  1, ALL96 E -0.00002993775016, ALL96 E difference inf
+ALL96 Energy Converged: -2.9937758500203457e-05
+Iteration  2, ALL96 E -0.00002993775850, ALL96 E difference 0.00000027866452
+C6 1.0017280060977236
+============4.000000==============
+Iteration  1, ALL96 E -0.00000386257840, ALL96 E difference inf
+ALL96 Energy Converged: -3.86257314325088e-06
+Iteration  2, ALL96 E -0.00000386257314, ALL96 E difference 0.00000136055429
+============4.222222==============
+Iteration  1, ALL96 E -0.00000513957880, ALL96 E difference inf
+ALL96 Energy Converged: -5.1395744223187856e-06
+Iteration  2, ALL96 E -0.00000513957442, ALL96 E difference 0.00000085112527
+============4.444444==============
+Iteration  1, ALL96 E -0.00000659716117, ALL96 E difference inf
+ALL96 Energy Converged: -6.597158313842848e-06
+Iteration  2, ALL96 E -0.00000659715831, ALL96 E difference 0.00000043245427
+============4.666667==============
+Iteration  1, ALL96 E -0.00000821925796, ALL96 E difference inf
+ALL96 Energy Converged: -8.219257085391348e-06
+Iteration  2, ALL96 E -0.00000821925709, ALL96 E difference 0.00000010655141
+============4.888889==============
+Iteration  1, ALL96 E -0.00000995800691, ALL96 E difference inf
+ALL96 Energy Converged: -9.958007967984933e-06
+Iteration  2, ALL96 E -0.00000995800797, ALL96 E difference 0.00000010593819
+============5.111111==============
+Iteration  1, ALL96 E -0.00001174300868, ALL96 E difference inf
+ALL96 Energy Converged: -1.1743011012806628e-05
+Iteration  2, ALL96 E -0.00001174301101, ALL96 E difference 0.00000019830152
+============5.333333==============
+Iteration  1, ALL96 E -0.00001353895638, ALL96 E difference inf
+ALL96 Energy Converged: -1.3538958769821783e-05
+Iteration  2, ALL96 E -0.00001353895877, ALL96 E difference 0.00000017651196
+============5.555556==============
+Iteration  1, ALL96 E -0.00001526579379, ALL96 E difference inf
+ALL96 Energy Converged: -1.526579443570655e-05
+Iteration  2, ALL96 E -0.00001526579444, ALL96 E difference 0.00000004199888
+============5.777778==============
+Iteration  1, ALL96 E -0.00001684792394, ALL96 E difference inf
+ALL96 Energy Converged: -1.684792095964578e-05
+Iteration  2, ALL96 E -0.00001684792096, ALL96 E difference 0.00000017684731
+============6.000000==============
+Iteration  1, ALL96 E -0.00001819565516, ALL96 E difference inf
+ALL96 Energy Converged: -1.8195647466047635e-05
+Iteration  2, ALL96 E -0.00001819564747, ALL96 E difference 0.00000042283003
+C6 0.5524249999626163
+============4.000000==============
+Iteration  1, ALL96 E -0.00000121090623, ALL96 E difference inf
+ALL96 Energy Converged: -1.2109020768995315e-06
+Iteration  2, ALL96 E -0.00000121090208, ALL96 E difference 0.00000343090021
+============4.222222==============
+Iteration  1, ALL96 E -0.00000178158255, ALL96 E difference inf
+ALL96 Energy Converged: -1.781577231540526e-06
+Iteration  2, ALL96 E -0.00000178157723, ALL96 E difference 0.00000298746216
+============4.444444==============
+Iteration  1, ALL96 E -0.00000249020727, ALL96 E difference inf
+ALL96 Energy Converged: -2.4902008972404626e-06
+Iteration  2, ALL96 E -0.00000249020090, ALL96 E difference 0.00000255728593
+============4.666667==============
+Iteration  1, ALL96 E -0.00000333983479, ALL96 E difference inf
+ALL96 Energy Converged: -3.3398276496391834e-06
+Iteration  2, ALL96 E -0.00000333982765, ALL96 E difference 0.00000213829607
+============4.888889==============
+Iteration  1, ALL96 E -0.00000431379294, ALL96 E difference inf
+ALL96 Energy Converged: -4.313785366036843e-06
+Iteration  2, ALL96 E -0.00000431378537, ALL96 E difference 0.00000175566101
+============5.111111==============
+Iteration  1, ALL96 E -0.00000540535994, ALL96 E difference inf
+ALL96 Energy Converged: -5.405352216572101e-06
+Iteration  2, ALL96 E -0.00000540535222, ALL96 E difference 0.00000142837681
+============5.333333==============
+Iteration  1, ALL96 E -0.00000657320563, ALL96 E difference inf
+ALL96 Energy Converged: -6.573197925176163e-06
+Iteration  2, ALL96 E -0.00000657319793, ALL96 E difference 0.00000117165987
+============5.555556==============
+Iteration  1, ALL96 E -0.00000780496674, ALL96 E difference inf
+ALL96 Energy Converged: -7.804958812614467e-06
+Iteration  2, ALL96 E -0.00000780495881, ALL96 E difference 0.00000101509949
+============5.777778==============
+Iteration  1, ALL96 E -0.00000904768221, ALL96 E difference inf
+ALL96 Energy Converged: -9.047673452290736e-06
+Iteration  2, ALL96 E -0.00000904767345, ALL96 E difference 0.00000096767983
+============6.000000==============
+Iteration  1, ALL96 E -0.00001024857940, ALL96 E difference inf
+ALL96 Energy Converged: -1.0248569084409456e-05
+Iteration  2, ALL96 E -0.00001024856908, ALL96 E difference 0.00000100662859
+C6 0.28390109755673637
+============4.000000==============
+Iteration  1, ALL96 E -0.00000029027476, ALL96 E difference inf
+ALL96 Energy Converged: -2.902733901363406e-07
+Iteration  2, ALL96 E -0.00000029027339, ALL96 E difference 0.00000470272813
+============4.222222==============
+Iteration  1, ALL96 E -0.00000050185794, ALL96 E difference inf
+ALL96 Energy Converged: -5.018557377104973e-07
+Iteration  2, ALL96 E -0.00000050185574, ALL96 E difference 0.00000438152335
+============4.444444==============
+Iteration  1, ALL96 E -0.00000079500060, ALL96 E difference inf
+ALL96 Energy Converged: -7.949973850593684e-07
+Iteration  2, ALL96 E -0.00000079499739, ALL96 E difference 0.00000404389661
+============4.666667==============
+Iteration  1, ALL96 E -0.00000117816969, ALL96 E difference inf
+ALL96 Energy Converged: -1.1781653552008457e-06
+Iteration  2, ALL96 E -0.00000117816536, ALL96 E difference 0.00000367782833
+============4.888889==============
+Iteration  1, ALL96 E -0.00000165897117, ALL96 E difference inf
+ALL96 Energy Converged: -1.658965706486442e-06
+Iteration  2, ALL96 E -0.00000165896571, ALL96 E difference 0.00000329287658
+============5.111111==============
+Iteration  1, ALL96 E -0.00000223507263, ALL96 E difference inf
+ALL96 Energy Converged: -2.2350661387920827e-06
+Iteration  2, ALL96 E -0.00000223506614, ALL96 E difference 0.00000290280043
+============5.333333==============
+Iteration  1, ALL96 E -0.00000290405339, ALL96 E difference inf
+ALL96 Energy Converged: -2.9040460526203507e-06
+Iteration  2, ALL96 E -0.00000290404605, ALL96 E difference 0.00000252546280
+============5.555556==============
+Iteration  1, ALL96 E -0.00000365489893, ALL96 E difference inf
+ALL96 Energy Converged: -3.654890885265073e-06
+Iteration  2, ALL96 E -0.00000365489089, ALL96 E difference 0.00000220189546
+============5.777778==============
+Iteration  1, ALL96 E -0.00000446872472, ALL96 E difference inf
+ALL96 Energy Converged: -4.468715970915304e-06
+Iteration  2, ALL96 E -0.00000446871597, ALL96 E difference 0.00000195795526
+============6.000000==============
+Iteration  1, ALL96 E -0.00000532554657, ALL96 E difference inf
+ALL96 Energy Converged: -5.325537037026426e-06
+Iteration  2, ALL96 E -0.00000532553704, ALL96 E difference 0.00000179006052
+C6 0.13476611540061692
