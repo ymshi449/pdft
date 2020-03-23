@@ -887,25 +887,21 @@ class U_Molecule():
             F_b.axpy(1.0, Vxc_b)
             F_a.axpy(1.0, vp_a)
             F_b.axpy(1.0, vp_b)
-            if projection is not None:
-                Pa = -(np.dot(F_a.np, projection[0]) + np.dot(projection[0].T, F_a.np))
-                Pa += -(np.dot(F_a.np, projection[1]) + np.dot(projection[1].T, F_a.np))
-                Pb = -(np.dot(F_b.np, projection[0]) + np.dot(projection[0].T, F_b.np))
-                Pb += -(np.dot(F_b.np, projection[1]) + np.dot(projection[1].T, F_b.np))
-                # print("|F_before|", np.linalg.norm(F_a.np), np.linalg.norm(F_b.np))
-                F_a.np[:] += Pa
-                F_b.np[:] += Pb
-                # print("|F_after|", np.linalg.norm(F_a.np), np.linalg.norm(F_b.np))
-                # print("|P|", np.linalg.norm(Pa)/np.linalg.norm(F_a.np),
-                #       np.linalg.norm(Pb)/np.linalg.norm(F_b.np))
             # if projection is not None:
-            #     # mu = mu_init * 10**(SCF_ITER)
-            #     # if mu > mu_max:
-            #     #     mu = mu_max
-            #     F_a.axpy(mu_max, projection[0])
-            #     F_a.axpy(mu_max, projection[1])
-            #     F_b.axpy(mu_max, projection[0])
-            #     F_b.axpy(mu_max, projection[1])
+            #     Pa = -(np.dot(F_a.np, projection[0]) + np.dot(projection[0].T, F_a.np))
+            #     Pa += -(np.dot(F_a.np, projection[1]) + np.dot(projection[1].T, F_a.np))
+            #     Pb = -(np.dot(F_b.np, projection[0]) + np.dot(projection[0].T, F_b.np))
+            #     Pb += -(np.dot(F_b.np, projection[1]) + np.dot(projection[1].T, F_b.np))
+            #     F_a.np[:] += Pa
+            #     F_b.np[:] += Pb
+            if projection is not None:
+                # mu = mu_init * 10**(SCF_ITER)
+                # if mu > mu_max:
+                #     mu = mu_max
+                F_a.axpy(mu_max, projection[0])
+                F_a.axpy(mu_max, projection[1])
+                F_b.axpy(mu_max, projection[0])
+                F_b.axpy(mu_max, projection[1])
 
             Vks_a = self.mints.ao_potential()
             Vks_a.axpy(0.5, self.jk.J()[0])  # why there is a 0.5
@@ -937,6 +933,9 @@ class U_Molecule():
             Hartree_a = 1.0 * self.jk.J()[0].vector_dot(D_a) + self.jk.J()[1].vector_dot(D_a)
             Hartree_b = 1.0 * self.jk.J()[0].vector_dot(D_b) + self.jk.J()[1].vector_dot(D_b)
             Partition = vp_a.vector_dot(D_a) + vp_b.vector_dot(D_b)
+            # if projection is not None:
+            #     Partition += np.trace(D_a.np.dot(Pa))
+            #     Partition += np.trace(D_b.np.dot(Pb))
             Exchange_Correlation = ks_e
 
             SCF_E = Core
@@ -944,10 +943,7 @@ class U_Molecule():
             SCF_E += Partition
             SCF_E += Exchange_Correlation            
             SCF_E += self.Enuc
-            # if projection is not None:
-            #     print("PE",np.trace(D_a.np.dot(Pa)), np.trace(D_b.np.dot(Pb)))
-            #     SCF_E += np.trace(D_a.np.dot(Pa))
-            #     SCF_E += np.trace(D_b.np.dot(Pb))
+
 
             #print('SCF Iter%3d: % 18.14f   % 11.7f   % 1.5E   %1.5E'
             #       % (SCF_ITER, SCF_E, ks_e, (SCF_E - Eold), dRMS))
@@ -958,7 +954,25 @@ class U_Molecule():
             #     print(abs(SCF_E - Eold) < E_conv)
             #     print(dRMS < D_conv)
             #     print((mu >= mu_max))
+            # print(SCF_E, Eold)
             if (abs(SCF_E - Eold) < E_conv) and (dRMS < D_conv):
+                # if projection is not None:
+                #     Pa = -(np.dot(F_a.np, projection[0]) + np.dot(projection[0].T, F_a.np))
+                #     Pa += -(np.dot(F_a.np, projection[1]) + np.dot(projection[1].T, F_a.np))
+                #     Pb = -(np.dot(F_b.np, projection[0]) + np.dot(projection[0].T, F_b.np))
+                #     Pb += -(np.dot(F_b.np, projection[1]) + np.dot(projection[1].T, F_b.np))
+                #     F_a.np[:] += Pa
+                #     F_b.np[:] += Pb
+                #     # Diagonalize Fock matrix
+                #     if skip is None:
+                #         C_a, Cocc_a, D_a, eigs_a = build_orbitals(F_a, self.A, self.nalpha)
+                #         C_b, Cocc_b, D_b, eigs_b = build_orbitals(F_b, self.A, self.nbeta)
+                #     else:
+                #         C_a, Cocc_a, D_a, eigs_a = build_orbitals(F_a, self.A, self.nalpha, skip=skip)
+                #         C_b, Cocc_b, D_b, eigs_b = build_orbitals(F_b, self.A, self.nbeta, skip=skip)
+                #     if projection is not None:
+                #         Partition += np.trace(D_a.np.dot(Pa))
+                #         Partition += np.trace(D_b.np.dot(Pb))
                 if print_energies is True:
                     print(F'SCF Convergence: NUM_ITER = {SCF_ITER} dE = {abs(SCF_E - Eold)} dDIIS = {dRMS}')
                 break
@@ -1455,7 +1469,7 @@ class U_Embedding:
         mu = np.min(np.abs(self.molecule.eig_a.np))
         step = np.exp(np.log(mu_max / mu) / maxiter)
         while True:
-            print("------mu=%e-------"%(mu))
+            # print("------mu=%e-------"%(mu))
             mu *= step
             P1,P2 = self.get_projection()
             self.fragments[0].scf(maxiter=1000, vp_matrix=vp_matrix, print_energies=printflag, projection=P1, mu_max=mu)

@@ -6,7 +6,7 @@ import libcubeprop
 
 psi4.set_output_file("H2P.psi4")
 functional = 'svwn'
-basis = 'cc-pvtz'
+basis = '6-311G**'
 svdc = -4
 reguc = -7
 title = "H2p BT" + basis + functional
@@ -69,6 +69,7 @@ nf = mol.to_grid(pdfter.fragments_Db+pdfter.fragments_Da)
 n_mol = mol.to_grid(mol.Da.np+mol.Db.np)
 f,ax = plt.subplots(1,1, dpi=210)
 ax.set_ylim(-1, 0.5)
+ax.set_xlim(-10,10)
 pdft.plot1d_x(pdfter.vp_Hext_nad + pdfter.vp_xc_nad, pdfter.molecule.Vpot, dimmer_length=2,
          ax=ax, label="vp", color="black")
 pdft.plot1d_x(nf, pdfter.molecule.Vpot, ax=ax, label="nf", ls="--")

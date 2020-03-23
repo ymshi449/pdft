@@ -11,32 +11,59 @@ basis = 'cc-pvdz'
 
 psi4.set_output_file("projection.psi4")
 
-Full_Molec = psi4.geometry("""
-nocom
-noreorient
-Be %f 0.0 0.00
-Be -%f 0.0 0.00
-units bohr
-symmetry c1
-""" % (separation / 2, separation / 2))
+# Full_Molec = psi4.geometry("""
+# nocom
+# noreorient
+# Be %f 0.0 0.00
+# Be -%f 0.0 0.00
+# units bohr
+# symmetry c1
+# """ % (separation / 2, separation / 2))
+#
+# Monomer_1 =  psi4.geometry("""
+# nocom
+# noreorient
+# Be %f 0.0 0.00
+# @Be -%f 0.0 0.00
+# units bohr
+# symmetry c1
+# """ % (separation / 2, separation / 2))
+#
+# Monomer_2 =  psi4.geometry("""
+# nocom
+# noreorient
+# @Be %f 0.0 0.00
+# Be -%f 0.0 0.00
+# units bohr
+# symmetry c1
+# """ % (separation / 2, separation / 2))
 
 Monomer_1 =  psi4.geometry("""
 nocom
 noreorient
-Be %f 0.0 0.00
-@Be -%f 0.0 0.00
+@H  -1 0 0
+H  1 0 0
 units bohr
 symmetry c1
-""" % (separation / 2, separation / 2))
+""")
 
 Monomer_2 =  psi4.geometry("""
 nocom
 noreorient
-@Be %f 0.0 0.00
-Be -%f 0.0 0.00
+H  -1 0 0
+@H  1 0 0
 units bohr
 symmetry c1
-""" % (separation / 2, separation / 2))
+""")
+Full_Molec =  psi4.geometry("""
+nocom
+noreorient
+1 2
+H  -1 0 0
+H  1 0 0
+units bohr
+symmetry c1""")
+Full_Molec.set_name("H2P")
 
 Full_Molec.set_name("projection")
 
@@ -67,7 +94,7 @@ C2b = f2.Cb.np
 E1 = f1.energy
 E2 = f2.energy
 S = np.array(mol.mints.ao_overlap())
-F = mol.Fa.np+mol.Fb.np
+F1a = f1.Fa.np
 n1be = mol.to_grid(D1a + D1b)
 n2be = mol.to_grid(D2a + D2b)
 n_mol = mol.to_grid(mol.Da.np + mol.Db.np)
@@ -129,9 +156,11 @@ P2b = np.dot(f1.Db.np, S)
 #            np.dot(S, np.dot(f1.Da.np + f1.Db.np, F)))
 P1psi = psi4.core.Matrix.from_array([P1a, P1b])
 P2psi = psi4.core.Matrix.from_array([P2a, P2b])
+print("--------------")
 f1.scf(maxiter=1000, projection=[P1a, P1b], print_energies=True)
 print("--------------")
 f2.scf(maxiter=1000, projection=[P2a, P2b], print_energies=True)
+print("--------------")
 pdfter.get_density_sum()
 rho_fragment = mol.to_grid(pdfter.fragments_Da, Duv_b=pdfter.fragments_Db)
 orho = [np.trace(np.dot(f2.Da.np, S).dot(np.dot(f1.Da.np, S))),
@@ -147,6 +176,7 @@ print(f2.Ca.np.T.dot(S.dot(C1a[:,0])))
 print(f1.Ca.np.T.dot(S.dot(f2.Ca.np[:,0])))
 print(f2.Ca.np.T.dot(S.dot(f1.Ca.np[:,0])))
 print("eigens", f1.eig_a.np, f2.eig_a.np)
+print("Energy", f1.energy, f1.frag_energy, E1)
 
 n1af = mol.to_grid(f1.Da.np + f1.Db.np)
 n2af = mol.to_grid(f2.Da.np + f2.Db.np)
