@@ -40,8 +40,8 @@ Full_Molec.set_name("H2P")
 
 #Psi4 Options:
 psi4.set_options({
-    # 'DFT_SPHERICAL_POINTS': 110,
-    # 'DFT_RADIAL_POINTS':    5,
+    'DFT_SPHERICAL_POINTS': 50,
+    'DFT_RADIAL_POINTS':    28,
     'REFERENCE' : 'UKS'
 })
 
@@ -62,7 +62,8 @@ pdfter = pdft.U_Embedding([f1, f2], mol)
 #                                beta=1, a_rho_var=1e-7, printflag=True)
 # # pdfter.find_vp_scipy_1basis(maxiter=7)
 # # pdfter.find_vp_densitydifference(42, 1)
-#
+jac, hess = pdfter.find_vp_response_grid(maxiter=1, hessian_data_type="float32")
+
 # f,ax = plt.subplots(1,1, dpi=210)
 # ax.set_ylim(-2,0.2)
 # pdft.plot1d_x(pdfter.vp_grid, mol.Vpot, ax=ax, label="vp")

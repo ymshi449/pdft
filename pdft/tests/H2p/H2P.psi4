@@ -91,11 +91,11 @@
 
     BS radius alpha        =              1
     Pruning alpha          =              1
-    Radial Points          =             75
-    Spherical Points       =            302
-    Total Points           =          44810
-    Total Blocks           =            392
-    Max Points             =            256
+    Radial Points          =             28
+    Spherical Points       =             50
+    Total Points           =           2800
+    Total Blocks           =             30
+    Max Points             =            223
     Max Functions          =             28
 
   Using in-core PK algorithm.
@@ -218,11 +218,11 @@
 
     BS radius alpha        =              1
     Pruning alpha          =              1
-    Radial Points          =             75
-    Spherical Points       =            302
-    Total Points           =          44810
-    Total Blocks           =            392
-    Max Points             =            256
+    Radial Points          =             28
+    Spherical Points       =             50
+    Total Points           =           2800
+    Total Blocks           =             30
+    Max Points             =            223
     Max Functions          =             28
 
   Using in-core PK algorithm.
@@ -345,11 +345,11 @@
 
     BS radius alpha        =              1
     Pruning alpha          =              1
-    Radial Points          =             75
-    Spherical Points       =            302
-    Total Points           =          44810
-    Total Blocks           =            392
-    Max Points             =            256
+    Radial Points          =             28
+    Spherical Points       =             50
+    Total Points           =           2800
+    Total Blocks           =             30
+    Max Points             =            223
     Max Functions          =             28
 
   Using in-core PK algorithm.
