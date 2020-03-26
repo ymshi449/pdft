@@ -2010,6 +2010,33 @@ class U_Embedding:
                 # print("Maximum number of SCF cycles exceeded for vp.")
         return
 
+    def scale_1basis(self):
+
+        V = np.zeros(self.molecule.nbf)
+        points_func = self.molecule.Vpot.properties()[0]
+        D = (self.molecule.Da.np+self.molecule.Db.np) - self.fragments_Da  - self.fragments_Db
+        D = np.ones_like(D)
+        # Loop over the blocks
+        for b in range(self.molecule.Vpot.nblocks()):
+            # Obtain block information
+            block = self.molecule.Vpot.get_block(b)
+            points_func.compute_points(block)
+            npoints = block.npoints()
+            lpos = np.array(block.functions_local_to_global())
+
+            # Obtain the grid weight
+            w = np.array(block.w())
+
+            # Compute phi!
+            phi = np.array(points_func.basis_values()["PHI"])[:npoints, :lpos.shape[0]]
+
+            lD = D[(lpos[:, None], lpos)]
+            n_grid = np.einsum('pm,mn,pn->p', phi, lD, phi)
+
+            V[lpos] += np.einsum('pa,p,p->a', phi, 1/n_grid, w, optimize=True)
+
+        return V
+
     def hess_1basis(self, vp):
         """
         To get the Hessian operator on the basis set xi_p = phi_i as a matrix.
@@ -2018,7 +2045,7 @@ class U_Embedding:
         if self.three_overlap is None:
             self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap())
 
-        three_new = np.einsum("ijk,kl->ijl", self.three_overlap, self.molecule.A.np)
+        three_overlap_ijK = np.einsum("ijk,kl->ijl", self.three_overlap, self.molecule.A.np)
 
         # If the vp stored is not the same as the vp we got, re-run scp calculations and update vp.
         if not np.linalg.norm(vp - self.vp[0]) < 1e-7:
@@ -2036,12 +2063,12 @@ class U_Embedding:
             epsilon_unocc_b = i.eig_b.np[i.nbeta:]
             epsilon_a = epsilon_occ_a - epsilon_unocc_a
             epsilon_b = epsilon_occ_b - epsilon_unocc_b
-            hess += i.omega*np.einsum('ai,bj,ci,dj,ij,amb,cnd -> mn', i.Ca.np[:, :i.nalpha], i.Ca.np[:, i.nalpha:],
+            hess += i.omega*np.einsum('ai,bj,ci,dj,ij,abm,cdn -> mn', i.Ca.np[:, :i.nalpha], i.Ca.np[:, i.nalpha:],
                                       i.Ca.np[:, :i.nalpha], i.Ca.np[:, i.nalpha:], np.reciprocal(epsilon_a),
-                                      three_new, three_new, optimize=True)
-            hess += i.omega*np.einsum('ai,bj,ci,dj,ij,amb,cnd -> mn', i.Cb.np[:, :i.nbeta], i.Cb.np[:, i.nbeta:],
+                                      three_overlap_ijK, three_overlap_ijK, optimize=True)
+            hess += i.omega*np.einsum('ai,bj,ci,dj,ij,abm,cdn -> mn', i.Cb.np[:, :i.nbeta], i.Cb.np[:, i.nbeta:],
                                       i.Cb.np[:, :i.nbeta], i.Cb.np[:, i.nbeta:], np.reciprocal(epsilon_b),
-                                      three_new, three_new, optimize=True)
+                                      three_overlap_ijK, three_overlap_ijK, optimize=True)
         # assert np.linalg.norm(hess - hess.T) < 1e-3, "hess not symmetry"
         hess = - 0.5 * (hess + hess.T)
 
@@ -2072,13 +2099,13 @@ class U_Embedding:
         if self.three_overlap is None:
             self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap())
 
-        three_new = np.einsum("ijk,kl->ijl", self.three_overlap, self.molecule.A.np)
+        three_overlap_ijK = np.einsum("ijk,kl->ijl", self.three_overlap, self.molecule.A.np)
 
         self.get_density_sum()
         density_difference_a = self.molecule.Da.np - self.fragments_Da
         density_difference_b = self.molecule.Db.np - self.fragments_Db
 
-        jac = np.einsum("uv,uiv->i", (density_difference_a + density_difference_b), three_new, optimize=True)
+        jac = np.einsum("uv,uvi->i", (density_difference_a + density_difference_b), three_overlap_ijK, optimize=True)
 
         # Regularization
         if self.regul_const is not None:
@@ -2094,9 +2121,6 @@ class U_Embedding:
         Return Lagrange Multipliers (G) value. on 1 basis.
         :return: L
         """
-        if self.three_overlap is None:
-            self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap())
-
         if vp_fock is None:
             vp_fock = self.vp_fock[0].np
 
@@ -2116,16 +2140,8 @@ class U_Embedding:
             T = 0.5 * (T + T.T)
             L -= 4*4*self.regul_const*np.dot(np.dot(vp, T), vp)
 
-        _, _, _, w = self.molecule.Vpot.get_np_xyzw()
-        rho_molecule = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
-        self.get_density_sum()
-        rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
-        rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
-
-        self.drho_conv.append(rho_conv)
-        # self.ep_conv.append(Ep)
-        self.lagrange.append(-L)
-        print("L:", L, "Int_vp_drho:", L-Ef, "Ef:", Ef, "Ep: ", Ep, "drho:", rho_conv)
+        self.lagrange.append(L)
+        # print("L:", L, "Int_vp_drho:", L-Ef, "Ef:", Ef, "Ep: ", Ep, "drho:", rho_conv)
         return L
 
     def find_vp_scipy_1basis(self, maxiter=21, guess=None, regul_const=None, opt_method="Newton-CG", printflag=False):
@@ -2212,7 +2228,7 @@ class U_Embedding:
         if self.three_overlap is None:
             self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap())
 
-        three_new = np.einsum("ijk,kl->ijl", self.three_overlap, self.molecule.A.np)
+        three_overlap_ijK = np.einsum("ijk,kl->ijl", self.three_overlap, self.molecule.A.np)
 
         if guess is None:
             vp_total = np.zeros(self.molecule.H.np.shape[0])
@@ -2263,7 +2279,6 @@ class U_Embedding:
 
         self.regul_const = regul_const
 
-
         print("<<<<<<<<<<<<<<<<<<<<<<WuYang 1 basis manual Newton<<<<<<<<<<<<<<<<<<<")
         for scf_step in range(1, maxiter + 1):
             """
@@ -2278,13 +2293,29 @@ class U_Embedding:
             hess = self.hess_1basis(self.vp[0])
             jac = self.jac_1basis(self.vp[0])
 
+            scale = self.scale_1basis()
+
+            # hess_new = np.dot(np.diag(1/scale), hess)
+
+            return hess, jac, scale
+
+            if scf_step == 1:
+                assert np.linalg.matrix_rank(hess) == hess.shape[0], \
+                    "Hessian matrix is not full rank! rank:%i, shape:%i" %(np.linalg.matrix_rank(hess), hess.shape[0])
+
+            # Using orthogonal basis for vp could hopefully avoid the singularity.
+            if svd_rcond is None:
+                dvp = -np.linalg.solve(hess, np.ones_like(jac))
+                vp_change = np.linalg.norm(dvp, ord=1)
+            # The svd pseudo-inverse could hopefully be avoided, with orthogonal vp_basis.
+            elif type(svd_rcond) is float:
+                hess_inv = np.linalg.pinv(hess, rcond=svd_rcond)
+                dvp = -np.dot(hess_inv, jac)
+                vp_change = np.linalg.norm(dvp, ord=1)
+            # The svd pseudo-inverse could hopefully be avoided, with orthogonal vp_basis.
             # Get a good svd parameter from the step-function-shape graph of |vp| vs svdc.
             # But I don't really understand how to interprate this.
-            if svd_rcond is not None:
-                hess_inv = np.linalg.pinv(hess, rcond=svd_rcond)
-                dvp = -hess_inv.dot(jac)
-                vp_change = np.linalg.norm(dvp, ord=1)
-            else:
+            elif svd_rcond == "search":
                 vp_change_last = 1e7
                 for i in np.linspace(1, 10, 20):
                     # Solve by SVD
@@ -2306,7 +2337,7 @@ class U_Embedding:
                 # Traditional WuYang
                 vp_total += beta * dvp
                 self.vp = [vp_total, vp_total]
-                dvpf = np.einsum('ijm,m->ij', three_new, beta * dvp)
+                dvpf = np.einsum('ijm,m->ij', three_overlap_ijK, beta * dvp)
                 dvpf = 0.5 * (dvpf + dvpf.T)
                 vp_totalfock.np[:] += dvpf
                 self.vp_fock = [vp_totalfock, vp_totalfock]  # Use total_vp instead of spin vp for calculation.
@@ -2328,10 +2359,10 @@ class U_Embedding:
                         print("No beta %e will work for this svd" % beta)
                         self.update_oueis_retularized_vp_nad(Qtype=Qtype, vstype=vstype,
                                                              vp_Hext_decomposition=False if (vp_nad_iter is None) else True)
-                        return
+                        return hess, jac
                     # Traditional WuYang
                     vp_temp = self.vp[0] + beta * dvp
-                    dvpf = np.einsum('ijm,m->ij', three_new, beta * dvp)
+                    dvpf = np.einsum('ijm,m->ij', three_overlap_ijK, beta * dvp)
                     dvpf = 0.5 * (dvpf + dvpf.T)
                     vp_fock_temp = psi4.core.Matrix.from_array(self.vp_fock[0].np + dvpf)
                     self.fragments_scf_1basis(300, vp_fock=[vp_fock_temp, vp_fock_temp])
@@ -2355,19 +2386,16 @@ class U_Embedding:
                         print("No beta %e will work for this svd" % beta)
                         self.update_oueis_retularized_vp_nad(Qtype=Qtype, vstype=vstype,
                                                              vp_Hext_decomposition=False if (vp_nad_iter is None) else True)
-                        return
+                        return hess, jac
                     # Traditional WuYang
                     vp_temp = self.vp[0] + beta * dvp
-                    dvpf = np.einsum('ijm,m->ij', three_new, beta * dvp)
+                    dvpf = np.einsum('ijm,m->ij', three_overlap_ijK, beta * dvp)
                     dvpf = 0.5 * (dvpf + dvpf.T)
                     vp_fock_temp = psi4.core.Matrix.from_array(self.vp_fock[0].np + dvpf)
                     self.fragments_scf_1basis(300, vp_fock=[vp_fock_temp, vp_fock_temp])
                     rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
                     now_drho = np.sum(np.abs(rho_molecule - rho_fragment) * w)
                     dvp_grid = self.molecule.to_grid(beta * np.dot(self.molecule.A.np, dvp))
-                    print(now_drho - self.drho_conv[-1], mu * beta * np.sum((rho_molecule - rho_fragment)
-                                                                            * dvp_grid * w))
-                    print(np.sum((rho_molecule - rho_fragment) * dvp_grid * w))
                     if now_drho - self.drho_conv[-1] <= mu * beta * np.sum((rho_molecule - rho_fragment)
                                                                             * dvp_grid * w) and np.sum((rho_molecule - rho_fragment)
                                                                                                         * dvp_grid * w) < 0:
@@ -2391,7 +2419,7 @@ class U_Embedding:
             #             return
             #
             #         vp_temp = self.vp[0] + beta * dvp
-            #         dvpf = np.einsum('ijm,m->ij', three_new, beta * dvp)
+            #         dvpf = np.einsum('ijm,m->ij', three_overlap_ijK, beta * dvp)
             #         dvpf = 0.5 * (dvpf + dvpf.T)
             #         vp_fock_temp = psi4.core.Matrix.from_array(self.vp_fock[0].np + dvpf)
             #         self.fragments_scf_1basis(300, vp_fock=[vp_fock_temp, vp_fock_temp])
@@ -2428,7 +2456,7 @@ class U_Embedding:
             #                 break
             #             # Traditional WuYang
             #             vp_temp = self.vp[0] + beta * dvp
-            #             dvpf = np.einsum('ijm,m->ij', three_new, beta * dvp)
+            #             dvpf = np.einsum('ijm,m->ij', three_overlap_ijK, beta * dvp)
             #             dvpf = 0.5 * (dvpf + dvpf.T)
             #             vp_fock_temp = psi4.core.Matrix.from_array(self.vp_fock[0].np + dvpf)
             #             self.fragments_scf_1basis(300, vp_fock=[vp_fock_temp, vp_fock_temp])
@@ -2654,7 +2682,7 @@ class U_Embedding:
         #         # Traditional WuYang
         #         vp_total += beta * dvp
         #         self.vp = [vp_total, vp_total]
-        #         dvpf = np.einsum('ijm,m->ij', three_new, beta * dvp)
+        #         dvpf = np.einsum('ijm,m->ij', three_overlap_ijK, beta * dvp)
         #         dvpf = 0.5 * (dvpf + dvpf.T)
         #         vp_totalfock.np[:] += dvpf
         #         self.vp_fock = [vp_totalfock, vp_totalfock]  # Use total_vp instead of spin vp for calculation.
@@ -2680,7 +2708,7 @@ class U_Embedding:
         #                 return
         #             # Traditional WuYang
         #             vp_temp = self.vp[0] + beta * dvp
-        #             dvpf = np.einsum('ijm,m->ij', three_new, beta * dvp)
+        #             dvpf = np.einsum('ijm,m->ij', three_overlap_ijK, beta * dvp)
         #             dvpf = 0.5 * (dvpf + dvpf.T)
         #             vp_fock_temp = psi4.core.Matrix.from_array(self.vp_fock[0].np + dvpf)
         #             self.fragments_scf_1basis(300, vp_fock=[vp_fock_temp, vp_fock_temp])
@@ -2709,7 +2737,7 @@ class U_Embedding:
         #                 return
         #             # Traditional WuYang
         #             vp_temp = self.vp[0] + beta * dvp
-        #             dvpf = np.einsum('ijm,m->ij', three_new, beta * dvp)
+        #             dvpf = np.einsum('ijm,m->ij', three_overlap_ijK, beta * dvp)
         #             dvpf = 0.5 * (dvpf + dvpf.T)
         #             vp_fock_temp = psi4.core.Matrix.from_array(self.vp_fock[0].np + dvpf)
         #             self.fragments_scf_1basis(300, vp_fock=[vp_fock_temp, vp_fock_temp])
