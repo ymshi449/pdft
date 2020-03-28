@@ -17,6 +17,9 @@ Full_Molec = psi4.geometry("""
 nocom
 noreorient
 Be %f 0.0 0.00
+@Be 0.0 1.0 0.00
+@Be 0.0 -1.0 0.00
+@Be 0.0 0.0 0.00
 Be -%f 0.0 0.00
 units bohr
 symmetry c1
@@ -26,6 +29,9 @@ Monomer_1 =  psi4.geometry("""
 nocom
 noreorient
 Be %f 0.0 0.00
+@Be 0.0 1.0 0.00
+@Be 0.0 -1.0 0.00
+@Be 0.0 0.0 0.00
 @Be -%f 0.0 0.00
 units bohr
 symmetry c1
@@ -35,6 +41,9 @@ Monomer_2 =  psi4.geometry("""
 nocom
 noreorient
 @Be %f 0.0 0.00
+@Be 0.0 1.0 0.00
+@Be 0.0 -1.0 0.00
+@Be 0.0 0.0 0.00
 Be -%f 0.0 0.00
 units bohr
 symmetry c1
@@ -50,15 +59,15 @@ psi4.set_options({
 })
 
 #Make fragment calculations:
-f1  = pdft.U_Molecule(Monomer_2,  basis, functional)
-f2  = pdft.U_Molecule(Monomer_1,  basis, functional)
 mol = pdft.U_Molecule(Full_Molec, basis, functional)
+f1  = pdft.U_Molecule(Monomer_2,  basis, functional, jk=mol.jk)
+f2  = pdft.U_Molecule(Monomer_1,  basis, functional, jk=mol.jk)
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
 # pdfter.find_vp_densitydifference(140)
 # pdfter.find_vp_response(21, guess=True, svd_rcond=10**svdc, beta=0.1, a_rho_var=1e-7)
-hess, jac, scale = pdfter.find_vp_response_1basis(14,a_rho_var=1e-5, mu=1e-5)
+hess, jac = pdfter.find_vp_response_1basis(14, a_rho_var=1e-5, mu=1e-5)
 # pdfter.find_vp_scipy_1basis(maxiter=7)
 #
 f,ax = plt.subplots(1,1, dpi=210)
@@ -73,18 +82,18 @@ f.show()
 f.savefig("vp" + title)
 plt.close(f)
 
-# vp_grid_DD = mol.to_grid(pdfter.vp_last[0])
-# vp_grid_WY = mol.to_grid(pdfter.vp[0])
-# f,ax = plt.subplots(1,1, dpi=210)
-# ax.set_ylim(-1.2, 0.2)
-# pdft.plot1d_x(pdfter.vp_grid, mol.Vpot, ax=ax, label="vp", color='black')
-# pdft.plot1d_x(vp_grid_DD, mol.Vpot, ax=ax, label="vp_DD")
-# pdft.plot1d_x(vp_grid_WY, mol.Vpot, dimmer_length=separation,
-#               title="vpDD+WY" + title + str(pdfter.drho_conv[-1]), ax=ax, label="vp_WY")
-# ax.legend()
-# f.show()
-# f.savefig("vpDD+WY" + title)
-# plt.close(f)
+vp_grid_DD = mol.to_grid(pdfter.vp_last[0])
+vp_grid_WY = mol.to_grid(mol.A.np.dot(pdfter.vp[0]))
+f,ax = plt.subplots(1,1, dpi=210)
+ax.set_ylim(-1.2, 0.2)
+pdft.plot1d_x(pdfter.vp_grid, mol.Vpot, ax=ax, label="vp", color='black')
+pdft.plot1d_x(vp_grid_DD, mol.Vpot, ax=ax, label="vp_DD")
+pdft.plot1d_x(vp_grid_WY, mol.Vpot, dimmer_length=separation,
+              title="vpDD+WY" + title + str(pdfter.drho_conv[-1]), ax=ax, label="vp_WY")
+ax.legend()
+f.show()
+f.savefig("vpDD+WY" + title)
+plt.close(f)
 
 # # 1D density differnece
 # nf = mol.to_grid(pdfter.fragments_Db + pdfter.fragments_Da)

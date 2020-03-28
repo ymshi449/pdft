@@ -1478,10 +1478,9 @@ class U_Embedding:
                 self.fragments_scf(300, vp_fock=self.vp_fock)
             elif beta_method == "Lagrangian":
                 # BT for beta with L
-                beta = 2.0
+                beta = 8.0
                 while True:
                     beta *= 0.5
-                    print(beta)
                     if beta < 1e-7:
                         print("No beta %e will work" % beta)
                         return
@@ -1516,8 +1515,6 @@ class U_Embedding:
                     rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
                     now_drho = np.sum(np.abs(rho_fragment - rho_molecule) * w)
                     dvp_grid = self.molecule.to_grid(beta * dvp)
-                    print(now_drho - self.drho_conv[-1])
-                    print(mu * beta * np.sum((rho_fragment - rho_molecule) * dvp_grid * w))
                     if now_drho - self.drho_conv[-1] <= mu * beta * np.sum((rho_molecule - rho_fragment)
                                                                             * dvp_grid * w) and np.sum((rho_molecule -
                                                                                                         rho_fragment) * dvp_grid * w) < 0:
@@ -2292,12 +2289,9 @@ class U_Embedding:
 
             hess = self.hess_1basis(self.vp[0])
             jac = self.jac_1basis(self.vp[0])
-
-            scale = self.scale_1basis()
-
+            # scale = self.scale_1basis()
             # hess_new = np.dot(np.diag(1/scale), hess)
-
-            return hess, jac, scale
+            # return hess, jac
 
             if scf_step == 1:
                 assert np.linalg.matrix_rank(hess) == hess.shape[0], \
@@ -2305,7 +2299,7 @@ class U_Embedding:
 
             # Using orthogonal basis for vp could hopefully avoid the singularity.
             if svd_rcond is None:
-                dvp = -np.linalg.solve(hess, np.ones_like(jac))
+                dvp = -np.linalg.solve(hess, jac)
                 vp_change = np.linalg.norm(dvp, ord=1)
             # The svd pseudo-inverse could hopefully be avoided, with orthogonal vp_basis.
             elif type(svd_rcond) is float:
@@ -2396,9 +2390,10 @@ class U_Embedding:
                     rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
                     now_drho = np.sum(np.abs(rho_molecule - rho_fragment) * w)
                     dvp_grid = self.molecule.to_grid(beta * np.dot(self.molecule.A.np, dvp))
+                    print(beta, now_drho - self.drho_conv[-1], mu * beta * np.sum((rho_molecule - rho_fragment) * dvp_grid * w))
+
                     if now_drho - self.drho_conv[-1] <= mu * beta * np.sum((rho_molecule - rho_fragment)
-                                                                            * dvp_grid * w) and np.sum((rho_molecule - rho_fragment)
-                                                                                                        * dvp_grid * w) < 0:
+                                                                            * dvp_grid * w):
                         self.vp = [vp_temp, vp_temp]
                         self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
                         self.drho_conv.append(now_drho)
