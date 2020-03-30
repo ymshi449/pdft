@@ -2276,6 +2276,8 @@ class U_Embedding:
 
         self.regul_const = regul_const
 
+        converge_flag = False
+
         print("<<<<<<<<<<<<<<<<<<<<<<WuYang 1 basis manual Newton<<<<<<<<<<<<<<<<<<<")
         for scf_step in range(1, maxiter + 1):
             """
@@ -2303,6 +2305,9 @@ class U_Embedding:
                 vp_change = np.linalg.norm(dvp, ord=1)
             # The svd pseudo-inverse could hopefully be avoided, with orthogonal vp_basis.
             elif type(svd_rcond) is float:
+                s = np.linalg.svd(hess)[1]
+                print(s)
+                svd_rcond = float(input("Enter svd_rcond number: "))
                 hess_inv = np.linalg.pinv(hess, rcond=svd_rcond)
                 dvp = -np.dot(hess_inv, jac)
                 vp_change = np.linalg.norm(dvp, ord=1)
@@ -2336,30 +2341,20 @@ class U_Embedding:
                 vp_totalfock.np[:] += dvpf
                 self.vp_fock = [vp_totalfock, vp_totalfock]  # Use total_vp instead of spin vp for calculation.
 
-                # With Yan's trick
-                # vp_total += dvp
-                # self.vp = [vp_total, vp_total]
-                # self.update_oueis_retularized_vp_nad(Qtype=Qtype, vstype=vstype,
-                #                                      vp_Hext_decomposition=False if (vp_nad_iter is None) else True)
-
-                # With Yan's trick bu updating dvp
-                # self.update_oueis_retularized_vp_nad(dvp=dvp)
             elif beta_method == "Lagrangian":
                 # BT for beta with L
                 beta = 2.0
                 while True:
                     beta *= 0.5
                     if beta < 1e-7:
-                        print("No beta %e will work for this svd" % beta)
-                        self.update_oueis_retularized_vp_nad(Qtype=Qtype, vstype=vstype,
-                                                             vp_Hext_decomposition=False if (vp_nad_iter is None) else True)
-                        return hess, jac
+                        converge_flag = True
+                        break
                     # Traditional WuYang
                     vp_temp = self.vp[0] + beta * dvp
                     dvpf = np.einsum('ijm,m->ij', three_overlap_ijK, beta * dvp)
                     dvpf = 0.5 * (dvpf + dvpf.T)
                     vp_fock_temp = psi4.core.Matrix.from_array(self.vp_fock[0].np + dvpf)
-                    self.fragments_scf_1basis(300, vp_fock=[vp_fock_temp, vp_fock_temp])
+                    self.fragments_scf_1basis(700, vp_fock=[vp_fock_temp, vp_fock_temp])
                     L = self.lagrange_mul_1basis(vp_temp, vp_fock_temp.np)
                     rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
                     dvp_grid = self.molecule.to_grid(beta * dvp)
@@ -2377,10 +2372,8 @@ class U_Embedding:
                 while True:
                     beta *= 0.5
                     if beta < 1e-7:
-                        print("No beta %e will work for this svd" % beta)
-                        self.update_oueis_retularized_vp_nad(Qtype=Qtype, vstype=vstype,
-                                                             vp_Hext_decomposition=False if (vp_nad_iter is None) else True)
-                        return hess, jac
+                        converge_flag = True
+                        break
                     # Traditional WuYang
                     vp_temp = self.vp[0] + beta * dvp
                     dvpf = np.einsum('ijm,m->ij', three_overlap_ijK, beta * dvp)
@@ -2393,10 +2386,11 @@ class U_Embedding:
                     print(beta, now_drho - self.drho_conv[-1], mu * beta * np.sum((rho_molecule - rho_fragment) * dvp_grid * w))
 
                     if now_drho - self.drho_conv[-1] <= mu * beta * np.sum((rho_molecule - rho_fragment)
-                                                                            * dvp_grid * w):
+                                                                            * dvp_grid * w) and np.sum((rho_molecule - rho_fragment) * dvp_grid * w) < 0:
                         self.vp = [vp_temp, vp_temp]
                         self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
                         self.drho_conv.append(now_drho)
+                        plot1d_x(dvp_grid, self.molecule.Vpot, title=scf_step)
                         break
             else:
                 NameError("No BackTracking method named " + str(beta_method))
@@ -2485,8 +2479,10 @@ class U_Embedding:
             print(
                 F'Iter: {scf_step} beta: {beta} SVD: {svd_rcond}'
                 F' Ef: {self.ef_conv[-1]} Ep: {self.ep_conv[-1]} d_rho: {self.drho_conv[-1]}')
-
-            if beta < 1e-7:
+            if converge_flag:
+                print("BT stoped updating. Converged. beta:%e" % beta)
+                break
+            elif beta < 1e-7:
                 print("Break because even small step length can not improve.")
                 break
             elif len(self.drho_conv) >= 5:
@@ -2496,12 +2492,14 @@ class U_Embedding:
             elif old_rho_conv < 1e-4:
                 print("Break because rho difference (cost) is small.")
                 break
-            # elif scf_step == maxiter:
+            elif scf_step == maxiter:
                 # raise Exception("Maximum number of SCF cycles exceeded for vp.")
-                # print("Maximum number of SCF cycles exceeded for vp.")
+                print("Maximum number of SCF cycles exceeded for vp.")
         # update current vp.
-        self.update_oueis_retularized_vp_nad(Qtype=Qtype, vstype=vstype,
-                                             vp_Hext_decomposition=False if (vp_nad_iter is None) else True)
+        # Calculating components is too slow.
+        # self.update_oueis_retularized_vp_nad(Qtype=Qtype, vstype=vstype,
+        #                                      vp_Hext_decomposition=False if (vp_nad_iter is None) else True)
+        self.vp_grid = self.molecule.to_grid(np.dot(self.molecule.A.np, self.vp[0]))
         return hess, jac
 
     def hess_grid(self, rho_mol, data_type="float64"):
