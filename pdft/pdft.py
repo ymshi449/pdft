@@ -2040,7 +2040,9 @@ class U_Embedding:
                                       i.Cb.np[:, :i.nbeta], i.Cb.np[:, i.nbeta:], np.reciprocal(epsilon_b),
                                       self.three_overlap, self.three_overlap, optimize=True)
         # assert np.linalg.norm(hess - hess.T) < 1e-3, "hess not symmetry"
-        hess = - 0.5 * (hess + hess.T)
+        hess = - hess
+
+        assert np.allclose(hess, hess.T)
 
         # Regularization
         if self.regul_const is not None:
@@ -2062,7 +2064,6 @@ class U_Embedding:
         """
         # If the vp stored is not the same as the vp we got, re-run scp calculations and update vp.
         if not np.linalg.norm(vp - self.vp[0]) < 1e-7:
-            # update vp and vp fock
             self.vp = [vp, vp]
             self.fragments_scf_1basis(1000, vp=True)
 
@@ -2320,8 +2321,9 @@ class U_Embedding:
                     beta *= 0.5
                     if beta < 1e-7:
                         print("No beta %e will work for this svd" % beta)
-                        self.update_oueis_retularized_vp_nad(Qtype=Qtype, vstype=vstype,
-                                                             vp_Hext_decomposition=False if (vp_nad_iter is None) else True)
+                        # self.update_oueis_retularized_vp_nad(Qtype=Qtype, vstype=vstype,
+                        #                                      vp_Hext_decomposition=False if (vp_nad_iter is None) else True)
+                        self.vp_grid = self.molecule.to_grid(self.vp[0])
                         return
                     # Traditional WuYang
                     vp_temp = self.vp[0] + beta * dvp
@@ -2347,9 +2349,10 @@ class U_Embedding:
                     beta *= 0.5
                     if beta < 1e-7:
                         print("No beta %e will work for this svd" % beta)
-                        self.update_oueis_retularized_vp_nad(Qtype=Qtype, vstype=vstype,
-                                                             vp_Hext_decomposition=False if (vp_nad_iter is None) else True)
-                        return
+                        # self.update_oueis_retularized_vp_nad(Qtype=Qtype, vstype=vstype,
+                        #                                      vp_Hext_decomposition=False if (vp_nad_iter is None) else True)
+                        self.vp_grid = self.molecule.to_grid(self.vp[0])
+                        return hess, jac
                     # Traditional WuYang
                     vp_temp = self.vp[0] + beta * dvp
                     dvpf = np.einsum('ijm,m->ij', self.three_overlap, beta * dvp)
@@ -2468,9 +2471,10 @@ class U_Embedding:
                 # raise Exception("Maximum number of SCF cycles exceeded for vp.")
                 # print("Maximum number of SCF cycles exceeded for vp.")
         # update current vp.
-        self.update_oueis_retularized_vp_nad(Qtype=Qtype, vstype=vstype,
-                                             vp_Hext_decomposition=False if (vp_nad_iter is None) else True)
-        return
+        # self.update_oueis_retularized_vp_nad(Qtype=Qtype, vstype=vstype,
+        #                                      vp_Hext_decomposition=False if (vp_nad_iter is None) else True)
+        self.vp_grid = self.molecule.to_grid(self.vp[0])
+        return hess, jac
 
     def find_vp_response_crude(self, maxiter=21, beta=None, atol=1e-7, guess=None):
         """

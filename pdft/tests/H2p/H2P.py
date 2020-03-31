@@ -6,7 +6,7 @@ import libcubeprop
 
 psi4.set_output_file("H2P.psi4")
 functional = 'svwn'
-basis = 'cc-pvtz'
+basis = 'cc-pvdz'
 svdc = -4
 reguc = -7
 title = "H2p BT" + basis + functional
