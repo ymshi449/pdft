@@ -9,7 +9,7 @@ functional = 'svwn'
 # There are two possibilities why a larger basis set is better than a smaller one:
 # 1. It provides a larger space for the inverse of Hessian.
 # 2. Or more likely it provides a more MOs for a better description of Hessian first order approximation.
-basis = 'cc-pv5z'
+basis = 'cc-pvqz'
 svdc = -4
 # title = "Be WuYang1b Yan Q[nf] v[nf] svdc%i reguc%i " %(svdc, reguc) + basis + functional
 title = "Be ortho_vp_basis svd %i "%svdc + basis + functional
