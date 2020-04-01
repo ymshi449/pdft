@@ -108,14 +108,14 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.75186765">
+    <splitter split-orientation="horizontal" split-proportion="0.6045891">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/pdft.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-1029">
-                  <caret line="2565" column="25" selection-start-line="2565" selection-start-column="25" selection-end-line="2565" selection-end-column="25" />
+                <state relative-caret-position="451">
+                  <caret line="2104" column="29" lean-forward="true" selection-start-line="2104" selection-start-column="29" selection-end-line="2104" selection-end-column="29" />
                   <folding>
                     <element signature="e#113580#116963#0" />
                   </folding>
@@ -142,8 +142,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/tests/Be/Be.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="380">
-                  <caret line="70" column="44" selection-start-line="70" selection-start-column="44" selection-end-line="70" selection-end-column="44" />
+                <state relative-caret-position="290">
+                  <caret line="71" column="55" selection-start-line="71" selection-start-column="55" selection-end-line="71" selection-end-column="55" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
                   </folding>
@@ -185,6 +185,8 @@
       <find>fouroverlap(</find>
       <find>Ar</find>
       <find>jac =</find>
+      <find>self.hess_1</find>
+      <find>if not np.allclose</find>
     </findStrings>
     <replaceStrings>
       <replace>rho_molecule - rho_fragment</replace>
@@ -442,7 +444,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="79933000" />
+    <option name="totallyTimeSpent" value="82021000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1920" y="25" width="1920" height="1055" extended-state="6" />
@@ -569,8 +571,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/Be/Be.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="380">
-          <caret line="70" column="44" selection-start-line="70" selection-start-column="44" selection-end-line="70" selection-end-column="44" />
+        <state relative-caret-position="290">
+          <caret line="71" column="55" selection-start-line="71" selection-start-column="55" selection-end-line="71" selection-end-column="55" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
@@ -579,8 +581,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pdft.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1029">
-          <caret line="2565" column="25" selection-start-line="2565" selection-start-column="25" selection-end-line="2565" selection-end-column="25" />
+        <state relative-caret-position="451">
+          <caret line="2104" column="29" lean-forward="true" selection-start-line="2104" selection-start-column="29" selection-end-line="2104" selection-end-column="29" />
           <folding>
             <element signature="e#113580#116963#0" />
           </folding>

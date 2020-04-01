@@ -2090,6 +2090,12 @@ class U_Embedding:
         Return Lagrange Multipliers (G) value. on 1 basis.
         :return: L
         """
+        # if not np.allclose(vp, self.vp[0]):
+        #     self.vp = [vp, vp]
+        #     vp_totalfock = psi4.core.Matrix.from_array((np.einsum('ijm,m->ij', self.three_overlap, vp)))
+        #     self.vp_fock = [vp_totalfock, vp_totalfock]
+        #     self.fragments_scf_1basis(1000, vp=True, vp_fock=True)
+
         if self.three_overlap is None:
             self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap())
 
@@ -2123,6 +2129,28 @@ class U_Embedding:
         self.lagrange.append(-L)
         print("L:", L, "Int_vp_drho:", L-Ef, "Ef:", Ef, "Ep: ", Ep, "drho:", rho_conv)
         return L
+
+    def lagrangian_method_jac(self, vp):
+        if not np.allclose(vp, self.vp[0]):
+            self.vp = [vp, vp]
+            vp_totalfock = psi4.core.Matrix.from_array((np.einsum('ijm,m->ij', self.three_overlap, vp)))
+            self.vp_fock = [vp_totalfock, vp_totalfock]
+            self.fragments_scf_1basis(1000, vp=True, vp_fock=True)
+
+        hess = self.hess_1basis(self.vp[0])
+        jac = self.jac_1basis(self.vp[0])
+
+        jac = jac + np.einsum("ij,j->i", hess, self.vp[0])
+        return jac
+
+    def lagrangian_method_hess(self, vp):
+        if not np.allclose(vp, self.vp[0]):
+            self.vp = [vp, vp]
+            vp_totalfock = psi4.core.Matrix.from_array((np.einsum('ijm,m->ij', self.three_overlap, vp)))
+            self.vp_fock = [vp_totalfock, vp_totalfock]
+            self.fragments_scf_1basis(1000, vp=True, vp_fock=True)
+        hess = self.hess_1basis(self.vp[0])
+        return 2*hess
 
     def find_vp_scipy_1basis(self, maxiter=21, guess=None, regul_const=None, opt_method="Newton-CG", printflag=False):
         """
@@ -2162,7 +2190,7 @@ class U_Embedding:
             vp_total = guess[0]
             self.vp = guess
 
-            vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(np.einsum('ijm,m->ij', self.three_overlap, guess[0])))
+            vp_totalfock = psi4.core.Matrix.from_array((np.einsum('ijm,m->ij', self.three_overlap, guess[0])))
             self.vp_fock = [vp_totalfock, vp_totalfock]
             # Initialize
             Ef = 0.0
@@ -2179,7 +2207,7 @@ class U_Embedding:
         }
         # optimize using cipy, default as Newton-CG.
         vp_array = optimizer.minimize(self.lagrange_mul_1basis, self.vp[0],
-                                      jac=self.jac_1basis, hess=self.hess_1basis, method=opt_method, options=opt)
+                                      jac=self.lagrangian_method_jac, hess=self.lagrangian_method_hess, method=opt_method, options=opt)
         return vp_array
 
 
