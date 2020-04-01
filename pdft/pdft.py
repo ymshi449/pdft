@@ -2272,6 +2272,10 @@ class U_Embedding:
             hess = self.hess_1basis(self.vp[0])
             jac = self.jac_1basis(self.vp[0])
 
+            if beta_method == "Lagrangian":
+                jac = jac + np.einsum("ij,j->i", hess, self.vp[0])
+                hess *= 2
+
             # Get a good svd parameter from the step-function-shape graph of |vp| vs svdc.
             # But I don't really understand how to interprate this.
             if svd_rcond is not None:
@@ -2333,9 +2337,7 @@ class U_Embedding:
                     self.fragments_scf_1basis(300, vp_fock=[vp_fock_temp, vp_fock_temp])
                     L = self.lagrange_mul_1basis(vp_temp, vp_fock_temp.np)
                     rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
-                    dvp_grid = self.molecule.to_grid(beta * dvp)
-                    if L - L_old <= mu * beta * np.sum(
-                            (rho_molecule - rho_fragment) * dvp_grid * w) and np.sum((rho_molecule - rho_fragment) * dvp_grid * w) < 0:
+                    if L - L_old <= mu * beta * np.sum(dvp*jac) and np.sum(dvp*jac) < 0:
                         L_old = L
                         self.vp = [vp_temp, vp_temp]
                         self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
@@ -2361,10 +2363,7 @@ class U_Embedding:
                     self.fragments_scf_1basis(300, vp_fock=[vp_fock_temp, vp_fock_temp])
                     rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
                     now_drho = np.sum(np.abs(rho_molecule - rho_fragment) * w)
-                    dvp_grid = self.molecule.to_grid(beta * dvp)
-                    if now_drho - self.drho_conv[-1] <= mu * beta * np.sum((rho_molecule - rho_fragment)
-                                                                            * dvp_grid * w) and np.sum((rho_fragment -rho_molecule)
-                                                                                                        * dvp_grid * w) < 0:
+                    if now_drho - self.drho_conv[-1] <= mu * beta * np.sum(dvp*jac) and np.sum(dvp*jac) < 0:
                         self.vp = [vp_temp, vp_temp]
                         self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
                         self.drho_conv.append(now_drho)
@@ -2475,6 +2474,36 @@ class U_Embedding:
         #                                      vp_Hext_decomposition=False if (vp_nad_iter is None) else True)
         self.vp_grid = self.molecule.to_grid(self.vp[0])
         return hess, jac
+
+    def check_gradient(self, dvp=None):
+        """
+        Numerically check the gradient and hessian.
+        :return:
+        """
+        jac = self.jac_1basis(self.vp[0])
+        hess = self.hess_1basis(self.vp[0])
+        jacL = jac + np.einsum("ij,j->i", hess, self.vp[0])
+        hessL = hess*2
+        dvpf = np.einsum('ijm,m->ij', self.three_overlap, self.vp[0])
+        L = self.lagrange_mul_1basis(self.vp[0], dvpf)
+        if dvp is None:
+            dvp = 1e-4 * self.vp[0]
+        dLTT1 = np.sum(jacL * dvp)
+        dLTT2 = 0.5*np.sum(dvp*np.dot(hessL, dvp))
+        djTT = np.dot(hess, dvp)
+
+        # Run new scf with perturbed vp
+        dvpf = np.einsum('ijm,m->ij', self.three_overlap, dvp + self.vp[0])
+        vp_fock_new = psi4.core.Matrix.from_array(dvpf)
+        self.fragments_scf_1basis(100, vp_fock=[vp_fock_new, vp_fock_new])
+
+        jac_new = self.jac_1basis(self.vp[0] + dvp)
+        L_new = self.lagrange_mul_1basis(self.vp[0], dvpf)
+        dL = L_new - L
+        dj = jac_new - jac
+        print("L gradient and hessian accuracy", dL, dLTT1, dLTT2+dLTT1)
+        print("hess accuracy", np.linalg.norm(dj), np.linalg.norm(djTT), np.linalg.norm(dj - djTT))
+
 
     def find_vp_response_crude(self, maxiter=21, beta=None, atol=1e-7, guess=None):
         """
