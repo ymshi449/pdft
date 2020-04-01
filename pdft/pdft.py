@@ -853,6 +853,7 @@ class U_Molecule():
         Eold = 0.0
         E = 0.0
         E_conv = psi4.core.get_option("SCF", "E_CONVERGENCE")
+        E_conv = 1e-8
         D_conv = psi4.core.get_option("SCF", "D_CONVERGENCE")
 
         for SCF_ITER in range(maxiter+1):
@@ -2138,7 +2139,7 @@ class U_Embedding:
             L -= 4*4*self.regul_const*np.dot(np.dot(vp, T), vp)
 
         self.lagrange.append(L)
-        # print("L:", L, "Int_vp_drho:", L-Ef, "Ef:", Ef, "Ep: ", Ep, "drho:", rho_conv)
+        # print("L:", L, "Int_vp_drho:", L-Ef, "Ef:", Ef, "Ep: ", Ep)
         return L
 
     def find_vp_scipy_1basis(self, maxiter=21, guess=None, regul_const=None, opt_method="Newton-CG", printflag=False):
@@ -2291,9 +2292,10 @@ class U_Embedding:
 
             hess = self.hess_1basis(self.vp[0])
             jac = self.jac_1basis(self.vp[0])
-            # scale = self.scale_1basis()
-            # hess_new = np.dot(np.diag(1/scale), hess)
-            # return hess, jac
+
+            if beta_method == "Lagrangian":
+                jac = jac + np.einsum("ij,j->i", hess, self.vp[0])
+                hess *= 2
 
             if scf_step == 1:
                 assert np.linalg.matrix_rank(hess) == hess.shape[0], \
@@ -2305,10 +2307,14 @@ class U_Embedding:
                 vp_change = np.linalg.norm(dvp, ord=1)
             # The svd pseudo-inverse could hopefully be avoided, with orthogonal vp_basis.
             elif type(svd_rcond) is float:
-                s = np.linalg.svd(hess)[1]
-                print(s)
-                svd_rcond = float(input("Enter svd_rcond number: "))
                 hess_inv = np.linalg.pinv(hess, rcond=svd_rcond)
+                dvp = -np.dot(hess_inv, jac)
+                vp_change = np.linalg.norm(dvp, ord=1)
+            elif svd_rcond == "input":
+                s = np.linalg.svd(hess)[1]
+                print(repr(s))
+                svd = float(input("Enter svd_rcond number: "))
+                hess_inv = np.linalg.pinv(hess, rcond=svd)
                 dvp = -np.dot(hess_inv, jac)
                 vp_change = np.linalg.norm(dvp, ord=1)
             # The svd pseudo-inverse could hopefully be avoided, with orthogonal vp_basis.
@@ -2340,7 +2346,10 @@ class U_Embedding:
                 dvpf = 0.5 * (dvpf + dvpf.T)
                 vp_totalfock.np[:] += dvpf
                 self.vp_fock = [vp_totalfock, vp_totalfock]  # Use total_vp instead of spin vp for calculation.
-
+                self.fragments_scf_1basis(300, vp_fock=True)
+                rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
+                now_drho = np.sum(np.abs(rho_molecule - rho_fragment) * w)
+                self.drho_conv.append(now_drho)
             elif beta_method == "Lagrangian":
                 # BT for beta with L
                 beta = 2.0
@@ -2354,15 +2363,15 @@ class U_Embedding:
                     dvpf = np.einsum('ijm,m->ij', three_overlap_ijK, beta * dvp)
                     dvpf = 0.5 * (dvpf + dvpf.T)
                     vp_fock_temp = psi4.core.Matrix.from_array(self.vp_fock[0].np + dvpf)
+                    dD = self.molecule.Da.np+self.molecule.Db.np-(self.fragments_Da+self.fragments_Db)
                     self.fragments_scf_1basis(700, vp_fock=[vp_fock_temp, vp_fock_temp])
                     L = self.lagrange_mul_1basis(vp_temp, vp_fock_temp.np)
-                    rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
-                    dvp_grid = self.molecule.to_grid(beta * dvp)
-                    if L - L_old <= mu * beta * np.sum(
-                            (rho_molecule - rho_fragment) * dvp_grid * w) and np.sum((rho_molecule - rho_fragment) * dvp_grid * w) < 0:
+                    print(beta, L - L_old, mu * beta * np.sum(jac*dvp))
+                    if L - L_old <= mu * beta * np.sum(jac*dvp) and mu * beta * np.sum(jac*dvp) < 0:
                         L_old = L
                         self.vp = [vp_temp, vp_temp]
                         self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
+                        rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
                         now_drho = np.sum(np.abs(rho_molecule - rho_fragment) * w)
                         self.drho_conv.append(now_drho)
                         break
@@ -2379,18 +2388,15 @@ class U_Embedding:
                     dvpf = np.einsum('ijm,m->ij', three_overlap_ijK, beta * dvp)
                     dvpf = 0.5 * (dvpf + dvpf.T)
                     vp_fock_temp = psi4.core.Matrix.from_array(self.vp_fock[0].np + dvpf)
+                    dD = self.molecule.Da.np + self.molecule.Db.np - (self.fragments_Da + self.fragments_Db)
                     self.fragments_scf_1basis(300, vp_fock=[vp_fock_temp, vp_fock_temp])
                     rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
                     now_drho = np.sum(np.abs(rho_molecule - rho_fragment) * w)
-                    dvp_grid = self.molecule.to_grid(beta * np.dot(self.molecule.A.np, dvp))
-                    print(beta, now_drho - self.drho_conv[-1], mu * beta * np.sum((rho_molecule - rho_fragment) * dvp_grid * w))
-
-                    if now_drho - self.drho_conv[-1] <= mu * beta * np.sum((rho_molecule - rho_fragment)
-                                                                            * dvp_grid * w) and np.sum((rho_molecule - rho_fragment) * dvp_grid * w) < 0:
+                    print(beta, now_drho - self.drho_conv[-1], mu * beta * np.sum(dvp*jac))
+                    if now_drho - self.drho_conv[-1] <= mu * beta * np.sum(dvp*jac) and np.sum(dvp*jac) < 0:
                         self.vp = [vp_temp, vp_temp]
                         self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
                         self.drho_conv.append(now_drho)
-                        plot1d_x(dvp_grid, self.molecule.Vpot, title=scf_step)
                         break
             else:
                 NameError("No BackTracking method named " + str(beta_method))

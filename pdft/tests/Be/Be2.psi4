@@ -1,9 +1,9 @@
    => Loading Basis Set <=
 
-    Name: CC-PV5Z
+    Name: CC-PVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-2 entry BE         line   170 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pv5z.gbs 
+    atoms 1-2 entry BE         line    75 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
 
 
          ---------------------------------------------------------
@@ -51,13 +51,13 @@
 
   ==> Primary Basis <==
 
-  Basis Set: CC-PV5Z
-    Blend: CC-PV5Z
-    Number of shells: 42
-    Number of basis function: 182
-    Number of Cartesian functions: 252
+  Basis Set: CC-PVDZ
+    Blend: CC-PVDZ
+    Number of shells: 12
+    Number of basis function: 28
+    Number of Cartesian functions: 30
     Spherical Harmonics?: true
-    Max angular momentum: 5
+    Max angular momentum: 2
 
   ==> DFT Potential <==
 
@@ -93,32 +93,27 @@
     Pruning alpha          =              1
     Radial Points          =             75
     Spherical Points       =            302
-    Total Points           =          45300
-    Total Blocks           =            420
-    Max Points             =            254
-    Max Functions          =            182
+    Total Points           =          44810
+    Total Blocks           =            416
+    Max Points             =            253
+    Max Functions          =             28
 
-  Using integral reordering PK algorithm.
-  Sizing the integral batches needed.
-  Building batch lookup table.
+  Using in-core PK algorithm.
    Calculation information:
       Number of atoms:                   2
-      Number of AO shells:              42
-      Number of primitives:            108
-      Number of atomic orbitals:       252
-      Number of basis functions:       182
+      Number of AO shells:              12
+      Number of primitives:             50
+      Number of atomic orbitals:        30
+      Number of basis functions:        28
 
       Integral cutoff                 1.00e-12
       Number of threads:                 2
 
-	Batch   1 pq = [       0,   14999] index = [             0,112492500] size =    112492500
-	Batch   2 pq = [   14999,   16653] index = [     112492500,138669531] size =     26177031
-  Task number: 10
-  Buffer size: 14062500
-  Buffer per thread: 2
-  We computed 639280 shell quartets total.
-  Whereas there are 408156 unique shell quartets.
-    56.63 percent of shell quartets recomputed by reordering.
+  Performing in-core PK
+  Using 165242 doubles for integral storage.
+  We computed 3774 shell quartets total.
+  Whereas there are 3081 unique shell quartets.
+    22.49 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -132,10 +127,10 @@
 
    => Loading Basis Set <=
 
-    Name: CC-PV5Z
+    Name: CC-PVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-2 entry BE         line   170 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pv5z.gbs 
+    atoms 1-2 entry BE         line    75 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
 
 
          ---------------------------------------------------------
@@ -183,13 +178,13 @@
 
   ==> Primary Basis <==
 
-  Basis Set: CC-PV5Z
-    Blend: CC-PV5Z
-    Number of shells: 42
-    Number of basis function: 182
-    Number of Cartesian functions: 252
+  Basis Set: CC-PVDZ
+    Blend: CC-PVDZ
+    Number of shells: 12
+    Number of basis function: 28
+    Number of Cartesian functions: 30
     Spherical Harmonics?: true
-    Max angular momentum: 5
+    Max angular momentum: 2
 
   ==> DFT Potential <==
 
@@ -225,17 +220,17 @@
     Pruning alpha          =              1
     Radial Points          =             75
     Spherical Points       =            302
-    Total Points           =          45300
-    Total Blocks           =            420
-    Max Points             =            254
-    Max Functions          =            182
+    Total Points           =          44810
+    Total Blocks           =            416
+    Max Points             =            253
+    Max Functions          =             28
 
    => Loading Basis Set <=
 
-    Name: CC-PV5Z
+    Name: CC-PVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-2 entry BE         line   170 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pv5z.gbs 
+    atoms 1-2 entry BE         line    75 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
 
 
          ---------------------------------------------------------
@@ -283,13 +278,13 @@
 
   ==> Primary Basis <==
 
-  Basis Set: CC-PV5Z
-    Blend: CC-PV5Z
-    Number of shells: 42
-    Number of basis function: 182
-    Number of Cartesian functions: 252
+  Basis Set: CC-PVDZ
+    Blend: CC-PVDZ
+    Number of shells: 12
+    Number of basis function: 28
+    Number of Cartesian functions: 30
     Spherical Harmonics?: true
-    Max angular momentum: 5
+    Max angular momentum: 2
 
   ==> DFT Potential <==
 
@@ -325,8 +320,8 @@
     Pruning alpha          =              1
     Radial Points          =             75
     Spherical Points       =            302
-    Total Points           =          45300
-    Total Blocks           =            420
-    Max Points             =            254
-    Max Functions          =            182
+    Total Points           =          44810
+    Total Blocks           =            416
+    Max Points             =            253
+    Max Functions          =             28
 
