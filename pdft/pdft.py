@@ -2508,6 +2508,37 @@ class U_Embedding:
         self.vp_grid = self.molecule.to_grid(np.dot(self.molecule.A.np, self.vp[0]))
         return hess, jac
 
+    def check_gradient(self, dvp=None):
+        """
+        Numerically check the gradient and hessian.
+        :return:
+        """
+        three_overlap_ijK = np.einsum("ijk,kl->ijl", self.three_overlap, self.molecule.A.np)
+
+        jac = self.jac_1basis(self.vp[0])
+        hess = self.hess_1basis(self.vp[0])
+        jacL = jac + np.einsum("ij,j->i", hess, self.vp[0])
+        hessL = hess*2
+        dvpf = np.einsum('ijm,m->ij', three_overlap_ijK, self.vp[0])
+        L = self.lagrange_mul_1basis(self.vp[0], dvpf)
+        if dvp is None:
+            dvp = 1e-4 * self.vp[0]
+        dLTT1 = np.sum(jacL * dvp)
+        dLTT2 = 0.5*np.sum(dvp*np.dot(hessL, dvp))
+        djTT = np.dot(hess, dvp)
+
+        # Run new scf with perturbed vp
+        dvpf = np.einsum('ijm,m->ij', three_overlap_ijK, dvp + self.vp[0])
+        vp_fock_new = psi4.core.Matrix.from_array(dvpf)
+        self.fragments_scf_1basis(100, vp_fock=[vp_fock_new, vp_fock_new])
+
+        jac_new = self.jac_1basis(self.vp[0] + dvp)
+        L_new = self.lagrange_mul_1basis(self.vp[0], dvpf)
+        dL = L_new - L
+        dj = jac_new - jac
+        print("L gradient and hessian accuracy", dL, dLTT1, dLTT2+dLTT1)
+        print("hess accuracy", np.linalg.norm(dj), np.linalg.norm(djTT), np.linalg.norm(dj - djTT))
+
     def hess_grid(self, rho_mol, data_type="float64"):
         """
         To get the Hessian operator on the basis set xi_p = phi_i as a matrix.
