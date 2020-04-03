@@ -2069,22 +2069,20 @@ class U_Embedding:
             epsilon_unocc_b = i.eig_b.np[i.nbeta:]
             epsilon_a = epsilon_occ_a - epsilon_unocc_a
             epsilon_b = epsilon_occ_b - epsilon_unocc_b
-            hess += i.omega*np.einsum('ai,bj,ci,dj,ij,abm,cdn -> mn', i.Ca.np[:, :i.nalpha], i.Ca.np[:, i.nalpha:],
+            hess += 2*i.omega*np.einsum('ai,bj,ci,dj,ij,abm,cdn -> mn', i.Ca.np[:, :i.nalpha], i.Ca.np[:, i.nalpha:],
                                       i.Ca.np[:, :i.nalpha], i.Ca.np[:, i.nalpha:], np.reciprocal(epsilon_a),
                                       self.three_overlap, self.three_overlap, optimize=True)
             hess += i.omega*np.einsum('ai,bj,ci,dj,ij,abm,cdn -> mn', i.Cb.np[:, :i.nbeta], i.Cb.np[:, i.nbeta:],
                                       i.Cb.np[:, :i.nbeta], i.Cb.np[:, i.nbeta:], np.reciprocal(epsilon_b),
                                       self.three_overlap, self.three_overlap, optimize=True)
         # assert np.linalg.norm(hess - hess.T) < 1e-3, "hess not symmetry"
-        hess = - 0.5 * (hess + hess.T)
+        hess = 0.5 * (hess + hess.T)
 
         # Regularization
         if self.regul_const is not None:
-            print("HERE!!!!!!!!!!!!!!")
-
             T = self.molecule.T.np
             T = 0.5 * (T + T.T)
-            hess -= 4*4*self.regul_const*T
+            hess += 4*4*self.regul_const*T
 
         # print("Response", np.linalg.norm(hess))
         # print(hess)
@@ -2116,18 +2114,16 @@ class U_Embedding:
             self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.molecule.A.np)
 
         self.get_density_sum()
-        density_difference_a = self.molecule.Da.np - self.fragments_Da
-        density_difference_b = self.molecule.Db.np - self.fragments_Db
+        density_difference_a = self.fragments_Da - self.molecule.Da.np
+        density_difference_b = self.fragments_Db - self.molecule.Db.np
 
         jac = np.einsum("uv,uvi->i", (density_difference_a + density_difference_b), self.three_overlap, optimize=True)
 
         # Regularization
         if self.regul_const is not None:
-            print("HERE!!!!!!!!!!!!!!")
-
             T = self.molecule.T.np
             T = 0.5 * (T + T.T)
-            jac -= 4*4*self.regul_const*np.dot(T, vp)
+            jac += 4*4*self.regul_const*np.dot(T, vp)
 
         # print("Jac norm:", np.linalg.norm(jac))
         return jac
@@ -2156,8 +2152,8 @@ class U_Embedding:
         Ep = self.ep_conv[-1]
 
         self.get_density_sum()
-        density_difference_a = self.molecule.Da.np - self.fragments_Da
-        density_difference_b = self.molecule.Db.np - self.fragments_Db
+        density_difference_a = self.fragments_Da - self.molecule.Da.np
+        density_difference_b = self.fragments_Db - self.molecule.Db.np
 
         L = Ef
         L += np.sum(vp_fock*(density_difference_a + density_difference_b))
@@ -2181,7 +2177,7 @@ class U_Embedding:
         if self.regul_const is not None:
             T = self.molecule.T.np
             T = 0.5 * (T + T.T)
-            L -= 4*4*self.regul_const*np.dot(np.dot(vp, T), vp)
+            L += 4*4*self.regul_const*np.dot(np.dot(vp, T), vp)
 
         self.lagrange.append(L)
         # print("L:", L, "Int_vp_drho:", L-Ef , "Ef:", Ef, "Ep: ", Ep)
@@ -2341,7 +2337,7 @@ class U_Embedding:
             jac = self.jac_1basis()
 
             if beta_method == "Lagrangian":
-                jac = jac + np.einsum("ij,j->i", hess, self.vp[0])
+                jac = jac - np.einsum("ij,j->i", hess, self.vp[0])
                 hess *= 2
 
             if scf_step == 1:
@@ -2400,22 +2396,21 @@ class U_Embedding:
                 self.drho_conv.append(now_drho)
             elif beta_method == "Lagrangian":
                 # BT for beta with L
-                beta = 2.0
+                beta = 1
                 while True:
                     beta *= 0.5
                     if beta < 1e-7:
                         converge_flag = True
                         break
                     # Traditional WuYang
-                    vp_temp = self.vp[0] + beta * dvp
-                    dvpf = np.einsum('ijm,m->ij', self.three_overlap, beta * dvp)
-                    dvpf = 0.5 * (dvpf + dvpf.T)
-                    vp_fock_temp = psi4.core.Matrix.from_array(self.vp_fock[0].np + dvpf)
-                    dD = self.molecule.Da.np+self.molecule.Db.np-(self.fragments_Da+self.fragments_Db)
+                    vp_temp = self.vp[0] - beta * jac
+                    vpf = np.einsum('ijm,m->ij', self.three_overlap, vp_temp)
+                    vpf = 0.5 * (vpf + vpf.T)
+                    vp_fock_temp = psi4.core.Matrix.from_array(vpf)
                     self.fragments_scf_1basis(700, vp_fock=[vp_fock_temp, vp_fock_temp])
                     L = self.lagrange_mul_1basis(vp_temp, vp_fock_temp.np, update_vp=False)
-                    print(beta, L - L_old, mu * beta * np.sum(jac*dvp))
-                    if L - L_old <= mu * beta * np.sum(jac*dvp) and mu * beta * np.sum(jac*dvp) < 0:
+                    print(beta, L - L_old, - mu * beta * np.sum(jac*jac))
+                    if L - L_old <= - mu * beta * np.sum(jac*jac) and - mu * beta * np.sum(jac*jac) < 0:
                         L_old = L
                         self.vp = [vp_temp, vp_temp]
                         self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
@@ -2439,95 +2434,17 @@ class U_Embedding:
                     self.fragments_scf_1basis(300, vp_fock=[vp_fock_temp, vp_fock_temp])
                     rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
                     now_drho = np.sum(np.abs(rho_molecule - rho_fragment) * w)
-                    print(beta, now_drho - self.drho_conv[-1], mu * beta * np.sum(dvp*jac))
-                    if now_drho - self.drho_conv[-1] <= mu * beta * np.sum(dvp*jac) and np.sum(dvp*jac) < 0:
+                    print(beta, now_drho - self.drho_conv[-1], -mu * beta * np.sum(dvp*jac))
+                    if now_drho - self.drho_conv[-1] <= -mu * beta * np.sum(dvp*jac) and -np.sum(dvp*jac) < 0:
                         self.vp = [vp_temp, vp_temp]
                         self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
                         self.drho_conv.append(now_drho)
+                        L = self.lagrange_mul_1basis(vp_temp, vp_fock_temp.np, update_vp=False)
+                        print(L)
                         break
             else:
                 NameError("No BackTracking method named " + str(beta_method))
 
-            # Here I tested using BT to search for SVDc and beta at the same time.
-            # But I dont think searching SVDc from a small number is a good idea.
-            # BT for svd and beta
-            # if svd_rcond is not None:
-            #     hess_inv = np.linalg.pinv(hess, rcond=svd_rcond)
-            #     dvp = - hess_inv.dot(jac)
-            #     beta = 2
-            #     while True:
-            #         beta *= 0.5
-            #         if beta < 1e-7:
-            #             return
-            #
-            #         vp_temp = self.vp[0] + beta * dvp
-            #         dvpf = np.einsum('ijm,m->ij', three_overlap_ijK, beta * dvp)
-            #         dvpf = 0.5 * (dvpf + dvpf.T)
-            #         vp_fock_temp = psi4.core.Matrix.from_array(self.vp_fock[0].np + dvpf)
-            #         self.fragments_scf_1basis(300, vp_fock=[vp_fock_temp, vp_fock_temp])
-            #
-            #         L = self.lagrange_mul_1basis(vp_temp, vp_fock_temp.np)
-            #         rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
-            #
-            #         dvp_grid = self.molecule.to_grid(beta * dvp)
-            #
-            #         if L - L_old <= mu * beta * np.sum(
-            #                 (rho_molecule - rho_fragment) * dvp_grid * w) and np.sum(
-            #                 (rho_molecule - rho_fragment) * dvp_grid * w) < 0:
-            #
-            #             L_old = L
-            #             self.vp = [vp_temp, vp_temp]
-            #             self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
-            #             rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
-            #             now_drho = np.sum(np.abs(rho_molecule - rho_fragment) * w)
-            #             self.drho_conv.append(now_drho)
-            #             break
-            # else:
-            #     # Loop for SVD
-            #     for i in range(2, 9):
-            #         # Solve by SVD
-            #         hess_inv = np.linalg.pinv(hess, rcond=10 ** -i)
-            #         dvp = - hess_inv.dot(jac)
-            #         vp_change = np.linalg.norm(dvp, ord=1)
-            #         beta = 2
-            #         while True:
-            #             beta *= 0.5
-            #             if beta < 1e-3:
-            #                 # print("No beta will work for this svd:", i)
-            #                 svd_flag = False
-            #                 break
-            #             # Traditional WuYang
-            #             vp_temp = self.vp[0] + beta * dvp
-            #             dvpf = np.einsum('ijm,m->ij', three_overlap_ijK, beta * dvp)
-            #             dvpf = 0.5 * (dvpf + dvpf.T)
-            #             vp_fock_temp = psi4.core.Matrix.from_array(self.vp_fock[0].np + dvpf)
-            #             self.fragments_scf_1basis(300, vp_fock=[vp_fock_temp, vp_fock_temp])
-            #             vp_temp = self.vp[0] + beta * dvp
-            #             L = self.lagrange_mul_1basis(vp_temp, vp_fock_temp.np)
-            #             rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
-            #
-            #             dvp_grid = self.molecule.to_grid(beta * dvp)
-            #             print("dL", L - L_old)
-            #             print(np.sum(
-            #                     (rho_molecule - rho_fragment) * dvp_grid * w))
-            #             if L - L_old <= mu * beta * np.sum(
-            #                     (rho_molecule - rho_fragment) * dvp_grid * w) and np.sum((rho_fragment -
-            #                                                                               rho_molecule) * dvp_grid * w) < 0:
-            #                 L_old = L
-            #                 self.vp = [vp_temp, vp_temp]
-            #                 self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
-            #                 now_drho = np.sum(np.abs(rho_molecule - rho_fragment) * w)
-            #                 self.drho_conv.append(now_drho)
-            #                 svd_flag = True
-            #                 break
-            #         if svd_flag:
-            #             break
-            #         elif i == 8:
-            #             print("NO SVD AND BETA WORK.")
-            #             self.update_oueis_retularized_vp_nad(Qtype=Qtype, vstype=vstype,
-            #                                                  vp_Hext_decomposition=False if (
-            #                                                              vp_nad_iter is None) else True)
-            #             return
 
             print(
                 F'Iter: {scf_step} beta: {beta} SVD: {svd_rcond}'
@@ -2570,8 +2487,8 @@ class U_Embedding:
         Ef = self.ef_conv[-1]
         jac = self.jac_1basis()
         hess = self.hess_1basis()
-        jacE = np.einsum("ij,j->i", hess, self.vp[0])
-        jacL = jac + np.einsum("ij,j->i", hess, self.vp[0])
+        jacE = - np.einsum("ij,j->i", hess, self.vp[0])
+        jacL = jac - np.einsum("ij,j->i", hess, self.vp[0])
         hessL = hess*2
         L = self.lagrange_mul_1basis()
         if dvp is None:
@@ -2773,128 +2690,6 @@ class U_Embedding:
             hess = self.hess_grid(rho_molecule, data_type=hessian_data_type)
             jac = self.jac_grid(rho_molecule)
 
-        #     # Get a good svd parameter from the step-function-shape graph of |vp| vs svdc.
-        #     # But I don't really understand how to interprate this.
-        #     if svd_rcond is not None:
-        #         hess_inv = np.linalg.pinv(hess, rcond=svd_rcond)
-        #         dvp = -hess_inv.dot(jac)
-        #         vp_change = np.linalg.norm(dvp, ord=1)
-        #     else:
-        #         vp_change_last = 1e7
-        #         for i in np.linspace(1, 10, 20):
-        #             # Solve by SVD
-        #             hess_inv = np.linalg.pinv(hess, rcond=10 ** -i)
-        #             dvp_temp = -hess_inv.dot(jac)
-        #             vp_change = np.linalg.norm(dvp_temp, ord=1)
-        #             print(i, vp_change)
-        #             if vp_change / vp_change_last > 7 and i > 1:
-        #                 dvp = dvp_last
-        #                 # dvp = dvp_temp
-        #                 break
-        #             else:
-        #                 dvp_last = dvp_temp
-        #                 vp_change_last = vp_change
-        #                 continue
-        #
-        #     # I have two ways to BT. One based on minimizing L one minimizing.
-        #     if type(beta_method) is int or type(beta_method) is float:
-        #         beta = beta_method
-        #         # Traditional WuYang
-        #         vp_total += beta * dvp
-        #         self.vp = [vp_total, vp_total]
-        #         dvpf = np.einsum('ijm,m->ij', self.three_overlap, beta * dvp)
-        #         dvpf = 0.5 * (dvpf + dvpf.T)
-        #         vp_totalfock.np[:] += dvpf
-        #         self.vp_fock = [vp_totalfock, vp_totalfock]  # Use total_vp instead of spin vp for calculation.
-        #
-        #         # With Yan's trick
-        #         # vp_total += dvp
-        #         # self.vp = [vp_total, vp_total]
-        #         # self.update_oueis_retularized_vp_nad(Qtype=Qtype, vstype=vstype,
-        #         #                                      vp_Hext_decomposition=False if (vp_nad_iter is None) else True)
-        #
-        #         # With Yan's trick bu updating dvp
-        #         # self.update_oueis_retularized_vp_nad(dvp=dvp)
-        #     elif beta_method == "Lagrangian":
-        #         # BT for beta with L
-        #         beta = 2.0
-        #         while True:
-        #             beta *= 0.5
-        #             if beta < 1e-7:
-        #                 print("No beta %e will work for this svd" % beta)
-        #                 self.update_oueis_retularized_vp_nad(Qtype=Qtype, vstype=vstype,
-        #                                                      vp_Hext_decomposition=False if (
-        #                                                                  vp_nad_iter is None) else True)
-        #                 return
-        #             # Traditional WuYang
-        #             vp_temp = self.vp[0] + beta * dvp
-        #             dvpf = np.einsum('ijm,m->ij', self.three_overlap, beta * dvp)
-        #             dvpf = 0.5 * (dvpf + dvpf.T)
-        #             vp_fock_temp = psi4.core.Matrix.from_array(self.vp_fock[0].np + dvpf)
-        #             self.fragments_scf_1basis(300, vp_fock=[vp_fock_temp, vp_fock_temp])
-        #             L = self.lagrange_mul_1basis(vp_temp, vp_fock_temp.np)
-        #             rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
-        #             dvp_grid = self.molecule.to_grid(beta * dvp)
-        #             if L - L_old <= mu * beta * np.sum(
-        #                     (rho_molecule - rho_fragment) * dvp_grid * w) and np.sum(
-        #                 (rho_molecule - rho_fragment) * dvp_grid * w) < 0:
-        #                 L_old = L
-        #                 self.vp = [vp_temp, vp_temp]
-        #                 self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
-        #                 now_drho = np.sum(np.abs(rho_molecule - rho_fragment) * w)
-        #                 self.drho_conv.append(now_drho)
-        #                 break
-        #     elif beta_method == "Density":
-        #         # BT for beta with dn
-        #         beta = 2.0
-        #         while True:
-        #             beta *= 0.5
-        #             if beta < 1e-7:
-        #                 print("No beta %e will work for this svd" % beta)
-        #                 self.update_oueis_retularized_vp_nad(Qtype=Qtype, vstype=vstype,
-        #                                                      vp_Hext_decomposition=False if (
-        #                                                                  vp_nad_iter is None) else True)
-        #                 return
-        #             # Traditional WuYang
-        #             vp_temp = self.vp[0] + beta * dvp
-        #             dvpf = np.einsum('ijm,m->ij', self.three_overlap, beta * dvp)
-        #             dvpf = 0.5 * (dvpf + dvpf.T)
-        #             vp_fock_temp = psi4.core.Matrix.from_array(self.vp_fock[0].np + dvpf)
-        #             self.fragments_scf_1basis(300, vp_fock=[vp_fock_temp, vp_fock_temp])
-        #             rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
-        #             now_drho = np.sum(np.abs(rho_molecule - rho_fragment) * w)
-        #             dvp_grid = self.molecule.to_grid(beta * dvp)
-        #             if now_drho - self.drho_conv[-1] <= mu * beta * np.sum((rho_molecule - rho_fragment)
-        #                                                                    * dvp_grid * w) and np.sum(
-        #                 (rho_fragment - rho_molecule)
-        #                 * dvp_grid * w) < 0:
-        #                 self.vp = [vp_temp, vp_temp]
-        #                 self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
-        #                 self.drho_conv.append(now_drho)
-        #                 break
-        #     else:
-        #         NameError("No BackTracking method named " + str(beta_method))
-        #
-        #     print(
-        #         F'Iter: {scf_step} beta: {beta} SVD: {svd_rcond}'
-        #         F' Ef: {self.ef_conv[-1]} Ep: {self.ep_conv[-1]} d_rho: {self.drho_conv[-1]}')
-        #
-        #     if beta < 1e-7:
-        #         print("Break because even small step length can not improve.")
-        #         break
-        #     elif len(self.drho_conv) >= 5:
-        #         if np.std(self.drho_conv[-4:]) < a_rho_var and vp_change < vp_norm_conv:
-        #             print("Break because rho and vp do not update for 5 iterations.")
-        #             break
-        #     elif old_rho_conv < 1e-4:
-        #         print("Break because rho difference (cost) is small.")
-        #         break
-        #     # elif scf_step == maxiter:
-        #     # raise Exception("Maximum number of SCF cycles exceeded for vp.")
-        #     # print("Maximum number of SCF cycles exceeded for vp.")
-        # # update current vp.
-        # self.update_oueis_retularized_vp_nad(Qtype=Qtype, vstype=vstype,
-        #                                      vp_Hext_decomposition=False if (vp_nad_iter is None) else True)
         return jac, hess
 
     def find_vp_response_crude(self, maxiter=21, beta=None, atol=1e-7, guess=None):
