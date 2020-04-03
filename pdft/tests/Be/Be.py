@@ -66,7 +66,7 @@ pdfter = pdft.U_Embedding([f1, f2], mol)
 hess, jac = pdfter.find_vp_response_1basis(3, svd_rcond=10**svdc, a_rho_var=1e-5, mu=1e-7)
 # pdfter.find_vp_scipy_1basis(maxiter=7)
 
-jac, jacL, jac_approx, jacL_approx, jacE, jacE_approx = pdfter.check_gradient()
+# jac, jacL, jac_approx, jacL_approx, jacE, jacE_approx, jac2 = pdfter.check_gradient()
 
 # f,ax = plt.subplots(1, 1, dpi=210)
 # ax.set_ylim(-0.42, 0.2)

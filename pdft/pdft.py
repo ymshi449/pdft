@@ -2032,7 +2032,7 @@ class U_Embedding:
 
         return V
 
-    def hess_1basis(self, vp=None, update_vp=True):
+    def hess_1basis(self, vp=None, update_vp=True, calculate_scf=True):
         """
         To get the Hessian operator on the basis set xi_p = phi_i as a matrix.
         :return: Hessian matrix as np.array self.molecule.nbf**2 x self.molecule.nbf**2
@@ -2043,11 +2043,12 @@ class U_Embedding:
         if vp is not None:
             if not np.linalg.norm(vp - self.vp[0]) < 1e-7:
                 # update vp and vp fock
-                if update_vp:
-                    self.vp = [vp, vp]
-                    self.fragments_scf_1basis(1000, vp=True)
-                else:
-                    self.fragments_scf_1basis(1000, vp=[vp,vp])
+                if calculate_scf:
+                    if update_vp:
+                        self.vp = [vp, vp]
+                        self.fragments_scf_1basis(1000, vp=True)
+                    else:
+                        self.fragments_scf_1basis(1000, vp=[vp, vp])
         else:
             vp = self.vp[0]
 
@@ -2080,7 +2081,7 @@ class U_Embedding:
         # print(hess)
         return hess
 
-    def jac_1basis(self, vp=None, update_vp=True):
+    def jac_1basis(self, vp=None, update_vp=True, calculate_scf=True):
         """
         To get Jaccobi vector, which is the density difference on the basis set xi_p = phi_i.
         a + b
@@ -2092,11 +2093,12 @@ class U_Embedding:
         if vp is not None:
             if not np.linalg.norm(vp - self.vp[0]) < 1e-7:
                 # update vp and vp fock
-                if update_vp:
-                    self.vp = [vp, vp]
-                    self.fragments_scf_1basis(1000, vp=True)
-                else:
-                    self.fragments_scf_1basis(1000, vp=[vp, vp])
+                if calculate_scf:
+                    if update_vp:
+                        self.vp = [vp, vp]
+                        self.fragments_scf_1basis(1000, vp=True)
+                    else:
+                        self.fragments_scf_1basis(1000, vp=[vp, vp])
         else:
             vp = self.vp[0]
 
@@ -2108,6 +2110,7 @@ class U_Embedding:
 
         # Regularization
         if self.regul_const is not None:
+
             T = self.molecule.T.np
             T = 0.5 * (T + T.T)
             jac += 4*4*self.regul_const*np.dot(T, vp)
@@ -2115,7 +2118,7 @@ class U_Embedding:
         # print("Jac norm:", np.linalg.norm(jac))
         return jac
 
-    def lagrange_mul_1basis(self, vp=None, vp_fock=None, update_vp=True):
+    def lagrange_mul_1basis(self, vp=None, vp_fock=None, update_vp=True, calculate_scf=True):
         """
         Return Lagrange Multipliers (G) value. on 1 basis.
         :return: L
@@ -2127,11 +2130,12 @@ class U_Embedding:
         if vp is not None:
             if not np.linalg.norm(vp - self.vp[0]) < 1e-7:
                 # update vp and vp fock
-                if update_vp:
-                    self.vp = [vp, vp]
-                    self.fragments_scf_1basis(1000, vp=True)
-                else:
-                    self.fragments_scf_1basis(1000, vp=[vp,vp])
+                if calculate_scf:
+                    if update_vp:
+                        self.vp = [vp, vp]
+                        self.fragments_scf_1basis(1000, vp=True)
+                    else:
+                        self.fragments_scf_1basis(1000, vp=[vp, vp])
         else:
             vp = self.vp[0]
 
@@ -2459,6 +2463,32 @@ class U_Embedding:
         self.vp_grid = self.molecule.to_grid(np.dot(self.molecule.A.np, self.vp[0]))
         return hess, jac
 
+    def check_hess_convergence(self):
+
+        hess = np.zeros((self.molecule.nbf, self.molecule.nbf))
+        for i in range(self.nfragments):
+            frag = self.fragments[i]
+            for occ in range(frag.nalpha):
+                print("\n==========================================================\n")
+                for uocc in range(frag.nalpha, frag.nbf):
+                    hess_old = np.copy(hess)
+                    hess += 2*frag.omega*np.einsum('a,b,c,d,abm,cdn -> mn', frag.Ca.np[:, occ], frag.Ca.np[:, uocc],
+                                              frag.Ca.np[:, occ], frag.Ca.np[:, uocc],
+                                              self.three_overlap, self.three_overlap, optimize=True)/(frag.eig_a.np[occ]-frag.eig_a.np[uocc])
+                    print("Hess of fragment ", i, "spin-up occupied %i |dhess| %e" %(occ+1, np.linalg.norm(hess-hess_old)))
+            for occ in range(frag.nbeta):
+                print("\n==========================================================\n")
+                for uocc in range(frag.nbeta, frag.nbf):
+                    hess_old = np.copy(hess)
+                    hess += 2 * frag.omega * np.einsum('a,b,c,d,abm,cdn -> mn', frag.Cb.np[:, occ], frag.Cb.np[:, uocc],
+                                                    frag.Cb.np[:, occ], frag.Cb.np[:, uocc],
+                                                    self.three_overlap, self.three_overlap, optimize=True) / (
+                                        frag.eig_b.np[occ] - frag.eig_b.np[uocc])
+                    print("Hess of fragment ", i, "spin-down occupied %i |dhess| %e" %(occ+1, np.linalg.norm(hess-hess_old)))
+
+        return
+
+
     def check_gradient(self, dvp=None):
         """
         Numerically check the gradient and hessian.
@@ -2473,15 +2503,17 @@ class U_Embedding:
         self.fragments_scf_1basis(100, vp_fock=[vp_fock_new, vp_fock_new])
 
         Ef = self.ef_conv[-1]
-        jac = self.jac_1basis()
-        hess = self.hess_1basis()
+        jac = self.jac_1basis(calculate_scf=False)
+        hess = self.hess_1basis(calculate_scf=False)
         jacE = - np.einsum("ij,j->i", hess, self.vp[0])
         jacL = jac - np.einsum("ij,j->i", hess, self.vp[0])
         hessL = hess*2
-        L = self.lagrange_mul_1basis()
+        L = self.lagrange_mul_1basis(calculate_scf=False)
+
         if dvp is None:
             dvp = 1e-4*np.ones_like(self.vp[0])
         jac_approx = np.zeros_like(jac)
+        jac_approx2 = np.zeros_like(jac)
         jacL_approx = np.zeros_like(jac)
         jacE_approx = np.zeros_like(jac)
 
@@ -2498,8 +2530,8 @@ class U_Embedding:
 
             # Get the new f(x+dx)
             Ef_new = self.ef_conv[-1]
-            jac_new = self.jac_1basis(self.vp[0] + dvpi, update_vp=False)
-            L_new = self.lagrange_mul_1basis(self.vp[0] + dvpi, dvpf, update_vp=False)
+            jac_new = self.jac_1basis(self.vp[0] + dvpi, update_vp=False, calculate_scf=False)
+            L_new = self.lagrange_mul_1basis(self.vp[0] + dvpi, dvpf, update_vp=False, calculate_scf=False)
 
             # approx_i = (f(x+dx) - f(x))/dx
             jacL_approx[i] = (L_new - L)/dvpi[i]
@@ -2536,6 +2568,8 @@ class U_Embedding:
         # Check if self.vp doen't change during the whole process.
         assert np.allclose(vp, self.vp[0])
         assert np.allclose(vp_fock, self.vp_fock[0])
+        assert np.allclose(jac+jacE, jacL)
+        assert np.allclose(jac_approx+jacE_approx, jacL_approx)
 
         return jac, jacL, jac_approx, jacL_approx, jacE, jacE_approx
 
