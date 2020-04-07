@@ -9,10 +9,11 @@ functional = 'svwn'
 # There are two possibilities why a larger basis set is better than a smaller one:
 # 1. It provides a larger space for the inverse of Hessian.
 # 2. Or more likely it provides a more MOs for a better description of Hessian first order approximation.
-basis = 'cc-pvtz'
-svdc = -3
+basis = 'cc-pvqz'
+svdc = -5
+Orthogonal_basis = False
 # title = "Be WuYang1b Yan Q[nf] v[nf] svdc%i reguc%i " %(svdc, reguc) + basis + functional
-title = "Be ortho_vp_basis svd %i "%svdc + basis + functional
+title = "Be ortho_vp_basis svd %i "%svdc + basis + functional + " orth_basis: " + Orthogonal_basis
 print(title)
 
 psi4.set_output_file("Be2.psi4")
@@ -25,6 +26,11 @@ Be -%f 0.0 0.00
 units bohr
 symmetry c1
 """ % (separation / 2, separation / 2))
+
+# @Ar 0 7 0
+# @Ar 0 -7 0
+# @Ar 0 0 7
+# @Ar 0 0 -7
 
 Monomer_1 =  psi4.geometry("""
 nocom
@@ -63,10 +69,8 @@ pdfter = pdft.U_Embedding([f1, f2], mol)
 # pdfter.find_vp_densitydifference(140)
 # pdfter.find_vp_response(21, guess=True, svd_rcond=10**svdc, beta=0.1, a_rho_var=1e-7)
 # pdfter.find_vp_cost_1basis(21, a_rho_var=1e-5, mu=1e-7)
-hess, jac = pdfter.find_vp_response_1basis(3, svd_rcond=10**svdc, a_rho_var=1e-5, mu=1e-7)
+hess, jac = pdfter.find_vp_response_1basis(1, ortho_basis=Orthogonal_basis, beta_method="Lagrangian", svd_rcond=10**svdc, a_rho_var=1e-5, mu=1e-7)
 # pdfter.find_vp_scipy_1basis(maxiter=7)
-
-# jac, jacL, jac_approx, jacL_approx, jacE, jacE_approx, jac2 = pdfter.check_gradient()
 
 # f,ax = plt.subplots(1, 1, dpi=210)
 # ax.set_ylim(-0.42, 0.2)
@@ -80,6 +84,9 @@ hess, jac = pdfter.find_vp_response_1basis(3, svd_rcond=10**svdc, a_rho_var=1e-5
 # f.show()
 # f.savefig("vp" + title)
 # plt.close(f)
+
+jac, jacL, jac_approx, jacL_approx, jacE, jacE_approx = pdfter.check_gradient()
+hess, hess_approx = pdfter.check_hess()
 
 # vp_grid_DD = mol.to_grid(pdfter.vp_last[0])
 # vp_grid_WY = mol.to_grid(mol.A.np.dot(pdfter.vp[0]))

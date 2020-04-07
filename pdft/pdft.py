@@ -2232,9 +2232,8 @@ class U_Embedding:
                                       jac=self.jac_1basis, hess=self.hess_1basis, method=opt_method, options=opt)
         return vp_array
 
-
     def find_vp_response_1basis(self, maxiter=21, guess=None, beta_method="Density", vp_nad_iter=None, Qtype='nf', vstype='nf',
-                                svd_rcond=None, mu=1e-4,
+                                svd_rcond=None, ortho_basis=True,mu=1e-4,
                                 regul_const=None, a_rho_var=1e-4,
                                 vp_norm_conv=1e-6, printflag=False):
         """
@@ -2258,7 +2257,8 @@ class U_Embedding:
 
         if self.three_overlap is None:
             self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap())
-            self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.molecule.A.np)
+            if ortho_basis:
+                self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.molecule.A.np)
 
         if guess is None:
             vp_total = np.zeros(self.molecule.H.np.shape[0])
@@ -2293,8 +2293,9 @@ class U_Embedding:
         old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
         print("Initial dn:", old_rho_conv)
         self.drho_conv.append(old_rho_conv)
-        if beta_method == "Lagrangian":
-            L_old = self.lagrange_mul_1basis()
+
+        L_old = self.lagrange_mul_1basis()
+
         self.vp_grid = 0
 
         # if vp_nad_iter is not None:
@@ -2320,16 +2321,11 @@ class U_Embedding:
             1) Un-orthogonalized
             2) I did not use alpha and beta wave functions to update Kai inverse. I should.
             """
-
+            # The reason why there is a - in front of it is that
+            # to make a concave problem L = Ef + \int vp(nf-n)dr
+            # to be a convex function L = Ef - \int vp(nf-n)dr
             hess = self.hess_1basis()
             jac = self.jac_1basis()
-
-            if beta_method == "Lagrangian":
-                jac = jac - np.einsum("ij,j->i", hess, self.vp[0])
-                hess *= 2
-            elif beta_method == "Density":
-                hess = self.hess_1basis(self.vp[0])
-                jac = self.jac_1basis(self.vp[0])
 
             if scf_step == 1:
                 assert np.linalg.matrix_rank(hess) == hess.shape[0], \
@@ -2371,6 +2367,7 @@ class U_Embedding:
                         vp_change_last = vp_change
                         continue
 
+
             # I have two ways to BT. One based on minimizing L one minimizing.
             if type(beta_method) is int or type(beta_method) is float:
                 beta = beta_method
@@ -2387,21 +2384,21 @@ class U_Embedding:
                 self.drho_conv.append(now_drho)
             elif beta_method == "Lagrangian":
                 # BT for beta with L
-                beta = 1
+                beta = 2
                 while True:
                     beta *= 0.5
-                    if beta < 1e-7:
+                    if beta < 0.1:
                         converge_flag = True
                         break
                     # Traditional WuYang
-                    vp_temp = self.vp[0] - beta * jac
+                    vp_temp = self.vp[0] + beta * dvp
                     vpf = np.einsum('ijm,m->ij', self.three_overlap, vp_temp)
                     vpf = 0.5 * (vpf + vpf.T)
                     vp_fock_temp = psi4.core.Matrix.from_array(vpf)
                     self.fragments_scf_1basis(700, vp_fock=[vp_fock_temp, vp_fock_temp])
                     L = self.lagrange_mul_1basis(vp_temp, vp_fock_temp.np, update_vp=False)
-                    print(beta, L - L_old, - mu * beta * np.sum(jac*jac))
-                    if L - L_old <= - mu * beta * np.sum(jac*jac) and - mu * beta * np.sum(jac*jac) < 0:
+                    print(beta, L - L_old, mu * beta * np.sum(jac*dvp))
+                    if L - L_old >= mu * beta * np.sum(jac*dvp) and mu * beta * np.sum(jac*dvp) > 0:
                         L_old = L
                         self.vp = [vp_temp, vp_temp]
                         self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
@@ -2414,7 +2411,7 @@ class U_Embedding:
                 beta = 2.0
                 while True:
                     beta *= 0.5
-                    if beta < 1e-7:
+                    if beta < 0.1:
                         converge_flag = True
                         break
                     # Traditional WuYang
@@ -2425,21 +2422,21 @@ class U_Embedding:
                     self.fragments_scf_1basis(300, vp_fock=[vp_fock_temp, vp_fock_temp])
                     rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
                     now_drho = np.sum(np.abs(rho_molecule - rho_fragment) * w)
-                    print(beta, now_drho - self.drho_conv[-1], -mu * beta * np.sum(dvp*jac))
-                    if now_drho - self.drho_conv[-1] <= -mu * beta * np.sum(dvp*jac) and -np.sum(dvp*jac) < 0:
+                    print(beta, now_drho - self.drho_conv[-1], np.sum(dvp*jac))
+                    if now_drho - self.drho_conv[-1] <= 0.0 and np.sum(dvp*jac) > 0:
                         self.vp = [vp_temp, vp_temp]
                         self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
                         self.drho_conv.append(now_drho)
                         L = self.lagrange_mul_1basis(vp_temp, vp_fock_temp.np, update_vp=False)
-                        print(L)
+                        # print(L)
                         break
             else:
                 NameError("No BackTracking method named " + str(beta_method))
 
 
             print(
-                F'Iter: {scf_step} beta: {beta} SVD: {svd_rcond}'
-                F' Ef: {self.ef_conv[-1]} Ep: {self.ep_conv[-1]} d_rho: {self.drho_conv[-1]}')
+                F'Iter: {scf_step} beta: {beta} SVD: {svd_rcond} Ef: {self.ef_conv[-1]} Ep: {self.ep_conv[-1]}\n'
+                F'd_rho: {self.drho_conv[-1]} |jac|: {np.linalg.norm(jac)} L: {self.lagrange[-1]}')
             if converge_flag:
                 print("BT stoped updating. Converged. beta:%e" % beta)
                 break
@@ -2460,8 +2457,50 @@ class U_Embedding:
         # Calculating components is too slow.
         # self.update_oueis_retularized_vp_nad(Qtype=Qtype, vstype=vstype,
         #                                      vp_Hext_decomposition=False if (vp_nad_iter is None) else True)
-        self.vp_grid = self.molecule.to_grid(np.dot(self.molecule.A.np, self.vp[0]))
+        if ortho_basis:
+            self.vp_grid = self.molecule.to_grid(np.dot(self.molecule.A.np, self.vp[0]))
+        else:
+            self.vp_grid = self.molecule.to_grid(self.vp[0])
         return hess, jac
+
+    def test_vp_modification_on_grid(self, filters, value=[0.0]):
+        """
+        This function will test a modified vp.
+        The modification will be done on the grid by the filter:
+        vp_grid[filter] = value
+        vp and vp_grid should be calculated prior to this.
+        :param filters: a list of filter
+        :return:
+        """
+        vp_grid_modified = np.copy(self.vp_grid)
+        for i in range(len(filters)):
+            vp_grid_modified[filters[i]] = value[i]
+            vp_grid_modified_fock = self.molecule.grid_to_fock(vp_grid_modified)
+            vp_grid_modified_psi4 = psi4.core.Matrix.from_array(vp_grid_modified_fock)
+
+        w = self.molecule.Vpot.get_np_xyzw()[-1]
+        rho_molecule = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
+        rho_fragment_before = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
+        print(F'Before modification Ef: {self.ef_conv[-1]} Ep: {self.ep_conv[-1]} d_rho: {self.drho_conv[-1]}')
+
+        self.fragments_scf_1basis(100, vp_fock=[vp_grid_modified_psi4, vp_grid_modified_psi4])
+
+        rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
+        old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
+
+        print(F'After modification Ef: {self.ef_conv[-1]} Ep: {self.ep_conv[-1]} d_rho: {old_rho_conv}')
+        self.ef_conv = self.ef_conv[:-1]
+        self.ep_conv = self.ep_conv[:-1]
+
+        # Plot
+        fig,ax = plt.subplots(1,1,dpi=200)
+        plot1d_x(vp_grid_modified, self.molecule.Vpot, ax=ax, label="vp_modified")
+        plot1d_x(rho_molecule - rho_fragment_before, self.molecule.Vpot, ax=ax, label="dn_before")
+        plot1d_x(rho_molecule - rho_fragment, self.molecule.Vpot, ax=ax, label="dn_after")
+        # plot1d_x(rho_molecule, self.molecule.Vpot, ax=ax, label="nmol")
+        ax.legend()
+        fig.show()
+        return
 
     def check_hess_convergence(self):
 
@@ -2491,7 +2530,7 @@ class U_Embedding:
 
     def check_gradient(self, dvp=None):
         """
-        Numerically check the gradient and hessian.
+        Numerically check the gradient.
         :return:
         """
 
@@ -2507,15 +2546,14 @@ class U_Embedding:
         hess = self.hess_1basis(calculate_scf=False)
         jacE = - np.einsum("ij,j->i", hess, self.vp[0])
         jacL = jac - np.einsum("ij,j->i", hess, self.vp[0])
-        hessL = hess*2
         L = self.lagrange_mul_1basis(calculate_scf=False)
 
-        if dvp is None:
-            dvp = 1e-4*np.ones_like(self.vp[0])
         jac_approx = np.zeros_like(jac)
-        jac_approx2 = np.zeros_like(jac)
         jacL_approx = np.zeros_like(jac)
         jacE_approx = np.zeros_like(jac)
+
+        if dvp is None:
+            dvp = 1e-3*np.ones_like(self.vp[0])
 
         # Get the approximate gradient.
         for i in range(jac_approx.shape[0]):
@@ -2538,31 +2576,31 @@ class U_Embedding:
             jac_approx[i] = (np.sum((dvpi + self.vp[0])*jac_new) - np.sum((self.vp[0])*jac))/dvpi[i]
             jacE_approx[i] = (Ef_new - Ef)/dvpi[i]
 
-        print("Lagrangian gradient (-\int vp*Cai+dn) difference norm: ", np.linalg.norm(jacL_approx - jacL))
+        print("Lagrangian gradient (-\int vp*Cai+dn) difference norm: ", np.linalg.norm(jacL_approx - jacL) / np.linalg.norm(jacL_approx))
         print("Lagrangian gradient (-\int vp*Cai+dn) correlation: ", np.sum(jacL_approx * jacL) / np.linalg.norm(jacL_approx) / np.linalg.norm(jacL))
         print("\n")
-        print("Lagrangian gradient (dn) difference norm: ", np.linalg.norm(jacL_approx - jac))
+        print("Lagrangian gradient (dn) difference norm: ", np.linalg.norm(jacL_approx - jac) / np.linalg.norm(jacL_approx))
         print("Lagrangian gradient (dn) correlation: ", np.sum(jacL_approx * jac) / np.linalg.norm(jacL_approx) / np.linalg.norm(jac))
         print("\n")
-        print("Lagrangian gradient (-\int vp*Cai) difference norm: ", np.linalg.norm(jacL_approx - jacE))
+        print("Lagrangian gradient (-\int vp*Cai) difference norm: ", np.linalg.norm(jacL_approx - jacE) / np.linalg.norm(jacL_approx))
         print("Lagrangian gradient (-\int vp*Cai) correlation: ", np.sum(jacL_approx * jacE) / np.linalg.norm(jacL_approx) / np.linalg.norm(jacE))
         print("\n===================\n")
-        print("Density gradient (-\int vp*Cai+dn) difference norm: ", np.linalg.norm(jac_approx - jacL))
+        print("Density gradient (-\int vp*Cai+dn) difference norm: ", np.linalg.norm(jac_approx - jacL) / np.linalg.norm(jacL_approx))
         print("Density gradient (-\int vp*Cai+dn) correlation: ", np.sum(jac_approx * jacL) / np.linalg.norm(jac_approx) / np.linalg.norm(jacL))
         print("\n")
-        print("Density gradient (dn) difference norm: ", np.linalg.norm(jac_approx - jac))
+        print("Density gradient (dn) difference norm: ", np.linalg.norm(jac_approx - jac) / np.linalg.norm(jac_approx))
         print("Density gradient (dn) correlation: ", np.sum(jac_approx * jac) / np.linalg.norm(jac_approx) / np.linalg.norm(jac))
         print("\n")
-        print("Density gradient (-\int vp*Cai) difference norm: ", np.linalg.norm(jac_approx - jacE))
+        print("Density gradient (-\int vp*Cai) difference norm: ", np.linalg.norm(jac_approx - jacE) / np.linalg.norm(jac_approx))
         print("Density gradient (-\int vp*Cai) correlation: ", np.sum(jac_approx * jacE) / np.linalg.norm(jac_approx) / np.linalg.norm(jacE))
         print("\n===================\n")
-        print("Ef gradient (-\int vp*Cai+dn) difference norm: ", np.linalg.norm(jacE_approx - jacL))
+        print("Ef gradient (-\int vp*Cai+dn) difference norm: ", np.linalg.norm(jacE_approx - jacL) / np.linalg.norm(jacE_approx))
         print("Ef gradient (-\int vp*Cai+dn) correlation: ", np.sum(jacE_approx * jacL) / np.linalg.norm(jacE_approx) / np.linalg.norm(jacL))
         print("\n")
-        print("Ef gradient (dn) difference norm: ", np.linalg.norm(jacE_approx - jac))
+        print("Ef gradient (dn) difference norm: ", np.linalg.norm(jacE_approx - jac) / np.linalg.norm(jacE_approx))
         print("Ef gradient (dn) correlation: ", np.sum(jacE_approx * jac) / np.linalg.norm(jacE_approx) / np.linalg.norm(jac))
         print("\n")
-        print("Ef gradient (-\int vp*Cai) difference norm: ", np.linalg.norm(jac_approx - jacE))
+        print("Ef gradient (-\int vp*Cai) difference norm: ", np.linalg.norm(jac_approx - jacE)/ np.linalg.norm(jacE_approx))
         print("Ef gradient (-\int vp*Cai) correlation: ", np.sum(jacE_approx * jacE) / np.linalg.norm(jacE_approx) / np.linalg.norm(jacE))
 
         # Check if self.vp doen't change during the whole process.
@@ -2573,6 +2611,54 @@ class U_Embedding:
 
         return jac, jacL, jac_approx, jacL_approx, jacE, jacE_approx
 
+    def check_hess(self, dvp=None):
+        """
+        Numerically check the hessian assuming the gradient is analytically dn.
+        :return:
+        """
+
+        vp = self.vp[0]
+        vp_fock = self.vp_fock[0].np
+
+        dvpf = np.einsum('ijm,m->ij', self.three_overlap, self.vp[0])
+        vp_fock_new = psi4.core.Matrix.from_array(dvpf)
+        self.fragments_scf_1basis(100, vp_fock=[vp_fock_new, vp_fock_new])
+
+        jac = self.jac_1basis(calculate_scf=False)
+        hess = self.hess_1basis(calculate_scf=False)
+
+        if dvp is None:
+            dvp = 1e-3*np.ones_like(self.vp[0])
+        hess_approx = np.zeros((jac.shape[0], jac.shape[0]))
+
+        # Get the approximate gradient.
+        for i in range(hess_approx.shape[0]):
+            print(i+1, "out of ", jac.shape[0])
+            dvpi = np.zeros_like(dvp)
+            dvpi[i] = dvp[i]
+            dvpf = np.einsum('ijm,m->ij', self.three_overlap, dvpi + self.vp[0])
+            vp_fock_new = psi4.core.Matrix.from_array(dvpf)
+            self.fragments_scf_1basis(100, vp_fock=[vp_fock_new, vp_fock_new])
+
+            # Get the new f(x+dx)
+            jac_new = self.jac_1basis(self.vp[0] + dvpi, update_vp=False, calculate_scf=False)
+
+            # approx_i = (f(x+dx) - f(x))/dx
+            hess_approx[i,:] = (jac_new - jac)/dvpi[i]
+
+        assert np.allclose(vp, self.vp[0])
+        assert np.allclose(vp_fock, self.vp_fock[0])
+
+        if not np.allclose(hess_approx, hess_approx.T):
+            print("HESSIAN APPROXIMATION IS NOT SYMMETRIC!")
+            hess_approx = 0.5 * (hess_approx + hess_approx.T)
+        print("Check approximated hessian norm (check L hess)", np.linalg.norm(hess_approx))
+        print("Check E hessian (-Cai) norm", np.linalg.norm(hess_approx + hess))
+        print("Check E hessian (-Cai) correlation (tr(hess_app dot hess))", np.trace(hess_approx.dot(-hess.T))/np.linalg.norm(hess_approx)/np.linalg.norm(-hess))
+        print("Check \int vp*dn hessian (Cai) norm", np.linalg.norm(hess_approx - hess))
+        print("Check \int vp*dn hessian (Cai) correlation (tr(hess_app dot hess))", np.trace(hess_approx.dot(hess.T))/np.linalg.norm(hess_approx)/np.linalg.norm(-hess))
+
+        return hess, hess_approx
 
     def find_vp_cost_1basis(self, maxiter=21, guess=None
                             , mu=1e-4,
