@@ -110,14 +110,14 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.58217716">
+    <splitter split-orientation="horizontal" split-proportion="0.7166489">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/pdft.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-10">
-                  <caret line="2613" column="8" selection-start-line="2613" selection-start-column="8" selection-end-line="2613" selection-end-column="8" />
+                <state relative-caret-position="370">
+                  <caret line="2436" column="88" selection-start-line="2436" selection-start-column="88" selection-end-line="2436" selection-end-column="88" />
                 </state>
               </provider>
             </entry>
@@ -141,8 +141,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/tests/Be/Be.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="800">
-                  <caret line="88" column="30" lean-forward="true" selection-start-line="88" selection-start-column="30" selection-end-line="88" selection-end-column="30" />
+                <state relative-caret-position="340">
+                  <caret line="71" column="33" selection-start-line="71" selection-start-column="33" selection-end-line="71" selection-end-column="33" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
                   </folding>
@@ -218,8 +218,8 @@
         <option value="$PROJECT_DIR$/tests/H2.py" />
         <option value="$PROJECT_DIR$/tests/He2/test.py" />
         <option value="$PROJECT_DIR$/tests/H2p/H2P.py" />
-        <option value="$PROJECT_DIR$/pdft.py" />
         <option value="$PROJECT_DIR$/tests/Be/Be.py" />
+        <option value="$PROJECT_DIR$/pdft.py" />
       </list>
     </option>
   </component>
@@ -434,15 +434,16 @@
       <workItem from="1585833766679" duration="30324000" />
       <workItem from="1585887045434" duration="2779000" />
       <workItem from="1585919697861" duration="22761000" />
-      <workItem from="1586053910813" duration="53164000" />
+      <workItem from="1586053910813" duration="56772000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="241863000" />
+    <option name="totallyTimeSpent" value="245471000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1920" y="-2" width="1920" height="1082" extended-state="7" />
+    <frame x="1920" y="-2" width="1920" height="1082" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.2497332" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -459,7 +460,7 @@
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Terminal" order="11" weight="0.32937366" />
-      <window_info active="true" anchor="bottom" x="0" y="55" width="1920" height="1025" id="Python Console" maximized="true" order="12" type="WINDOWED" visible="true" weight="0.32948583" />
+      <window_info anchor="bottom" x="0" y="55" width="1920" height="1025" id="Python Console" maximized="true" order="12" type="WINDOWED" weight="0.32948583" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -579,8 +580,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/Be/Be.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="800">
-          <caret line="88" column="30" lean-forward="true" selection-start-line="88" selection-start-column="30" selection-end-line="88" selection-end-column="30" />
+        <state relative-caret-position="340">
+          <caret line="71" column="33" selection-start-line="71" selection-start-column="33" selection-end-line="71" selection-end-column="33" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
@@ -589,8 +590,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pdft.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-10">
-          <caret line="2613" column="8" selection-start-line="2613" selection-start-column="8" selection-end-line="2613" selection-end-column="8" />
+        <state relative-caret-position="370">
+          <caret line="2436" column="88" selection-start-line="2436" selection-start-column="88" selection-end-line="2436" selection-end-column="88" />
         </state>
       </provider>
     </entry>

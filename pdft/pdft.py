@@ -2291,10 +2291,10 @@ class U_Embedding:
         rho_molecule = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
         rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
         old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
-        print("Initial dn:", old_rho_conv)
+        L_old = self.lagrange_mul_1basis(calculate_scf=False, update_vp=False)
         self.drho_conv.append(old_rho_conv)
 
-        L_old = self.lagrange_mul_1basis()
+        print("Initial dn:", old_rho_conv, L_old)
 
         self.vp_grid = 0
 
@@ -2307,7 +2307,6 @@ class U_Embedding:
         #     vp_totalfock.np[:] += vp_Hext_nad_fock
         #     self.vp_fock = [vp_totalfock, vp_totalfock]
         #     self.fragments_scf_1basis(1000, vp_fock=True)
-
 
         converge_flag = False
 
@@ -2387,7 +2386,7 @@ class U_Embedding:
                 beta = 2
                 while True:
                     beta *= 0.5
-                    if beta < 0.1:
+                    if beta < 1e-4:
                         converge_flag = True
                         break
                     # Traditional WuYang
@@ -2396,7 +2395,7 @@ class U_Embedding:
                     vpf = 0.5 * (vpf + vpf.T)
                     vp_fock_temp = psi4.core.Matrix.from_array(vpf)
                     self.fragments_scf_1basis(700, vp_fock=[vp_fock_temp, vp_fock_temp])
-                    L = self.lagrange_mul_1basis(vp_temp, vp_fock_temp.np, update_vp=False)
+                    L = self.lagrange_mul_1basis(vp_temp, vp_fock_temp.np, calculate_scf=False, update_vp=False)
                     print(beta, L - L_old, mu * beta * np.sum(jac*dvp))
                     if L - L_old >= mu * beta * np.sum(jac*dvp) and mu * beta * np.sum(jac*dvp) > 0:
                         L_old = L
@@ -2427,7 +2426,7 @@ class U_Embedding:
                         self.vp = [vp_temp, vp_temp]
                         self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
                         self.drho_conv.append(now_drho)
-                        L = self.lagrange_mul_1basis(vp_temp, vp_fock_temp.np, update_vp=False)
+                        L = self.lagrange_mul_1basis(calculate_scf=False, update_vp=False)
                         # print(L)
                         break
             else:
@@ -2435,6 +2434,7 @@ class U_Embedding:
 
 
             print(
+                F'--------------------------------------------------------------------\n'
                 F'Iter: {scf_step} beta: {beta} SVD: {svd_rcond} Ef: {self.ef_conv[-1]} Ep: {self.ep_conv[-1]}\n'
                 F'd_rho: {self.drho_conv[-1]} |jac|: {np.linalg.norm(jac)} L: {self.lagrange[-1]}')
             if converge_flag:

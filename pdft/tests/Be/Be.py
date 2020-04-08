@@ -13,7 +13,7 @@ basis = 'cc-pvqz'
 svdc = -5
 Orthogonal_basis = False
 # title = "Be WuYang1b Yan Q[nf] v[nf] svdc%i reguc%i " %(svdc, reguc) + basis + functional
-title = "Be ortho_vp_basis svd %i "%svdc + basis + functional + " orth_basis: " + Orthogonal_basis
+title = "Be ortho_vp_basis svd %i "%svdc + basis + functional + " orth_basis: " + str(Orthogonal_basis)
 print(title)
 
 psi4.set_output_file("Be2.psi4")
@@ -69,7 +69,7 @@ pdfter = pdft.U_Embedding([f1, f2], mol)
 # pdfter.find_vp_densitydifference(140)
 # pdfter.find_vp_response(21, guess=True, svd_rcond=10**svdc, beta=0.1, a_rho_var=1e-7)
 # pdfter.find_vp_cost_1basis(21, a_rho_var=1e-5, mu=1e-7)
-hess, jac = pdfter.find_vp_response_1basis(1, ortho_basis=Orthogonal_basis, beta_method="Lagrangian", svd_rcond=10**svdc, a_rho_var=1e-5, mu=1e-7)
+hess, jac = pdfter.find_vp_response_1basis(14, ortho_basis=Orthogonal_basis, beta_method="Lagrangian", svd_rcond=10**svdc, a_rho_var=1e-5, mu=1e-7)
 # pdfter.find_vp_scipy_1basis(maxiter=7)
 
 # f,ax = plt.subplots(1, 1, dpi=210)
