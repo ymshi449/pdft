@@ -6,10 +6,11 @@ import libcubeprop
 
 psi4.set_output_file("H2P.psi4")
 functional = 'svwn'
-basis = 'cc-pvdz'
-svdc = -4
+basis = 'cc-pv6z'
+svdc = -3
 reguc = -7
-title = "H2p BT" + basis + functional
+mu = -7
+title = "H2p BT %i svd:%i " %(mu,svdc) + basis + functional
 print(title)
 Monomer_1 =  psi4.geometry("""
 nocom
@@ -40,15 +41,13 @@ Full_Molec.set_name("H2P")
 
 #Psi4 Options:
 psi4.set_options({
-    # 'DFT_SPHERICAL_POINTS': 110,
-    # 'DFT_RADIAL_POINTS':    5,
     'REFERENCE' : 'UKS'
 })
 
 #Make fragment calculations:
-f1  = pdft.U_Molecule(Monomer_2,  basis, functional, omega=0.5)
-f2  = pdft.U_Molecule(Monomer_1,  basis, functional, omega=0.5)
 mol = pdft.U_Molecule(Full_Molec, basis, functional)
+f1  = pdft.U_Molecule(Monomer_2,  basis, functional, omega=0.5, jk=mol.jk)
+f2  = pdft.U_Molecule(Monomer_1,  basis, functional, omega=0.5, jk=mol.jk)
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
@@ -56,22 +55,35 @@ pdfter = pdft.U_Embedding([f1, f2], mol)
 
 # pdfter.find_vp_response(49, svd_rcond=10**svdc, regul_const=10**reguc, beta=0.1, a_rho_var=1e-7)
 
-# pdfter.find_vp_densitydifference(32, 4)
+# pdfter.find_vp_densitydifference(21)
 # pdfter.find_vp_response(21, svd_rcond=10**svdc, regul_const=10**reguc, beta=0.1, a_rho_var=1e-7)
-# pdfter.find_vp_response_1basis(42, regul_const=10**reguc,
-#                                beta=1, a_rho_var=1e-7, printflag=True)
-# # pdfter.find_vp_scipy_1basis(maxiter=7)
+hess, jac = pdfter.find_vp_response_1basis(14, svd_rcond=10**svdc, a_rho_var=1e-7)
+# pdfter.find_vp_scipy_1basis(maxiter=24)
 # # pdfter.find_vp_densitydifference(42, 1)
-#
-# f,ax = plt.subplots(1,1, dpi=210)
-# ax.set_ylim(-2,0.2)
-# pdft.plot1d_x(pdfter.vp_grid, mol.Vpot, ax=ax, label="vp")
-# pdft.plot1d_x(pdfter.vp_Hext_nad, mol.Vpot, dimmer_length=2,
-#               title=title, ax=ax, label="Hext", ls='--')
+# jac, hess = pdfter.find_vp_response_grid(maxiter=1, hessian_data_type="float32")
+
+f,ax = plt.subplots(1,1, dpi=210)
+ax.set_ylim(-2, 1)
+pdft.plot1d_x(pdfter.vp_grid, mol.Vpot, dimmer_length=2,
+              title=title + str(pdfter.drho_conv[-1]), ax=ax, label="vp")
+# pdft.plot1d_x(pdfter.vp_Hext_nad, mol.Vpot,ax=ax, label="Hext", ls='--')
 # pdft.plot1d_x(pdfter.vp_xc_nad, mol.Vpot, ax=ax, label="xc", ls='--')
 # pdft.plot1d_x(pdfter.vp_kin_nad, mol.Vpot, ax=ax, label="kin", ls='--')
+ax.legend()
+f.show()
+plt.close(f)
+
+# vp_grid_DD = mol.to_grid(pdfter.vp_last[0])
+# vp_grid_WY = mol.to_grid(mol.A.np.dot(pdfter.vp[0]))
+# f,ax = plt.subplots(1,1, dpi=210)
+# ax.set_ylim(-1.2, 1)
+# pdft.plot1d_x(pdfter.vp_grid, mol.Vpot, ax=ax, label="vp", color='black')
+# pdft.plot1d_x(vp_grid_DD, mol.Vpot, ax=ax, label="vp_DD")
+# pdft.plot1d_x(vp_grid_WY, mol.Vpot, dimmer_length=2,
+#               title="vpDD+WY" + title + str(pdfter.drho_conv[-1]), ax=ax, label="vp_WY")
 # ax.legend()
 # f.show()
+# f.savefig("vpDD+WY" + title)
 # plt.close(f)
 
 # #%% 1 basis 2D plot
