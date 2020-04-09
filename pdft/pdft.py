@@ -2075,11 +2075,19 @@ class U_Embedding:
         if self.regul_const is not None:
             T = self.molecule.T.np
             T = 0.5 * (T + T.T)
-            hess += 4*4*self.regul_const*T
+            hess -= 4*4*self.regul_const*T
 
-        # print("Response", np.linalg.norm(hess))
-        # print(hess)
-        return -hess
+        # SVD to eliminate some singularity.
+        # u,s,v = np.linalg.svd(hess)
+        # filter = s < s[0]*1e-3
+        # s[filter] = 0.0
+        # # u[filter,:] = 0.0
+        # # v[:,filter] = 0.0
+        # hess = np.dot(u,np.dot(np.diag(s), v))
+
+        # L, D = modified_cholesky(hess, 1e-3, 5)
+        # hess = np.dot(L, np.dot(D, L.T))
+        return hess
 
     def jac_1basis(self, vp=None, update_vp=True, calculate_scf=True):
         """
@@ -2113,10 +2121,10 @@ class U_Embedding:
 
             T = self.molecule.T.np
             T = 0.5 * (T + T.T)
-            jac += 4*4*self.regul_const*np.dot(T, vp)
+            jac -= 4*4*self.regul_const*np.dot(T, vp)
 
         # print("Jac norm:", np.linalg.norm(jac))
-        return -jac
+        return jac
 
     def lagrange_mul_1basis(self, vp=None, vp_fock=None, update_vp=True, calculate_scf=True):
         """
@@ -2167,13 +2175,13 @@ class U_Embedding:
         if self.regul_const is not None:
             T = self.molecule.T.np
             T = 0.5 * (T + T.T)
-            L += 4*4*self.regul_const*np.dot(np.dot(vp, T), vp)
+            L -= 4*4*self.regul_const*np.dot(np.dot(vp, T), vp)
 
         self.lagrange.append(L)
         print("L:", L, "Int_vp_drho:", L-Ef , "Ef:", Ef, "Ep: ", Ep, "dn",np.sum(np.abs(dn)*w))
-        return -L
+        return L
 
-    def find_vp_scipy_1basis(self, maxiter=21, guess=None, regul_const=None, opt_method="Newton-CG", ortho_basis=True, printflag=False):
+    def find_vp_scipy_1basis(self, maxiter=21, guess=None, regul_const=None, opt_method="trust-exact", ortho_basis=True, printflag=False):
         """
         Scipy Newton-CG
         :param maxiter:
@@ -2227,7 +2235,8 @@ class U_Embedding:
             "maxiter": maxiter,
             # "eps": 1e-7
         }
-        # optimize using cipy, default as Newton-CG.
+        # optimize using scipy, default as Newton-CG.
+
         vp_array = optimizer.minimize(self.lagrange_mul_1basis, self.vp[0],
                                       jac=self.jac_1basis, hess=self.hess_1basis, method=opt_method, options=opt)
         self.vp = [vp_array.x, vp_array.x]
@@ -2333,7 +2342,9 @@ class U_Embedding:
             hess = self.hess_1basis()
             jac = self.jac_1basis()
 
-            if scf_step == 1:
+            # jac, jacL, jac_approx, jacL_approx, jacE, jacE_approx = self.check_gradient()
+
+            if ortho_basis and scf_step == 1:
                 assert np.linalg.matrix_rank(hess) == hess.shape[0], \
                     "Hessian matrix is not full rank! rank:%i, shape:%i" %(np.linalg.matrix_rank(hess), hess.shape[0])
 
@@ -2417,7 +2428,7 @@ class U_Embedding:
                 beta = 2.0
                 while True:
                     beta *= 0.5
-                    if beta < 0.1:
+                    if beta < 1e-3:
                         converge_flag = True
                         break
                     # Traditional WuYang
@@ -3088,3 +3099,21 @@ def inv_pinv(a, rcond):
     s[~large] = 0
     res = np.matmul(np.transpose(vt), np.multiply(s[..., None], np.transpose(u)))
     return res
+
+def modified_cholesky(A, delta, beta):
+    n = A.shape[0]
+    L = np.copy(A)
+    d = np.ones(n)
+    # get the process started
+    for i in range(n-1):
+        theta = np.max(np.abs(L[i + 1:n, i]))
+        d[i] = np.max([np.abs(L[i, i]), (theta / beta) ** 2, delta])
+        # d[i] = 100.0
+        L[i:n, i] /= d[i]
+        L[i, i] = 1.0
+        L[i + 1:n, i + 1:n] -= d[i] * L[i + 1:n, i] * L[i + 1:n, i]
+
+    d[n-1] = np.max([np.abs(L[n-1, n-1]), delta])
+    L[n-1, n-1] = 1.0
+    D = np.diag(d)
+    return np.tril(L), D

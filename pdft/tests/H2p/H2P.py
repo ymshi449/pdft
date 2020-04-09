@@ -10,6 +10,7 @@ basis = 'cc-pv6z'
 svdc = -3
 reguc = -7
 mu = -7
+Orthogonal_basis = True
 title = "H2p BT %i svd:%i " %(mu,svdc) + basis + functional
 print(title)
 Monomer_1 =  psi4.geometry("""
@@ -57,15 +58,15 @@ pdfter = pdft.U_Embedding([f1, f2], mol)
 
 # pdfter.find_vp_densitydifference(21)
 # pdfter.find_vp_response(21, svd_rcond=10**svdc, regul_const=10**reguc, beta=0.1, a_rho_var=1e-7)
-hess, jac = pdfter.find_vp_response_1basis(14, svd_rcond=10**svdc, a_rho_var=1e-7)
+# hess, jac = pdfter.find_vp_response_1basis(14, svd_rcond=10**svdc, a_rho_var=1e-7)
 # pdfter.find_vp_scipy_1basis(maxiter=24)
 # # pdfter.find_vp_densitydifference(42, 1)
 # jac, hess = pdfter.find_vp_response_grid(maxiter=1, hessian_data_type="float32")
+pdfter.find_vp_scipy_1basis(maxiter=140, ortho_basis=Orthogonal_basis)
 
 f,ax = plt.subplots(1,1, dpi=210)
 ax.set_ylim(-2, 1)
-pdft.plot1d_x(pdfter.vp_grid, mol.Vpot, dimmer_length=2,
-              title=title + str(pdfter.drho_conv[-1]), ax=ax, label="vp")
+pdft.plot1d_x(pdfter.vp_grid, mol.Vpot, dimmer_length=2, ax=ax, label="vp")
 # pdft.plot1d_x(pdfter.vp_Hext_nad, mol.Vpot,ax=ax, label="Hext", ls='--')
 # pdft.plot1d_x(pdfter.vp_xc_nad, mol.Vpot, ax=ax, label="xc", ls='--')
 # pdft.plot1d_x(pdfter.vp_kin_nad, mol.Vpot, ax=ax, label="kin", ls='--')
