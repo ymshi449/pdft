@@ -1,9 +1,9 @@
    => Loading Basis Set <=
 
-    Name: CC-PVDZ
+    Name: CC-PVTZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-2 entry BE         line    75 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
+    atoms 1-2 entry BE         line   102 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvtz.gbs 
 
 
          ---------------------------------------------------------
@@ -51,13 +51,13 @@
 
   ==> Primary Basis <==
 
-  Basis Set: CC-PVDZ
-    Blend: CC-PVDZ
-    Number of shells: 12
-    Number of basis function: 28
-    Number of Cartesian functions: 30
+  Basis Set: CC-PVTZ
+    Blend: CC-PVTZ
+    Number of shells: 20
+    Number of basis function: 60
+    Number of Cartesian functions: 70
     Spherical Harmonics?: true
-    Max angular momentum: 2
+    Max angular momentum: 3
 
   ==> DFT Potential <==
 
@@ -93,27 +93,27 @@
     Pruning alpha          =              1
     Radial Points          =             75
     Spherical Points       =            302
-    Total Points           =          44810
-    Total Blocks           =            416
-    Max Points             =            253
-    Max Functions          =             28
+    Total Points           =          44962
+    Total Blocks           =            418
+    Max Points             =            255
+    Max Functions          =             60
 
   Using in-core PK algorithm.
    Calculation information:
       Number of atoms:                   2
-      Number of AO shells:              12
-      Number of primitives:             50
-      Number of atomic orbitals:        30
-      Number of basis functions:        28
+      Number of AO shells:              20
+      Number of primitives:             68
+      Number of atomic orbitals:        70
+      Number of basis functions:        60
 
       Integral cutoff                 1.00e-12
       Number of threads:                 2
 
   Performing in-core PK
-  Using 165242 doubles for integral storage.
-  We computed 3774 shell quartets total.
-  Whereas there are 3081 unique shell quartets.
-    22.49 percent of shell quartets recomputed by reordering.
+  Using 3350730 doubles for integral storage.
+  We computed 25594 shell quartets total.
+  Whereas there are 22155 unique shell quartets.
+    15.52 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -127,10 +127,10 @@
 
    => Loading Basis Set <=
 
-    Name: CC-PVDZ
+    Name: CC-PVTZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-2 entry BE         line    75 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
+    atoms 1-2 entry BE         line   102 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvtz.gbs 
 
 
          ---------------------------------------------------------
@@ -178,13 +178,13 @@
 
   ==> Primary Basis <==
 
-  Basis Set: CC-PVDZ
-    Blend: CC-PVDZ
-    Number of shells: 12
-    Number of basis function: 28
-    Number of Cartesian functions: 30
+  Basis Set: CC-PVTZ
+    Blend: CC-PVTZ
+    Number of shells: 20
+    Number of basis function: 60
+    Number of Cartesian functions: 70
     Spherical Harmonics?: true
-    Max angular momentum: 2
+    Max angular momentum: 3
 
   ==> DFT Potential <==
 
@@ -220,27 +220,27 @@
     Pruning alpha          =              1
     Radial Points          =             75
     Spherical Points       =            302
-    Total Points           =          44810
-    Total Blocks           =            416
-    Max Points             =            253
-    Max Functions          =             28
+    Total Points           =          44962
+    Total Blocks           =            418
+    Max Points             =            255
+    Max Functions          =             60
 
   Using in-core PK algorithm.
    Calculation information:
       Number of atoms:                   2
-      Number of AO shells:              12
-      Number of primitives:             50
-      Number of atomic orbitals:        30
-      Number of basis functions:        28
+      Number of AO shells:              20
+      Number of primitives:             68
+      Number of atomic orbitals:        70
+      Number of basis functions:        60
 
       Integral cutoff                 1.00e-12
       Number of threads:                 2
 
   Performing in-core PK
-  Using 165242 doubles for integral storage.
-  We computed 3774 shell quartets total.
-  Whereas there are 3081 unique shell quartets.
-    22.49 percent of shell quartets recomputed by reordering.
+  Using 3350730 doubles for integral storage.
+  We computed 25594 shell quartets total.
+  Whereas there are 22155 unique shell quartets.
+    15.52 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -254,10 +254,10 @@
 
    => Loading Basis Set <=
 
-    Name: CC-PVDZ
+    Name: CC-PVTZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-2 entry BE         line    75 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
+    atoms 1-2 entry BE         line   102 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvtz.gbs 
 
 
          ---------------------------------------------------------
@@ -305,13 +305,13 @@
 
   ==> Primary Basis <==
 
-  Basis Set: CC-PVDZ
-    Blend: CC-PVDZ
-    Number of shells: 12
-    Number of basis function: 28
-    Number of Cartesian functions: 30
+  Basis Set: CC-PVTZ
+    Blend: CC-PVTZ
+    Number of shells: 20
+    Number of basis function: 60
+    Number of Cartesian functions: 70
     Spherical Harmonics?: true
-    Max angular momentum: 2
+    Max angular momentum: 3
 
   ==> DFT Potential <==
 
@@ -347,27 +347,27 @@
     Pruning alpha          =              1
     Radial Points          =             75
     Spherical Points       =            302
-    Total Points           =          44810
-    Total Blocks           =            416
-    Max Points             =            253
-    Max Functions          =             28
+    Total Points           =          44962
+    Total Blocks           =            418
+    Max Points             =            255
+    Max Functions          =             60
 
   Using in-core PK algorithm.
    Calculation information:
       Number of atoms:                   2
-      Number of AO shells:              12
-      Number of primitives:             50
-      Number of atomic orbitals:        30
-      Number of basis functions:        28
+      Number of AO shells:              20
+      Number of primitives:             68
+      Number of atomic orbitals:        70
+      Number of basis functions:        60
 
       Integral cutoff                 1.00e-12
       Number of threads:                 2
 
   Performing in-core PK
-  Using 165242 doubles for integral storage.
-  We computed 3774 shell quartets total.
-  Whereas there are 3081 unique shell quartets.
-    22.49 percent of shell quartets recomputed by reordering.
+  Using 3350730 doubles for integral storage.
+  We computed 25594 shell quartets total.
+  Whereas there are 22155 unique shell quartets.
+    15.52 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -379,94 +379,3 @@
 
     OpenMP threads:              2
 
-   => Loading Basis Set <=
-
-    Name: (CC-PVDZ AUX)
-    Role: JKFIT
-    Keyword: DF_BASIS_SCF
-    atoms 1-2 entry BE         line   101 file /home/yuming/anaconda3/envs/work/share/psi4/basis/def2-qzvpp-jkfit.gbs 
-
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.

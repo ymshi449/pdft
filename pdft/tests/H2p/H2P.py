@@ -6,7 +6,7 @@ import libcubeprop
 
 psi4.set_output_file("H2P.psi4")
 functional = 'svwn'
-basis = '6-311G**'
+basis = 'cc-pvtz'
 svdc = -4
 reguc = -7
 title = "H2p BT" + basis + functional
@@ -15,6 +15,7 @@ Monomer_1 =  psi4.geometry("""
 nocom
 noreorient
 @H  -1 0 0
+@H 0 0 0
 H  1 0 0
 units bohr
 symmetry c1
@@ -24,6 +25,7 @@ Monomer_2 =  psi4.geometry("""
 nocom
 noreorient
 H  -1 0 0
+@H 0 0 0
 @H  1 0 0
 units bohr
 symmetry c1
@@ -33,6 +35,7 @@ nocom
 noreorient
 1 2
 H  -1 0 0
+@H 0 0 0
 H  1 0 0
 units bohr
 symmetry c1""")
@@ -61,7 +64,7 @@ pdfter = pdft.U_Embedding([f1, f2], mol)
 #                                beta=1, a_rho_var=1e-7, printflag=True)
 # # pdfter.find_vp_scipy_1basis(maxiter=7)
 # # pdfter.find_vp_densitydifference(42, 1)
-pdfter.find_vp_projection(4)
+pdfter.find_vp_projection(49)
 
 n1 = pdfter.molecule.to_grid(f1.Da.np + f1.Db.np)
 n2 = pdfter.molecule.to_grid(f2.Da.np + f2.Db.np)
@@ -69,7 +72,7 @@ nf = mol.to_grid(pdfter.fragments_Db+pdfter.fragments_Da)
 n_mol = mol.to_grid(mol.Da.np+mol.Db.np)
 f,ax = plt.subplots(1,1, dpi=210)
 ax.set_ylim(-1, 0.5)
-ax.set_xlim(-10,10)
+ax.set_xlim(-10, 10)
 pdft.plot1d_x(pdfter.vp_Hext_nad + pdfter.vp_xc_nad, pdfter.molecule.Vpot, dimmer_length=2,
          ax=ax, label="vp", color="black")
 pdft.plot1d_x(nf, pdfter.molecule.Vpot, ax=ax, label="nf", ls="--")

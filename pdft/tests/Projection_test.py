@@ -75,121 +75,87 @@ psi4.set_options({
 })
 
 #Make fragment calculations:
-f1  = pdft.U_Molecule(Monomer_2,  "cc-pvdz", "SVWN")
-f2  = pdft.U_Molecule(Monomer_1,  "cc-pvdz", "SVWN")
-mol = pdft.U_Molecule(Full_Molec, "CC-PVDZ", "SVWN")
+f1  = pdft.U_Molecule(Monomer_2,  basis, "SVWN")
+f2  = pdft.U_Molecule(Monomer_1,  basis, "SVWN")
+mol = pdft.U_Molecule(Full_Molec, basis, "SVWN")
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
 
 pdfter.fragments_scf(100)
-D1a = f1.Da.np
-D2a = f2.Da.np
-D1b = f1.Db.np
-D2b = f2.Db.np
-C1a = f1.Ca.np
-C2a = f2.Ca.np
-C1b = f1.Cb.np
-C2b = f2.Cb.np
+D1a = np.copy(f1.Da.np)
+D2a = np.copy(f2.Da.np)
+D1b = np.copy(f1.Db.np)
+D2b = np.copy(f2.Db.np)
+C1a = np.copy(f1.Ca.np)
+C2a = np.copy(f2.Ca.np)
+C1b = np.copy(f1.Cb.np)
+C2b = np.copy(f2.Cb.np)
 E1 = f1.energy
 E2 = f2.energy
 S = np.array(mol.mints.ao_overlap())
-F1a = f1.Fa.np
 n1be = mol.to_grid(D1a + D1b)
 n2be = mol.to_grid(D2a + D2b)
 n_mol = mol.to_grid(mol.Da.np + mol.Db.np)
 _, _, _, w = pdfter.molecule.Vpot.get_np_xyzw()
 rho_molecule = mol.to_grid(mol.Da.np, Duv_b=mol.Db.np)
 rho_fragment = mol.to_grid(pdfter.fragments_Da, Duv_b=pdfter.fragments_Db)
-orho = [np.trace(np.dot(f2.Da.np, S).dot(np.dot(f1.Da.np, S))),
-        np.trace(np.dot(f2.Db.np, S).dot(np.dot(f1.Db.np, S))),
-        np.trace(np.dot(f2.Da.np, S).dot(np.dot(f1.Db.np, S))),
-        np.trace(np.dot(f2.Db.np, S).dot(np.dot(f1.Da.np, S)))]
-print(np.trace(np.dot(mol.Da.np + mol.Db.np - pdfter.fragments_Da - pdfter.fragments_Db, mol.T.np)))
+ortho = [np.dot(f1.Ca.np[:, 0:f1.nalpha].T,
+                S.dot(C2a[:, 0:f2.nalpha])),
+         np.dot(f1.Cb.np[:, :f1.nbeta].T,
+                S.dot(C2b[:, 0:f2.nbeta])),
+         np.dot(f2.Ca.np[:, 0:f2.nalpha].T,
+                S.dot(C1a[:, 0:f1.nalpha])),
+         np.dot(f2.Cb.np[:, 0:f2.nbeta].T,
+                S.dot(C1b[:, 0:f1.nbeta]))]
 print("dn", np.sum(np.abs(rho_fragment - rho_molecule) * w))
-print("Orthogonality", orho)
-print(f1.Ca.np.T.dot(S.dot(C2a[:,0])))
-print(f2.Ca.np.T.dot(S.dot(C1a[:,0])))
+print("Orthogonality", ortho)
 print("eigens", f1.eig_a.np, f2.eig_a.np)
-# for i in range(1,100):
-#     print("==============================================================")
-#     if i < mol.eig_a.np.shape[0]:
-#         mu = np.sort(np.abs(mol.eig_a.np))[i]
-#     else:
-#         mu *= 0.9
-mu = np.min(np.abs(mol.eig_a.np))
-# step = np.exp(np.log(1e6/mu)/100.0)
-# i = 0
-# while True:
-#     print("===========================i=%i,mu=%e=================================="%(i,mu))
-#     mu *= step
-#     P1a = np.dot(f2.Da.np, S)
-#     P1b = np.dot(f2.Db.np, S)
-#     P2a = np.dot(f1.Da.np, S)
-#     P2b = np.dot(f1.Db.np, S)
-#     # P1 = -0.5*(np.dot(F, np.dot(f2.Da.np + f2.Db.np, S)) +
-#     #            np.dot(S, np.dot(f2.Da.np + f2.Db.np, F)))
-#     # P2 = -0.5*(np.dot(F, np.dot(f1.Da.np + f1.Db.np, S)) +
-#     #            np.dot(S, np.dot(f1.Da.np + f1.Db.np, F)))
-#     P1psi = psi4.core.Matrix.from_array([P1a, P1b])
-#     P2psi = psi4.core.Matrix.from_array([P2a, P2b])
-#     f1.scf(maxiter=1000, projection=[P1a, P1b])
-#     f2.scf(maxiter=1000, projection=[P2a, P2b])
-#     pdfter.get_density_sum()
-#     rho_fragment = mol.to_grid(pdfter.fragments_Da, Duv_b=pdfter.fragments_Db)
-#
-#     print("NAKP", np.trace(np.dot(mol.Da.np + mol.Db.np
-#                                      - pdfter.fragments_Da - pdfter.fragments_Db, mol.T.np)))
-#     print("dn", np.sum(np.abs(rho_fragment - rho_molecule) * w))
-#     print("Orthogonality", np.trace(np.dot(f2.Da.np + f2.Db.np, S).dot(np.dot(f1.Da.np + f1.Db.np, S))))
-#     i += 1
-#     if i >= 3:
-#         break
 
 P1a = np.dot(f2.Da.np, S)
 P1b = np.dot(f2.Db.np, S)
 P2a = np.dot(f1.Da.np, S)
 P2b = np.dot(f1.Db.np, S)
-# P1 = -0.5*(np.dot(F, np.dot(f2.Da.np + f2.Db.np, S)) +
-#            np.dot(S, np.dot(f2.Da.np + f2.Db.np, F)))
-# P2 = -0.5*(np.dot(F, np.dot(f1.Da.np + f1.Db.np, S)) +
-#            np.dot(S, np.dot(f1.Da.np + f1.Db.np, F)))
-P1psi = psi4.core.Matrix.from_array([P1a, P1b])
-P2psi = psi4.core.Matrix.from_array([P2a, P2b])
+# P1psi = psi4.core.Matrix.from_array([P1a, P1b])
+# P2psi = psi4.core.Matrix.from_array([P2a, P2b])
+# print("--------------")
+# f1.scf(maxiter=1000, projection=[P1a, P1b], print_energies=True)
+# print("--------------")
+# f2.scf(maxiter=1000, projection=[P2a, P2b], print_energies=True)
+# print("--------------")
+# mol.scf(maxiter=1000, projection=[P2a, P2b], print_energies=True)
 print("--------------")
-f1.scf(maxiter=1000, projection=[P1a, P1b], print_energies=True)
-print("--------------")
-f2.scf(maxiter=1000, projection=[P2a, P2b], print_energies=True)
+pdfter.orthogonal_scf(1000, mixing_paramter=1, printflag=True)
 print("--------------")
 pdfter.get_density_sum()
+ortho = [np.dot(f1.Ca.np.T,
+                S.dot(C2a[:, 0:f2.nalpha])),
+         np.dot(f1.Cb.np.T,
+                S.dot(C2b[:, 0:f2.nbeta])),
+         np.dot(f2.Ca.np.T,
+                S.dot(C1a[:, 0:f1.nalpha])),
+         np.dot(f2.Cb.np.T,
+                S.dot(C1b[:, 0:f1.nbeta])),
+         np.dot(mol.Ca.np.T,
+                S.dot(C1a[:, 0:f2.nalpha])),
+         np.dot(mol.Cb.np.T,
+                S.dot(C1b[:, 0:f2.nbeta]))
+         ]
 rho_fragment = mol.to_grid(pdfter.fragments_Da, Duv_b=pdfter.fragments_Db)
-orho = [np.trace(np.dot(f2.Da.np, S).dot(np.dot(f1.Da.np, S))),
-        np.trace(np.dot(f2.Db.np, S).dot(np.dot(f1.Db.np, S))),
-        np.trace(np.dot(f2.Da.np, S).dot(np.dot(f1.Db.np, S))),
-        np.trace(np.dot(f2.Db.np, S).dot(np.dot(f1.Da.np, S)))]
-print("NAKP", np.trace(np.dot(mol.Da.np + mol.Db.np
-                                 - pdfter.fragments_Da - pdfter.fragments_Db, mol.T.np)))
 print("dn", np.sum(np.abs(rho_fragment - rho_molecule) * w))
-print("Orthogonality", orho)
-print(f1.Ca.np.T.dot(S.dot(C2a[:,0])))
-print(f2.Ca.np.T.dot(S.dot(C1a[:,0])))
-print(f1.Ca.np.T.dot(S.dot(f2.Ca.np[:,0])))
-print(f2.Ca.np.T.dot(S.dot(f1.Ca.np[:,0])))
-print("eigens", f1.eig_a.np, f2.eig_a.np)
-print("Energy", f1.energy, f1.frag_energy, E1)
+print("Orthogonality", ortho)
 
 n1af = mol.to_grid(f1.Da.np + f1.Db.np)
 n2af = mol.to_grid(f2.Da.np + f2.Db.np)
 
 f,ax = plt.subplots(1,1, dpi=210)
 pdft.plot1d_x(n1af, mol.Vpot, ax=ax, label="n1af", dimmer_length=separation, ls='--')
-pdft.plot1d_x(n2af, mol.Vpot, ax=ax, label="n2af", title="%e"%mu, ls='--')
+pdft.plot1d_x(n2af, mol.Vpot, ax=ax, label="n2af", ls='--')
 pdft.plot1d_x(n1be, mol.Vpot, ax=ax, label="n1be", ls="dotted")
 pdft.plot1d_x(n2be, mol.Vpot, ax=ax, label="n2be", ls="dotted")
 pdft.plot1d_x(n1af + n2af - n1be - n2be, mol.Vpot, ax=ax, label="dn", ls="dotted")
 ax.legend()
 f.show()
-f.savefig("%1.0e"%mu)
 plt.close(f)
 
 # pdfter.get_density_sum()

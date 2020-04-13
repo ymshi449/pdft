@@ -6,7 +6,7 @@ import numpy as np
 
 separation = 4.522
 functional = 'svwn'
-basis = 'cc-pvdz'
+basis = 'cc-pvtz'
 svdc = -2
 reguc = -7
 # title = "Be WuYang1b Yan Q[nf] v[nf] svdc%i reguc%i " %(svdc, reguc) + basis + functional
@@ -62,20 +62,18 @@ pdfter = pdft.U_Embedding([f1, f2], mol)
 # pdfter.find_vp_response(21, guess=True, svd_rcond=10**svdc, beta=0.1, a_rho_var=1e-7)
 # pdfter.find_vp_response_1basis(42, a_rho_var=1e-5, mu=1e-5)
 # pdfter.find_vp_scipy_1basis(maxiter=7)
-pdfter.find_vp_projection(14)
+pdfter.find_vp_projection(1400)
 
 n1 = pdfter.molecule.to_grid(f1.Da.np + f1.Db.np)
 n2 = pdfter.molecule.to_grid(f2.Da.np + f2.Db.np)
-nf = mol.to_grid(pdfter.fragments_Db+pdfter.fragments_Da)
+nf = n1 + n2
 n_mol = mol.to_grid(mol.Da.np+mol.Db.np)
 f,ax = plt.subplots(1,1, dpi=210)
 ax.set_ylim(-1.5, 2)
-pdft.plot1d_x(pdfter.vp_Hext_nad + pdfter.vp_xc_nad, pdfter.molecule.Vpot, dimmer_length=2,
+pdft.plot1d_x(pdfter.vp_Hext_nad + pdfter.vp_xc_nad, mol.Vpot, dimmer_length=2,
          ax=ax, label="vp", color="black")
-pdft.plot1d_x(nf, pdfter.molecule.Vpot, ax=ax, label="nf", ls="--")
-pdft.plot1d_x(n_mol, pdfter.molecule.Vpot, ax=ax, label="nmol")
-pdft.plot1d_x(n1*0.5, pdfter.molecule.Vpot, ax=ax, label="n1", ls="dotted")
-pdft.plot1d_x(n2*0.5, pdfter.molecule.Vpot, ax=ax, label="n2", ls="dotted")
+pdft.plot1d_x(nf, mol.Vpot, ax=ax, label="nf", ls="--")
+pdft.plot1d_x(n_mol, mol.Vpot, ax=ax, label="nmol")
 pdft.plot1d_x(pdfter.vp_Hext_nad, pdfter.molecule.Vpot,
          ax=ax, label="vpHext", ls='--')
 pdft.plot1d_x(pdfter.vp_xc_nad, pdfter.molecule.Vpot,
