@@ -586,8 +586,8 @@ class U_Molecule():
         Update wfn.Da and wfn.Db from self.Da and self.Db.
         :return:
         """
-        self.wfn.Da().np[:] = np.copy(self.Da.np)
-        self.wfn.Db().np[:] = np.copy(self.Db.np)
+        self.wfn.Da().np[:] = self.Da.np
+        self.wfn.Db().np[:] = self.Db.np
         # self.wfn.Ca().np[:] = self.Ca.np
         # self.wfn.Cb().np[:] = self.Cb.np
         # self.wfn.epsilon_a().np[:] = self.eig_a.np
@@ -1289,13 +1289,13 @@ class U_Embedding:
         # v_Hext of all fragments
         if Qtype != 'input':
             self.get_density_sum()
-            temp_mol_Da = np.copy(self.molecule.wfn.Da().np)
-            temp_mol_Db = np.copy(self.molecule.wfn.Db().np)
-            self.molecule.wfn.Da().np[:] = self.fragments_Da
-            self.molecule.wfn.Db().np[:] = self.fragments_Db
+            temp_mol_Da = np.copy(self.molecule.Da.np)
+            temp_mol_Db = np.copy(self.molecule.Db.np)
+            self.molecule.Da.np[:] = self.fragments_Da
+            self.molecule.Db.np[:] = self.fragments_Db
             v_Hext_f = self.molecule.esp_on_grid()
-            self.molecule.wfn.Da().np[:] = temp_mol_Da
-            self.molecule.wfn.Db().np[:] = temp_mol_Db
+            self.molecule.Da.np[:] = temp_mol_Da
+            self.molecule.Db.np[:] = temp_mol_Db
         else:
             v_Hext_f = self.molecule.esp_on_grid().np
 
@@ -1333,13 +1333,13 @@ class U_Embedding:
         # vxc[nf]
         if vstype != 'input':
             self.get_density_sum()
-            temp_mol_Da = np.copy(self.molecule.wfn.Da().np)
-            temp_mol_Db = np.copy(self.molecule.wfn.Db().np)
-            self.molecule.wfn.Da().np[:] = self.fragments_Da
-            self.molecule.wfn.Db().np[:] = self.fragments_Db
+            temp_mol_Da = np.copy(self.molecule.Da.np)
+            temp_mol_Db = np.copy(self.molecule.Db.np)
+            self.molecule.Da.np[:] = self.fragments_Da
+            self.molecule.Db.np[:] = self.fragments_Db
             v_Hext_f = self.molecule.esp_on_grid()
-            self.molecule.wfn.Da().np[:] = temp_mol_Da
-            self.molecule.wfn.Db().np[:] = temp_mol_Db
+            self.molecule.Da.np[:] = temp_mol_Da
+            self.molecule.Db.np[:] = temp_mol_Db
         else:
             v_Hext_f = self.molecule.esp_on_grid()
         # v_Hext[nf]
@@ -1546,7 +1546,7 @@ class U_Embedding:
         plot1d_x(rho_fragment, self.molecule.Vpot, ax=ax, label="nf")
         plot1d_x(rho_molecule, self.molecule.Vpot, ax=ax, label="nmol")
         ax.legend()
-        f.savefig("H2p without vp")
+        f.savefig(self.molecule.wfn.molecule().name()+"without vp")
         plt.close(f)
 
         rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
@@ -1587,7 +1587,7 @@ class U_Embedding:
                      ax=ax, label="vpxc", ls='--')
             ax.legend()
             # f.show()
-            f.savefig("H2p"+str(scf_step))
+            f.savefig(self.molecule.wfn.molecule().name() +str(scf_step))
             plt.close(f)
 
             print(F'Iter: {scf_step} mu: %e d_rho: {self.drho_conv[-1]} Ef: {Ef} orthogonality: {ortho}' %mu)

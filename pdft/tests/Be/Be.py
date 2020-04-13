@@ -6,7 +6,7 @@ import numpy as np
 
 separation = 4.522
 functional = 'svwn'
-basis = 'cc-pvtz'
+basis = 'cc-pvdz'
 svdc = -2
 reguc = -7
 # title = "Be WuYang1b Yan Q[nf] v[nf] svdc%i reguc%i " %(svdc, reguc) + basis + functional
