@@ -1793,6 +1793,8 @@ class U_Embedding:
         self.vp_grid = 0
 
         S = self.molecule.S.np
+        A = self.molecule.A.np
+
 
         assert mixing==1, "Temporarily, density mixing does not work."
 
@@ -1842,12 +1844,142 @@ class U_Embedding:
         print("After projection dn:", old_rho_conv)
         self.drho_conv.append(old_rho_conv)
 
+        # Trial & Residual Vector Lists
+        # Fragment 1
+        Fa_list1 = []
+        DIISa1 = []
+        Fb_list1 = []
+        DIISb1 = []
+        # Fragment 2
+        Fa_list2 = []
+        DIISa2 = []
+        Fb_list2 = []
+        DIISb2 = []
+
         ## vp update start
         print("<<<<<<<<<<<<<<<<<<<<<<Projection<<<<<<<<<<<<<<<<<<")
         for scf_step in range(1,maxiter+1):
             for frag in self.fragments:
                 assert np.allclose(frag.Cocca.np.dot(frag.Cocca.np.T), frag.Da.np)
                 assert np.allclose(frag.Coccb.np.dot(frag.Coccb.np.T), frag.Db.np)
+
+            # DIIS
+            # Build DIIS Residual
+            diisa_r1 = A.dot(self.fragments[0].Fa.np.dot(self.fragments[0].Da.np).dot(S) -
+                           S.dot(self.fragments[0].Da.np).dot(self.fragments[0].Fa.np)).dot(A)
+            diisb_r1 = A.dot(self.fragments[0].Fb.np.dot(self.fragments[0].Db.np).dot(S) -
+                           S.dot(self.fragments[0].Db.np).dot(self.fragments[0].Fb.np)).dot(A)
+            diisa_r2 = A.dot(self.fragments[1].Fa.np.dot(self.fragments[1].Da.np).dot(S) -
+                           S.dot(self.fragments[1].Da.np).dot(self.fragments[1].Fa.np)).dot(A)
+            diisb_r2 = A.dot(self.fragments[1].Fb.np.dot(self.fragments[1].Db.np).dot(S) -
+                           S.dot(self.fragments[1].Db.np).dot(self.fragments[1].Fb.np)).dot(A)
+
+            Fa_list1.append(np.copy(self.fragments[0].Fa.np))
+            Fb_list1.append(np.copy(self.fragments[0].Fb.np))
+            Fa_list2.append(np.copy(self.fragments[1].Fa.np))
+            Fb_list2.append(np.copy(self.fragments[1].Fb.np))
+            DIISa1.append(diisa_r1)
+            DIISb1.append(diisb_r1)
+            DIISa2.append(diisa_r2)
+            DIISb2.append(diisb_r2)
+            dRMS = np.mean(diisa_r1**2)**0.5 + np.mean(diisb_r1**2)**0.5 + \
+                   np.mean(diisa_r2**2)**0.5 + np.mean(diisb_r2**2)**0.5
+
+            """
+            This is NOT finished yet! I don't know how to organize the two layers to DIIS for them to work together.
+            """
+            if scf_step >= 2:
+                # a1 ======================
+                # Build B matrix
+                B_dim = len(Fa_list1) + 1
+                Ba1 = np.empty((B_dim, B_dim))
+                Ba1[-1, :] = -1
+                Ba1[:, -1] = -1
+                Ba1[-1, -1] = 0
+                for i in range(len(Fa_list1)):
+                    for j in range(len(Fa_list1)):
+                        Ba1[i, j] = np.einsum('ij,ij->', DIISa1[i], DIISa1[j], optimize=True)
+
+                # Build RHS of Pulay equation
+                rhs = np.zeros((B_dim))
+                rhs[-1] = -1
+
+                # Solve Pulay equation for c_i's with NumPy
+                coeff = np.linalg.solve(Ba1, rhs)
+
+                # Build DIIS Fock matrix
+                self.fragments[0].Fa.np[:] = np.zeros_like(self.fragments[0].Fa.np)
+                for x in range(coeff.shape[0] - 1):
+                    self.fragments[0].Fa.np[:] += coeff[x] * Fa_list1[x]
+
+                # b1 ======================
+                # Build B matrix
+                B_dim = len(Fb_list1) + 1
+                Bb1 = np.empty((B_dim, B_dim))
+                Bb1[-1, :] = -1
+                Bb1[:, -1] = -1
+                Bb1[-1, -1] = 0
+                for i in range(len(Fb_list1)):
+                    for j in range(len(Fb_list1)):
+                        Bb1[i, j] = np.einsum('ij,ij->', DIISb1[i], DIISb1[j], optimize=True)
+
+                # Build RHS of Pulay equation
+                rhs = np.zeros((B_dim))
+                rhs[-1] = -1
+
+                # Solve Pulay equation for c_i's with NumPy
+                coeff = np.linalg.solve(Bb1, rhs)
+
+                # Build DIIS Fock matrix
+                self.fragments[0].Fb.np[:] = np.zeros_like(self.fragments[0].Fb.np)
+                for x in range(coeff.shape[0] - 1):
+                    self.fragments[0].Fb.np[:] += coeff[x] * Fb_list1[x]
+
+                # a2 ======================
+                # Build B matrix
+                B_dim = len(Fa_list1) + 1
+                Ba2 = np.empty((B_dim, B_dim))
+                Ba2[-1, :] = -1
+                Ba2[:, -1] = -1
+                Ba2[-1, -1] = 0
+                for i in range(len(Fa_list1)):
+                    for j in range(len(Fa_list1)):
+                        Ba2[i, j] = np.einsum('ij,ij->', DIISa2[i], DIISa2[j], optimize=True)
+
+                # Build RHS of Pulay equation
+                rhs = np.zeros((B_dim))
+                rhs[-1] = -1
+
+                # Solve Pulay equation for c_i's with NumPy
+                coeff = np.linalg.solve(Ba2, rhs)
+
+                # Build DIIS Fock matrix
+                self.fragments[1].Fa.np[:] = np.zeros_like(self.fragments[1].Fa.np)
+                for x in range(coeff.shape[1] - 1):
+                    self.fragments[1].Fa.np[:] += coeff[x] * Fa_list2[x]
+
+                # b2 ======================
+                # Build B matrix
+                B_dim = len(Fb_list1) + 1
+                Bb2 = np.empty((B_dim, B_dim))
+                Bb2[-1, :] = -1
+                Bb2[:, -1] = -1
+                Bb2[-1, -1] = 0
+                for i in range(len(Fb_list1)):
+                    for j in range(len(Fb_list1)):
+                        Bb2[i, j] = np.einsum('ij,ij->', DIISb2[i], DIISb2[j], optimize=True)
+
+                # Build RHS of Pulay equation
+                rhs = np.zeros((B_dim))
+                rhs[-1] = -1
+
+                # Solve Pulay equation for c_i's with NumPy
+                coeff = np.linalg.solve(Bb2, rhs)
+
+                # Build DIIS Fock matrix
+                self.fragments[1].Fb.np[:] = np.zeros_like(self.fragments[1].Fb.np)
+                for x in range(coeff.shape[1] - 1):
+                    self.fragments[1].Fb.np[:] += coeff[x] * Fb_list2[x]
 
             self.get_vp_Hext_nad()
             self.get_vp_xc_nad()
@@ -1885,7 +2017,7 @@ class U_Embedding:
             f.savefig(self.molecule.wfn.molecule().name() + projection_method +str(scf_step))
             plt.close(f)
 
-            print(F'Iter: {scf_step} mu: %e d_rho: {self.drho_conv[-1]} Ef: {Ef} orthogonality: {ortho}' %mu)
+            print(F'Iter: {scf_step} mu: %e d_rho: {self.drho_conv[-1]} Ef: {Ef} orthogonality: {ortho} dRMS: %e' %(mu, dRMS))
             if len(rho_convergence) >= 5:
                 if np.std(rho_convergence[-4:]) < rho_std:
                     print("Break because rho does update for 5 iter")
