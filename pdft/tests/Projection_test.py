@@ -7,7 +7,7 @@ import libcubeprop
 psi4.set_output_file("B2")
 separation = 4.522
 functional = 'svwn'
-basis = 'cc-pvdz'
+basis = '6-31g'
 
 psi4.set_output_file("projection.psi4")
 
@@ -37,6 +37,11 @@ psi4.set_output_file("projection.psi4")
 # units bohr
 # symmetry c1
 # """ % (separation / 2, separation / 2))
+#
+# # Make fragment calculations:
+# f1  = pdft.U_Molecule(Monomer_2,  basis, "SVWN")
+# f2  = pdft.U_Molecule(Monomer_1,  basis, "SVWN")
+# mol = pdft.U_Molecule(Full_Molec, basis, "SVWN")
 
 Monomer_1 =  psi4.geometry("""
 nocom
@@ -75,8 +80,8 @@ psi4.set_options({
 })
 
 #Make fragment calculations:
-f1  = pdft.U_Molecule(Monomer_2,  basis, "SVWN")
-f2  = pdft.U_Molecule(Monomer_1,  basis, "SVWN")
+f1  = pdft.U_Molecule(Monomer_2,  basis, "SVWN", omega=0.5)
+f2  = pdft.U_Molecule(Monomer_1,  basis, "SVWN", omega=0.5)
 mol = pdft.U_Molecule(Full_Molec, basis, "SVWN")
 
 #Start a pdft systemm, and perform calculation to find vp
@@ -99,35 +104,7 @@ n2be = mol.to_grid(D2a + D2b)
 n_mol = mol.to_grid(mol.Da.np + mol.Db.np)
 _, _, _, w = pdfter.molecule.Vpot.get_np_xyzw()
 rho_molecule = mol.to_grid(mol.Da.np, Duv_b=mol.Db.np)
-rho_fragment = mol.to_grid(pdfter.fragments_Da, Duv_b=pdfter.fragments_Db)
-ortho = [np.dot(f1.Ca.np[:, 0:f1.nalpha].T,
-                S.dot(C2a[:, 0:f2.nalpha])),
-         np.dot(f1.Cb.np[:, :f1.nbeta].T,
-                S.dot(C2b[:, 0:f2.nbeta])),
-         np.dot(f2.Ca.np[:, 0:f2.nalpha].T,
-                S.dot(C1a[:, 0:f1.nalpha])),
-         np.dot(f2.Cb.np[:, 0:f2.nbeta].T,
-                S.dot(C1b[:, 0:f1.nbeta]))]
-print("dn", np.sum(np.abs(rho_fragment - rho_molecule) * w))
-print("Orthogonality", ortho)
-print("eigens", f1.eig_a.np, f2.eig_a.np)
-
-P1a = np.dot(f2.Da.np, S)
-P1b = np.dot(f2.Db.np, S)
-P2a = np.dot(f1.Da.np, S)
-P2b = np.dot(f1.Db.np, S)
-# P1psi = psi4.core.Matrix.from_array([P1a, P1b])
-# P2psi = psi4.core.Matrix.from_array([P2a, P2b])
-# print("--------------")
-# f1.scf(maxiter=1000, projection=[P1a, P1b], print_energies=True)
-# print("--------------")
-# f2.scf(maxiter=1000, projection=[P2a, P2b], print_energies=True)
-# print("--------------")
-# mol.scf(maxiter=1000, projection=[P2a, P2b], print_energies=True)
-print("--------------")
-pdfter.orthogonal_scf(1000, mixing_paramter=1, printflag=True)
-print("--------------")
-pdfter.get_density_sum()
+rho_fragment_be = mol.to_grid(pdfter.fragments_Da, Duv_b=pdfter.fragments_Db)
 ortho = [np.dot(f1.Ca.np.T,
                 S.dot(C2a[:, 0:f2.nalpha])),
          np.dot(f1.Cb.np.T,
@@ -141,16 +118,53 @@ ortho = [np.dot(f1.Ca.np.T,
          np.dot(mol.Cb.np.T,
                 S.dot(C1b[:, 0:f2.nbeta]))
          ]
+print("dn", np.sum(np.abs(rho_fragment_be - rho_molecule) * w))
+print("Orthogonality", ortho)
+print("eigens", f1.eig_a.np, f2.eig_a.np)
+
+projection_method = "Huzinaga_staggered"
+P1a = np.dot(f2.Da.np, S)
+P1b = np.dot(f2.Db.np, S)
+P2a = np.dot(f1.Da.np, S)
+P2b = np.dot(f1.Db.np, S)
+# P1a = S.dot(P1a)
+# P1b = S.dot(P1b)
+# P2a = S.dot(P2a)
+# P2b = S.dot(P2b)
+print("--------------")
+f1.scf(maxiter=100, projection=[f2, projection_method], print_energies=True, mu=1e7)
+print("--------------")
+f2.scf(maxiter=100, projection=[f1, projection_method], print_energies=True, mu=1e7)
+# print("--------------")
+# mol.scf(maxiter=100, projection=[P2a, P2b, projection_method], print_energies=True, mu=1e7)
+# print("--------------")
+# pdfter.orthogonal_scf(35, mixing_paramter=1, mu=1e7, printflag=False)
+# print("--------------")
+pdfter.get_density_sum()
+ortho = [np.dot(f1.Cocca.np.T,
+                S.dot(C2a[:, 0:f2.nalpha])),
+         np.dot(f1.Coccb.np.T,
+                S.dot(C2b[:, 0:f2.nbeta])),
+         np.dot(f2.Cocca.np.T,
+                S.dot(C1a[:, 0:f1.nalpha])),
+         np.dot(f2.Coccb.np.T,
+                S.dot(C1b[:, 0:f1.nbeta])),
+         np.dot(mol.Cocca.np.T,
+                S.dot(C1a[:, 0:f2.nalpha])),
+         np.dot(mol.Coccb.np.T,
+                S.dot(C1b[:, 0:f2.nbeta]))
+         ]
 rho_fragment = mol.to_grid(pdfter.fragments_Da, Duv_b=pdfter.fragments_Db)
 print("dn", np.sum(np.abs(rho_fragment - rho_molecule) * w))
+print("before-after", np.sum(np.abs(rho_fragment - rho_fragment_be) * w))
 print("Orthogonality", ortho)
 
 n1af = mol.to_grid(f1.Da.np + f1.Db.np)
 n2af = mol.to_grid(f2.Da.np + f2.Db.np)
 
 f,ax = plt.subplots(1,1, dpi=210)
-pdft.plot1d_x(n1af, mol.Vpot, ax=ax, label="n1af", dimmer_length=separation, ls='--')
-pdft.plot1d_x(n2af, mol.Vpot, ax=ax, label="n2af", ls='--')
+pdft.plot1d_x(n1af, mol.Vpot, ax=ax, label="n1af", dimmer_length=separation, ls='-')
+pdft.plot1d_x(n2af, mol.Vpot, ax=ax, label="n2af", ls='-')
 pdft.plot1d_x(n1be, mol.Vpot, ax=ax, label="n1be", ls="dotted")
 pdft.plot1d_x(n2be, mol.Vpot, ax=ax, label="n2be", ls="dotted")
 pdft.plot1d_x(n1af + n2af - n1be - n2be, mol.Vpot, ax=ax, label="dn", ls="dotted")

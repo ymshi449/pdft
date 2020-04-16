@@ -17,7 +17,7 @@ import scipy.optimize as optimizer
 psi4.set_num_threads(2)
 
 
-def build_orbitals(diag, A, ndocc, skip=None):
+def build_orbitals(diag, A, ndocc, skip=None, S=None):
     """
     Diagonalizes matrix
 
@@ -58,10 +58,27 @@ def build_orbitals(diag, A, ndocc, skip=None):
     if skip is None:
         Cocc = psi4.core.Matrix(nbf, ndocc)
         Cocc.np[:] = C.np[:, :ndocc]
-    else:
+    elif type(skip) is int:
+        # Skip specific orbitals from the bottom.
         Cocc = psi4.core.Matrix(nbf, ndocc)
         Cocc.np[:] = C.np[:, skip:skip+ndocc]
+    elif type(skip) is np.ndarray:
+        # Skip all the orbitals that are not orthogonal to the Cocc
+        cocc_list = []
+        occ = 0
+        Cnp = np.copy(C.np)
+        for i in range(nbf):
+            if occ >= ndocc:
+                break
+            if np.all(np.abs((Cnp[:, i:i+1].T.dot(S.dot(skip)))) < 1e-7):
+                cocc_list.append(i)
+                occ += 1
+        assert len(cocc_list) == ndocc, (cocc_list, ndocc)
+        Cocc = psi4.core.Matrix(nbf, ndocc)
+        Cocc.np[:] = C.np[:, cocc_list]
     D = psi4.core.doublet(Cocc, Cocc, False, True)
+
+    assert np.allclose(Cocc.np.dot(Cocc.np.T), D.np)
     return C, Cocc, D, eigvecs
 
 def fouroverlap(wfn,geometry,basis, mints):
@@ -496,6 +513,8 @@ class U_Molecule():
         self.Fb             = None
         self.Ca             = None
         self.Cb             = None
+        self.Cocca          = None
+        self.Coccb          = None
 
         # vp component calculator
         self.esp_calculator = None
@@ -801,7 +820,133 @@ class U_Molecule():
         Da = 0.5 * (Da + Da.T)
         return Da
 
-    def scf(self, maxiter=30, vp_matrix=None, print_energies=False, projection=None, skip=None,mu=None):
+    def scf_1step(self, vp_matrix=None, print_energies=False, projection=None, skip=None, mu=1e7):
+        """
+        Running 1 step of scf iteration. The reason for it is that I want to run the scf for both fragments
+        simultaneously.
+        :param maxiter:
+        :param vp_matrix:
+        :param print_energies:
+        :param projection:
+        :param skip:
+        :param mu:
+        :return:
+        """
+        if vp_matrix is None:
+            vp_a = psi4.core.Matrix(self.nbf,self.nbf)
+            vp_b = psi4.core.Matrix(self.nbf,self.nbf)
+            vp_a.np[:] = 0.0
+            vp_b.np[:] = 0.0
+            self.initialize()
+        else:
+            vp_a = vp_matrix[0]
+            vp_b = vp_matrix[1]
+
+        diisa_obj = psi4.p4util.solvers.DIIS(max_vec=3, removal_policy="largest")
+        diisb_obj = psi4.p4util.solvers.DIIS(max_vec=3, removal_policy="largest")
+
+        self.jk.C_left_add(self.Cocca)
+        self.jk.C_left_add(self.Coccb)
+        self.jk.compute()
+        self.jk.C_clear()
+
+        # Bring core matrix
+        F_a = self.H.clone()
+        F_b = self.H.clone()
+
+        # Exchange correlation energy/matrix
+        self.Vpot.set_D([self.Da, self.Db])
+        self.Vpot.properties()[0].set_pointers(self.Da, self.Db)
+
+        ks_e, Vxc_a, Vxc_b, self.vxc = U_xc(self.Da, self.Db, self.Vpot)
+        Vxc_a = psi4.core.Matrix.from_array(Vxc_a)
+        Vxc_b = psi4.core.Matrix.from_array(Vxc_b)
+
+        F_a.axpy(1.0, self.jk.J()[0])
+        F_a.axpy(1.0, self.jk.J()[1])
+        F_b.axpy(1.0, self.jk.J()[0])
+        F_b.axpy(1.0, self.jk.J()[1])
+        F_a.axpy(1.0, Vxc_a)
+        F_b.axpy(1.0, Vxc_b)
+        F_a.axpy(1.0, vp_a)
+        F_b.axpy(1.0, vp_b)
+
+        if projection is not None:
+            if projection[-1] == "Projection_interaction":
+                # Projection
+                F_a.np[:] += mu * projection[0]
+                F_b.np[:] += mu * projection[1]
+            elif projection[-1] == "Huzinaga":
+                # Huzinaga
+                Pa = -(np.dot(F_a.np, projection[0]) + np.dot(projection[0].T, F_a.np))
+                Pb = -(np.dot(F_b.np, projection[1]) + np.dot(projection[1].T, F_b.np))
+                F_a.np[:] += Pa
+                F_b.np[:] += Pb
+
+        assert np.allclose(F_a.np, F_a.np.T)
+        assert np.allclose(F_b.np, F_b.np.T)
+
+        Vks_a = self.mints.ao_potential()
+        Vks_a.axpy(0.5, self.jk.J()[0])  # why there is a 0.5
+        Vks_a.axpy(0.5, self.jk.J()[1])  # why there is a 0.5
+        Vks_a.axpy(1.0, Vxc_a)
+        Vks_a.axpy(1.0, vp_a)
+
+        Vks_b = self.mints.ao_potential()
+        Vks_b.axpy(0.5, self.jk.J()[0])  # why there is a 0.5
+        Vks_b.axpy(0.5, self.jk.J()[1])  # why there is a 0.5
+        Vks_b.axpy(1.0, Vxc_b)
+        Vks_b.axpy(1.0, vp_b)
+
+        # DIIS
+        diisa_e = psi4.core.triplet(F_a, self.Da, self.S, False, False, False)
+        diisa_e.subtract(psi4.core.triplet(self.S, self.Da, F_a, False, False, False))
+        diisa_e = psi4.core.triplet(self.A, diisa_e, self.A, False, False, False)
+        diisa_obj.add(F_a, diisa_e)
+
+        diisb_e = psi4.core.triplet(F_b, self.Db, self.S, False, False, False)
+        diisb_e.subtract(psi4.core.triplet(self.S, self.Db, F_b, False, False, False))
+        diisb_e = psi4.core.triplet(self.A, diisb_e, self.A, False, False, False)
+        diisb_obj.add(F_b, diisb_e)
+
+        dRMSa = diisa_e.rms()
+        dRMSb = diisb_e.rms()
+
+        Core = 1.0 * self.H.vector_dot(self.Da) + 1.0 * self.H.vector_dot(self.Db)
+        Hartree_a = 1.0 * self.jk.J()[0].vector_dot(self.Da) + self.jk.J()[1].vector_dot(self.Da)
+        Hartree_b = 1.0 * self.jk.J()[0].vector_dot(self.Db) + self.jk.J()[1].vector_dot(self.Db)
+        Partition = vp_a.vector_dot(self.Da) + vp_b.vector_dot(self.Db)
+        Exchange_Correlation = ks_e
+
+        SCF_E = Core
+        SCF_E += (Hartree_a + Hartree_b) * 0.5
+        SCF_E += Partition
+        SCF_E += Exchange_Correlation
+        SCF_E += self.Enuc
+
+        self.energy         = SCF_E
+        self.frag_energy    = SCF_E - Partition
+
+        dRMS = 0.5 * (np.mean(diisa_e.np ** 2) ** 0.5 + np.mean(diisb_e.np ** 2) ** 0.5)
+
+        if print_energies is True:
+            print(F'Energy = {SCF_E} dDIIS = {dRMS}')
+
+        # DIIS extrapolate
+        F_a = diisa_obj.extrapolate()
+        F_b = diisb_obj.extrapolate()
+
+        self.Fa = F_a
+        self.Fb = F_b
+
+        # Diagonalize Fock matrix
+        self.Ca, self.Cocca, self.Da, self.eig_a = build_orbitals(F_a, self.A, self.nalpha, skip=skip)
+        self.Cb, self.Coccb, self.Db, self.eig_b = build_orbitals(F_b, self.A, self.nbeta, skip=skip)
+
+        return
+
+
+    def scf(self, maxiter=30, vp_matrix=None, print_energies=False, projection=None, skip=[None,None], mu=1e7):
         """
         Performs scf calculation to find energy and density
         Parameters
@@ -827,6 +972,8 @@ class U_Molecule():
             vp_b.np[:] = 0.0
             self.initialize()
 
+        skip1 = skip[0]
+        skip2 = skip[1]
 
         # if self.Da is None:
         #     C_a, Cocc_a, D_a, eigs_a = build_orbitals(self.H, self.A, self.nalpha)
@@ -849,8 +996,6 @@ class U_Molecule():
         E = 0.0
         E_conv = psi4.core.get_option("SCF", "E_CONVERGENCE")
         D_conv = psi4.core.get_option("SCF", "D_CONVERGENCE")
-        # mu_init = 1e-2
-        # mu = np.inf
 
         for SCF_ITER in range(maxiter+1):
             self.jk.C_left_add(Cocc_a)
@@ -879,20 +1024,46 @@ class U_Molecule():
             F_a.axpy(1.0, vp_a)
             F_b.axpy(1.0, vp_b)
 
-            # Huzinaga
             if projection is not None:
-                Pa = -(np.dot(F_a.np, projection[0]) + np.dot(projection[0].T, F_a.np))
-                Pb = -(np.dot(F_b.np, projection[1]) + np.dot(projection[1].T, F_b.np))
-                F_a.np[:] += Pa
-                F_b.np[:] += Pb
+                if projection[-1] == "Projection":
+                    # Projection
+                    F_a.np[:] += mu*projection[0]
+                    F_b.np[:] += mu*projection[1]
+                elif projection[-1] == "Huzinaga_staggered":
+                    # Huzinaga
+                    S = self.S.np
+                    Pa = projection[0].Da.np.dot(S)
+                    Pb = projection[0].Db.np.dot(S)
 
-            # Projection
-            # if projection is not None and mu is not None:
-            #     # mu = mu_init * 10**(SCF_ITER)
-            #     # if mu > mu_max:
-            #     #     mu = mu_max
-            #     F_a.axpy(mu, projection[0])
-            #     F_b.axpy(mu, projection[1])
+                    skip1 = projection[0].Cocca.np
+                    skip2 = projection[0].Coccb.np
+
+                    Pa = -(np.dot(F_a.np, Pa) + np.dot(Pa.T, F_a.np))
+                    Pb = -(np.dot(F_b.np, Pb) + np.dot(Pb.T, F_b.np))
+                    F_a.np[:] += Pa
+                    F_b.np[:] += Pb
+                elif projection[-1] == "Huzinaga":
+                    # Huzinaga
+                    S = self.S.np
+                    Pa = np.dot(projection[0],projection[0].T).dot(S)
+                    Pb = np.dot(projection[1],projection[1].T).dot(S)
+
+                    skip1 = projection[0]
+                    skip2 = projection[0]
+
+                    Pa = -(np.dot(F_a.np, Pa) + np.dot(Pa.T, F_a.np))
+                    Pb = -(np.dot(F_b.np, Pb) + np.dot(Pb.T, F_b.np))
+                    F_a.np[:] += Pa
+                    F_b.np[:] += Pb
+                elif projection[-1] == "Huzinaga_full":
+                    # Huzinaga
+                    Pa = -(np.dot(F_a.np, projection[0]) + np.dot(projection[0].T, F_a.np))
+                    Pb = -(np.dot(F_b.np, projection[1]) + np.dot(projection[1].T, F_b.np))
+                    F_a.np[:] += Pa
+                    F_b.np[:] += Pb
+
+            assert np.allclose(F_a.np, F_a.np.T)
+            assert np.allclose(F_b.np, F_b.np.T)
 
             Vks_a = self.mints.ao_potential()
             Vks_a.axpy(0.5, self.jk.J()[0])  # why there is a 0.5
@@ -932,12 +1103,10 @@ class U_Molecule():
             SCF_E += Exchange_Correlation            
             SCF_E += self.Enuc
 
-
-            #print('SCF Iter%3d: % 18.14f   % 11.7f   % 1.5E   %1.5E'
-            #       % (SCF_ITER, SCF_E, ks_e, (SCF_E - Eold), dRMS))
-
             dRMS = 0.5 * (np.mean(diisa_e.np**2)**0.5 + np.mean(diisb_e.np**2)**0.5)
 
+            # print('SCF Iter%3d: Energy % 18.14f  ksE % 11.7f   dE % 1.5E   dRMS%1.5E'
+            #       % (SCF_ITER, SCF_E, ks_e, (SCF_E - Eold), dRMS))
             if (abs(SCF_E - Eold) < E_conv) and (dRMS < D_conv):
                 if print_energies is True:
                     print(F'SCF Convergence: NUM_ITER = {SCF_ITER} dE = {abs(SCF_E - Eold)} dDIIS = {dRMS}')
@@ -946,12 +1115,12 @@ class U_Molecule():
             Eold = SCF_E
 
             #DIIS extrapolate
-            F_a = diisa_obj.extrapolate()
-            F_b = diisb_obj.extrapolate()
+            # F_a = diisa_obj.extrapolate()
+            # F_b = diisb_obj.extrapolate()
 
             #Diagonalize Fock matrix
-            C_a, Cocc_a, D_a, eigs_a = build_orbitals(F_a, self.A, self.nalpha, skip=skip)
-            C_b, Cocc_b, D_b, eigs_b = build_orbitals(F_b, self.A, self.nbeta, skip=skip)
+            C_a, Cocc_a, D_a, eigs_a = build_orbitals(F_a, self.A, self.nalpha, skip=skip1, S=self.S.np)
+            C_b, Cocc_b, D_b, eigs_b = build_orbitals(F_b, self.A, self.nbeta, skip=skip2, S=self.S.np)
 
             if SCF_ITER == maxiter:
                 # raise Exception("Maximum number of SCF cycles exceeded.")
@@ -974,6 +1143,9 @@ class U_Molecule():
         self.Fb             = F_b
         self.Ca             = C_a
         self.Cb             = C_b
+        self.Cocca          = Cocc_a
+        self.Coccb          = Cocc_b
+
         # if projection is not None:
         #     return PA, PB
         # else:
@@ -1069,7 +1241,7 @@ class U_Embedding:
     def fragments_scf(self, max_iter, vp=None, vp_fock=None, printflag=False):
         # Run the whole molecule SCF calculation if not calculated before.
         if self.molecule.Da is None:
-            self.molecule.scf(print_energies=printflag)
+            self.molecule.scf(maxiter=max_iter, print_energies=printflag)
 
         if vp is None and vp_fock is None:
             # No vp is given.
@@ -1419,59 +1591,35 @@ class U_Embedding:
         else:
             return vp_kin_nad, vp_xc_nad, vp_grid, vp_fock
 
-    def get_projection(self):
+    def get_projection(self, projection_method="Projection"):
         S = self.molecule.S
-        # # Projection
-        # P1a = np.dot(S, np.dot(self.fragments[1].Da.np, S))
-        # P1b = np.dot(S, np.dot(self.fragments[1].Db.np, S))
-        # P2a = np.dot(S, np.dot(self.fragments[0].Da.np, S))
-        # P2b = np.dot(S, np.dot(self.fragments[0].Db.np, S))
-        # P1a_psi = psi4.core.Matrix.from_array(P1a)
-        # P1b_psi = psi4.core.Matrix.from_array(P1b)
-        # P2a_psi = psi4.core.Matrix.from_array(P2a)
-        # P2b_psi = psi4.core.Matrix.from_array(P2b)
-        # return [P1a_psi, P1b_psi], [P2a_psi, P2b_psi]
-
+        if projection_method == "Projection":
+            # Projection
+            P1a = np.dot(S, np.dot(self.fragments[1].Da.np, S))
+            P1b = np.dot(S, np.dot(self.fragments[1].Db.np, S))
+            P2a = np.dot(S, np.dot(self.fragments[0].Da.np, S))
+            P2b = np.dot(S, np.dot(self.fragments[0].Db.np, S))
+        elif projection_method =="Huzinaga_full":
         # Huzinaga
-        P1a = np.dot(self.fragments[1].Da.np, S)
-        P1b = np.dot(self.fragments[1].Db.np, S)
-        P2a = np.dot(self.fragments[0].Da.np, S)
-        P2b = np.dot(self.fragments[0].Db.np, S)
-        return [P1a, P1b], [P2a, P2b]
+            P1a = np.dot(self.fragments[1].Da.np, S)
+            P1b = np.dot(self.fragments[1].Db.np, S)
+            P2a = np.dot(self.fragments[0].Da.np, S)
+            P2b = np.dot(self.fragments[0].Db.np, S)
+        elif projection_method =="Huzinaga":
+            P2a = np.copy(self.fragments[0].Cocca.np)
+            P2b = np.copy(self.fragments[0].Coccb.np)
+            P1a = np.copy(self.fragments[1].Cocca.np)
+            P1b = np.copy(self.fragments[1].Coccb.np)
+        else:
+            assert False
+        return [P1a, P1b, projection_method], [P2a, P2b, projection_method]
+
+    def projection_communacator(self, projection_method="Projection"):
+        return [self.fragments[1], projection_method], [self.fragments[0], projection_method]
 
 
 
-    def orthogonal_scf(self, maxiter, vp_matrix=None, mu=None,mixing_paramter=0.5,printflag=False):
-        # mu = np.min(np.abs(self.molecule.eig_a.np))
-        # step = np.exp(np.log(mu_max / mu) / maxiter)
-        # while True:
-        #     # print("------mu=%e-------"%(mu))
-        #     mu *= step
-        #     P1,P2 = self.get_projection()
-        #     self.fragments[0].scf(maxiter=1000, vp_matrix=vp_matrix, print_energies=printflag, projection=P1, mu_max=mu)
-        #     self.fragments[1].scf(maxiter=1000, vp_matrix=vp_matrix, print_energies=printflag, projection=P2, mu_max=mu)
-        #     self.get_density_sum()
-        #     if mu >= mu_max:
-        #         break
-
-        # P1,P2 = self.get_projection()
-        # Da1 = np.copy(self.fragments[0].Da.np)
-        # Da2 = np.copy(self.fragments[1].Da.np)
-        # Db1 = np.copy(self.fragments[0].Db.np)
-        # Db2 = np.copy(self.fragments[1].Db.np)
-        # Ca1 = np.copy(self.fragments[0].Ca.np)
-        # Ca2 = np.copy(self.fragments[1].Ca.np)
-        # Cb1 = np.copy(self.fragments[0].Cb.np)
-        # Cb2 = np.copy(self.fragments[1].Cb.np)
-        # self.fragments[0].scf(maxiter=maxiter, vp_matrix=vp_matrix, print_energies=printflag, projection=P1, mu=mu)
-        # self.fragments[1].scf(maxiter=maxiter, vp_matrix=vp_matrix, print_energies=printflag, projection=P2, mu=mu)
-        #
-        # self.fragments[0].Da.np[:] = 0.5*(self.fragments[0].Da.np + Da1)
-        # self.fragments[0].Db.np[:] = 0.5*(self.fragments[0].Db.np + Db1)
-        # self.fragments[1].Da.np[:] = 0.5*(self.fragments[1].Da.np + Da2)
-        # self.fragments[1].Db.np[:] = 0.5*(self.fragments[1].Db.np + Db2)
-
-        P1,P2 = self.get_projection()
+    def orthogonal_scf(self, maxiter, projection_method="Projection",vp_matrix=None, mu=None,mixing_paramter=1,printflag=False):
         Da1 = np.copy(self.fragments[0].Da.np)
         Db1 = np.copy(self.fragments[0].Db.np)
         Da2 = np.copy(self.fragments[1].Da.np)
@@ -1480,24 +1628,154 @@ class U_Embedding:
         Cb1 = np.copy(self.fragments[0].Cb.np)
         Ca2 = np.copy(self.fragments[1].Ca.np)
         Cb2 = np.copy(self.fragments[1].Cb.np)
-        self.molecule.scf(maxiter=maxiter, vp_matrix=vp_matrix, print_energies=printflag, projection=P1, mu=mu)
-        Da1_new = self.molecule.Ca.np[:,0:self.fragments[0].nalpha].dot(self.molecule.Ca.np[:,0:self.fragments[0].nalpha].T)
-        Db1_new = self.molecule.Cb.np[:,0:self.fragments[0].nbeta].dot(self.molecule.Cb.np[:,0:self.fragments[0].nbeta].T)
-        self.fragments[0].Da.np[:] = ((1-mixing_paramter)*Da1 + mixing_paramter*Da1_new)
-        self.fragments[0].Db.np[:] = ((1-mixing_paramter)*Db1 + mixing_paramter*Db1_new)
-        self.fragments[0].Ca.np[:] = (mixing_paramter*self.molecule.Ca.np + (1-mixing_paramter)*Ca1)
-        self.fragments[0].Cb.np[:] = (mixing_paramter*self.molecule.Cb.np + (1-mixing_paramter)*Cb1)
-        self.molecule.scf(maxiter=maxiter, vp_matrix=vp_matrix, print_energies=printflag, projection=P2, mu=mu)
-        Da2_new = self.molecule.Ca.np[:,0:self.fragments[1].nalpha].dot(self.molecule.Ca.np[:,0:self.fragments[1].nalpha].T)
-        Db2_new = self.molecule.Cb.np[:,0:self.fragments[1].nbeta].dot(self.molecule.Cb.np[:,0:self.fragments[1].nbeta].T)
-        self.fragments[1].Da.np[:] = ((1-mixing_paramter)*Da2 + mixing_paramter*Da2_new)
-        self.fragments[1].Db.np[:] = ((1-mixing_paramter)*Db2 + mixing_paramter*Db2_new)
-        self.fragments[1].Ca.np[:] = (mixing_paramter*self.molecule.Ca.np + (1-mixing_paramter)*Ca2)
-        self.fragments[1].Cb.np[:] = (mixing_paramter*self.molecule.Cb.np + (1-mixing_paramter)*Cb2)
-        self.get_density_sum()
+        Cocca1 = np.copy(self.fragments[0].Cocca.np)
+        Coccb1 = np.copy(self.fragments[0].Coccb.np)
+        Cocca2 = np.copy(self.fragments[1].Cocca.np)
+        Coccb2 = np.copy(self.fragments[1].Coccb.np)
+        if projection_method == "Projection":
+            """
+            Bad orthogonality.
+            """
+            assert mu is not None
+            P1, P2 = self.get_projection(projection_method=projection_method)
+            self.fragments[0].scf(maxiter=1000, vp_matrix=vp_matrix, print_energies=printflag, projection=P1, mu=mu)
+            self.fragments[0].Da.np[:] = (mixing_paramter*self.fragments[0].Da.np + (1-mixing_paramter)*Da1)
+            self.fragments[0].Db.np[:] = (mixing_paramter*self.fragments[0].Db.np + (1-mixing_paramter)*Db1)
+            self.fragments[0].Ca.np[:] = (mixing_paramter*self.fragments[0].Ca.np + (1-mixing_paramter)*Ca1)
+            self.fragments[0].Cb.np[:] = (mixing_paramter*self.fragments[0].Cb.np + (1-mixing_paramter)*Cb1)
+            self.fragments[0].Cocca.np[:] = (mixing_paramter*self.fragments[0].Cocca.np + (1-mixing_paramter)*Cocca1)
+            self.fragments[0].Coccb.np[:] = (mixing_paramter*self.fragments[0].Coccb.np + (1-mixing_paramter)*Coccb1)
+
+            self.fragments[1].scf(maxiter=1000, vp_matrix=vp_matrix, print_energies=printflag, projection=P2, mu=mu)
+            self.fragments[1].Da.np[:] = (mixing_paramter*self.fragments[1].Da.np + (1-mixing_paramter)*Da2)
+            self.fragments[1].Db.np[:] = (mixing_paramter*self.fragments[1].Db.np + (1-mixing_paramter)*Db2)
+            self.fragments[1].Ca.np[:] = (mixing_paramter*self.fragments[1].Ca.np + (1-mixing_paramter)*Ca2)
+            self.fragments[1].Cb.np[:] = (mixing_paramter*self.fragments[1].Cb.np + (1-mixing_paramter)*Cb2)
+            self.fragments[1].Cocca.np[:] = (mixing_paramter*self.fragments[1].Cocca.np + (1-mixing_paramter)*Cocca2)
+            self.fragments[1].Coccb.np[:] = (mixing_paramter*self.fragments[1].Coccb.np + (1-mixing_paramter)*Coccb2)
+
+        elif projection_method == "Projection_interaction":
+            """
+            Does not work by now.
+            Mixing Cocc also not fixed yet.
+            """
+            assert mu is not None
+
+            S = self.molecule.S.np
+
+            nmol = self.molecule.to_grid(self.molecule.Da.np + self.molecule.Db.np)
+            mulist = np.sort(np.abs(self.molecule.eig_a.np))
+            mui = 1e7
+            for i in range(1):
+                P1, P2 = self.get_projection(projection_method="Projection")
+                P1[-1] = projection_method
+                P2[-1] = projection_method
+                self.fragments[0].scf_1step(vp_matrix=vp_matrix, print_energies=printflag, projection=P1, mu=mui)
+                self.fragments[1].scf_1step(100, vp_matrix=vp_matrix, print_energies=printflag, projection=P2, mu=mui)
+                ortho = [np.dot(self.fragments[0].Ca.np[:, 0:self.fragments[0].nalpha].T,
+                                S.dot(self.fragments[1].Ca.np[:, 0:self.fragments[1].nalpha])),
+                         np.dot(self.fragments[0].Cb.np[:, 0:self.fragments[0].nbeta].T,
+                                S.dot(self.fragments[1].Cb.np[:, 0:self.fragments[1].nbeta]))]
+                print("step %i mu %e" %(i, mui), ortho)
+                if mui >= mu:
+                    print("step %i mu %e" % (i, mui), ortho)
+                    break
+                if i < self.molecule.nbf:
+                    mui = mulist[i]
+                else:
+                    mui *= 2.0
+                # mui *= np.e
+
+        elif projection_method == "Huzinaga_full":
+            """
+            Bad idea for PDFT.
+            """
+            P1,P2 = self.get_projection(projection_method=projection_method)
+            self.molecule.scf(maxiter=maxiter, vp_matrix=vp_matrix, print_energies=printflag, projection=P1, mu=mu)
+            Da1_new = self.molecule.Cocca.np.dot(self.molecule.Cocca.np.T)
+            Db1_new = self.molecule.Cb.np[:,0:self.fragments[0].nbeta].dot(self.molecule.Cb.np[:,0:self.fragments[0].nbeta].T)
+            self.fragments[0].Da.np[:] = ((1-mixing_paramter)*Da1 + mixing_paramter*Da1_new)
+            self.fragments[0].Db.np[:] = ((1-mixing_paramter)*Db1 + mixing_paramter*Db1_new)
+            self.fragments[0].Ca.np[:] = (mixing_paramter*self.molecule.Ca.np + (1-mixing_paramter)*Ca1)
+            self.fragments[0].Cb.np[:] = (mixing_paramter*self.molecule.Cb.np + (1-mixing_paramter)*Cb1)
+
+            self.molecule.scf(maxiter=maxiter, vp_matrix=vp_matrix, print_energies=printflag, projection=P2, mu=mu)
+            Da2_new = self.molecule.Cocca.np.dot(self.molecule.Cocca.np.T)
+            Db2_new = self.molecule.Coccb.np.dot(self.molecule.Coccb.np.T)
+            self.fragments[1].Da.np[:] = ((1-mixing_paramter)*Da2 + mixing_paramter*Da2_new)
+            self.fragments[1].Db.np[:] = ((1-mixing_paramter)*Db2 + mixing_paramter*Db2_new)
+            self.fragments[1].Ca.np[:] = (mixing_paramter*self.molecule.Ca.np + (1-mixing_paramter)*Ca2)
+            self.fragments[1].Cb.np[:] = (mixing_paramter*self.molecule.Cb.np + (1-mixing_paramter)*Cb2)
+            self.get_density_sum()
+        elif projection_method == "Huzinaga_staggered":
+            """
+            Stggered fragment step will cause unsymmetrical density for symmetrical fragments diatomis. 
+            """
+
+            P1,P2 = self.projection_communacator(projection_method=projection_method)
+
+            # Randomly to pick 1 fragment to start first.
+            order = np.arange(self.nfragments)
+            np.random.shuffle(order)
+            for i in order:
+                if i == 0:
+                    self.fragments[0].scf(maxiter=maxiter, vp_matrix=vp_matrix, print_energies=printflag, projection=P1, mu=mu)
+                    self.fragments[0].Da.np[:] = (mixing_paramter*self.fragments[0].Da.np + (1-mixing_paramter)*Da1)
+                    self.fragments[0].Db.np[:] = (mixing_paramter*self.fragments[0].Db.np + (1-mixing_paramter)*Db1)
+                    self.fragments[0].Ca.np[:] = (mixing_paramter*self.fragments[0].Ca.np + (1-mixing_paramter)*Ca1)
+                    self.fragments[0].Cb.np[:] = (mixing_paramter*self.fragments[0].Cb.np + (1-mixing_paramter)*Cb1)
+                    self.fragments[0].Cocca.np[:] = (mixing_paramter*self.fragments[0].Cocca.np + (1-mixing_paramter)*Cocca1)
+                    self.fragments[0].Coccb.np[:] = (mixing_paramter*self.fragments[0].Coccb.np + (1-mixing_paramter)*Coccb1)
+                elif i == 1:
+                    self.fragments[1].scf(maxiter=maxiter, vp_matrix=vp_matrix, print_energies=printflag, projection=P2, mu=mu)
+                    self.fragments[1].Da.np[:] = (mixing_paramter*self.fragments[1].Da.np + (1-mixing_paramter)*Da2)
+                    self.fragments[1].Db.np[:] = (mixing_paramter*self.fragments[1].Db.np + (1-mixing_paramter)*Db2)
+                    self.fragments[1].Ca.np[:] = (mixing_paramter*self.fragments[1].Ca.np + (1-mixing_paramter)*Ca2)
+                    self.fragments[1].Cb.np[:] = (mixing_paramter*self.fragments[1].Cb.np + (1-mixing_paramter)*Cb2)
+                    self.fragments[1].Cocca.np[:] = (mixing_paramter*self.fragments[1].Cocca.np + (1-mixing_paramter)*Cocca2)
+                    self.fragments[1].Coccb.np[:] = (mixing_paramter*self.fragments[1].Coccb.np + (1-mixing_paramter)*Coccb2)
+                else:
+                    assert False
+            self.get_density_sum()
+        elif projection_method == "Huzinaga":
+            P1, P2 = self.get_projection(projection_method=projection_method)
+
+            # Randomly to pick 1 fragment to start first.
+            self.fragments[0].scf(maxiter=maxiter, vp_matrix=vp_matrix, print_energies=printflag, projection=P1,
+                                  mu=mu)
+            self.fragments[0].Da.np[:] = (
+                        mixing_paramter * self.fragments[0].Da.np + (1 - mixing_paramter) * Da1)
+            self.fragments[0].Db.np[:] = (
+                        mixing_paramter * self.fragments[0].Db.np + (1 - mixing_paramter) * Db1)
+            self.fragments[0].Ca.np[:] = (
+                        mixing_paramter * self.fragments[0].Ca.np + (1 - mixing_paramter) * Ca1)
+            self.fragments[0].Cb.np[:] = (
+                        mixing_paramter * self.fragments[0].Cb.np + (1 - mixing_paramter) * Cb1)
+            self.fragments[0].Cocca.np[:] = (
+                        mixing_paramter * self.fragments[0].Cocca.np + (1 - mixing_paramter) * Cocca1)
+            self.fragments[0].Coccb.np[:] = (
+                        mixing_paramter * self.fragments[0].Coccb.np + (1 - mixing_paramter) * Coccb1)
+
+            self.fragments[1].scf(maxiter=maxiter, vp_matrix=vp_matrix, print_energies=printflag, projection=P2,
+                                  mu=mu)
+            self.fragments[1].Da.np[:] = (
+                        mixing_paramter * self.fragments[1].Da.np + (1 - mixing_paramter) * Da2)
+            self.fragments[1].Db.np[:] = (
+                        mixing_paramter * self.fragments[1].Db.np + (1 - mixing_paramter) * Db2)
+            self.fragments[1].Ca.np[:] = (
+                        mixing_paramter * self.fragments[1].Ca.np + (1 - mixing_paramter) * Ca2)
+            self.fragments[1].Cb.np[:] = (
+                        mixing_paramter * self.fragments[1].Cb.np + (1 - mixing_paramter) * Cb2)
+            self.fragments[1].Cocca.np[:] = (
+                        mixing_paramter * self.fragments[1].Cocca.np + (1 - mixing_paramter) * Cocca2)
+            self.fragments[1].Coccb.np[:] = (
+                        mixing_paramter * self.fragments[1].Coccb.np + (1 - mixing_paramter) * Coccb2)
+            self.get_density_sum()
+        else:
+            assert False
         return
 
-    def find_vp_projection(self, maxiter, mu_init=1e-2, rho_std=1e-5, printflag=False):
+    def find_vp_projection(self, maxiter, mu=1e7, projection_method="Projection", mixing=1, rho_std=1e-5, printflag=False):
         """
         This is not an inverse method. The main idea is to use projection to eliminate the NAKP.
         And to use local-Q for the rest.
@@ -1516,26 +1794,31 @@ class U_Embedding:
 
         S = self.molecule.S.np
 
-        self.molecule.scf(print_energies=printflag)
+        assert mixing==1, "Temporarily, density mixing does not work."
+
+        _, _, _, w = self.molecule.Vpot.get_np_xyzw()
+
+
+        self.molecule.scf(maxiter=1000, print_energies=printflag)
         self.fragments[0].scf(maxiter=1000, print_energies=printflag)
         self.fragments[1].scf(maxiter=1000, print_energies=printflag)
         self.get_density_sum()
+        n10 = self.fragments[0].omega*self.molecule.to_grid(self.fragments[0].Da.np+self.fragments[0].Db.np)
+        n20 = self.fragments[1].omega*self.molecule.to_grid(self.fragments[1].Da.np+self.fragments[1].Db.np)
 
-        mol_epsilon_a = np.copy(self.molecule.eig_a.np)
-        mol_epsilon_a = np.sort(np.abs(mol_epsilon_a))
-        _, _, _, w = self.molecule.Vpot.get_np_xyzw()
-
-        mu = mol_epsilon_a[0]
 
         ## Tracking rho and changing beta
         rho_convergence = []
         rho_molecule = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
         rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
+
         old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
         print("Initial dn:", old_rho_conv)
         self.drho_conv.append(old_rho_conv)
 
-        self.orthogonal_scf(400, printflag=printflag)
+        self.orthogonal_scf(21, mu=mu, projection_method=projection_method, mixing_paramter=mixing, printflag=printflag)
+        n11 = self.fragments[0].omega*self.molecule.to_grid(self.fragments[0].Da.np+self.fragments[0].Db.np)
+        n21 = self.fragments[1].omega*self.molecule.to_grid(self.fragments[1].Da.np+self.fragments[1].Db.np)
         assert np.isclose(np.sum(rho_fragment * w), self.molecule.ndocc), np.sum(rho_fragment * w)
         Ef = 0.0
         for i in self.fragments:
@@ -1543,10 +1826,14 @@ class U_Embedding:
         Eold = Ef
 
         f, ax = plt.subplots(1, 1, dpi=210)
-        plot1d_x(rho_fragment, self.molecule.Vpot, ax=ax, label="nf")
         plot1d_x(rho_molecule, self.molecule.Vpot, ax=ax, label="nmol")
+        plot1d_x(n10, self.molecule.Vpot, ax=ax, label="n10")
+        plot1d_x(n20, self.molecule.Vpot, ax=ax, label="n20")
+        plot1d_x(n11, self.molecule.Vpot, ax=ax, label="n11", ls="--")
+        plot1d_x(n21, self.molecule.Vpot, ax=ax, label="n21", ls="--")
         ax.legend()
-        f.savefig(self.molecule.wfn.molecule().name()+"without vp")
+        f.show()
+        f.savefig(self.molecule.wfn.molecule().name()+projection_method+"without vp")
         plt.close(f)
 
         rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
@@ -1558,12 +1845,18 @@ class U_Embedding:
         ## vp update start
         print("<<<<<<<<<<<<<<<<<<<<<<Projection<<<<<<<<<<<<<<<<<<")
         for scf_step in range(1,maxiter+1):
+            for frag in self.fragments:
+                assert np.allclose(frag.Cocca.np.dot(frag.Cocca.np.T), frag.Da.np)
+                assert np.allclose(frag.Coccb.np.dot(frag.Coccb.np.T), frag.Db.np)
+
             self.get_vp_Hext_nad()
             self.get_vp_xc_nad()
             vp_fock = psi4.core.Matrix.from_array(self.molecule.grid_to_fock((self.vp_Hext_nad+self.vp_xc_nad)))
             self.vp_fock = [vp_fock, vp_fock]
 
-            self.orthogonal_scf(420, printflag=printflag, vp_matrix=self.vp_fock)
+            self.orthogonal_scf(21, mu=mu, projection_method=projection_method, mixing_paramter=mixing, printflag=printflag, vp_matrix=self.vp_fock)
+            n1 = self.fragments[0].omega * self.molecule.to_grid(self.fragments[0].Da.np + self.fragments[0].Db.np)
+            n2 = self.fragments[1].omega * self.molecule.to_grid(self.fragments[1].Da.np + self.fragments[1].Db.np)
             Ef = 0.0
             for i in self.fragments:
                 Ef += i.frag_energy * i.omega
@@ -1572,22 +1865,24 @@ class U_Embedding:
             assert np.isclose(np.sum(rho_fragment * w), self.molecule.ndocc), np.sum(rho_fragment * w)
             dn = np.sum(np.abs(rho_fragment - rho_molecule) * w)
             self.drho_conv.append(dn)
-            ortho = [np.dot(self.fragments[0].Ca.np[:,0:self.fragments[0].nalpha].T, S.dot(self.fragments[1].Ca.np[:,0:self.fragments[1].nalpha])),
-                     np.dot(self.fragments[0].Cb.np[:,0:self.fragments[0].nbeta].T, S.dot(self.fragments[1].Cb.np[:,0:self.fragments[1].nbeta]))]
+            ortho = [np.dot(self.fragments[0].Cocca.np.T, S.dot(self.fragments[1].Cocca.np)),
+                     np.dot(self.fragments[0].Coccb.np.T, S.dot(self.fragments[1].Coccb.np))]
 
             f,ax = plt.subplots(1,1, dpi=210)
             ax.set_ylim(-1, 0.5)
             plot1d_x(self.vp_Hext_nad + self.vp_xc_nad, self.molecule.Vpot, dimmer_length=2,
                      ax=ax, label="vp", color="black", title="H2+"+str(scf_step))
             plot1d_x(rho_fragment, self.molecule.Vpot, ax=ax, label="nf")
+            plot1d_x(n1, self.molecule.Vpot, ax=ax, label="n1", ls="--")
+            plot1d_x(n2, self.molecule.Vpot, ax=ax, label="n2", ls="--")
             plot1d_x(rho_molecule, self.molecule.Vpot, ax=ax, label="nmol")
             plot1d_x(self.vp_Hext_nad, self.molecule.Vpot,
-                     ax=ax, label="vpHext", ls='--')
+                     ax=ax, label="vpHext", ls='-.')
             plot1d_x(self.vp_xc_nad, self.molecule.Vpot,
-                     ax=ax, label="vpxc", ls='--')
+                     ax=ax, label="vpxc", ls='-.')
             ax.legend()
             # f.show()
-            f.savefig(self.molecule.wfn.molecule().name() +str(scf_step))
+            f.savefig(self.molecule.wfn.molecule().name() + projection_method +str(scf_step))
             plt.close(f)
 
             print(F'Iter: {scf_step} mu: %e d_rho: {self.drho_conv[-1]} Ef: {Ef} orthogonality: {ortho}' %mu)
@@ -1603,10 +1898,6 @@ class U_Embedding:
                 break
 
             Eold = Ef
-            if scf_step < mol_epsilon_a.shape[0]:
-                mu = mol_epsilon_a[scf_step]
-            else:
-                mu *= 1.4
         return
 
     def find_vp_densitydifference(self, maxiter, beta_method="Density", guess=None, mu=1e-4, rho_std=1e-5, printflag=False):
