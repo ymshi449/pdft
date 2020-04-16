@@ -64,7 +64,7 @@ pdfter = pdft.U_Embedding([f1, f2], mol)
 #                                beta=1, a_rho_var=1e-7, printflag=True)
 # # pdfter.find_vp_scipy_1basis(maxiter=7)
 # # pdfter.find_vp_densitydifference(42, 1)
-pdfter.find_vp_projection(21, projection_method="Huzinaga_staggered", printflag=True)
+pdfter.find_vp_projection(21, projection_method="Projection", printflag=True)
 
 mol.scf(100)
 n1 = pdfter.molecule.to_grid(f1.Da.np + f1.Db.np)

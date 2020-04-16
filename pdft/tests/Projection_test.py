@@ -7,7 +7,7 @@ import libcubeprop
 psi4.set_output_file("B2")
 separation = 4.522
 functional = 'svwn'
-basis = '6-31g'
+basis = 'cc-pvtz'
 
 psi4.set_output_file("projection.psi4")
 
@@ -86,7 +86,7 @@ mol = pdft.U_Molecule(Full_Molec, basis, "SVWN")
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
-
+print("-----------Isolated systems-------------")
 pdfter.fragments_scf(100)
 D1a = np.copy(f1.Da.np)
 D2a = np.copy(f2.Da.np)
@@ -122,7 +122,7 @@ print("dn", np.sum(np.abs(rho_fragment_be - rho_molecule) * w))
 print("Orthogonality", ortho)
 print("eigens", f1.eig_a.np, f2.eig_a.np)
 
-projection_method = "Huzinaga_staggered"
+projection_method = "Huzinaga"
 P1a = np.dot(f2.Da.np, S)
 P1b = np.dot(f2.Db.np, S)
 P2a = np.dot(f1.Da.np, S)
@@ -131,16 +131,15 @@ P2b = np.dot(f1.Db.np, S)
 # P1b = S.dot(P1b)
 # P2a = S.dot(P2a)
 # P2b = S.dot(P2b)
-print("--------------")
-f1.scf(maxiter=100, projection=[f2, projection_method], print_energies=True, mu=1e7)
-print("--------------")
-f2.scf(maxiter=100, projection=[f1, projection_method], print_energies=True, mu=1e7)
+# print("--------------")
+# f1.scf(maxiter=100, projection=[P1a, P1b, projection_method], print_energies=True, mu=1e7)
+# print("--------------")
+# f2.scf(maxiter=100, projection=[P2a, P2b, projection_method], print_energies=True, mu=1e7)
 # print("--------------")
 # mol.scf(maxiter=100, projection=[P2a, P2b, projection_method], print_energies=True, mu=1e7)
+print("----------Orthogonalization---------")
+pdfter.orthogonal_scf(35, projection_method=projection_method, mixing_paramter=1, mu=1e7, printflag=False)
 # print("--------------")
-# pdfter.orthogonal_scf(35, mixing_paramter=1, mu=1e7, printflag=False)
-# print("--------------")
-pdfter.get_density_sum()
 ortho = [np.dot(f1.Cocca.np.T,
                 S.dot(C2a[:, 0:f2.nalpha])),
          np.dot(f1.Coccb.np.T,
@@ -149,10 +148,10 @@ ortho = [np.dot(f1.Cocca.np.T,
                 S.dot(C1a[:, 0:f1.nalpha])),
          np.dot(f2.Coccb.np.T,
                 S.dot(C1b[:, 0:f1.nbeta])),
-         np.dot(mol.Cocca.np.T,
-                S.dot(C1a[:, 0:f2.nalpha])),
-         np.dot(mol.Coccb.np.T,
-                S.dot(C1b[:, 0:f2.nbeta]))
+         np.dot(f1.Cocca.np.T,
+                S.dot(f2.Cocca.np)),
+         np.dot(f1.Coccb.np.T,
+                S.dot(f2.Coccb.np))
          ]
 rho_fragment = mol.to_grid(pdfter.fragments_Da, Duv_b=pdfter.fragments_Db)
 print("dn", np.sum(np.abs(rho_fragment - rho_molecule) * w))
@@ -163,11 +162,13 @@ n1af = mol.to_grid(f1.Da.np + f1.Db.np)
 n2af = mol.to_grid(f2.Da.np + f2.Db.np)
 
 f,ax = plt.subplots(1,1, dpi=210)
-pdft.plot1d_x(n1af, mol.Vpot, ax=ax, label="n1af", dimmer_length=separation, ls='-')
-pdft.plot1d_x(n2af, mol.Vpot, ax=ax, label="n2af", ls='-')
-pdft.plot1d_x(n1be, mol.Vpot, ax=ax, label="n1be", ls="dotted")
-pdft.plot1d_x(n2be, mol.Vpot, ax=ax, label="n2be", ls="dotted")
-pdft.plot1d_x(n1af + n2af - n1be - n2be, mol.Vpot, ax=ax, label="dn", ls="dotted")
+pdft.plot1d_x(n_mol, mol.Vpot, ax=ax, label="n_mol", dimmer_length=separation, ls='-')
+pdft.plot1d_x(0.5*n1af, mol.Vpot, ax=ax, label="n1af", dimmer_length=separation, ls='-')
+pdft.plot1d_x(0.5*n2af, mol.Vpot, ax=ax, label="n2af", ls='-')
+pdft.plot1d_x(0.5*n1be, mol.Vpot, ax=ax, label="n1be", ls="--")
+pdft.plot1d_x(0.5*n2be, mol.Vpot, ax=ax, label="n2be", ls="--")
+pdft.plot1d_x(n_mol - 0.5*(n1af+n2af), mol.Vpot, ax=ax, label="dnaf", ls="dotted")
+pdft.plot1d_x(n_mol - 0.5*(n1be+n2be), mol.Vpot, ax=ax, label="dnbe", ls="dotted")
 ax.legend()
 f.show()
 plt.close(f)

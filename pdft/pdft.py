@@ -13,6 +13,7 @@ import qcelemental as qc
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.optimize as optimizer
+from scipy.linalg import fractional_matrix_power
 
 psi4.set_num_threads(2)
 
@@ -485,7 +486,7 @@ class U_Molecule():
 
         #From psi4 objects
         self.nbf        = self.wfn.nso()
-        self.ndocc      = self.wfn.nalpha() + self.wfn.nbeta() # what is this?
+        self.ndocc      = self.wfn.nalpha() + self.wfn.nbeta()
 
         self.nalpha     = self.wfn.nalpha()
         self.nbeta      = self.wfn.nbeta()
@@ -1115,8 +1116,8 @@ class U_Molecule():
             Eold = SCF_E
 
             #DIIS extrapolate
-            # F_a = diisa_obj.extrapolate()
-            # F_b = diisb_obj.extrapolate()
+            F_a = diisa_obj.extrapolate()
+            F_b = diisb_obj.extrapolate()
 
             #Diagonalize Fock matrix
             C_a, Cocc_a, D_a, eigs_a = build_orbitals(F_a, self.A, self.nalpha, skip=skip1, S=self.S.np)
@@ -1634,7 +1635,7 @@ class U_Embedding:
         Coccb2 = np.copy(self.fragments[1].Coccb.np)
         if projection_method == "Projection":
             """
-            Bad orthogonality.
+            Bad orthogonality with oscillations.
             """
             assert mu is not None
             P1, P2 = self.get_projection(projection_method=projection_method)
@@ -1706,7 +1707,6 @@ class U_Embedding:
             self.fragments[1].Db.np[:] = ((1-mixing_paramter)*Db2 + mixing_paramter*Db2_new)
             self.fragments[1].Ca.np[:] = (mixing_paramter*self.molecule.Ca.np + (1-mixing_paramter)*Ca2)
             self.fragments[1].Cb.np[:] = (mixing_paramter*self.molecule.Cb.np + (1-mixing_paramter)*Cb2)
-            self.get_density_sum()
         elif projection_method == "Huzinaga_staggered":
             """
             Stggered fragment step will cause unsymmetrical density for symmetrical fragments diatomis. 
@@ -1736,7 +1736,6 @@ class U_Embedding:
                     self.fragments[1].Coccb.np[:] = (mixing_paramter*self.fragments[1].Coccb.np + (1-mixing_paramter)*Coccb2)
                 else:
                     assert False
-            self.get_density_sum()
         elif projection_method == "Huzinaga":
             P1, P2 = self.get_projection(projection_method=projection_method)
 
@@ -1770,10 +1769,66 @@ class U_Embedding:
                         mixing_paramter * self.fragments[1].Cocca.np + (1 - mixing_paramter) * Cocca2)
             self.fragments[1].Coccb.np[:] = (
                         mixing_paramter * self.fragments[1].Coccb.np + (1 - mixing_paramter) * Coccb2)
-            self.get_density_sum()
         else:
             assert False
+        self.sym_Lowdin_ortho_4_MO()
+        self.get_density_sum()
         return
+
+    def sym_Lowdin_ortho_4_MO(self):
+        """
+        An symmetric Lowdin orthogonalization procedure for MOs.
+        Right now only works when fragments have the same basis set.
+        Works presumably with projection method: Projection and Huzinaga.
+        :return:
+        """
+        S = self.molecule.S.np
+        # Alpha
+        nalpha1 = self.fragments[0].nalpha
+        nalpha2 = self.fragments[1].nalpha
+        if not (nalpha1==0 or nalpha2==0):
+            nmo_a = nalpha1 + nalpha2
+            # Smo = \int [MO_A, MO_B] \dot [MO_A, MO_B]^T
+            Smo_a = np.zeros((nmo_a, nmo_a))
+            Smo_a[:nalpha1, nalpha1:] = np.dot(self.fragments[0].Cocca.np.T, np.dot(S, self.fragments[1].Cocca))
+            Smo_a = Smo_a + Smo_a.T
+            Smo_a += np.eye(nmo_a)
+            Aa = fractional_matrix_power(Smo_a, -0.5)
+            assert np.allclose(Aa.dot(Smo_a.dot(Aa)), np.eye(nmo_a))
+            # Original MOs
+            MOa = np.append(self.fragments[0].Cocca.np, self.fragments[1].Cocca.np, axis=1)
+            # Orthogonalized MOs
+            orth_MOa = np.dot(Aa, MOa.T).T
+            assert np.allclose(orth_MOa.T.dot(S.dot(orth_MOa)), np.eye(nmo_a))
+            # Reassign Cocc and D as well
+            self.fragments[0].Cocca.np[:] = orth_MOa[:, :nalpha1]
+            self.fragments[1].Cocca.np[:] = orth_MOa[:, nalpha1:]
+            self.fragments[0].Da.np[:] = orth_MOa[:, :nalpha1].dot(orth_MOa[:, :nalpha1].T)
+            self.fragments[1].Da.np[:] = orth_MOa[:, nalpha1:].dot(orth_MOa[:, nalpha1:].T)
+        
+        # beta
+        nbeta1 = self.fragments[0].nbeta
+        nbeta2 = self.fragments[1].nbeta
+        if not (nbeta1==0 or nbeta2==0):
+            nmo_b = nbeta1 + nbeta2
+            # Smo = \int [MO_A, MO_B] \dot [MO_A, MO_B]^T
+            Smo_b = np.zeros((nmo_b, nmo_b))
+            Smo_b[:nbeta1, nbeta1:] = np.dot(self.fragments[0].Coccb.np.T, np.dot(S, self.fragments[1].Coccb))
+            Smo_b = Smo_b + Smo_b.T
+            Smo_b += np.eye(nmo_b)
+            Ab = fractional_matrix_power(Smo_b, -0.5)
+            assert np.allclose(Ab.dot(Smo_b.dot(Ab)), np.eye(nmo_b))
+            # Original MOs
+            MOb = np.append(self.fragments[0].Coccb.np, self.fragments[1].Coccb.np, axis=1)
+            # Orthogonalized MOs
+            orth_MOb = np.dot(Ab, MOb.T).T
+            assert np.allclose(orth_MOb.T.dot(S.dot(orth_MOb)), np.eye(nmo_b))
+            # Reassign Cocc and D as well
+            self.fragments[0].Coccb.np[:] = orth_MOb[:, :nalpha1]
+            self.fragments[1].Coccb.np[:] = orth_MOb[:, nalpha1:]
+            self.fragments[0].Db.np[:] = orth_MOb[:, :nbeta1].dot(orth_MOb[:, :nbeta1].T)
+            self.fragments[1].Db.np[:] = orth_MOb[:, nbeta1:].dot(orth_MOb[:, nbeta1:].T)
+
 
     def find_vp_projection(self, maxiter, mu=1e7, projection_method="Projection", mixing=1, rho_std=1e-5, printflag=False):
         """
@@ -1843,7 +1898,7 @@ class U_Embedding:
         self.drho_conv.append(old_rho_conv)
 
         ## vp update start
-        print("<<<<<<<<<<<<<<<<<<<<<<Projection<<<<<<<<<<<<<<<<<<")
+        print("<<<<<<<<<<<<<<<<<<<<<<Projection Method %s<<<<<<<<<<<<<<<<<<"%projection_method)
         for scf_step in range(1,maxiter+1):
             for frag in self.fragments:
                 assert np.allclose(frag.Cocca.np.dot(frag.Cocca.np.T), frag.Da.np)
