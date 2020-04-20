@@ -999,6 +999,17 @@ class U_Molecule():
         D_conv = psi4.core.get_option("SCF", "D_CONVERGENCE")
 
         for SCF_ITER in range(maxiter+1):
+            if projection is not None and projection[-1] == "Frozen":
+                # Reassign Cocc to introduce the MOs of environments
+                nalphaenv = projection[0].shape[1]
+                nbetaenv = projection[1].shape[1]
+                if nalphaenv == 0:
+                    Cocc_a.np[:, self.nalpha:self.nalpha+nalphaenv] = projection[0]
+                    D_a = psi4.core.doublet(Cocc_a, Cocc_a, False, True)
+                if nbetaenv == 0:
+                    Cocc_b.np[:, self.nbeta:self.nbeta+nbetaenv] = projection[1]
+                    D_b = psi4.core.doublet(Cocc_b, Cocc_b, False, True)
+
             self.jk.C_left_add(Cocc_a)
             self.jk.C_left_add(Cocc_b)
             self.jk.compute()
@@ -1062,6 +1073,15 @@ class U_Molecule():
                     Pb = -(np.dot(F_b.np, projection[1]) + np.dot(projection[1].T, F_b.np))
                     F_a.np[:] += Pa
                     F_b.np[:] += Pb
+                elif projection[-1] == "Frozen":
+                    # Projection-based method with a frozen environment
+                    S = self.S.np
+                    Da = projection[0].dot(projection[0].T)
+                    Db = projection[1].dot(projection[1].T)
+                    Pa = S.dot(Da.dot(S))
+                    Pb = S.dot(Db.dot(S))
+                    F_a.np[:] += mu*Pa
+                    F_b.np[:] += mu*Pb
 
             assert np.allclose(F_a.np, F_a.np.T)
             assert np.allclose(F_b.np, F_b.np.T)
@@ -1470,7 +1490,7 @@ class U_Embedding:
             self.molecule.Da.np[:] = temp_mol_Da
             self.molecule.Db.np[:] = temp_mol_Db
         else:
-            v_Hext_f = self.molecule.esp_on_grid().np
+            v_Hext_f = self.molecule.esp_on_grid()
 
         vp_hext_nad = v_Hext_f
         for j in range(self.nfragments):
@@ -1794,11 +1814,13 @@ class U_Embedding:
             Smo_a = Smo_a + Smo_a.T
             Smo_a += np.eye(nmo_a)
             Aa = fractional_matrix_power(Smo_a, -0.5)
+            # print(repr(Smo_a))
+            assert np.allclose(Aa, Aa.T)
             assert np.allclose(Aa.dot(Smo_a.dot(Aa)), np.eye(nmo_a))
             # Original MOs
             MOa = np.append(self.fragments[0].Cocca.np, self.fragments[1].Cocca.np, axis=1)
             # Orthogonalized MOs
-            orth_MOa = np.dot(Aa, MOa.T).T
+            orth_MOa = np.dot(MOa, Aa)
             assert np.allclose(orth_MOa.T.dot(S.dot(orth_MOa)), np.eye(nmo_a))
             # Reassign Cocc and D as well
             self.fragments[0].Cocca.np[:] = orth_MOa[:, :nalpha1]
@@ -1821,7 +1843,7 @@ class U_Embedding:
             # Original MOs
             MOb = np.append(self.fragments[0].Coccb.np, self.fragments[1].Coccb.np, axis=1)
             # Orthogonalized MOs
-            orth_MOb = np.dot(Ab, MOb.T).T
+            orth_MOb = np.dot(MOb, Ab)
             assert np.allclose(orth_MOb.T.dot(S.dot(orth_MOb)), np.eye(nmo_b))
             # Reassign Cocc and D as well
             self.fragments[0].Coccb.np[:] = orth_MOb[:, :nalpha1]
@@ -1880,17 +1902,6 @@ class U_Embedding:
             Ef += i.frag_energy * i.omega
         Eold = Ef
 
-        f, ax = plt.subplots(1, 1, dpi=210)
-        plot1d_x(rho_molecule, self.molecule.Vpot, ax=ax, label="nmol")
-        plot1d_x(n10, self.molecule.Vpot, ax=ax, label="n10")
-        plot1d_x(n20, self.molecule.Vpot, ax=ax, label="n20")
-        plot1d_x(n11, self.molecule.Vpot, ax=ax, label="n11", ls="--")
-        plot1d_x(n21, self.molecule.Vpot, ax=ax, label="n21", ls="--")
-        ax.legend()
-        f.show()
-        f.savefig(self.molecule.wfn.molecule().name()+projection_method+"without vp")
-        plt.close(f)
-
         rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
         old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
 
@@ -1906,6 +1917,7 @@ class U_Embedding:
 
             self.get_vp_Hext_nad()
             self.get_vp_xc_nad()
+            # vp_fock = psi4.core.Matrix.from_array(self.molecule.grid_to_fock((self.vp_Hext_nad)))
             vp_fock = psi4.core.Matrix.from_array(self.molecule.grid_to_fock((self.vp_Hext_nad+self.vp_xc_nad)))
             self.vp_fock = [vp_fock, vp_fock]
 
@@ -1922,7 +1934,7 @@ class U_Embedding:
             self.drho_conv.append(dn)
             ortho = [np.dot(self.fragments[0].Cocca.np.T, S.dot(self.fragments[1].Cocca.np)),
                      np.dot(self.fragments[0].Coccb.np.T, S.dot(self.fragments[1].Coccb.np))]
-
+            ortho_max = np.max(np.abs(ortho))
             f,ax = plt.subplots(1,1, dpi=210)
             ax.set_ylim(-1, 0.5)
             plot1d_x(self.vp_Hext_nad + self.vp_xc_nad, self.molecule.Vpot, dimmer_length=2,
@@ -1940,7 +1952,7 @@ class U_Embedding:
             f.savefig(self.molecule.wfn.molecule().name() + projection_method +str(scf_step))
             plt.close(f)
 
-            print(F'Iter: {scf_step} mu: %e d_rho: {self.drho_conv[-1]} Ef: {Ef} orthogonality: {ortho}' %mu)
+            print(F'Iter: {scf_step} mu: %e d_rho: {self.drho_conv[-1]} Ef: {Ef} ortho: {ortho}' %mu)
             if len(rho_convergence) >= 5:
                 if np.std(rho_convergence[-4:]) < rho_std:
                     print("Break because rho does update for 5 iter")

@@ -62,7 +62,7 @@ pdfter = pdft.U_Embedding([f1, f2], mol)
 # pdfter.find_vp_response(21, guess=True, svd_rcond=10**svdc, beta=0.1, a_rho_var=1e-7)
 # pdfter.find_vp_response_1basis(42, a_rho_var=1e-5, mu=1e-5)
 # pdfter.find_vp_scipy_1basis(maxiter=7)
-pdfter.find_vp_projection(14, projection_method="Huzinaga")
+pdfter.find_vp_projection(49, projection_method="Projection")
 
 n1 = pdfter.molecule.to_grid(f1.Da.np + f1.Db.np)
 n2 = pdfter.molecule.to_grid(f2.Da.np + f2.Db.np)
