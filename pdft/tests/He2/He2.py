@@ -63,65 +63,54 @@ mol = pdft.U_Molecule(Full_Molec, basis, functional)
 f1  = pdft.U_Molecule(Monomer_2,  basis, functional, jk=mol.jk)
 f2  = pdft.U_Molecule(Monomer_1,  basis, functional, jk=mol.jk)
 
-#Start a pdft systemm
+#Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
+mol.scf(100)
+E, wfn = psi4.energy("B3LYP/"+basis, molecule=Full_Molec, return_wfn=True)
+n_mol = mol.to_grid(mol.Da.np+mol.Db.np)
+n_wfn = mol.to_grid(wfn.Da().np+wfn.Db().np)
+mol.Da.np[:] = np.copy(wfn.Da().np)
+mol.Db.np[:] = np.copy(wfn.Db().np)
 
-#%% Running SCF with svwn
-pdfter.find_vp_response_1basis(49, vp_nad_iter=None,
-                               svd_rcond=10**svdc,
-                               # regul_const=None,
-                               a_rho_var=1e-7)
+pdfter.find_vp_densitydifference(35, scf_method="Orthogonal", beta_initial=0.5)
+
+assert np.allclose(wfn.Da().np, mol.Da.np)
+
+D1a = np.copy(f1.Da.np)
+D2a = np.copy(f2.Da.np)
+D1b = np.copy(f1.Db.np)
+D2b = np.copy(f2.Db.np)
+Cocc1a = np.copy(f1.Cocca.np)
+Cocc2a = np.copy(f2.Cocca.np)
+Cocc1b = np.copy(f1.Coccb.np)
+Cocc2b = np.copy(f2.Coccb.np)
+
+n1 = pdfter.molecule.to_grid(f1.Da.np + f1.Db.np)
+n2 = pdfter.molecule.to_grid(f2.Da.np + f2.Db.np)
+nf = n1 + n2
+n_mol = mol.to_grid(mol.Da.np+mol.Db.np)
+
+pdfter.update_vp_EDA(update_object=True)
+
+w = mol.Vpot.get_np_xyzw()[-1]
+S = mol.S.np
+ortho = [np.dot(f1.Cocca.np.T, S.dot(f2.Cocca.np)),
+         np.dot(f1.Coccb.np.T, S.dot(f2.Coccb.np))]
+print("orthogonality", ortho)
 
 f,ax = plt.subplots(1,1, dpi=210)
-pdft.plot1d_x(pdfter.vp_grid, mol.Vpot, ax=ax, label="vp", color='black')
-pdft.plot1d_x(pdfter.vp_Hext_nad, mol.Vpot, dimmer_length=separation,
-              title=title, ax=ax, label="Hext", ls='--')
-pdft.plot1d_x(pdfter.vp_xc_nad, mol.Vpot, ax=ax, label="xc", ls='--')
-pdft.plot1d_x(pdfter.vp_kin_nad, mol.Vpot, ax=ax, label="kin", ls='--')
+ax.set_ylim(-2, 1)
+ax.set_xlim(-10, 10)
+pdft.plot1d_x(pdfter.vp_grid, pdfter.molecule.Vpot, dimmer_length=2,
+         ax=ax, label="vp", title=mol.wfn.molecule().name(),color="black")
+pdft.plot1d_x(nf, pdfter.molecule.Vpot, ax=ax, label="nf", ls="--")
+pdft.plot1d_x(n_mol, pdfter.molecule.Vpot, ax=ax, label="nmol")
+pdft.plot1d_x(pdfter.vp_Hext_nad, pdfter.molecule.Vpot,
+         ax=ax, label="vpHext", ls=':')
+pdft.plot1d_x(pdfter.vp_xc_nad, pdfter.molecule.Vpot,
+         ax=ax, label="vpxc", ls=':')
+pdft.plot1d_x(pdfter.vp_kin_nad, pdfter.molecule.Vpot,
+         ax=ax, label="vpkin", ls=':')
 ax.legend()
 f.show()
 plt.close(f)
-# #%% Get vp_all96
-# vp_all96, vp_fock_all96 = pdfter.vp_all96()
-# print("vp all96", vp_fock_all96)
-# pdft.plot1d_x(vp_all96, mol.Vpot, title="vp all96:" + str(separation), fignum=2)
-# #%% Running SCF with vp_all96
-# vp_fock_psi4 = psi4.core.Matrix.from_array(vp_fock_all96)
-# pdfter.fragments_scf(max_iter=1000, vp=True, vp_fock=[vp_fock_psi4, vp_fock_psi4])
-# n_all96 = mol.to_grid(pdfter.fragments_Da + pdfter.fragments_Db)
-# pdft.plot1d_x(n_all96 - n_novp, mol.Vpot, title="density difference all96 - novp" + str(separation), fignum=3)
-# pdft.plot1d_x(n_all96 - n_svwn, mol.Vpot, title="density difference all96 - svwn" + str(separation), fignum=4)
-# #%% Campare density difference
-# w = mol.Vpot.get_np_xyzw()[-1]
-# print("==========DENSITY DIFFERENCE==========")
-# print("Density difference no vp and all96.", np.sum(np.abs(n_novp - n_all96)*w))
-# print("Density difference svwn and all96.", np.sum(np.abs(n_all96 - n_svwn)*w))
-# print("Density difference no vp and svwn.", np.sum(np.abs(n_novp - n_svwn)*w))
-#
-# #%% Check if vp_all96 consist with vp_fock_all96
-# if pdfter.four_overlap is None:
-#     pdfter.four_overlap, _, _, _ = pdft.fouroverlap(pdfter.molecule.wfn, pdfter.molecule.geometry,
-#                                                     pdfter.molecule.basis, pdfter.molecule.mints)
-# vp_basis_all96 = mol.to_basis(vp_all96)
-# vp_fock_all96_1 = np.einsum("abcd, ab -> cd", pdfter.four_overlap, vp_basis_all96)
-# print("vp_all96 consists with vp_fock_all96?", np.allclose(vp_fock_all96_1, vp_fock_all96, atol=np.linalg.norm(vp_fock_all96)*0.1))
-# vp_all96_1 = mol.to_grid(vp_basis_all96)
-# print("basis and grid back and forth consistence?", np.allclose(vp_all96_1, vp_all96, atol=np.linalg.norm(vp_all96)*0.1))
-# if not np.allclose(vp_all96_1, vp_all96, atol=np.linalg.norm(vp_all96)*0.1):
-#     print("size of basis", mol.nbf)
-#     print("The difference is", np.linalg.norm(vp_all96_1 - vp_all96)/np.linalg.norm(vp_all96))
-#     pdft.plot1d_x(vp_all96_1, mol.Vpot, title="vp presented by the basis", fignum=5)
-# # %% Plot vp_all96 on grid.
-# L = [5.0,  5.0, 4.0]
-# D = [0.2, 0.2, 0.2]
-# # Plot file
-# O, N = libcubeprop.build_grid(mol.wfn, L, D)
-# block, points, nxyz, npoints = libcubeprop.populate_grid(mol.wfn, O, N, D)
-# # vp_basis_all96_psi4 = psi4.core.Matrix.from_array(pdfter.vp[0])
-# vp_cube = libcubeprop.compute_density_1basis(mol.wfn, O, N, D, npoints, points, nxyz, block, pdfter.vp[0])
-# f, ax = plt.subplots(1, 1, figsize=(16, 12), dpi=160)
-# plt.imshow(vp_cube[:,:,20], interpolation="bicubic")
-# # plt.title("vpALL96 on basis.")
-# plt.colorbar(fraction=0.040, pad=0.04)
-# f.show()
-# plt.savefig("vp2D")

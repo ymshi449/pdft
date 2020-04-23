@@ -6,7 +6,7 @@ import numpy as np
 
 separation = 4.522
 functional = 'svwn'
-basis = 'cc-pvdz'
+basis = 'cc-pvtz'
 svdc = -2
 reguc = -7
 # title = "Be WuYang1b Yan Q[nf] v[nf] svdc%i reguc%i " %(svdc, reguc) + basis + functional
@@ -52,69 +52,61 @@ psi4.set_options({
 })
 
 #Make fragment calculations:
-f1  = pdft.U_Molecule(Monomer_2,  basis, functional)
-f2  = pdft.U_Molecule(Monomer_1,  basis, functional)
 mol = pdft.U_Molecule(Full_Molec, basis, functional)
+f1  = pdft.U_Molecule(Monomer_2,  basis, functional, jk=mol.jk)
+f2  = pdft.U_Molecule(Monomer_1,  basis, functional, jk=mol.jk)
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
-# pdfter.find_vp_densitydifference(140)
-# pdfter.find_vp_response(21, guess=True, svd_rcond=10**svdc, beta=0.1, a_rho_var=1e-7)
-# pdfter.find_vp_response_1basis(42, a_rho_var=1e-5, mu=1e-5)
-# pdfter.find_vp_scipy_1basis(maxiter=7)
-pdfter.find_vp_projection(14, projection_method="Huzinaga")
+mol.scf(100)
+E, wfn = psi4.energy("B3LYP/"+basis, molecule=Full_Molec, return_wfn=True)
+n_mol = mol.to_grid(mol.Da.np+mol.Db.np)
+n_wfn = mol.to_grid(wfn.Da().np+wfn.Db().np)
+mol.Da.np[:] = np.copy(wfn.Da().np)
+mol.Db.np[:] = np.copy(wfn.Db().np)
+mol.energy = E
+
+pdfter.find_vp_projection(100, projection_method="Huzinaga")
+# pdfter.find_vp_densitydifference(63, scf_method="Orthogonal")
+
+D1a = np.copy(f1.Da.np)
+D2a = np.copy(f2.Da.np)
+D1b = np.copy(f1.Db.np)
+D2b = np.copy(f2.Db.np)
+Cocc1a = np.copy(f1.Cocca.np)
+Cocc2a = np.copy(f2.Cocca.np)
+Cocc1b = np.copy(f1.Coccb.np)
+Cocc2b = np.copy(f2.Coccb.np)
 
 n1 = pdfter.molecule.to_grid(f1.Da.np + f1.Db.np)
 n2 = pdfter.molecule.to_grid(f2.Da.np + f2.Db.np)
 nf = n1 + n2
 n_mol = mol.to_grid(mol.Da.np+mol.Db.np)
+
+w = mol.Vpot.get_np_xyzw()[-1]
+S = mol.S.np
+ortho = [np.dot(f1.Cocca.np.T, S.dot(f2.Cocca.np)),
+         np.dot(f1.Coccb.np.T, S.dot(f2.Coccb.np))]
+print("orthogonality", ortho)
+pdfter.update_vp_EDA(update_object=True)
+
 f,ax = plt.subplots(1,1, dpi=210)
-ax.set_ylim(-1.5, 2)
-pdft.plot1d_x(pdfter.vp_Hext_nad + pdfter.vp_xc_nad, mol.Vpot, dimmer_length=2,
+ax.set_ylim(-2, 1)
+ax.set_xlim(-10, 10)
+pdft.plot1d_x(pdfter.vp_grid, pdfter.molecule.Vpot, dimmer_length=2,
          ax=ax, label="vp", color="black")
-pdft.plot1d_x(nf, mol.Vpot, ax=ax, label="nf", ls="--")
-pdft.plot1d_x(n_mol, mol.Vpot, ax=ax, label="nmol")
+pdft.plot1d_x(nf, pdfter.molecule.Vpot, ax=ax, label="nf", ls="--")
+pdft.plot1d_x(n_mol, pdfter.molecule.Vpot, ax=ax, label="nmol")
 pdft.plot1d_x(pdfter.vp_Hext_nad, pdfter.molecule.Vpot,
-         ax=ax, label="vpHext", ls='--')
+         ax=ax, label="vpHext", ls=':')
 pdft.plot1d_x(pdfter.vp_xc_nad, pdfter.molecule.Vpot,
-         ax=ax, label="vpxc", ls='--')
+         ax=ax, label="vpxc", ls=':')
+pdft.plot1d_x(pdfter.vp_kin_nad, pdfter.molecule.Vpot,
+         ax=ax, label="vpkin", ls=':')
 ax.legend()
 f.show()
 plt.close(f)
-# f,ax = plt.subplots(1,1, dpi=210)
-# ax.set_ylim(-1.2, 0.2)
-# pdft.plot1d_x(pdfter.vp_grid, mol.Vpot, ax=ax, label="vp", color='black')
-# pdft.plot1d_x(pdfter.vp_Hext_nad, mol.Vpot, dimmer_length=separation,
-#               title="vp" + title + str(pdfter.drho_conv[-1]), ax=ax, label="Hext", ls='--')
-# pdft.plot1d_x(pdfter.vp_xc_nad, mol.Vpot, ax=ax, label="xc", ls='--')
-# pdft.plot1d_x(pdfter.vp_kin_nad, mol.Vpot, ax=ax, label="kin", ls='--')
-# ax.legend()
-# f.show()
-# f.savefig("vp" + title)
-# plt.close(f)
 
-# vp_grid_DD = mol.to_grid(pdfter.vp_last[0])
-# vp_grid_WY = mol.to_grid(pdfter.vp[0])
-# f,ax = plt.subplots(1,1, dpi=210)
-# ax.set_ylim(-1.2, 0.2)
-# pdft.plot1d_x(pdfter.vp_grid, mol.Vpot, ax=ax, label="vp", color='black')
-# pdft.plot1d_x(vp_grid_DD, mol.Vpot, ax=ax, label="vp_DD")
-# pdft.plot1d_x(vp_grid_WY, mol.Vpot, dimmer_length=separation,
-#               title="vpDD+WY" + title + str(pdfter.drho_conv[-1]), ax=ax, label="vp_WY")
-# ax.legend()
-# f.show()
-# f.savefig("vpDD+WY" + title)
-# plt.close(f)
-#
-# # 1D density differnece
-# nf = mol.to_grid(pdfter.fragments_Db + pdfter.fragments_Da)
-# nmol = mol.to_grid(mol.Da.np + mol.Db.np)
-# f,ax = plt.subplots(1,1)
-# # pdft.plot1d_x(nmol, mol.Vpot, dimmer_length=separation, ax=ax)
-# # pdft.plot1d_x(nf, mol.Vpot, dimmer_length=separation, ax=ax)
-# pdft.plot1d_x(nmol - nf, mol.Vpot, dimmer_length=separation, ax=ax)
-# f.show()
-# plt.close(f)
 
 # #%% 1 basis 2D plot
 # L = [4.0, 4.0, 2.0]

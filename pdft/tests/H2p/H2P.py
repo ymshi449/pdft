@@ -55,38 +55,77 @@ mol = pdft.U_Molecule(Full_Molec, basis, functional)
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
-
-# pdfter.find_vp_response(49, svd_rcond=10**svdc, regul_const=10**reguc, beta=0.1, a_rho_var=1e-7)
-
-# pdfter.find_vp_densitydifference(32, 4)
-# pdfter.find_vp_response(21, svd_rcond=10**svdc, regul_const=10**reguc, beta=0.1, a_rho_var=1e-7)
-# pdfter.find_vp_response_1basis(42, regul_const=10**reguc,
-#                                beta=1, a_rho_var=1e-7, printflag=True)
-# # pdfter.find_vp_scipy_1basis(maxiter=7)
-# # pdfter.find_vp_densitydifference(42, 1)
-pdfter.find_vp_projection(21, projection_method="Huzinaga_staggered", printflag=True)
-
 mol.scf(100)
+E, wfn = psi4.energy("B3LYP/"+basis, molecule=Full_Molec, return_wfn=True)
+n_mol = mol.to_grid(mol.Da.np+mol.Db.np)
+n_wfn = mol.to_grid(wfn.Da().np+wfn.Db().np)
+mol.Da.np[:] = np.copy(wfn.Da().np)
+mol.Db.np[:] = np.copy(wfn.Db().np)
+
+pdfter.find_vp_densitydifference(350, scf_method="Orthogonal", beta_initial=0.2)
+
+assert np.allclose(wfn.Da().np, mol.Da.np)
+
+D1a = np.copy(f1.Da.np)
+D2a = np.copy(f2.Da.np)
+D1b = np.copy(f1.Db.np)
+D2b = np.copy(f2.Db.np)
+Cocc1a = np.copy(f1.Cocca.np)
+Cocc2a = np.copy(f2.Cocca.np)
+Cocc1b = np.copy(f1.Coccb.np)
+Cocc2b = np.copy(f2.Coccb.np)
+
 n1 = pdfter.molecule.to_grid(f1.Da.np + f1.Db.np)
 n2 = pdfter.molecule.to_grid(f2.Da.np + f2.Db.np)
-nf = mol.to_grid(pdfter.fragments_Db+pdfter.fragments_Da)
+nf = 0.5*(n1 + n2)
 n_mol = mol.to_grid(mol.Da.np+mol.Db.np)
+
+pdfter.update_vp_EDA(update_object=True)
+
+w = mol.Vpot.get_np_xyzw()[-1]
+S = mol.S.np
+ortho = [np.dot(f1.Cocca.np.T, S.dot(f2.Cocca.np)),
+         np.dot(f1.Coccb.np.T, S.dot(f2.Coccb.np))]
+print("orthogonality", ortho)
+
 f,ax = plt.subplots(1,1, dpi=210)
-ax.set_ylim(-1, 0.5)
+ax.set_ylim(-2, 1)
 ax.set_xlim(-10, 10)
-pdft.plot1d_x(pdfter.vp_Hext_nad + pdfter.vp_xc_nad, pdfter.molecule.Vpot, dimmer_length=2,
-         ax=ax, label="vp", color="black")
+pdft.plot1d_x(pdfter.vp_grid, pdfter.molecule.Vpot, dimmer_length=2,
+         ax=ax, label="vp", title=mol.wfn.molecule().name(),color="black")
 pdft.plot1d_x(nf, pdfter.molecule.Vpot, ax=ax, label="nf", ls="--")
 pdft.plot1d_x(n_mol, pdfter.molecule.Vpot, ax=ax, label="nmol")
-pdft.plot1d_x(n1*0.5, pdfter.molecule.Vpot, ax=ax, label="n1", ls="dotted")
-pdft.plot1d_x(n2*0.5, pdfter.molecule.Vpot, ax=ax, label="n2", ls="dotted")
 pdft.plot1d_x(pdfter.vp_Hext_nad, pdfter.molecule.Vpot,
-         ax=ax, label="vpHext", ls='--')
+         ax=ax, label="vpHext", ls=':')
 pdft.plot1d_x(pdfter.vp_xc_nad, pdfter.molecule.Vpot,
-         ax=ax, label="vpxc", ls='--')
+         ax=ax, label="vpxc", ls=':')
+pdft.plot1d_x(pdfter.vp_kin_nad, pdfter.molecule.Vpot,
+         ax=ax, label="vpkin", ls=':')
 ax.legend()
 f.show()
 plt.close(f)
+
+# mol.scf(100)
+# n1 = pdfter.molecule.to_grid(f1.Da.np + f1.Db.np)
+# n2 = pdfter.molecule.to_grid(f2.Da.np + f2.Db.np)
+# nf = mol.to_grid(pdfter.fragments_Db+pdfter.fragments_Da)
+# n_mol = mol.to_grid(mol.Da.np+mol.Db.np)
+# f,ax = plt.subplots(1,1, dpi=210)
+# ax.set_ylim(-1, 0.5)
+# ax.set_xlim(-10, 10)
+# pdft.plot1d_x(pdfter.vp_Hext_nad + pdfter.vp_xc_nad, pdfter.molecule.Vpot, dimmer_length=2,
+#          ax=ax, label="vp", color="black")
+# pdft.plot1d_x(nf, pdfter.molecule.Vpot, ax=ax, label="nf", ls="--")
+# pdft.plot1d_x(n_mol, pdfter.molecule.Vpot, ax=ax, label="nmol")
+# pdft.plot1d_x(n1*0.5, pdfter.molecule.Vpot, ax=ax, label="n1", ls="dotted")
+# pdft.plot1d_x(n2*0.5, pdfter.molecule.Vpot, ax=ax, label="n2", ls="dotted")
+# pdft.plot1d_x(pdfter.vp_Hext_nad, pdfter.molecule.Vpot,
+#          ax=ax, label="vpHext", ls='--')
+# pdft.plot1d_x(pdfter.vp_xc_nad, pdfter.molecule.Vpot,
+#          ax=ax, label="vpxc", ls='--')
+# ax.legend()
+# f.show()
+# plt.close(f)
 
 # #%% 1 basis 2D plot
 # L = [2.0, 2.0, 2.0]
@@ -149,3 +188,19 @@ ax.scatter(atoms[:,2], atoms[:,1])
 ax.set_title("dn" + title)
 f.colorbar(p, ax=ax)
 f.show()
+
+#%%
+vp_fock_Hextxc = mol.grid_to_fock(pdfter.vp_Hext_nad + pdfter.vp_Hext_nad)
+f1.scf(1000)
+f2.scf(1000)
+for i in range(14):
+    coeff = 0.1 * i
+    if coeff > 1:
+        coeff = 1
+    vp_fock_psi4 = psi4.core.Matrix.from_array(coeff * vp_fock_Hextxc)
+    pdfter.orthogonal_scf(1000, vp_matrix=[vp_fock_psi4, vp_fock_psi4],
+                          projection_method="Huzinaga")
+    nftemp = mol.to_grid(pdfter.fragments_Da + pdfter.fragments_Db)
+    dntemo = np.sum(np.abs(n_mol - nftemp) * w)
+    Tsnad = abs(np.trace((mol.Da.np - pdfter.fragments_Da).dot(mol.T.np)))
+    print("%.2f"%coeff, dntemo, Tsnad)

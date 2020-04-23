@@ -72,55 +72,60 @@ psi4.set_options({
     'REFERENCE' : 'UKS'})
 
 #Make fragment calculations:
-f1  = pdft.U_Molecule(Monomer_2,  basis, functional)
-f2  = pdft.U_Molecule(Monomer_1,  basis, functional)
 mol = pdft.U_Molecule(Full_Molec, basis, functional)
-
+f1  = pdft.U_Molecule(Monomer_2,  basis, functional, jk=mol.jk)
+f2  = pdft.U_Molecule(Monomer_1,  basis, functional, jk=mol.jk)
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
+mol.scf(1000)
+E, wfn = psi4.energy("B3LYP/"+basis, molecule=Full_Molec, return_wfn=True)
+n_mol = mol.to_grid(mol.Da.np+mol.Db.np)
+n_wfn = mol.to_grid(wfn.Da().np+wfn.Db().np)
+mol.Da.np[:] = np.copy(wfn.Da().np)
+mol.Db.np[:] = np.copy(wfn.Db().np)
 
-# pdfter.find_vp_response(maxiter=25, beta=0.1, svd_rcond=1e-4)
-pdfter.find_vp_response_1basis(49, svd_rcond=10**svdc, regul_const=10**reguc, beta=0.1, a_rho_var=1e-7)
-# pdfter.find_vp_scipy_1basis(maxiter=42, regul_const=1e-4, opt_method="trust-ncg")
+pdfter.find_vp_densitydifference(35, scf_method="Orthogonal")
 
-#%% 2 basis 2D plot
-# vp_psi4 = psi4.core.Matrix.from_array(pdfter.vp[0])
-# L = [4.0, 4.0, 4.0]
-# D = [0.05, 0.2, 0.2]
-# # Plot file
-# O, N = libcubeprop.build_grid(mol.wfn, L, D)
-# block, points, nxyz, npoints = libcubeprop.populate_grid(mol.wfn, O, N, D)
-# vp_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, vp_psi4)
-# f, ax = plt.subplots(1, 1, figsize=(16, 12), dpi=160)
-# p = ax.imshow(vp_cube[81, :, :], interpolation="bicubic")
-# ax.set_title("vp svd_rond=1e-5" + basis + functional)
-# f.colorbar(p, ax=ax)
-# f.show()
+assert np.allclose(wfn.Da().np, mol.Da.np)
 
-#%% 1 basis 2D plot
-L = [2.0, 4.0, 4.0]
-D = [0.05, 0.2, 0.2]
-# Plot file
-O, N = libcubeprop.build_grid(mol.wfn, L, D)
-block, points, nxyz, npoints = libcubeprop.populate_grid(mol.wfn, O, N, D)
-vp_cube = libcubeprop.compute_density_1basis(mol.wfn, O, N, D, npoints, points, nxyz, block, pdfter.vp[0])
-f, ax = plt.subplots(1, 1, figsize=(16, 12), dpi=160)
-p = ax.imshow(vp_cube[40, :, :], interpolation="bicubic", cmap="Spectral")
-atoms = libcubeprop.get_atoms(mol.wfn, D, O)
-ax.scatter(atoms[:,3], atoms[:,2])
-ax.set_title("vp" + title)
-f.colorbar(p, ax=ax)
+D1a = np.copy(f1.Da.np)
+D2a = np.copy(f2.Da.np)
+D1b = np.copy(f1.Db.np)
+D2b = np.copy(f2.Db.np)
+Cocc1a = np.copy(f1.Cocca.np)
+Cocc2a = np.copy(f2.Cocca.np)
+Cocc1b = np.copy(f1.Coccb.np)
+Cocc2b = np.copy(f2.Coccb.np)
+
+n1 = pdfter.molecule.to_grid(f1.Da.np + f1.Db.np)
+n2 = pdfter.molecule.to_grid(f2.Da.np + f2.Db.np)
+nf = n1 + n2
+n_mol = mol.to_grid(mol.Da.np+mol.Db.np)
+
+pdfter.update_vp_EDA(update_object=True)
+
+w = mol.Vpot.get_np_xyzw()[-1]
+S = mol.S.np
+ortho = [np.dot(f1.Cocca.np.T, S.dot(f2.Cocca.np)),
+         np.dot(f1.Coccb.np.T, S.dot(f2.Coccb.np))]
+print("orthogonality", ortho)
+
+f,ax = plt.subplots(1,1, dpi=210)
+ax.set_ylim(-2, 1)
+ax.set_xlim(-10, 10)
+pdft.plot1d_x(pdfter.vp_grid, pdfter.molecule.Vpot, dimmer_length=2,
+         ax=ax, label="vp", title=mol.wfn.molecule().name(),color="black")
+pdft.plot1d_x(nf, pdfter.molecule.Vpot, ax=ax, label="nf", ls="--")
+pdft.plot1d_x(n_mol, pdfter.molecule.Vpot, ax=ax, label="nmol")
+pdft.plot1d_x(pdfter.vp_Hext_nad, pdfter.molecule.Vpot,
+         ax=ax, label="vpHext", ls=':')
+pdft.plot1d_x(pdfter.vp_xc_nad, pdfter.molecule.Vpot,
+         ax=ax, label="vpxc", ls=':')
+pdft.plot1d_x(pdfter.vp_kin_nad, pdfter.molecule.Vpot,
+         ax=ax, label="vpkin", ls=':')
+ax.legend()
 f.show()
-f.savefig("vp" + title)
+plt.close(f)
 
-dD = psi4.core.Matrix.from_array(pdfter.fragments_Da + pdfter.fragments_Db - mol.Da.np - mol.Db.np)
-dn_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, dD)
-f, ax = plt.subplots(1, 1, figsize=(16, 12), dpi=160)
-p = ax.imshow(dn_cube[40, :, :], interpolation="bicubic", cmap="Spectral")
-atoms = libcubeprop.get_atoms(mol.wfn, D, O)
-ax.scatter(atoms[:,3], atoms[:,2])
-ax.set_title("dn" + title)
-f.colorbar(p, ax=ax)
-f.show()
-f.savefig("dn" + title)
+#%%
