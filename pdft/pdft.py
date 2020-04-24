@@ -1030,6 +1030,9 @@ class U_Embedding:
         self.vp_xc_nad = None
         self.vp_kin_nad = None
 
+        # Control the sign of lagrange_multiplier
+        self.Lagrange_mul = 1
+
     def get_density_sum(self):
         sum_a = self.fragments[0].Da.np.copy() * self.fragments[0].omega
         sum_b = self.fragments[0].Db.np.copy() * self.fragments[0].omega
@@ -2033,15 +2036,29 @@ class U_Embedding:
 
         # If the vp stored is not the same as the vp we got, re-run scp calculations and update vp.
 
+        assert self.Lagrange_mul == -1 or self.Lagrange_mul == 1
+        # If the vp stored is not the same as the vp we got, re-run scp calculations and update vp.
         if vp is not None:
-            if not np.linalg.norm(vp - self.vp[0]) < 1e-7:
-                # update vp and vp fock
-                if calculate_scf:
-                    if update_vp:
-                        self.vp = [vp, vp]
-                        self.fragments_scf_1basis(1000, vp=True)
-                    else:
-                        self.fragments_scf_1basis(1000, vp=[vp, vp])
+            # if not np.linalg.norm(vp - self.vp[0]) < 1e-7:
+            # update vp and vp fock
+            if calculate_scf:
+                if update_vp:
+                    self.vp = [vp, vp]
+                    vp_fock = self.Lagrange_mul * np.einsum('ijm,m->ij', self.three_overlap, self.vp[0])
+                    vp_fock = psi4.core.Matrix.from_array(vp_fock)
+                    self.vp_fock = [vp_fock, vp_fock]
+                    for i in range(self.nfragments):
+                        self.fragments[i].scf(maxiter=1000, print_energies=False, vp_matrix=self.vp_fock)
+                    self.update_EpEf()
+                    self.get_density_sum()
+                else:
+                    vp_fock = self.Lagrange_mul * np.einsum('ijm,m->ij', self.three_overlap, self.vp[0])
+                    vp_fock = psi4.core.Matrix.from_array(vp_fock)
+                    vp_fock = [vp_fock, vp_fock]
+                    for i in range(self.nfragments):
+                        self.fragments[i].scf(maxiter=1000, print_energies=False, vp_matrix=vp_fock)
+                    self.update_EpEf()
+                    self.get_density_sum()
         else:
             vp = self.vp[0]
 
@@ -2062,25 +2079,15 @@ class U_Embedding:
                                       i.Cb.np[:, :i.nbeta], i.Cb.np[:, i.nbeta:], np.reciprocal(epsilon_b),
                                       self.three_overlap, self.three_overlap, optimize=True)
         # assert np.linalg.norm(hess - hess.T) < 1e-3, "hess not symmetry"
-        hess = 0.5 * (hess + hess.T)
+        hess = self.Lagrange_mul * 0.5 * (hess + hess.T)
 
         # Regularization
         if self.regul_const is not None:
             T = self.molecule.T.np
             T = 0.5 * (T + T.T)
-            hess += 4*4*self.regul_const*T
+            hess -= self.Lagrange_mul * 4*4*self.regul_const*T
 
-        # SVD to eliminate some singularity.
-        # u,s,v = np.linalg.svd(hess)
-        # filter = s < s[0]*1e-3
-        # s[filter] = 0.0
-        # # u[filter,:] = 0.0
-        # # v[:,filter] = 0.0
-        # hess = np.dot(u,np.dot(np.diag(s), v))
-
-        # L, D = modified_cholesky(hess, 1e-3, 5)
-        # hess = np.dot(L, np.dot(D, L.T))
-        return -hess
+        return -self.Lagrange_mul * hess
 
     def jac_1basis(self, vp=None, update_vp=True, calculate_scf=True):
         """
@@ -2090,24 +2097,29 @@ class U_Embedding:
         If matrix=True, return a matrix self.molecule.nbf x self.molecule.nbf
 
         """
+        assert self.Lagrange_mul == -1 or self.Lagrange_mul == 1
         # If the vp stored is not the same as the vp we got, re-run scp calculations and update vp.
         if vp is not None:
-            if not np.linalg.norm(vp - self.vp[0]) < 1e-7:
-                # update vp and vp fock
-                if calculate_scf:
-                    if update_vp:
-                        self.vp = [vp, vp]
-                        # vp_fock = - np.einsum('ijm,m->ij', self.three_overlap, self.vp[0])
-                        # self.vp_fock = [vp_fock, vp_fock]
-                        # for i in range(self.nfragments):
-                        #     self.fragments[i].scf(maxiter=1000, print_energies=False, vp_matrix=self.vp_fock)
-                        self.fragments_scf_1basis(1000, vp=True)
-                    else:
-                        # vp_fock = - np.einsum('ijm,m->ij', self.three_overlap, self.vp[0])
-                        # vp_fock = [vp_fock, vp_fock]
-                        # for i in range(self.nfragments):
-                        #     self.fragments[i].scf(maxiter=1000, print_energies=False, vp_matrix=self.vp_fock)
-                        self.fragments_scf_1basis(1000, vp=[vp, vp])
+            # if not np.linalg.norm(vp - self.vp[0]) < 1e-7:
+            # update vp and vp fock
+            if calculate_scf:
+                if update_vp:
+                    self.vp = [vp, vp]
+                    vp_fock = self.Lagrange_mul * np.einsum('ijm,m->ij', self.three_overlap, self.vp[0])
+                    vp_fock = psi4.core.Matrix.from_array(vp_fock)
+                    self.vp_fock = [vp_fock, vp_fock]
+                    for i in range(self.nfragments):
+                        self.fragments[i].scf(maxiter=1000, print_energies=False, vp_matrix=self.vp_fock)
+                    self.update_EpEf()
+                    self.get_density_sum()
+                else:
+                    vp_fock = self.Lagrange_mul * np.einsum('ijm,m->ij', self.three_overlap, self.vp[0])
+                    vp_fock = psi4.core.Matrix.from_array(vp_fock)
+                    vp_fock = [vp_fock, vp_fock]
+                    for i in range(self.nfragments):
+                        self.fragments[i].scf(maxiter=1000, print_energies=False, vp_matrix=vp_fock)
+                    self.update_EpEf()
+                    self.get_density_sum()
         else:
             vp = self.vp[0]
 
@@ -2115,38 +2127,53 @@ class U_Embedding:
         density_difference_a = self.fragments_Da - self.molecule.Da.np
         density_difference_b = self.fragments_Db - self.molecule.Db.np
 
-        jac = np.einsum("uv,uvi->i", (density_difference_a + density_difference_b), self.three_overlap, optimize=True)
+        jac = self.Lagrange_mul * np.einsum("uv,uvi->i", (density_difference_a + density_difference_b), self.three_overlap, optimize=True)
 
         # Regularization
         if self.regul_const is not None:
 
             T = self.molecule.T.np
             T = 0.5 * (T + T.T)
-            jac -= 4*4*self.regul_const*np.dot(T, vp)
+            jac -= self.Lagrange_mul * 4*4*self.regul_const*np.dot(T, vp)
 
         # print("Jac norm:", np.linalg.norm(jac))
-        return jac
+
+        return - self.Lagrange_mul * jac
 
     def lagrange_mul_1basis(self, vp=None, vp_fock=None, update_vp=True, calculate_scf=True):
         """
         Return Lagrange Multipliers (G) value. on 1 basis.
         :return: L
         """
-        if vp_fock is None:
-            vp_fock = self.vp_fock[0].np
 
+        assert self.Lagrange_mul == -1 or self.Lagrange_mul == 1
         # If the vp stored is not the same as the vp we got, re-run scp calculations and update vp.
         if vp is not None:
-            if not np.linalg.norm(vp - self.vp[0]) < 1e-7:
-                # update vp and vp fock
-                if calculate_scf:
-                    if update_vp:
-                        self.vp = [vp, vp]
-                        self.fragments_scf_1basis(1000, vp=True)
-                    else:
-                        self.fragments_scf_1basis(1000, vp=[vp, vp])
+            # if not np.linalg.norm(vp - self.vp[0]) < 1e-7:
+            # update vp and vp fock
+            if calculate_scf:
+                if update_vp:
+                    self.vp = [vp, vp]
+                    vp_fock = self.Lagrange_mul * np.einsum('ijm,m->ij', self.three_overlap, self.vp[0])
+                    vp_fock = psi4.core.Matrix.from_array(vp_fock)
+                    self.vp_fock = [vp_fock, vp_fock]
+                    for i in range(self.nfragments):
+                        self.fragments[i].scf(maxiter=1000, print_energies=False, vp_matrix=self.vp_fock)
+                    self.update_EpEf()
+                    self.get_density_sum()
+                    vp_fock = self.vp_fock[0].np
+                else:
+                    vp_fock = self.Lagrange_mul * np.einsum('ijm,m->ij', self.three_overlap, self.vp[0])
+                    vp_fock = psi4.core.Matrix.from_array(vp_fock)
+                    vp_fock = [vp_fock, vp_fock]
+                    for i in range(self.nfragments):
+                        self.fragments[i].scf(maxiter=1000, print_energies=False, vp_matrix=vp_fock)
+                    self.update_EpEf()
+                    self.get_density_sum()
+                    vp_fock = vp_fock[0].np
         else:
             vp = self.vp[0]
+            vp_fock = self.vp_fock[0].np
 
         Ef = self.ef_conv[-1]
         Ep = self.ep_conv[-1]
@@ -2158,29 +2185,18 @@ class U_Embedding:
         L = Ef
         L += np.sum(vp_fock*(density_difference_a + density_difference_b))
 
-        # print("||dD||", np.linalg.norm(density_difference_a+density_difference_b))
         w = self.molecule.Vpot.get_np_xyzw()[-1]
         dn = self.molecule.to_grid(density_difference_a+density_difference_b)
-        # vp_grid = self.molecule.to_grid(np.dot(self.molecule.A.np,vp))
-        # f,ax = plt.subplots(1, 1, dpi=210)
-        # ax.set_ylim(-0.42, 0.2)
-        # plot1d_x(vp_grid, self.molecule.Vpot, ax=ax, label="vp", dimmer_length=4.522)
-        # plot1d_x(dn, self.molecule.Vpot, ax=ax, label="dn", dimmer_length=4.522)
-        # ax.legend()
-        # f.show()
-        # plt.close(f)
-
-        # check = np.sum(np.abs(dn)*vp_grid*w)
 
         # Regularization
         if self.regul_const is not None:
             T = self.molecule.T.np
             T = 0.5 * (T + T.T)
-            L -= 4*4*self.regul_const*np.dot(np.dot(vp, T), vp)
+            L -= self.Lagrange_mul * 4*4*self.regul_const*np.dot(np.dot(vp, T), vp)
 
         self.lagrange.append(L)
-        print("L:", L, "Int_vp_drho:", L-Ef , "Ef:", Ef, "Ep: ", Ep, "dn",np.sum(np.abs(dn)*w))
-        return L
+        # print("L:", -self.Lagrange_mul * L, "Int_vp_drho:", L-Ef , "Ef:", Ef, "Ep: ", Ep, "dn", np.sum(np.abs(dn)*w))
+        return -self.Lagrange_mul * L
 
     def find_vp_scipy_1basis(self, maxiter=21, guess=None, regul_const=None, opt_method="trust-exact", ortho_basis=True, printflag=False):
         """
@@ -2337,7 +2353,7 @@ class U_Embedding:
             1) Un-orthogonalized
             2) I did not use alpha and beta wave functions to update Kai inverse. I should.
             """
-            self.check_gradient()
+            # self.check_gradient()
 
             # The reason why there is a - in front of it is that
             # to make a concave problem L = Ef + \int vp(nf-n)dr
@@ -2443,7 +2459,7 @@ class U_Embedding:
                     rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
                     now_drho = np.sum(np.abs(rho_molecule - rho_fragment) * w)
                     print(beta, now_drho - self.drho_conv[-1], np.sum(dvp*jac))
-                    if now_drho - self.drho_conv[-1] <= 0.0 and np.sum(dvp*jac) > 0:
+                    if now_drho - self.drho_conv[-1] <= 0.0 and np.sum(dvp*jac) < 0:
                         self.vp = [vp_temp, vp_temp]
                         self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
                         self.drho_conv.append(now_drho)
@@ -2555,10 +2571,10 @@ class U_Embedding:
         :return:
         """
 
-        vp = self.vp[0]
-        vp_fock = self.vp_fock[0].np
+        vp = np.copy(self.vp[0])
+        vp_fock = np.copy(self.vp_fock[0].np)
 
-        dvpf = np.einsum('ijm,m->ij', self.three_overlap, self.vp[0])
+        dvpf = self.Lagrange_mul * np.einsum('ijm,m->ij', self.three_overlap, self.vp[0])
         vp_fock_new = psi4.core.Matrix.from_array(dvpf)
         self.fragments_scf_1basis(100, vp_fock=[vp_fock_new, vp_fock_new])
 
@@ -2583,7 +2599,7 @@ class U_Embedding:
             # Run new scf with perturbed vp
             dvpi = np.zeros_like(dvp)
             dvpi[i] = dvp[i]
-            dvpf = np.einsum('ijm,m->ij', self.three_overlap, dvpi + self.vp[0])
+            dvpf = self.Lagrange_mul * np.einsum('ijm,m->ij', self.three_overlap, dvpi + self.vp[0])
             vp_fock_new = psi4.core.Matrix.from_array(dvpf)
             self.fragments_scf_1basis(100, vp_fock=[vp_fock_new, vp_fock_new])
 
@@ -2628,7 +2644,10 @@ class U_Embedding:
         assert np.allclose(vp, self.vp[0])
         assert np.allclose(vp_fock, self.vp_fock[0])
         assert np.allclose(jac+jacE, jacL)
-        assert np.allclose(jac_approx+jacE_approx, jacL_approx)
+        # assert np.allclose(jac_approx+jacE_approx, jacL_approx), np.linalg.norm(jac_approx+jacE_approx-jacL_approx)
+        print(repr(jac_approx+jacE_approx))
+        print(repr(jacL))
+
 
         return jac, jacL, jac_approx, jacL_approx, jacE, jacE_approx
 
