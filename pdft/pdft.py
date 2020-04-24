@@ -1043,6 +1043,16 @@ class U_Embedding:
         self.fragments_Db = sum_b
         return
 
+    def update_EpEf(self):
+        Ef = 0.0
+        for i in range(self.nfragments):
+            # print("Calcualte fragment %i with new vp" %i)
+            Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
+        Ep = self.molecule.energy - self.molecule.Enuc - Ef
+        self.ep_conv.append(Ep)
+        self.ef_conv.append(Ef)
+        return
+
     def initial_run(self, max_iter):
         self.molecule.scf(maxiter=max_iter, print_energies=True)
 
@@ -1124,15 +1134,6 @@ class U_Embedding:
         else:
             assert False, "If statement should never get here."
 
-        Ef = 0.0
-        for i in range(self.nfragments):
-            # print("Calcualte fragment %i with new vp" %i)
-            Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
-        Ep = self.molecule.energy - self.molecule.Enuc - Ef
-
-        self.ep_conv.append(Ep)
-        self.ef_conv.append(Ef)
-
         self.get_density_sum()
         return
 
@@ -1202,15 +1203,7 @@ class U_Embedding:
         else:
             assert False, "If statement should never get here."
 
-        Ef = 0.0
-        for i in range(self.nfragments):
-            # print("Calcualte fragment %i with new vp" %i)
-            Ef += (self.fragments[i].frag_energy - self.fragments[i].Enuc) * self.fragments[i].omega
-        Ep = self.molecule.energy - self.molecule.Enuc - Ef
-
-        self.ep_conv.append(Ep)
-        self.ef_conv.append(Ef)
-
+        self.update_EpEf()
         self.get_density_sum()
         return
 
@@ -2075,7 +2068,7 @@ class U_Embedding:
         if self.regul_const is not None:
             T = self.molecule.T.np
             T = 0.5 * (T + T.T)
-            hess -= 4*4*self.regul_const*T
+            hess += 4*4*self.regul_const*T
 
         # SVD to eliminate some singularity.
         # u,s,v = np.linalg.svd(hess)
@@ -2087,7 +2080,7 @@ class U_Embedding:
 
         # L, D = modified_cholesky(hess, 1e-3, 5)
         # hess = np.dot(L, np.dot(D, L.T))
-        return hess
+        return -hess
 
     def jac_1basis(self, vp=None, update_vp=True, calculate_scf=True):
         """
@@ -2104,8 +2097,16 @@ class U_Embedding:
                 if calculate_scf:
                     if update_vp:
                         self.vp = [vp, vp]
+                        # vp_fock = - np.einsum('ijm,m->ij', self.three_overlap, self.vp[0])
+                        # self.vp_fock = [vp_fock, vp_fock]
+                        # for i in range(self.nfragments):
+                        #     self.fragments[i].scf(maxiter=1000, print_energies=False, vp_matrix=self.vp_fock)
                         self.fragments_scf_1basis(1000, vp=True)
                     else:
+                        # vp_fock = - np.einsum('ijm,m->ij', self.three_overlap, self.vp[0])
+                        # vp_fock = [vp_fock, vp_fock]
+                        # for i in range(self.nfragments):
+                        #     self.fragments[i].scf(maxiter=1000, print_energies=False, vp_matrix=self.vp_fock)
                         self.fragments_scf_1basis(1000, vp=[vp, vp])
         else:
             vp = self.vp[0]
@@ -2336,6 +2337,8 @@ class U_Embedding:
             1) Un-orthogonalized
             2) I did not use alpha and beta wave functions to update Kai inverse. I should.
             """
+            self.check_gradient()
+
             # The reason why there is a - in front of it is that
             # to make a concave problem L = Ef + \int vp(nf-n)dr
             # to be a convex function L = Ef - \int vp(nf-n)dr
