@@ -2068,7 +2068,7 @@ class U_Embedding:
         if self.regul_const is not None:
             T = self.molecule.T.np
             T = 0.5 * (T + T.T)
-            hess += 4*4*self.regul_const*T
+            hess -= 4*4*self.regul_const*T
 
         # SVD to eliminate some singularity.
         # u,s,v = np.linalg.svd(hess)
@@ -2080,7 +2080,7 @@ class U_Embedding:
 
         # L, D = modified_cholesky(hess, 1e-3, 5)
         # hess = np.dot(L, np.dot(D, L.T))
-        return -hess
+        return hess
 
     def jac_1basis(self, vp=None, update_vp=True, calculate_scf=True):
         """
@@ -2337,7 +2337,7 @@ class U_Embedding:
             1) Un-orthogonalized
             2) I did not use alpha and beta wave functions to update Kai inverse. I should.
             """
-            self.check_gradient()
+            # self.check_gradient()
 
             # The reason why there is a - in front of it is that
             # to make a concave problem L = Ef + \int vp(nf-n)dr
