@@ -7,7 +7,7 @@
       <change beforePath="$PROJECT_DIR$/tests/Be/Be.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Be/Be.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/Be/Be2.psi4" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Be/Be2.psi4" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/H2.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/H2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/H2p/H2P.psi4" beforeDir="false" afterPath="$PROJECT_DIR$/tests/H2p/H2P.psi4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/H2p/H2P.psi4" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/H2p/H2P.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/H2p/H2P.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/H2p/grid_esp.dat" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/He2/He2" beforeDir="false" afterPath="$PROJECT_DIR$/tests/He2/He2" afterDir="false" />
@@ -110,14 +110,14 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.5421558">
+    <splitter split-orientation="horizontal" split-proportion="0.5683031">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/pdft.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="3130">
-                  <caret line="2070" column="18" selection-start-line="2070" selection-start-column="18" selection-end-line="2070" selection-end-column="18" />
+                <state relative-caret-position="-1130">
+                  <caret line="2086" column="35" selection-start-line="2086" selection-start-column="35" selection-end-line="2086" selection-end-column="35" />
                 </state>
               </provider>
             </entry>
@@ -150,7 +150,7 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/tests/formic/formic.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="2420">
+                <state relative-caret-position="861">
                   <caret line="125" column="23" selection-start-line="125" selection-start-column="23" selection-end-line="125" selection-end-column="23" />
                   <folding>
                     <element signature="e#0#18#0" expanded="true" />
@@ -162,8 +162,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/tests/Be/Be.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="480">
-                  <caret line="99" lean-forward="true" selection-start-line="99" selection-end-line="99" />
+                <state relative-caret-position="620">
+                  <caret line="82" column="18" selection-start-line="82" selection-start-column="18" selection-end-line="82" selection-end-column="18" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
                   </folding>
@@ -246,12 +246,12 @@
         <option value="$PROJECT_DIR$/tests/H2.py" />
         <option value="$PROJECT_DIR$/tests/He2/test.py" />
         <option value="$PROJECT_DIR$/tests/H2p/H2P.py" />
-        <option value="$PROJECT_DIR$/pdft.py" />
         <option value="$PROJECT_DIR$/tests/Be/Be.py" />
+        <option value="$PROJECT_DIR$/pdft.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="2277" />
     <option name="y" value="164" />
     <option name="width" value="1440" />
@@ -488,10 +488,10 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="157672000" />
+    <option name="totallyTimeSpent" value="158932000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1920" y="-2" width="1920" height="1082" extended-state="6" />
+    <frame x="1920" y="-2" width="1920" height="1082" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.2497332" />
@@ -579,13 +579,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pdft.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3130">
-          <caret line="2070" column="18" selection-start-line="2070" selection-start-column="18" selection-end-line="2070" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/H2p/H2P.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2500">
@@ -605,7 +598,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/formic/formic.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2420">
+        <state relative-caret-position="861">
           <caret line="125" column="23" selection-start-line="125" selection-start-column="23" selection-end-line="125" selection-end-column="23" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
@@ -625,11 +618,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/Be/Be.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="480">
-          <caret line="99" lean-forward="true" selection-start-line="99" selection-end-line="99" />
+        <state relative-caret-position="620">
+          <caret line="82" column="18" selection-start-line="82" selection-start-column="18" selection-end-line="82" selection-end-column="18" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pdft.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1130">
+          <caret line="2086" column="35" selection-start-line="2086" selection-start-column="35" selection-end-line="2086" selection-end-column="35" />
         </state>
       </provider>
     </entry>
