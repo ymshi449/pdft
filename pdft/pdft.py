@@ -2079,15 +2079,15 @@ class U_Embedding:
                                       i.Cb.np[:, :i.nbeta], i.Cb.np[:, i.nbeta:], np.reciprocal(epsilon_b),
                                       self.three_overlap, self.three_overlap, optimize=True)
         # assert np.linalg.norm(hess - hess.T) < 1e-3, "hess not symmetry"
-        hess = self.Lagrange_mul * 0.5 * (hess + hess.T)
+        hess = - 0.5 * (hess + hess.T)
 
         # Regularization
         if self.regul_const is not None:
             T = self.molecule.T.np
             T = 0.5 * (T + T.T)
-            hess -= self.Lagrange_mul * 4*4*self.regul_const*T
+            hess += 4*4*self.regul_const*T
 
-        return -self.Lagrange_mul * hess
+        return hess
 
     def jac_1basis(self, vp=None, update_vp=True, calculate_scf=True):
         """
@@ -2127,18 +2127,18 @@ class U_Embedding:
         density_difference_a = self.fragments_Da - self.molecule.Da.np
         density_difference_b = self.fragments_Db - self.molecule.Db.np
 
-        jac = self.Lagrange_mul * np.einsum("uv,uvi->i", (density_difference_a + density_difference_b), self.three_overlap, optimize=True)
+        jac = - self.Lagrange_mul * np.einsum("uv,uvi->i", (density_difference_a + density_difference_b), self.three_overlap, optimize=True)
 
         # Regularization
         if self.regul_const is not None:
 
             T = self.molecule.T.np
             T = 0.5 * (T + T.T)
-            jac -= self.Lagrange_mul * 4*4*self.regul_const*np.dot(T, vp)
+            jac += 4*4*self.regul_const*np.dot(T, vp)
 
         # print("Jac norm:", np.linalg.norm(jac))
 
-        return - self.Lagrange_mul * jac
+        return jac
 
     def lagrange_mul_1basis(self, vp=None, vp_fock=None, update_vp=True, calculate_scf=True):
         """
@@ -2182,8 +2182,8 @@ class U_Embedding:
         density_difference_a = self.fragments_Da - self.molecule.Da.np
         density_difference_b = self.fragments_Db - self.molecule.Db.np
 
-        L = Ef
-        L += np.sum(vp_fock*(density_difference_a + density_difference_b))
+        L = - Ef
+        L -= np.sum(vp_fock*(density_difference_a + density_difference_b))
 
         w = self.molecule.Vpot.get_np_xyzw()[-1]
         dn = self.molecule.to_grid(density_difference_a+density_difference_b)
@@ -2192,11 +2192,11 @@ class U_Embedding:
         if self.regul_const is not None:
             T = self.molecule.T.np
             T = 0.5 * (T + T.T)
-            L -= self.Lagrange_mul * 4*4*self.regul_const*np.dot(np.dot(vp, T), vp)
+            L += self.Lagrange_mul * 4 * 4 * self.regul_const*np.dot(np.dot(vp, T), vp)
 
         self.lagrange.append(L)
-        # print("L:", -self.Lagrange_mul * L, "Int_vp_drho:", L-Ef , "Ef:", Ef, "Ep: ", Ep, "dn", np.sum(np.abs(dn)*w))
-        return -self.Lagrange_mul * L
+        # print("L:", L, "Int_vp_drho:", self.Lagrange_mul * (L+Ef), "Ef:", Ef, "Ep: ", Ep, "dn", np.sum(np.abs(dn)*w))
+        return L
 
     def find_vp_scipy_1basis(self, maxiter=21, guess=None, regul_const=None, opt_method="trust-exact", ortho_basis=True, printflag=False):
         """
@@ -2259,9 +2259,9 @@ class U_Embedding:
         self.vp = [vp_array.x, vp_array.x]
 
         if ortho_basis:
-            self.vp_grid = self.molecule.to_grid(np.dot(self.molecule.A.np, self.vp[0]))
+            self.vp_grid = self.molecule.to_grid(self.Lagrange_mul * np.dot(self.molecule.A.np, self.vp[0]))
         else:
-            self.vp_grid = self.molecule.to_grid(self.vp[0])
+            self.vp_grid = self.molecule.to_grid(self.Lagrange_mul * self.vp[0])
 
         return vp_array
 
@@ -2644,9 +2644,9 @@ class U_Embedding:
         assert np.allclose(vp, self.vp[0])
         assert np.allclose(vp_fock, self.vp_fock[0])
         assert np.allclose(jac+jacE, jacL)
-        # assert np.allclose(jac_approx+jacE_approx, jacL_approx), np.linalg.norm(jac_approx+jacE_approx-jacL_approx)
-        print(repr(jac_approx+jacE_approx))
-        print(repr(jacL))
+        assert np.allclose(jac_approx+jacE_approx, jacL_approx), np.linalg.norm(jac_approx+jacE_approx-jacL_approx)
+        # print(repr(jac_approx+jacE_approx))
+        # print(repr(jacL))
 
 
         return jac, jacL, jac_approx, jacL_approx, jacE, jacE_approx
