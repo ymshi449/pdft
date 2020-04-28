@@ -9,8 +9,8 @@ functional = 'svwn'
 # There are two possibilities why a larger basis set is better than a smaller one:
 # 1. It provides a larger space for the inverse of Hessian.
 # 2. Or more likely it provides a more MOs for a better description of Hessian first order approximation.
-basis = 'cc-pvqz'
-svdc = -3
+basis = 'cc-pvdz'
+svdc = -4
 regulc = -3
 Orthogonal_basis = False
 scipy_method = "dogleg"
@@ -24,6 +24,7 @@ Full_Molec = psi4.geometry("""
 nocom
 noreorient
 Be %f 0.0 0.00
+
 Be -%f 0.0 0.00
 units bohr
 symmetry c1
@@ -38,6 +39,7 @@ Monomer_1 =  psi4.geometry("""
 nocom
 noreorient
 Be %f 0.0 0.00
+
 @Be -%f 0.0 0.00
 units bohr
 symmetry c1
@@ -47,6 +49,7 @@ Monomer_2 =  psi4.geometry("""
 nocom
 noreorient
 @Be %f 0.0 0.00
+
 Be -%f 0.0 0.00
 units bohr
 symmetry c1
@@ -79,7 +82,9 @@ pdfter = pdft.U_Embedding([f1, f2], mol)
 # pdfter.find_vp_response(21, guess=True, svd_rcond=10**svdc, beta=0.1, a_rho_var=1e-7)
 # pdfter.find_vp_cost_1basis(21, a_rho_var=1e-5, mu=1e-7)
 # hess, jac = pdfter.find_vp_response_1basis(49, ortho_basis=Orthogonal_basis, beta_method="Density",
-#                                            svd_rcond=10**svdc, a_rho_var=1e-5, mu=1e-7)
+#                                            svd_rcond=10**svdc,
+                                           # regul_const=10**regulc,
+                                           # a_rho_var=1e-5, mu=1e-7)
 pdfter.find_vp_scipy_1basis(maxiter=140, opt_method=scipy_method, ortho_basis=Orthogonal_basis)
 
 f,ax = plt.subplots(1, 1, dpi=210)

@@ -2080,7 +2080,7 @@ class U_Embedding:
 
         # L, D = modified_cholesky(hess, 1e-3, 5)
         # hess = np.dot(L, np.dot(D, L.T))
-        return -hess
+        return hess
 
     def jac_1basis(self, vp=None, update_vp=True, calculate_scf=True):
         """
@@ -2125,7 +2125,7 @@ class U_Embedding:
             jac -= 4*4*self.regul_const*np.dot(T, vp)
 
         # print("Jac norm:", np.linalg.norm(jac))
-        return -jac
+        return jac
 
     def lagrange_mul_1basis(self, vp=None, vp_fock=None, update_vp=True, calculate_scf=True):
         """
@@ -2180,7 +2180,7 @@ class U_Embedding:
 
         self.lagrange.append(L)
         print("L:", L, "Int_vp_drho:", L-Ef , "Ef:", Ef, "Ep: ", Ep, "dn",np.sum(np.abs(dn)*w))
-        return -L
+        return L
 
     def find_vp_scipy_1basis(self, maxiter=21, guess=None, regul_const=None, opt_method="trust-exact", ortho_basis=True, printflag=False):
         """
