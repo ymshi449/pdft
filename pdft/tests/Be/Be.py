@@ -9,9 +9,9 @@ functional = 'svwn'
 # There are two possibilities why a larger basis set is better than a smaller one:
 # 1. It provides a larger space for the inverse of Hessian.
 # 2. Or more likely it provides a more MOs for a better description of Hessian first order approximation.
-basis = 'cc-pvqz'
-svdc = -3
-regulc = -3
+basis = 'cc-pvdz'
+svdc = -6
+regulc = -5
 Orthogonal_basis = False
 lag_tap = 1
 scipy_method = "dogleg"
@@ -80,9 +80,9 @@ pdfter.Lagrange_mul = lag_tap
 # pdfter.find_vp_densitydifference(140)
 # pdfter.find_vp_response(21, guess=True, svd_rcond=10**svdc, beta=0.1, a_rho_var=1e-7)
 # pdfter.find_vp_cost_1basis(21, a_rho_var=1e-5, mu=1e-7)
-# hess, jac = pdfter.find_vp_response_1basis(3, ortho_basis=Orthogonal_basis, beta_method="Density",
-#                                            svd_rcond=10**svdc, a_rho_var=1e-5, mu=1e-7)
-pdfter.find_vp_scipy_1basis(maxiter=140, opt_method=scipy_method, ortho_basis=Orthogonal_basis)
+hess, jac = pdfter.find_vp_response_1basis(14, ortho_basis=Orthogonal_basis, beta_method="Density",
+                                           svd_rcond=10**svdc, regul_const=10**regulc, a_rho_var=1e-5, mu=1e-7)
+# pdfter.find_vp_scipy_1basis(maxiter=4, opt_method=scipy_method, ortho_basis=Orthogonal_basis)
 
 f,ax = plt.subplots(1, 1, dpi=210)
 ax.set_ylim(-0.42, 0.2)
@@ -122,25 +122,25 @@ plt.close(f)
 # f.show()
 # plt.close(f)
 
-#%% 1 basis 2D plot
-L = [3.0, 3.0, 2.0]
-D = [0.1, 0.1, 0.1]
-# Plot file
-O, N = libcubeprop.build_grid(mol.wfn, L, D)
-block, points, nxyz, npoints = libcubeprop.populate_grid(mol.wfn, O, N, D)
-if Orthogonal_basis:
-    vp_cube = libcubeprop.compute_density_1basis(mol.wfn, O, N, D, npoints, points, nxyz, block, np.dot(mol.A.np, pdfter.vp[0]))
-else:
-    vp_cube = libcubeprop.compute_density_1basis(mol.wfn, O, N, D, npoints, points, nxyz, block,
-                                                 pdfter.vp[0])
-f, ax = plt.subplots(1, 1, dpi=160)
-p = ax.imshow(vp_cube[:, :, 20], interpolation="bicubic", cmap="Spectral")
-atoms = libcubeprop.get_atoms(mol.wfn, D, O)
-# ax.scatter(atoms[:,2], atoms[:,1])
-f.colorbar(p, ax=ax)
-f.show()
-f.savefig("vp2D" + title)
-plt.close(f)
+# #%% 1 basis 2D plot
+# L = [3.0, 3.0, 2.0]
+# D = [0.1, 0.1, 0.1]
+# # Plot file
+# O, N = libcubeprop.build_grid(mol.wfn, L, D)
+# block, points, nxyz, npoints = libcubeprop.populate_grid(mol.wfn, O, N, D)
+# if Orthogonal_basis:
+#     vp_cube = libcubeprop.compute_density_1basis(mol.wfn, O, N, D, npoints, points, nxyz, block, np.dot(mol.A.np, pdfter.vp[0]))
+# else:
+#     vp_cube = libcubeprop.compute_density_1basis(mol.wfn, O, N, D, npoints, points, nxyz, block,
+#                                                  pdfter.vp[0])
+# f, ax = plt.subplots(1, 1, dpi=160)
+# p = ax.imshow(vp_cube[:, :, 20], interpolation="bicubic", cmap="Spectral")
+# atoms = libcubeprop.get_atoms(mol.wfn, D, O)
+# # ax.scatter(atoms[:,2], atoms[:,1])
+# f.colorbar(p, ax=ax)
+# f.show()
+# f.savefig("vp2D" + title)
+# plt.close(f)
 
 #
 # dD = psi4.core.Matrix.from_array(pdfter.fragments_Da + pdfter.fragments_Db - mol.Da.np - mol.Db.np)
@@ -153,3 +153,15 @@ plt.close(f)
 # f.colorbar(p, ax=ax)
 # f.show()
 # f.savefig("dn" + title)
+
+# dvp_grid = mol.to_grid(jacL
+# _approx)
+# dvp_grid1 = mol.to_grid(jacL)
+# dvp_grid2 = mol.to_grid(jac)
+# f,ax = plt.subplots(1, 1, dpi=210)
+# pdft.plot1d_x(dvp_grid, mol.Vpot, ax=ax, label="app", dimmer_length=separation)
+# pdft.plot1d_x(dvp_grid1, mol.Vpot, ax=ax, label="dn-int vp*Cai", ls='--')
+# pdft.plot1d_x(dvp_grid2, mol.Vpot, ax=ax, label='dn', ls='--')
+# ax.legend()
+# f.show()
+# plt.close(f)

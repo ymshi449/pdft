@@ -1033,6 +1033,9 @@ class U_Embedding:
         # Control the sign of lagrange_multiplier
         self.Lagrange_mul = 1
 
+        # if using orthogonal basis set
+        self.ortho_basis = None
+
     def get_density_sum(self):
         sum_a = self.fragments[0].Da.np.copy() * self.fragments[0].omega
         sum_b = self.fragments[0].Db.np.copy() * self.fragments[0].omega
@@ -2188,17 +2191,33 @@ class U_Embedding:
         w = self.molecule.Vpot.get_np_xyzw()[-1]
         dn = self.molecule.to_grid(density_difference_a+density_difference_b)
 
+        # if self.ortho_basis:
+        #     self.vp_grid = self.molecule.to_grid(self.Lagrange_mul * np.dot(self.molecule.A.np, self.vp[0]))
+        # else:
+        #     self.vp_grid = self.molecule.to_grid(self.Lagrange_mul * self.vp[0])
+        # f, ax = plt.subplots(1, 1, dpi=210)
+        # ax.set_ylim(-0.42, 0.2)
+        # plot1d_x(self.vp_grid, self.molecule.Vpot, ax=ax, label="vp", title=str(np.sum(np.abs(dn)*w)))
+        # ax.legend()
+        # f.show()
+        # plt.close(f)
+
         # Regularization
         if self.regul_const is not None:
             T = self.molecule.T.np
             T = 0.5 * (T + T.T)
-            L += self.Lagrange_mul * 4 * 4 * self.regul_const*np.dot(np.dot(vp, T), vp)
+            norm = 4 * 4 * np.dot(np.dot(vp, T), vp)
+            if not np.isclose(norm, 0):
+                # self.regul_const = L / norm * 1e-4
+                print("L", L, norm, L / norm, self.regul_const)
+            L += norm * self.regul_const
 
         self.lagrange.append(L)
-        # print("L:", L, "Int_vp_drho:", self.Lagrange_mul * (L+Ef), "Ef:", Ef, "Ep: ", Ep, "dn", np.sum(np.abs(dn)*w))
+        print("L:", L, "Int_vp_drho:", self.Lagrange_mul * (L+Ef), "Ef:", Ef, "Ep: ", Ep, "dn", np.sum(np.abs(dn)*w))
         return L
 
-    def find_vp_scipy_1basis(self, maxiter=21, guess=None, regul_const=None, opt_method="trust-exact", ortho_basis=True, printflag=False):
+    def find_vp_scipy_1basis(self, maxiter=21, guess=None, regul_const=None, opt_method="trust-exact",
+                             ortho_basis=True, printflag=False):
         """
         Scipy Newton-CG
         :param maxiter:
@@ -2208,9 +2227,11 @@ class U_Embedding:
         """
         self.regul_const = regul_const
 
+        self.ortho_basis = ortho_basis
+
         if self.three_overlap is None:
             self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap())
-            if ortho_basis:
+            if self.ortho_basis:
                 self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.molecule.A.np)
 
         if guess is None:
@@ -2288,9 +2309,11 @@ class U_Embedding:
         """
         self.regul_const = regul_const
 
+        self.ortho_basis = ortho_basis
+
         if self.three_overlap is None:
             self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap())
-            if ortho_basis:
+            if self.ortho_basis:
                 self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.molecule.A.np)
 
         if guess is None:
@@ -2644,7 +2667,8 @@ class U_Embedding:
         assert np.allclose(vp, self.vp[0])
         assert np.allclose(vp_fock, self.vp_fock[0])
         assert np.allclose(jac+jacE, jacL)
-        assert np.allclose(jac_approx+jacE_approx, jacL_approx), np.linalg.norm(jac_approx+jacE_approx-jacL_approx)
+        # assert np.allclose(jac_approx+jacE_approx, jacL_approx), np.linalg.norm(jac_approx+jacE_approx-jacL_approx)
+        print(np.linalg.norm(jac_approx + jacE_approx - jacL_approx))
         # print(repr(jac_approx+jacE_approx))
         # print(repr(jacL))
 
