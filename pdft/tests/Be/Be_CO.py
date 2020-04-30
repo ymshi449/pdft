@@ -9,16 +9,12 @@ functional = 'svwn'
 # There are two possibilities why a larger basis set is better than a smaller one:
 # 1. It provides a larger space for the inverse of Hessian.
 # 2. Or more likely it provides a more MOs for a better description of Hessian first order approximation.
-basis = 'cc-pvtz'
-svdc = 1e-4
+basis = 'cc-pvdz'
 regulc = None
 Orthogonal_basis = False
-lag_tap = 1
-scipy_method = "dogleg"
 # title = "Be WuYang1b Yan Q[nf] v[nf] svdc%i reguc%i " %(svdc, reguc) + basis + functional
-title = F"ortho_vp_basis svd {svdc} regu {regulc} " + basis + functional + " orth_basis: " + str(Orthogonal_basis)
+title = basis + functional + " orth_basis: " + str(Orthogonal_basis)
 print(title)
-print(scipy_method, lag_tap)
 
 psi4.set_output_file("Be2.psi4")
 
@@ -79,9 +75,24 @@ f2 = pdft.U_Molecule(Monomer_1, basis, functional, jk=mol.jk)
 pdfter = pdft.U_Embedding([f1, f2], mol)
 pdfter.fragments_scf_1basis(1000)
 
-vp = np.zeros(mol.nbf)
-pdfter.vp = [vp, vp]
-vp_fock = psi4.core.Matrix.from_array(np.zeros_like(mol.H.np))
-pdfter.vp_fock = [vp_fock, vp_fock]
+pdfter.find_vp_scipy_constrainedoptimization(1000)
 
-grad, grad_app = pdfter.check_gradient_constrainedoptimization()
+pdft.plot1d_x(pdfter.vp_grid, mol.Vpot)
+
+L = [3.0, 3.0, 2.0]
+D = [0.1, 0.1, 0.1]
+# Plot file
+O, N = libcubeprop.build_grid(mol.wfn, L, D)
+block, points, nxyz, npoints = libcubeprop.populate_grid(mol.wfn, O, N, D)
+if Orthogonal_basis:
+    vp_cube = libcubeprop.compute_density_1basis(mol.wfn, O, N, D, npoints, points, nxyz, block, np.dot(mol.A.np, pdfter.vp[0]))
+else:
+    vp_cube = libcubeprop.compute_density_1basis(mol.wfn, O, N, D, npoints, points, nxyz, block,
+                                                 pdfter.vp[0])
+f, ax = plt.subplots(1, 1, dpi=160)
+p = ax.imshow(vp_cube[:, :, 20], interpolation="bicubic", cmap="Spectral")
+atoms = libcubeprop.get_atoms(mol.wfn, D, O)
+# ax.scatter(atoms[:,2], atoms[:,1])
+f.colorbar(p, ax=ax)
+f.show()
+plt.close(f)
