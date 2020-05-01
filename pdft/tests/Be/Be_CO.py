@@ -9,7 +9,7 @@ functional = 'svwn'
 # There are two possibilities why a larger basis set is better than a smaller one:
 # 1. It provides a larger space for the inverse of Hessian.
 # 2. Or more likely it provides a more MOs for a better description of Hessian first order approximation.
-basis = 'cc-pvdz'
+basis = 'cc-pvqz'
 regulc = None
 Orthogonal_basis = False
 # title = "Be WuYang1b Yan Q[nf] v[nf] svdc%i reguc%i " %(svdc, reguc) + basis + functional
@@ -75,24 +75,24 @@ f2 = pdft.U_Molecule(Monomer_1, basis, functional, jk=mol.jk)
 pdfter = pdft.U_Embedding([f1, f2], mol)
 pdfter.fragments_scf_1basis(1000)
 
-pdfter.find_vp_scipy_constrainedoptimization(1000)
+pdfter.find_vp_scipy_constrainedoptimization(100)
+# pdfter.find_vp_constrainedoptimization_BT(77)
+# pdft.plot1d_x(pdfter.vp_grid, mol.Vpot)
 
-pdft.plot1d_x(pdfter.vp_grid, mol.Vpot)
-
-L = [3.0, 3.0, 2.0]
-D = [0.1, 0.1, 0.1]
-# Plot file
-O, N = libcubeprop.build_grid(mol.wfn, L, D)
-block, points, nxyz, npoints = libcubeprop.populate_grid(mol.wfn, O, N, D)
-if Orthogonal_basis:
-    vp_cube = libcubeprop.compute_density_1basis(mol.wfn, O, N, D, npoints, points, nxyz, block, np.dot(mol.A.np, pdfter.vp[0]))
-else:
-    vp_cube = libcubeprop.compute_density_1basis(mol.wfn, O, N, D, npoints, points, nxyz, block,
-                                                 pdfter.vp[0])
-f, ax = plt.subplots(1, 1, dpi=160)
-p = ax.imshow(vp_cube[:, :, 20], interpolation="bicubic", cmap="Spectral")
-atoms = libcubeprop.get_atoms(mol.wfn, D, O)
-# ax.scatter(atoms[:,2], atoms[:,1])
-f.colorbar(p, ax=ax)
-f.show()
-plt.close(f)
+# L = [3.0, 3.0, 2.0]
+# D = [0.1, 0.1, 0.1]
+# # Plot file
+# O, N = libcubeprop.build_grid(mol.wfn, L, D)
+# block, points, nxyz, npoints = libcubeprop.populate_grid(mol.wfn, O, N, D)
+# if Orthogonal_basis:
+#     vp_cube = libcubeprop.compute_density_1basis(mol.wfn, O, N, D, npoints, points, nxyz, block, np.dot(mol.A.np, pdfter.vp[0]))
+# else:
+#     vp_cube = libcubeprop.compute_density_1basis(mol.wfn, O, N, D, npoints, points, nxyz, block,
+#                                                  pdfter.vp[0])
+# f, ax = plt.subplots(1, 1, dpi=160)
+# p = ax.imshow(vp_cube[:, :, 20], interpolation="bicubic", cmap="Spectral")
+# atoms = libcubeprop.get_atoms(mol.wfn, D, O)
+# # ax.scatter(atoms[:,2], atoms[:,1])
+# f.colorbar(p, ax=ax)
+# f.show()
+# plt.close(f)

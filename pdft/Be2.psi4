@@ -1,9 +1,9 @@
    => Loading Basis Set <=
 
-    Name: CC-PVQZ
+    Name: CC-PVTZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-2 entry BE         line   130 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvqz.gbs 
+    atoms 1-2 entry BE         line   102 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvtz.gbs 
 
 
          ---------------------------------------------------------
@@ -51,13 +51,13 @@
 
   ==> Primary Basis <==
 
-  Basis Set: CC-PVQZ
-    Blend: CC-PVQZ
-    Number of shells: 30
-    Number of basis function: 110
-    Number of Cartesian functions: 140
+  Basis Set: CC-PVTZ
+    Blend: CC-PVTZ
+    Number of shells: 20
+    Number of basis function: 60
+    Number of Cartesian functions: 70
     Spherical Harmonics?: true
-    Max angular momentum: 4
+    Max angular momentum: 3
 
   ==> DFT Potential <==
 
@@ -93,27 +93,27 @@
     Pruning alpha          =              1
     Radial Points          =             75
     Spherical Points       =            302
-    Total Points           =          45300
-    Total Blocks           =            420
-    Max Points             =            254
-    Max Functions          =            110
+    Total Points           =          44962
+    Total Blocks           =            418
+    Max Points             =            255
+    Max Functions          =             60
 
   Using in-core PK algorithm.
    Calculation information:
       Number of atoms:                   2
-      Number of AO shells:              30
-      Number of primitives:             84
-      Number of atomic orbitals:       140
-      Number of basis functions:       110
+      Number of AO shells:              20
+      Number of primitives:             68
+      Number of atomic orbitals:        70
+      Number of basis functions:        60
 
       Integral cutoff                 1.00e-12
       Number of threads:                 2
 
   Performing in-core PK
-  Using 37277130 doubles for integral storage.
-  We computed 119335 shell quartets total.
-  Whereas there are 108345 unique shell quartets.
-    10.14 percent of shell quartets recomputed by reordering.
+  Using 3350730 doubles for integral storage.
+  We computed 25594 shell quartets total.
+  Whereas there are 22155 unique shell quartets.
+    15.52 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -127,10 +127,10 @@
 
    => Loading Basis Set <=
 
-    Name: CC-PVQZ
+    Name: CC-PVTZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-2 entry BE         line   130 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvqz.gbs 
+    atoms 1-2 entry BE         line   102 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvtz.gbs 
 
 
          ---------------------------------------------------------
@@ -178,13 +178,13 @@
 
   ==> Primary Basis <==
 
-  Basis Set: CC-PVQZ
-    Blend: CC-PVQZ
-    Number of shells: 30
-    Number of basis function: 110
-    Number of Cartesian functions: 140
+  Basis Set: CC-PVTZ
+    Blend: CC-PVTZ
+    Number of shells: 20
+    Number of basis function: 60
+    Number of Cartesian functions: 70
     Spherical Harmonics?: true
-    Max angular momentum: 4
+    Max angular momentum: 3
 
   ==> DFT Potential <==
 
@@ -220,17 +220,17 @@
     Pruning alpha          =              1
     Radial Points          =             75
     Spherical Points       =            302
-    Total Points           =          45300
-    Total Blocks           =            420
-    Max Points             =            254
-    Max Functions          =            110
+    Total Points           =          44962
+    Total Blocks           =            418
+    Max Points             =            255
+    Max Functions          =             60
 
    => Loading Basis Set <=
 
-    Name: CC-PVQZ
+    Name: CC-PVTZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-2 entry BE         line   130 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvqz.gbs 
+    atoms 1-2 entry BE         line   102 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvtz.gbs 
 
 
          ---------------------------------------------------------
@@ -278,13 +278,13 @@
 
   ==> Primary Basis <==
 
-  Basis Set: CC-PVQZ
-    Blend: CC-PVQZ
-    Number of shells: 30
-    Number of basis function: 110
-    Number of Cartesian functions: 140
+  Basis Set: CC-PVTZ
+    Blend: CC-PVTZ
+    Number of shells: 20
+    Number of basis function: 60
+    Number of Cartesian functions: 70
     Spherical Harmonics?: true
-    Max angular momentum: 4
+    Max angular momentum: 3
 
   ==> DFT Potential <==
 
@@ -320,8 +320,15 @@
     Pruning alpha          =              1
     Radial Points          =             75
     Spherical Points       =            302
-    Total Points           =          45300
-    Total Blocks           =            420
-    Max Points             =            254
-    Max Functions          =            110
+    Total Points           =          44962
+    Total Blocks           =            418
+    Max Points             =            255
+    Max Functions          =             60
+
+   => Loading Basis Set <=
+
+    Name: (CC-PVTZ AUX)
+    Role: JKFIT
+    Keyword: DF_BASIS_SCF
+    atoms 1-2 entry BE         line   101 file /home/yuming/anaconda3/envs/work/share/psi4/basis/def2-qzvpp-jkfit.gbs 
 

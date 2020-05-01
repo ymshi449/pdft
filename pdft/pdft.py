@@ -546,7 +546,7 @@ class U_Molecule():
         plot = qc.models.Molecule.from_data(self.geometry.save_string_xyz())
         return plot
 
-    def two_gradtwo_grid(self, vpot=None):
+    def two_gradtwo_grid_overlap(self, vpot=None):
         """
         Find \int phi_j*phi_n*dot(grad(phi_i), grad(phi_m)) to (ijmn)
         :param vpot:
@@ -999,7 +999,7 @@ class U_Molecule():
         return
 
 class U_Embedding:
-    def __init__(self, fragments, molecule, vp_basis=None):
+    def __init__(self, fragments, molecule, vp_basis=None, vp_T=None):
         #basics
         self.fragments = fragments
         self.nfragments = len(fragments)
@@ -1014,8 +1014,10 @@ class U_Embedding:
         self.vp      = None  # Real function on basis
         if vp_basis is None:
             self.vp_basis = self.molecule.wfn.basisset()
+            self.vp_T = self.molecule.T.np
         else:
             self.vp_basis = psi4.core.BasisSet.build(self.molecule.geometry, other=vp_basis)
+            self.vp_T = vp_T
 
         # Used to store vp from last method when switch between 1basis and 2basis.
         # Remember to plot this part.
@@ -1857,7 +1859,7 @@ class U_Embedding:
 
         self.regul_const = regul_const
         if self.twogradtwo is None and self.regul_const is not None:
-            self.twogradtwo = self.molecule.two_gradtwo_grid()
+            self.twogradtwo = self.molecule.two_gradtwo_grid_overlap()
 
         opt = {
             "disp": True,
@@ -1943,7 +1945,7 @@ class U_Embedding:
             svd_rcond = 1e-3
 
         if self.twogradtwo is None and self.regul_const is not None:
-            self.twogradtwo = self.molecule.two_gradtwo_grid()
+            self.twogradtwo = self.molecule.two_gradtwo_grid_overlap()
 
         print("<<<<<<<<<<<<<<<<<<<<<<Compute_Method_Response Method 2<<<<<<<<<<<<<<<<<<<")
         for scf_step in range(1, maxiter + 1):
@@ -2099,7 +2101,7 @@ class U_Embedding:
 
         # Regularization
         if self.regul_const is not None:
-            T = self.molecule.T.np
+            T = self.vp_T
             T = 0.5 * (T + T.T)
             hess += 4*4*self.regul_const*T
 
@@ -2148,7 +2150,7 @@ class U_Embedding:
         # Regularization
         if self.regul_const is not None:
 
-            T = self.molecule.T.np
+            T = self.vp_T
             T = 0.5 * (T + T.T)
             jac += 4*4*self.regul_const*np.dot(T, vp)
 
@@ -2217,7 +2219,7 @@ class U_Embedding:
 
         # Regularization
         if self.regul_const is not None:
-            T = self.molecule.T.np
+            T = self.vp_T
             T = 0.5 * (T + T.T)
             norm = 4 * 4 * np.dot(np.dot(vp, T), vp)
             # if not np.isclose(norm, 0):
@@ -2243,8 +2245,14 @@ class U_Embedding:
         self.ortho_basis = ortho_basis
 
         if self.three_overlap is None:
-            self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap())
+            if self.vp_basis is self.molecule.wfn.basisset():
+                self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap())
+            else:
+                assert not self.ortho_basis
+                self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
+                                                      self.molecule.wfn.basisset(), self.vp_basis))
             if self.ortho_basis:
+                assert self.vp_basis is self.molecule.wfn.basisset()
                 self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.molecule.A.np)
 
         if guess is None:
@@ -2353,12 +2361,6 @@ class U_Embedding:
             elif self.vp[0].ndim == 1:
                 vp_total = self.vp
             vp_totalfock = self.vp_fock[0]
-        else:
-            vp_total = guess[0]
-            self.vp = guess
-            vp_totalfock = psi4.core.Matrix.from_array(
-                np.zeros_like(np.einsum('ijmn,mn->ij', self.four_overlap, guess[0])))
-            self.vp_fock = [vp_totalfock, vp_totalfock]
 
             self.fragments_scf_1basis(1000, vp=True, vp_fock=True)
 
@@ -2538,10 +2540,10 @@ class U_Embedding:
         # Calculating components is too slow.
         # self.update_oueis_retularized_vp_nad(Qtype=Qtype, vstype=vstype,
         #                                      vp_Hext_decomposition=False if (vp_nad_iter is None) else True)
-        if ortho_basis:
-            self.vp_grid = self.molecule.to_grid(np.dot(self.molecule.A.np, self.vp[0]))
-        else:
-            self.vp_grid = self.molecule.to_grid(self.vp[0])
+        # if ortho_basis:
+        #     self.vp_grid = self.molecule.to_grid(np.dot(self.molecule.A.np, self.vp[0]))
+        # else:
+        #     self.vp_grid = self.molecule.to_grid(self.vp[0])
         return hess, jac
 
     def test_vp_modification_on_grid(self, filters, value=[0.0]):
@@ -3307,6 +3309,8 @@ class U_Embedding:
             "disp": True,
             "maxiter": maxiter,
             # "eps": 1e-7
+            "norm": 2,
+            "gtol": 1e-7
         }
 
         vp_array = optimizer.minimize(self.lagrangian_constrainedoptimization, self.vp[0],
@@ -3319,6 +3323,91 @@ class U_Embedding:
             self.vp_grid = self.molecule.to_grid(self.vp[0])
 
         return vp_array
+
+    def find_vp_constrainedoptimization_BT(self, maxiter=21, guess=None, ortho_basis=True, mu=1e-4):
+
+        self.ortho_basis = ortho_basis
+
+        if self.four_overlap is None:
+            self.four_overlap = fouroverlap(self.molecule.wfn, self.molecule.geometry,
+                                            self.molecule.basis, self.molecule.mints)[0]
+
+        if self.three_overlap is None:
+            self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap())
+            if self.ortho_basis:
+                self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.molecule.A.np)
+
+        if guess is None:
+            vp_total = np.zeros(self.vp_basis.nbf())
+            self.vp = [vp_total, vp_total]
+
+            vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
+
+            self.vp_fock = [vp_totalfock, vp_totalfock]
+
+            self.fragments_scf_1basis(1000, vp=True, vp_fock=True)
+
+        _, _, _, w = self.molecule.Vpot.get_np_xyzw()
+
+        ## Tracking rho and changing beta
+        rho_molecule = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
+        rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
+        old_rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
+        L_old = self.lagrangian_constrainedoptimization(calculate_scf=False, update_vp=False)
+        self.lagrange = []
+        self.lagrange.append(L_old)
+        self.drho_conv.append(old_rho_conv)
+
+        print("Initial dn:", old_rho_conv, L_old)
+
+        self.vp_grid = 0
+
+        converge_flag = False
+
+        print("<<<<<<<<<<<<<<<<<<<<<<WuYang 1 basis manual Newton<<<<<<<<<<<<<<<<<<<")
+        for scf_step in range(1, maxiter + 1):
+            dvp = - self.jac_constrainedoptimization(calculate_scf=False, update_vp=False)
+
+            # BT for beta with L
+            beta = 2
+            while True:
+                beta *= 0.5
+                if beta < 1e-4:
+                    converge_flag = True
+                    break
+                # Traditional WuYang
+                vp_temp = self.vp[0] + beta * dvp
+                vpf = np.einsum('ijm,m->ij', self.three_overlap, vp_temp)
+                vpf = 0.5 * (vpf + vpf.T)
+                vp_fock_temp = psi4.core.Matrix.from_array(vpf)
+                self.fragments_scf_1basis(700, vp_fock=[vp_fock_temp, vp_fock_temp])
+                L = self.lagrangian_constrainedoptimization(vp_temp, calculate_scf=False, update_vp=False)
+                print(beta, L - L_old, -mu * beta * np.sum(dvp * dvp))
+                if L - L_old <= -mu * beta * np.sum(dvp * dvp):
+                    L_old = L
+                    self.lagrange.append(L)
+                    self.vp = [vp_temp, vp_temp]
+                    self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
+                    rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
+                    now_drho = np.sum(np.abs(rho_molecule - rho_fragment) * w)
+                    self.drho_conv.append(now_drho)
+                    break
+
+            print(
+                F'--------------------------------------------------------------- \n'
+                F'Iter: {scf_step} beta: {beta} Ef: {self.ef_conv[-1]} Ep: {self.ep_conv[-1]} dn: {self.drho_conv[-1]} L: {self.lagrange[-1]}\n')
+            if converge_flag:
+                print("BT stoped updating. Converged. beta:%e" % beta)
+                break
+            elif scf_step == maxiter:
+                # raise Exception("Maximum number of SCF cycles exceeded for vp.")
+                print("Maximum number of SCF cycles exceeded for vp.")
+
+        if ortho_basis:
+            self.vp_grid = self.molecule.to_grid(np.dot(self.molecule.A.np, self.vp[0]))
+        else:
+            self.vp_grid = self.molecule.to_grid(self.vp[0])
+        return
 
     def check_gradient_constrainedoptimization(self, dvp=None):
         vp = np.copy(self.vp[0])
