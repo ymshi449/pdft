@@ -1823,10 +1823,14 @@ class U_Embedding:
             orth_MOa = np.dot(MOa, Aa)
             assert np.allclose(orth_MOa.T.dot(S.dot(orth_MOa)), np.eye(nmo_a))
             # Reassign Cocc and D as well
+            print("BeforeSYM", np.max(np.abs(np.dot(self.fragments[0].Cocca.np[:].T, np.dot(S, self.fragments[1].Cocca.np[:])))))
+            Cocca1 = np.copy(self.fragments[0].Cocca.np[:])
             self.fragments[0].Cocca.np[:] = orth_MOa[:, :nalpha1]
             self.fragments[1].Cocca.np[:] = orth_MOa[:, nalpha1:]
             self.fragments[0].Da.np[:] = orth_MOa[:, :nalpha1].dot(orth_MOa[:, :nalpha1].T)
             self.fragments[1].Da.np[:] = orth_MOa[:, nalpha1:].dot(orth_MOa[:, nalpha1:].T)
+            print("AfterSYM", np.max(np.abs(np.dot(self.fragments[0].Cocca.np[:].T, np.dot(S, self.fragments[1].Cocca.np[:])))),
+                  np.linalg.norm(self.fragments[0].Cocca.np-Cocca1))
         
         # beta
         nbeta1 = self.fragments[0].nbeta
@@ -1846,8 +1850,8 @@ class U_Embedding:
             orth_MOb = np.dot(MOb, Ab)
             assert np.allclose(orth_MOb.T.dot(S.dot(orth_MOb)), np.eye(nmo_b))
             # Reassign Cocc and D as well
-            self.fragments[0].Coccb.np[:] = orth_MOb[:, :nalpha1]
-            self.fragments[1].Coccb.np[:] = orth_MOb[:, nalpha1:]
+            self.fragments[0].Coccb.np[:] = orth_MOb[:, :nbeta1]
+            self.fragments[1].Coccb.np[:] = orth_MOb[:, nbeta1:]
             self.fragments[0].Db.np[:] = orth_MOb[:, :nbeta1].dot(orth_MOb[:, :nbeta1].T)
             self.fragments[1].Db.np[:] = orth_MOb[:, nbeta1:].dot(orth_MOb[:, nbeta1:].T)
 
@@ -1934,7 +1938,11 @@ class U_Embedding:
             self.drho_conv.append(dn)
             ortho = [np.dot(self.fragments[0].Cocca.np.T, S.dot(self.fragments[1].Cocca.np)),
                      np.dot(self.fragments[0].Coccb.np.T, S.dot(self.fragments[1].Coccb.np))]
-            ortho_max = np.max(np.abs(ortho))
+            ortho_max = (np.max(np.abs(ortho[0])), np.max(np.abs(ortho[1])))
+
+            Tsnad = (np.trace((self.molecule.Da.np - self.fragments_Da).dot(self.molecule.T.np)),
+                     np.trace((self.molecule.Db.np - self.fragments_Db).dot(self.molecule.T.np)))
+
             f,ax = plt.subplots(1,1, dpi=210)
             ax.set_ylim(-1, 0.5)
             plot1d_x(self.vp_Hext_nad + self.vp_xc_nad, self.molecule.Vpot, dimmer_length=2,
@@ -1952,7 +1960,7 @@ class U_Embedding:
             f.savefig(self.molecule.wfn.molecule().name() + projection_method +str(scf_step))
             plt.close(f)
 
-            print(F'Iter: {scf_step} mu: %e d_rho: {self.drho_conv[-1]} Ef: {Ef} ortho: {ortho}' %mu)
+            print(F'Iter: {scf_step} mu: %e d_rho: {self.drho_conv[-1]} Ef: {Ef} ortho: {ortho_max} Tsnad: {Tsnad}' %mu)
             if len(rho_convergence) >= 5:
                 if np.std(rho_convergence[-4:]) < rho_std:
                     print("Break because rho does update for 5 iter")
@@ -2014,6 +2022,9 @@ class U_Embedding:
         ## Tracking rho and changing beta
         old_rho_conv = np.inf
         beta_lastupdate_iter = 0
+
+        self.orthogonal_scf(21, projection_method="Huzinaga", printflag=printflag)
+
         rho_convergence = []
         rho_molecule = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
         rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
@@ -2077,15 +2088,23 @@ class U_Embedding:
                         break
             elif beta_method == "Density":
                 # BT for beta with dn
-                beta = 2.0
+                beta = 2
                 while True:
                     beta *= 0.5
-                    if beta < 1e-7:
+                    if beta < 1e-4:
                         print("No beta %e will work" % beta)
                         return
                     vp_temp = self.vp[0] + beta * dvp
                     vp_fock_temp = psi4.core.Matrix.from_array(self.vp_fock[0].np + beta * dvpf)
-                    self.fragments_scf(300, vp_fock=[vp_fock_temp, vp_fock_temp])
+
+                    Cocca1 = np.copy(self.fragments[0].Cocca.np)
+                    Coccb1 = np.copy(self.fragments[0].Coccb.np)
+                    Cocca2 = np.copy(self.fragments[1].Cocca.np)
+                    Coccb2 = np.copy(self.fragments[1].Coccb.np)
+
+                    self.orthogonal_scf(21, projection_method="Huzinaga", printflag=printflag, vp_matrix=[vp_fock_temp, vp_fock_temp])
+
+                    # self.fragments_scf(300, vp_fock=[vp_fock_temp, vp_fock_temp])
                     rho_fragment = self.molecule.to_grid(self.fragments_Da, Duv_b=self.fragments_Db)
                     now_drho = np.sum(np.abs(rho_fragment - rho_molecule) * w)
                     dvp_grid = self.molecule.to_grid(beta * dvp)
@@ -2098,10 +2117,18 @@ class U_Embedding:
                         self.vp_fock = [vp_fock_temp, vp_fock_temp]  # Use total_vp instead of spin vp for calculation.
                         self.drho_conv.append(now_drho)
                         break
+                    else:
+                        self.fragments[0].Cocca.np[:] = Cocca1
+                        self.fragments[0].Coccb.np[:] = Coccb1
+                        self.fragments[1].Cocca.np[:] = Cocca2
+                        self.fragments[1].Coccb.np[:] = Coccb2
+
             else:
                 NameError("No BackTracking method named " + str(beta_method))
 
-            print(F'Iter: {scf_step} beta: {beta} Ef: {self.ef_conv[-1]} Ep: {self.ep_conv[-1]} d_rho: {self.drho_conv[-1]}')
+            Tsnad = (np.trace((self.molecule.Da.np - self.fragments_Da).dot(self.molecule.T.np)),
+                     np.trace((self.molecule.Db.np - self.fragments_Db).dot(self.molecule.T.np)))
+            print(F'Iter: {scf_step} beta: {beta} Ef: {self.ef_conv[-1]} Ep: {self.ep_conv[-1]} Tsnad {Tsnad} d_rho: {self.drho_conv[-1]}')
 
             if beta < 1e-7:
                 print("Break because even small step length can not improve.")
@@ -2116,7 +2143,8 @@ class U_Embedding:
             # elif scf_step == maxiter:
             # raise Exception("Maximum number of SCF cycles exceeded for vp.")
             # print("Maximum number of SCF cycles exceeded for vp.")
-
+        self.orthogonal_scf(21, projection_method="Huzinaga", printflag=printflag,
+                            vp_matrix=self.vp_fock)
         return
 
     def find_vp_densitydifference_onbasis(self, maxiter, beta, guess=None, rho_std=1e-5, printflag=False):
