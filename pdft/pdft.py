@@ -1037,6 +1037,9 @@ class U_Embedding:
         # Regularization Constant
         self.regul_const = None
 
+        # Constrained Optimization W exponent
+        self.CO_weight_exponent = None
+
         # nad parts of vp with local-Q
         self.vp_ext_nad = None
         self.vp_Hext_nad = None
@@ -1155,6 +1158,7 @@ class U_Embedding:
         else:
             assert False, "If statement should never get here."
 
+        self.update_EpEf()
         self.get_density_sum()
         return
 
@@ -2424,9 +2428,22 @@ class U_Embedding:
                 dvp = -np.dot(hess_inv, jac)
                 vp_change = np.linalg.norm(dvp, ord=1)
             elif svd_rcond == "input":
+
                 s = np.linalg.svd(hess)[1]
-                print(repr(s))
-                svd = float(input("Enter svd_rcond number: "))
+
+                if scf_step == 1:
+                    print(repr(s))
+
+                    plt.scatter(range(s.shape[0]), np.log10(s), s=2)
+                    plt.title(str(self.ortho_basis))
+                    plt.show()
+                    plt.close()
+
+                    svd_index = int(input("Enter svd_rcond number: "))
+                svd = s[svd_index]
+                # print(svd)
+                svd = svd * 0.95 / s[0]
+
                 hess_inv = np.linalg.pinv(hess, rcond=svd)
                 dvp = -np.dot(hess_inv, jac)
                 vp_change = np.linalg.norm(dvp, ord=1)
@@ -3127,7 +3144,53 @@ class U_Embedding:
             print("Singulartiy vp %f" % np.linalg.norm(vp))
         return all96_e, vp, vp_fock
 
-    def lagrangian_constrainedoptimization(self, vp=None, update_vp=True, calculate_scf=True):
+    def CO_weighted_cost(self):
+        """
+        To get the function g_uv = \int w*(nf-n_mol)*phi_u*phi_v.
+        So that the cost function is dD_uv*g_uv.
+        The first term in g funtion is -2*C_v*g_uv.
+        w = n_mol**-self.CO_weight_exponent
+        :return:
+        """
+        self.get_density_sum()
+        density_difference_a = self.fragments_Da - self.molecule.Da.np
+        density_difference_b = self.fragments_Db - self.molecule.Db.np
+        dD = density_difference_a + density_difference_b
+        D_mol = self.molecule.Da.np + self.molecule.Db.np
+
+
+        g_uv = np.zeros_like(self.molecule.H.np)
+        if self.CO_weight_exponent is None:
+            return np.einsum("mn,mnuv->uv", dD, self.four_overlap, optimize=True)
+        else:
+            vpot = self.molecule.Vpot
+            points_func = vpot.properties()[0]
+            f_grid = np.array([])
+            # Loop over the blocks
+            for b in range(vpot.nblocks()):
+                # Obtain block information
+                block = vpot.get_block(b)
+                points_func.compute_points(block)
+                w = block.w()
+                npoints = block.npoints()
+                lpos = np.array(block.functions_local_to_global())
+
+                # Compute phi!
+                phi = np.array(points_func.basis_values()["PHI"])[:npoints, :lpos.shape[0]]
+
+                # Build a local slice of D
+                ldD = dD[(lpos[:, None], lpos)]
+                lD_mol = D_mol[(lpos[:, None], lpos)]
+
+                # Copmute dn and n_mol
+                n_mol = np.einsum('pm,mn,pn->p', phi, lD_mol, phi)
+
+                g_uv[(lpos[:, None], lpos)] += np.einsum('pm,pn,pu,pv,p,mn,p->uv', phi, phi, phi, phi, (1/n_mol)**self.CO_weight_exponent,
+                                  ldD, w, optimize=True)
+            return g_uv
+
+
+    def lagrangian_constrainedoptimization(self, w, vp=None, update_vp=True, calculate_scf=True):
         """
         Return Lagrange Multipliers from Nafziger and Jensen's constrained optimization.
         :return: L
@@ -3166,7 +3229,9 @@ class U_Embedding:
         density_difference_b = self.fragments_Db - self.molecule.Db.np
         dD = density_difference_a + density_difference_b
 
-        L = np.einsum("ij,uv,ijuv->", dD, dD, self.four_overlap)
+        g_uv = self.CO_weighted_cost()
+
+        L = np.sum(dD * g_uv)
         print("L", L)
 
         return L
@@ -3215,7 +3280,8 @@ class U_Embedding:
         jac_real = np.zeros((self.vp_basis.nbf(), self.vp_basis.nbf()))
 
         # Pre-calculate \int (n - nf)*phi_u*phi_v
-        g_uv = - np.einsum("mn,mnuv->uv", dD, self.four_overlap)
+        # g_uv = - np.einsum("mn,mnuv->uv", dD, self.four_overlap)
+        g_uv = - self.CO_weighted_cost()
         # Fragments
         for A in self.fragments:
             # spin up
