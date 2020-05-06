@@ -9,11 +9,11 @@ functional = 'svwn'
 # There are two possibilities why a larger basis set is better than a smaller one:
 # 1. It provides a larger space for the inverse of Hessian.
 # 2. Or more likely it provides a more MOs for a better description of Hessian first order approximation.
-basis = 'cc-pvdz'
-vp_basis = 'cc-pvqz'
-svdc = 1e-4
+basis = 'cc-pvqz'
+vp_basis = None
+svdc = "input"
 regulc = None
-Orthogonal_basis = False
+Orthogonal_basis = True
 lag_tap = 1
 scipy_method = "trust-exact"
 # title = "Be WuYang1b Yan Q[nf] v[nf] svdc%i reguc%i " %(svdc, reguc) + basis + functional
@@ -104,7 +104,7 @@ ax.set_ylim(-1, 1)
 pdft.plot1d_x(pdfter.vp_grid, vp_tester.Vpot, ax=ax,
               label="vp", color='black',
               dimmer_length=separation,
-              title="vp")
+              title="vp"+str(Orthogonal_basis))
 # pdft.plot1d_x(pdfter.vp_Hext_nad, mol.Vpot, dimmer_length=separation,
 #               title="vp" + title + str(pdfter.drho_conv[-1]), ax=ax, label="Hext", ls='--')
 # pdft.plot1d_x(pdfter.vp_xc_nad, mol.Vpot, ax=ax, label="xc", ls='--')
@@ -115,7 +115,7 @@ f.show()
 plt.close(f)
 
 #%% 1 basis 2D plot
-L = [3.0, 3.0, 2.0]
+L = [5.0, 5.0, 1.0]
 D = [0.1, 0.1, 0.1]
 # Plot file
 O, N = libcubeprop.build_grid(vp_tester.wfn, L, D)
@@ -126,9 +126,10 @@ else:
     vp_cube = libcubeprop.compute_density_1basis(vp_tester.wfn, O, N, D, npoints, points, nxyz, block,
                                                  pdfter.vp[0])
 f, ax = plt.subplots(1, 1, dpi=160)
-p = ax.imshow(vp_cube[:, :, 20], interpolation="bicubic", cmap="Spectral")
+p = ax.imshow(vp_cube[:, :, 10], interpolation="bicubic", cmap="Spectral")
 atoms = libcubeprop.get_atoms(vp_tester.wfn, D, O)
 # ax.scatter(atoms[:,2], atoms[:,1])
+ax.set_title(str(Orthogonal_basis))
 f.colorbar(p, ax=ax)
 f.show()
 plt.close(f)

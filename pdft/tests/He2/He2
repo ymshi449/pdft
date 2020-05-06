@@ -1,9 +1,9 @@
    => Loading Basis Set <=
 
-    Name: AUG-CC-PVDZ
+    Name: 6-31G
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-2 entry HE         line    50 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz.gbs 
+    atoms 1-2 entry HE         line    34 file /home/yuming/anaconda3/envs/work/share/psi4/basis/6-31g.gbs 
 
 
          ---------------------------------------------------------
@@ -51,13 +51,13 @@
 
   ==> Primary Basis <==
 
-  Basis Set: AUG-CC-PVDZ
-    Blend: AUG-CC-PVDZ
-    Number of shells: 10
-    Number of basis function: 18
-    Number of Cartesian functions: 18
-    Spherical Harmonics?: true
-    Max angular momentum: 1
+  Basis Set: 6-31G
+    Blend: 6-31G
+    Number of shells: 4
+    Number of basis function: 4
+    Number of Cartesian functions: 4
+    Spherical Harmonics?: false
+    Max angular momentum: 0
 
   ==> DFT Potential <==
 
@@ -93,27 +93,27 @@
     Pruning alpha          =              1
     Radial Points          =             75
     Spherical Points       =            302
-    Total Points           =          45300
-    Total Blocks           =            414
-    Max Points             =            255
-    Max Functions          =             18
+    Total Points           =          42752
+    Total Blocks           =            400
+    Max Points             =            254
+    Max Functions          =              4
 
   Using in-core PK algorithm.
    Calculation information:
       Number of atoms:                   2
-      Number of AO shells:              10
-      Number of primitives:             14
-      Number of atomic orbitals:        18
-      Number of basis functions:        18
+      Number of AO shells:               4
+      Number of primitives:              8
+      Number of atomic orbitals:         4
+      Number of basis functions:         4
 
       Integral cutoff                 1.00e-12
       Number of threads:                 2
 
   Performing in-core PK
-  Using 29412 doubles for integral storage.
-  We computed 1601 shell quartets total.
-  Whereas there are 1540 unique shell quartets.
-     3.96 percent of shell quartets recomputed by reordering.
+  Using 110 doubles for integral storage.
+  We computed 60 shell quartets total.
+  Whereas there are 55 unique shell quartets.
+     9.09 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -127,10 +127,10 @@
 
    => Loading Basis Set <=
 
-    Name: AUG-CC-PVDZ
+    Name: 6-31G
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-2 entry HE         line    50 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz.gbs 
+    atoms 1-2 entry HE         line    34 file /home/yuming/anaconda3/envs/work/share/psi4/basis/6-31g.gbs 
 
 
          ---------------------------------------------------------
@@ -178,13 +178,13 @@
 
   ==> Primary Basis <==
 
-  Basis Set: AUG-CC-PVDZ
-    Blend: AUG-CC-PVDZ
-    Number of shells: 10
-    Number of basis function: 18
-    Number of Cartesian functions: 18
-    Spherical Harmonics?: true
-    Max angular momentum: 1
+  Basis Set: 6-31G
+    Blend: 6-31G
+    Number of shells: 4
+    Number of basis function: 4
+    Number of Cartesian functions: 4
+    Spherical Harmonics?: false
+    Max angular momentum: 0
 
   ==> DFT Potential <==
 
@@ -220,17 +220,17 @@
     Pruning alpha          =              1
     Radial Points          =             75
     Spherical Points       =            302
-    Total Points           =          45300
-    Total Blocks           =            414
-    Max Points             =            255
-    Max Functions          =             18
+    Total Points           =          42752
+    Total Blocks           =            400
+    Max Points             =            254
+    Max Functions          =              4
 
    => Loading Basis Set <=
 
-    Name: AUG-CC-PVDZ
+    Name: 6-31G
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1-2 entry HE         line    50 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvdz.gbs 
+    atoms 1-2 entry HE         line    34 file /home/yuming/anaconda3/envs/work/share/psi4/basis/6-31g.gbs 
 
 
          ---------------------------------------------------------
@@ -278,13 +278,13 @@
 
   ==> Primary Basis <==
 
-  Basis Set: AUG-CC-PVDZ
-    Blend: AUG-CC-PVDZ
-    Number of shells: 10
-    Number of basis function: 18
-    Number of Cartesian functions: 18
-    Spherical Harmonics?: true
-    Max angular momentum: 1
+  Basis Set: 6-31G
+    Blend: 6-31G
+    Number of shells: 4
+    Number of basis function: 4
+    Number of Cartesian functions: 4
+    Spherical Harmonics?: false
+    Max angular momentum: 0
 
   ==> DFT Potential <==
 
@@ -320,14 +320,22 @@
     Pruning alpha          =              1
     Radial Points          =             75
     Spherical Points       =            302
-    Total Points           =          45300
-    Total Blocks           =            414
-    Max Points             =            255
-    Max Functions          =             18
+    Total Points           =          42752
+    Total Blocks           =            400
+    Max Points             =            254
+    Max Functions          =              4
 
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
+   => Loading Basis Set <=
+
+    Name: (6-31G AUX)
+    Role: JKFIT
+    Keyword: DF_BASIS_SCF
+    atoms 1-2 entry HE         line    39 file /home/yuming/anaconda3/envs/work/share/psi4/basis/def2-qzvpp-jkfit.gbs 
+
+   => Loading Basis Set <=
+
+    Name: 6-31G
+    Role: ORBITAL
+    Keyword: BASIS
+    atoms 1-2 entry HE         line    34 file /home/yuming/anaconda3/envs/work/share/psi4/basis/6-31g.gbs 
+

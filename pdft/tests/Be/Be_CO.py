@@ -75,7 +75,7 @@ f2 = pdft.U_Molecule(Monomer_1, basis, functional, jk=mol.jk)
 pdfter = pdft.U_Embedding([f1, f2], mol)
 pdfter.fragments_scf_1basis(1000)
 
-pdfter.CO_weight_exponent = 0.5
+pdfter.CO_weight_exponent = 1.5
 
 pdfter.find_vp_scipy_constrainedoptimization(100)
 # pdfter.find_vp_constrainedoptimization_BT(770)
