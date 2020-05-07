@@ -1,21 +1,22 @@
 """
 pDFT.py
 """
-import os
-os.environ["OMP_NUM_THREADS"] = "3" # export OMP_NUM_THREADS=4
-os.environ["OPENBLAS_NUM_THREADS"] = "3" # export OPENBLAS_NUM_THREADS=4
-os.environ["MKL_NUM_THREADS"] = "3" # export MKL_NUM_THREADS=6
-os.environ["VECLIB_MAXIMUM_THREADS"] = "3" # export VECLIB_MAXIMUM_THREADS=4
-os.environ["NUMEXPR_NUM_THREADS"] = "3" # export NUMEXPR_NUM_THREADS=6
+if __name__ == "__main__":
+    import os
+    os.environ["OMP_NUM_THREADS"] = "3" # export OMP_NUM_THREADS=4
+    os.environ["OPENBLAS_NUM_THREADS"] = "3" # export OPENBLAS_NUM_THREADS=4
+    os.environ["MKL_NUM_THREADS"] = "3" # export MKL_NUM_THREADS=6
+    os.environ["VECLIB_MAXIMUM_THREADS"] = "3" # export VECLIB_MAXIMUM_THREADS=4
+    os.environ["NUMEXPR_NUM_THREADS"] = "3" # export NUMEXPR_NUM_THREADS=6
 
 import psi4
 import qcelemental as qc
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.optimize as optimizer
-import scipy.linalg as splg
 
-psi4.set_num_threads(2)
+if __name__ == "__main__":
+    psi4.set_num_threads(2)
 
 
 def build_orbitals(diag, A, ndocc):
@@ -201,6 +202,8 @@ def U_xc(D_a, D_b, Vpot, functional='lda'):
     e_xc = 0.0
 
     vxc = []
+    vxc_a = []
+    vxc_b = []
 
     # First loop over the outer set of blocks
     for l_block in range(Vpot.nblocks()):
@@ -235,12 +238,14 @@ def U_xc(D_a, D_b, Vpot, functional='lda'):
         Vtmp_b = np.einsum('pb,p,p,pa->ab', phi, v_rho_b, l_w, phi, optimize=True)
 
         vxc.extend(0.5*(v_rho_a+v_rho_b))
+        vxc_a.extend(v_rho_a)
+        vxc_b.extend(v_rho_b)
 
         # Sum back to the correct place
         V_a[(lpos[:, None], lpos)] += 0.5*(Vtmp_a + Vtmp_a.T)
         V_b[(lpos[:, None], lpos)] += 0.5*(Vtmp_b + Vtmp_b.T)
 
-    return e_xc, V_a, V_b, np.array(vxc)
+    return e_xc, V_a, V_b, np.array(vxc), (np.array(vxc_a), np.array(vxc_b))
 
 class Molecule():
     def __init__(self, geometry, basis, method, mints=None, jk=None, restricted=True):
@@ -501,6 +506,8 @@ class U_Molecule():
         self.esp_calculator = None
         self.vxc = None
 
+        self.w = self.Vpot.get_np_xyzw()[-1]
+
     def initialize(self):
         """
         Initializes functional and V potential objects
@@ -588,8 +595,8 @@ class U_Molecule():
         """
         self.wfn.Da().np[:] = self.Da.np
         self.wfn.Db().np[:] = self.Db.np
-        # self.wfn.Ca().np[:] = self.Ca.np
-        # self.wfn.Cb().np[:] = self.Cb.np
+        self.wfn.Ca().np[:] = self.Ca.np
+        self.wfn.Cb().np[:] = self.Cb.np
         # self.wfn.epsilon_a().np[:] = self.eig_a.np
         # self.wfn.epsilon_b().np[:] = self.eig_b.np
         return
@@ -800,7 +807,7 @@ class U_Molecule():
         Da = 0.5 * (Da + Da.T)
         return Da
 
-    def scf(self, maxiter=30, vp_matrix=None, print_energies=False):
+    def scf(self, maxiter, vp_matrix=None, print_energies=False):
         """
         Performs scf calculation to find energy and density
         Parameters
@@ -871,7 +878,7 @@ class U_Molecule():
             self.Vpot.set_D([D_a,D_b])
             self.Vpot.properties()[0].set_pointers(D_a, D_b)
 
-            ks_e ,Vxc_a, Vxc_b, self.vxc = U_xc(D_a, D_b, self.Vpot)
+            ks_e ,Vxc_a, Vxc_b, self.vxc, _ = U_xc(D_a, D_b, self.Vpot)
             Vxc_a = psi4.core.Matrix.from_array(Vxc_a)
             Vxc_b = psi4.core.Matrix.from_array(Vxc_b)
 
@@ -1268,7 +1275,7 @@ class U_Embedding:
 
         if Qtype != 'input':
             self.get_density_sum()
-            v_xc_f = U_xc(self.fragments_Da, self.fragments_Da, self.molecule.Vpot)[-1]
+            v_xc_f = U_xc(self.fragments_Da, self.fragments_Da, self.molecule.Vpot)[-2]
         else:
             v_xc_f = self.molecule.vxc
 
@@ -1345,7 +1352,7 @@ class U_Embedding:
         # v_Hext[nf]
         if vstype != 'input':
             self.get_density_sum()
-            v_xc_f = U_xc(self.fragments_Da, self.fragments_Da, self.molecule.Vpot)[-1]
+            v_xc_f = U_xc(self.fragments_Da, self.fragments_Da, self.molecule.Vpot)[-2]
         else:
             v_xc_f = self.molecule.vxc
 

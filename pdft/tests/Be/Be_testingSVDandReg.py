@@ -96,7 +96,8 @@ for svd in range(1,7):
                                                    beta_method="Lagrangian",
                                                    svd_rcond=svdc,
                                                    regul_const=regulc,
-                                                   a_rho_var=1e-5, mu=1e-7)
+                                                   a_rho_var=1e-5, mu=1e-7,
+                                                   )
 
         pdfter.vp_grid = vp_tester.to_grid(pdfter.vp[0])
         f, ax = plt.subplots(1, 1, dpi=210)
