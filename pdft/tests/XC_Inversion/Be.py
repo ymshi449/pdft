@@ -49,4 +49,5 @@ ax.legend()
 f.show()
 plt.close()
 
-# grad, grad_app = inverser.check_gradient()
+grad, grad_app = inverser.check_gradient()
+hess, hess_app = inverser.check_hess()

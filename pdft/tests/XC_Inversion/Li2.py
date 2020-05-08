@@ -10,28 +10,28 @@ if __name__ == "__main__":
 separation = 5.122
 functional = 'svwn'
 basis = 'aug-pcsseg-2'
-# basis = 'cc-pvqz'
-ortho_basis = False
-svd = 1e-5
+basis = 'cc-pvqz'
+ortho_basis = True
+svd = "input"
 opt_method="BFGS"
 method = "WuYangMN"
-title = "N2 "+ method + opt_method +" "+basis+" Ortho_basis: "\
+title = "Li2 "+ method + opt_method +" "+basis+" Ortho_basis: "\
         + str(ortho_basis) +" svd " + str(svd)
 print(title)
 
-psi4.set_output_file("N2.psi4")
+psi4.set_output_file("Li2.psi4")
 
 Full_Molec = psi4.geometry("""
 nocom
 noreorient
-N %f 0.0 0.00
-N -%f 0.0 0.00
+Li %f 0.0 0.00
+Li -%f 0.0 0.00
 units bohr
 symmetry c1
 """ % (separation / 2, separation / 2))
 
 
-Full_Molec.set_name("N2")
+Full_Molec.set_name("Li2")
 
 #Psi4 Options:
 psi4.set_options({
