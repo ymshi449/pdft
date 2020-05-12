@@ -1006,7 +1006,7 @@ class U_Molecule():
         return
 
 class U_Embedding:
-    def __init__(self, fragments, molecule, vp_basis=None, vp_T=None):
+    def __init__(self, fragments, molecule, vp_basis=None):
         #basics
         self.fragments = fragments
         self.nfragments = len(fragments)
@@ -1019,12 +1019,7 @@ class U_Embedding:
         # vp
         self.vp_fock = None
         self.vp      = None  # Real function on basis
-        if vp_basis is None:
-            self.vp_basis = self.molecule.wfn.basisset()
-            self.vp_T = self.molecule.T.np
-        else:
-            self.vp_basis = psi4.core.BasisSet.build(self.molecule.geometry, other=vp_basis)
-            self.vp_T = vp_T
+        self.vp_basis = vp_basis
 
         # Used to store vp from last method when switch between 1basis and 2basis.
         # Remember to plot this part.
@@ -2112,7 +2107,7 @@ class U_Embedding:
 
         # Regularization
         if self.regul_const is not None:
-            T = self.vp_T
+            T = self.vp_basis.T.np
             T = 0.5 * (T + T.T)
             hess -= 4*4*self.regul_const*T
         return hess
@@ -2160,7 +2155,7 @@ class U_Embedding:
         # Regularization
         if self.regul_const is not None:
 
-            T = self.vp_T
+            T = self.vp_basis.T.np
             T = 0.5 * (T + T.T)
             jac += 4*4*self.regul_const*np.dot(T, vp)
 
@@ -2229,7 +2224,7 @@ class U_Embedding:
 
         # Regularization
         if self.regul_const is not None:
-            T = self.vp_T
+            T = self.vp_basis.T.np
             T = 0.5 * (T + T.T)
             norm = 4 * 4 * np.dot(np.dot(vp, T), vp)
             # if not np.isclose(norm, 0):
@@ -2255,15 +2250,12 @@ class U_Embedding:
         self.ortho_basis = ortho_basis
 
         if self.three_overlap is None:
-            if self.vp_basis is self.molecule.wfn.basisset():
-                self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap())
-            else:
-                assert not self.ortho_basis
-                self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
-                                                      self.molecule.wfn.basisset(), self.vp_basis))
+            self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
+                                                                             self.molecule.wfn.basisset(),
+                                                                             self.vp_basis.wfn.basisset()))
             if self.ortho_basis:
-                assert self.vp_basis is self.molecule.wfn.basisset()
-                self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.molecule.A.np)
+                
+                self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.vp_basis.A.np)
 
         if guess is None:
             self.molecule.scf(maxiter=1000, print_energies=printflag)
@@ -2344,15 +2336,12 @@ class U_Embedding:
         self.ortho_basis = ortho_basis
 
         if self.three_overlap is None:
-            if self.vp_basis is self.molecule.wfn.basisset():
-                self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap())
-            else:
-                assert not self.ortho_basis
-                self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
-                                                      self.molecule.wfn.basisset(), self.vp_basis))
+            self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
+                                                                             self.molecule.wfn.basisset(),
+                                                                             self.vp_basis.wfn.basisset()))
             if self.ortho_basis:
-                assert self.vp_basis is self.molecule.wfn.basisset()
-                self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.molecule.A.np)
+                
+                self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.vp_basis.A.np)
 
         if guess is None:
             vp_total = np.zeros(self.vp_basis.nbf())
@@ -2792,8 +2781,12 @@ class U_Embedding:
         """
 
         if self.three_overlap is None:
-            self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap())
-            self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.molecule.A.np)
+            self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
+                                                                             self.molecule.wfn.basisset(),
+                                                                             self.vp_basis.wfn.basisset()))
+            if self.ortho_basis:
+                
+                self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.vp_basis.A.np)
 
         if guess is None:
             vp_total = np.zeros(self.vp_basis.nbf())
@@ -3339,9 +3332,12 @@ class U_Embedding:
                                             self.molecule.basis, self.molecule.mints)[0]
 
         if self.three_overlap is None:
-            self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap())
+            self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
+                                                                             self.molecule.wfn.basisset(),
+                                                                             self.vp_basis.wfn.basisset()))
             if self.ortho_basis:
-                self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.molecule.A.np)
+                
+                self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.vp_basis.A.np)
 
         if guess is None:
             self.molecule.scf(maxiter=1000, print_energies=printflag)
@@ -3405,9 +3401,12 @@ class U_Embedding:
                                             self.molecule.basis, self.molecule.mints)[0]
 
         if self.three_overlap is None:
-            self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap())
+            self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
+                                                                             self.molecule.wfn.basisset(),
+                                                                             self.vp_basis.wfn.basisset()))
             if self.ortho_basis:
-                self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.molecule.A.np)
+                
+                self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.vp_basis.A.np)
 
         if guess is None:
             vp_total = np.zeros(self.vp_basis.nbf())
@@ -3490,9 +3489,12 @@ class U_Embedding:
                                             self.molecule.basis, self.molecule.mints)[0]
 
         if self.three_overlap is None:
-            self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap())
+            self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
+                                                                             self.molecule.wfn.basisset(),
+                                                                             self.vp_basis.wfn.basisset()))
             if self.ortho_basis:
-                self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.molecule.A.np)
+                
+                self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.vp_basis.A.np)
 
         L = self.lagrangian_constrainedoptimization(update_vp=False, calculate_scf=False)
         grad = self.jac_constrainedoptimization(update_vp=False, calculate_scf=False)

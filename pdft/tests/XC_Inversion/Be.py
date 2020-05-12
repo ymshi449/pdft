@@ -8,6 +8,8 @@ if __name__ == "__main__":
     psi4.set_num_threads(2)
 
 separation = 4.522
+vp_basis = None
+
 functional = 'svwn'
 basis = 'cc-pvdz'
 title = "Be2 vxc inversion on "+basis
@@ -36,8 +38,13 @@ E, input_wfn = psi4.energy(functional+"/"+basis, molecule=Full_Molec, return_wfn
 mol = XC_Inversion.Molecule(Full_Molec, basis, functional)
 mol.scf(100)
 
-inverser = XC_Inversion.Inverser(mol, input_wfn)
+if vp_basis is not None:
+    vp_tester = XC_Inversion.Molecule(Full_Molec, vp_basis, functional)
+    vp_tester.scf(100)
+else:
+    vp_tester = mol
 
+inverser = XC_Inversion.Inverser(mol, input_wfn)
 
 inverser.find_vxc_scipy()
 

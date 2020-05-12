@@ -9,10 +9,13 @@ if __name__ == "__main__":
 
 separation = 5.122
 functional = 'svwn'
-basis = 'aug-pcsseg-2'
+basis = 'sto-3g'
 basis = 'cc-pvqz'
+# basis = 'aug-pcsseg-3'
+vp_basis = None
+
 ortho_basis = True
-svd = "input"
+svd = "increase_from_middle"
 opt_method="BFGS"
 method = "WuYangMN"
 title = "Li2 "+ method + opt_method +" "+basis+" Ortho_basis: "\
@@ -35,17 +38,27 @@ Full_Molec.set_name("Li2")
 
 #Psi4 Options:
 psi4.set_options({
+    'DFT_SPHERICAL_POINTS': 302,
+    'DFT_RADIAL_POINTS': 77,
     'REFERENCE' : 'UKS'
 })
 E, input_wfn = psi4.energy(functional+"/"+basis, molecule=Full_Molec, return_wfn=True)
 
 mol = XC_Inversion.Molecule(Full_Molec, basis, functional)
 mol.scf(100)
+print("Number of Basis: ", mol.nbf)
+if vp_basis is not None:
+    vp_basis = XC_Inversion.Molecule(Full_Molec, vp_basis, functional)
+    vp_basis.scf(100)
+else:
+    vp_basis = mol
 
-inverser = XC_Inversion.Inverser(mol, input_wfn, ortho_basis=ortho_basis)
+inverser = XC_Inversion.Inverser(mol, input_wfn,
+                                 ortho_basis=ortho_basis,
+                                 vp_basis=vp_basis)
 
 # grad, grad_app = inverser.check_gradient_constrainedoptimization()
-# hess, hess_app = inverser.check_hess_convergence()
+# hess, hess_app = inverser.check_hess_constrainedoptimization()
 
 if method == "WuYangScipy":
     inverser.find_vxc_scipy_WuYang(opt_method=opt_method)
@@ -54,9 +67,9 @@ elif method == "WuYangMN":
 elif method == "COScipy":
     inverser.find_vxc_scipy_constrainedoptimization(opt_method=opt_method)
 
-# dDa = input_wfn.Da().np - mol.Da.np
-# dDb = input_wfn.Db().np - mol.Db.np
-# dn = mol.to_grid(dDa + dDb)
+dDa = input_wfn.Da().np - mol.Da.np
+dDb = input_wfn.Db().np - mol.Db.np
+dn = mol.to_grid(dDa + dDb)
 
 f,ax = plt.subplots(1,1,dpi=200)
 XC_Inversion.pdft.plot1d_x(inverser.input_vxc_a, input_wfn.V_potential(), ax=ax,

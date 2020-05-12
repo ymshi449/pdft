@@ -81,10 +81,10 @@ mol = pdft.U_Molecule(Full_Molec, basis, functional)
 f1 = pdft.U_Molecule(Monomer_2, basis, functional, jk=mol.jk)
 f2 = pdft.U_Molecule(Monomer_1, basis, functional, jk=mol.jk)
 if vp_basis is not None:
-    vp_tester = pdft.U_Molecule(Full_Molec, vp_basis, functional)
-    vp_tester.scf(100)
+    vp_basis = pdft.U_Molecule(Full_Molec, vp_basis, functional)
+    vp_basis.scf(100)
 else:
-    vp_tester = mol
+    vp_basis = mol
 
 # Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol, vp_basis=vp_basis)
@@ -102,7 +102,7 @@ hess, jac = pdfter.find_vp_response_1basis(35,
                                            )
 # pdfter.find_vp_scipy_1basis(maxiter=140, opt_method=scipy_method, ortho_basis=Orthogonal_basis)
 
-pdfter.vp_grid = vp_tester.to_grid(pdfter.vp[0])
+pdfter.vp_grid = vp_basis.to_grid(pdfter.vp[0])
 f,ax = plt.subplots(1, 1, dpi=210)
 ax.set_ylim(-1, 1)
 pdft.plot1d_x(pdfter.vp_grid, vp_tester.Vpot, ax=ax,
