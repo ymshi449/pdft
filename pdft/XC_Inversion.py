@@ -17,7 +17,7 @@ class Molecule(pdft.U_Molecule):
     def __init__(self, geometry, basis, method):
         super().__init__(geometry, basis, method)
 
-    def scf(self, maxiter, V=None, print_energies=False, vp_matrix=None):
+    def scf_inversion(self, maxiter, V=None, print_energies=False, vp_matrix=None):
         """
         Performs scf calculation to find energy and density with a given V
         Parameters
@@ -175,6 +175,11 @@ class Inverser(pdft.U_Embedding):
         # TSVD. The index of svd array from where to be cut.
         self.svd_index = None
 
+        # Counter
+        self.L_counter = 0
+        self.grad_counter = 0
+        self.hess_counter = 0
+
     def get_input_vxc(self):
         self.input_vxc_a, self.input_vxc_b = pdft.U_xc(self.input_wfn.Da().np, self.input_wfn.Db().np,
                                                        self.input_wfn.V_potential())[-1]
@@ -253,6 +258,7 @@ class Inverser(pdft.U_Embedding):
         self.v_FermiAmaldi_input_Fock = self.molecule.grid_to_fock((nocc-1)/nocc*self.vH_input)
         # self.v_FermiAmaldi_input_Fock = self.molecule.grid_to_fock(self.vH_input)
         return
+    
 
     def update_v0(self):
         """
@@ -277,9 +283,9 @@ class Inverser(pdft.U_Embedding):
 
         nocc = self.molecule.ndocc
         if self.ortho_basis:
-            self.vxc_a_grid = self.vp_basis.to_grid(np.dot(self.molecule.A.np, self.v_output_a))
+            self.vxc_a_grid = self.vp_basis.to_grid(np.dot(self.vp_basis.A.np, self.v_output_a))
 
-            self.vxc_b_grid = self.vp_basis.to_grid(np.dot(self.molecule.A.np, self.v_output_b))
+            self.vxc_b_grid = self.vp_basis.to_grid(np.dot(self.vp_basis.A.np, self.v_output_b))
 
 
         else:
@@ -294,11 +300,13 @@ class Inverser(pdft.U_Embedding):
         return
 
 
-    def Laplacian_WuYang(self, v=None):
+    def Lagrangian_WuYang(self, v=None):
         """
         L = - <T> - \int (vks_a*(n_a-n_a_input)+vks_b*(n_b-n_b_input))
         :return: L
         """
+        self.L_counter += 1
+
         if self.three_overlap is None:
             self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
                                                                              self.molecule.wfn.basisset(),
@@ -314,7 +322,7 @@ class Inverser(pdft.U_Embedding):
 
             Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.v_FermiAmaldi_input_Fock)
             Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.v_FermiAmaldi_input_Fock)
-            self.molecule.scf(1000, [Vks_a, Vks_b])
+            self.molecule.scf_inversion(1000, [Vks_a, Vks_b])
 
         L = - self.molecule.T.vector_dot(self.molecule.Da) - self.molecule.T.vector_dot(self.molecule.Db)
         L += - self.molecule.vks_a.vector_dot(self.molecule.Da) - self.molecule.vks_b.vector_dot(self.molecule.Db)
@@ -328,6 +336,8 @@ class Inverser(pdft.U_Embedding):
         grad_b = dL/dvxc_b = - (n_b-n_b_input)
         :return:
         """
+        self.grad_counter += 1
+
         if v is not None:
             nbf = int(v.shape[0] / 2)
             v_output_a = v[:nbf]
@@ -336,7 +346,7 @@ class Inverser(pdft.U_Embedding):
             Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.v_FermiAmaldi_input_Fock)
             Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.v_FermiAmaldi_input_Fock)
 
-            self.molecule.scf(100, [Vks_a, Vks_b])
+            self.molecule.scf_inversion(100, [Vks_a, Vks_b])
 
         dDa = self.input_wfn.Da().np - self.molecule.Da.np
         dDb = self.input_wfn.Db().np - self.molecule.Db.np
@@ -351,6 +361,7 @@ class Inverser(pdft.U_Embedding):
         """
         hess: WuYang (21)
         """
+        self.hess_counter += 1
         if v is not None:
             nbf = int(v.shape[0] / 2)
             v_output_a = v[:nbf]
@@ -359,7 +370,7 @@ class Inverser(pdft.U_Embedding):
             Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.v_FermiAmaldi_input_Fock)
             Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.v_FermiAmaldi_input_Fock)
 
-            self.molecule.scf(100, [Vks_a, Vks_b])
+            self.molecule.scf_inversion(100, [Vks_a, Vks_b])
 
         epsilon_occ_a = self.molecule.eig_a.np[:self.molecule.nalpha, None]
         epsilon_occ_b = self.molecule.eig_b.np[:self.molecule.nbeta, None]
@@ -368,9 +379,9 @@ class Inverser(pdft.U_Embedding):
         epsilon_a = epsilon_occ_a - epsilon_unocc_a
         epsilon_b = epsilon_occ_b - epsilon_unocc_b
 
-        hess = np.zeros((self.molecule.nbf*2, self.molecule.nbf*2))
+        hess = np.zeros((self.vp_basis.nbf*2, self.vp_basis.nbf*2))
         # Alpha electrons
-        hess[0:self.molecule.nbf, 0:self.molecule.nbf] = - self.molecule.omega * np.einsum('ai,bj,ci,dj,ij,abm,cdn -> mn',
+        hess[0:self.vp_basis.nbf, 0:self.vp_basis.nbf] = - self.molecule.omega * np.einsum('ai,bj,ci,dj,ij,abm,cdn -> mn',
                                                                                              self.molecule.Ca.np[:, :self.molecule.nalpha],
                                                                                              self.molecule.Ca.np[:, self.molecule.nalpha:],
                                                                                              self.molecule.Ca.np[:, :self.molecule.nalpha],
@@ -378,7 +389,7 @@ class Inverser(pdft.U_Embedding):
                                                                                              np.reciprocal(epsilon_a), self.three_overlap,
                                                                                              self.three_overlap, optimize=True)
         # Beta electrons
-        hess[self.molecule.nbf:, self.molecule.nbf:] = - self.molecule.omega * np.einsum('ai,bj,ci,dj,ij,abm,cdn -> mn',
+        hess[self.vp_basis.nbf:, self.vp_basis.nbf:] = - self.molecule.omega * np.einsum('ai,bj,ci,dj,ij,abm,cdn -> mn',
                                                                                            self.molecule.Cb.np[:, :self.molecule.nbeta],
                                                                                            self.molecule.Cb.np[:, self.molecule.nbeta:],
                                                                                            self.molecule.Cb.np[:, :self.molecule.nbeta],
@@ -403,9 +414,9 @@ class Inverser(pdft.U_Embedding):
 
         Vks_a = psi4.core.Matrix.from_array(self.v_FermiAmaldi_input_Fock)
         Vks_b = psi4.core.Matrix.from_array(self.v_FermiAmaldi_input_Fock)
-        self.molecule.scf(100, [Vks_a, Vks_b])
+        self.molecule.scf_inversion(100, [Vks_a, Vks_b])
 
-        L = self.Laplacian_WuYang()
+        L = self.Lagrangian_WuYang()
         grad = self.grad_WuYang()
 
         if dv is None:
@@ -417,7 +428,7 @@ class Inverser(pdft.U_Embedding):
             dvi = np.zeros_like(dv)
             dvi[i] = dv[i]
 
-            L_new = self.Laplacian_WuYang(dvi)
+            L_new = self.Lagrangian_WuYang(dvi)
 
             grad_app[i] = (L_new-L) / dvi[i]
 
@@ -439,7 +450,7 @@ class Inverser(pdft.U_Embedding):
 
         Vks_a = psi4.core.Matrix.from_array(self.v_FermiAmaldi_input_Fock)
         Vks_b = psi4.core.Matrix.from_array(self.v_FermiAmaldi_input_Fock)
-        self.molecule.scf(100, [Vks_a, Vks_b])
+        self.molecule.scf_inversion(100, [Vks_a, Vks_b])
 
         hess = self.hess_WuYang()
         grad = self.grad_WuYang()
@@ -487,7 +498,7 @@ class Inverser(pdft.U_Embedding):
             "gtol": 1e-7
         }
 
-        vp_array = optimizer.minimize(self.Laplacian_WuYang, self.v_output,
+        vp_array = optimizer.minimize(self.Lagrangian_WuYang, self.v_output,
                                       jac=self.grad_WuYang,
                                       hess=self.hess_WuYang,
                                       method=opt_method,
@@ -500,6 +511,7 @@ class Inverser(pdft.U_Embedding):
             np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.v_FermiAmaldi_input_Fock)
         Vks_b = psi4.core.Matrix.from_array(
             np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.v_FermiAmaldi_input_Fock)
+        self.molecule.scf_inversion(100, [Vks_a, Vks_b])
 
         dDa = self.input_wfn.Da().np - self.molecule.Da.np
         dDb = self.input_wfn.Db().np - self.molecule.Db.np
@@ -511,32 +523,34 @@ class Inverser(pdft.U_Embedding):
         self.get_vxc()
         return vp_array
 
-    def find_vxc_manualNewton(self, maxiter=49, svd_rcond=None, mu=1e-4):
+    def find_vxc_manualNewton(self, maxiter=49, svd_rcond=None, mu=1e-4,
+                              svd_parameter=None, back_tracking_method="L",
+                              BT_beta_threshold=1e-3):
         if self.three_overlap is None:
             self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
                                                                              self.molecule.wfn.basisset(),
                                                                              self.vp_basis.wfn.basisset()))
             if self.ortho_basis:
-                
+
                 self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.vp_basis.A.np)
 
-        # Start a new calculation.
+        # # Start a new calculation.
         self.v_output = np.zeros_like(self.v_output)
 
         Vks_a = psi4.core.Matrix.from_array(self.v_FermiAmaldi_input_Fock)
         Vks_b = psi4.core.Matrix.from_array(self.v_FermiAmaldi_input_Fock)
-        self.molecule.scf(100, [Vks_a, Vks_b])
+        self.molecule.scf_inversion(100, [Vks_a, Vks_b])
 
         ## Tracking rho and changing beta
         n = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
         n_input = self.molecule.to_grid(self.input_wfn.Da().np+self.input_wfn.Db().np)
         dn_before = np.sum(np.abs(n - n_input) * self.molecule.w)
-        L_old = self.Laplacian_WuYang()
+        L_old = self.Lagrangian_WuYang()
 
         print("Initial dn:", dn_before, "Initial L:",L_old)
 
         converge_flag = False
-
+        beta = 2
         print("<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion manual Newton<<<<<<<<<<<<<<<<<<<")
         for scf_step in range(1, maxiter + 1):
 
@@ -575,7 +589,7 @@ class Inverser(pdft.U_Embedding):
             elif svd_rcond == "input_every":
                 s = np.linalg.svd(hess)[1]
 
-                print(repr(s))
+                # print(repr(s))
 
                 plt.figure(dpi=200)
                 # plt.scatter(range(s.shape[0]), np.log10(s), s=2)
@@ -592,54 +606,229 @@ class Inverser(pdft.U_Embedding):
                 hess_inv = np.linalg.pinv(hess, rcond=svd)
                 dv = -np.dot(hess_inv, jac)
 
-            elif svd_rcond == "increase_from_middle":
+            elif svd_rcond == "increase":
+                if svd_parameter is None:
+                    svd_parameter = [0, 10] # [Starting percentile, update step ]
                 s = np.linalg.svd(hess)[1]
 
                 if scf_step == 1:
-                    self.svd_index = int(s.shape[0]/2)
-                else:
-                    self.svd_index += int(s.shape[0]/10)
+                    self.svd_index = int(s.shape[0]*svd_parameter[0])
+                elif beta <= BT_beta_threshold:
+                    # SVD move on
+                    self.svd_index += int(svd_parameter[1])
 
                 if self.svd_index >= s.shape[0]:
                     self.svd_index = s.shape[0]
+                    converge_flag = True
+                    
+                svd = s[self.svd_index-1]
+                # print(svd)
                 svd = svd * 0.95 / s[0]
 
                 hess_inv = np.linalg.pinv(hess, rcond=svd)
                 dv = -np.dot(hess_inv, jac)
 
-            beta = 2
-            while True:
-                beta *= 0.5
-                if beta < 1e-4:
+            elif svd_rcond == "segment_cycle":
+                if svd_parameter is None:
+                    # [seg step length, current start idx]
+                    svd_parameter = [10, 0]
+
+                s = np.linalg.svd(hess)[1]
+                # SVD move on
+                s_shape = s.shape[0]
+
+                if scf_step == 1:
+                    print(repr(s))
+
+                    plt.figure(dpi=200)
+                    # plt.scatter(range(s.shape[0]), np.log10(s), s=2)
+                    plt.scatter(range(s.shape[0]), np.log10(s), s=2)
+                    plt.title(str(self.ortho_basis))
+                    plt.show()
+                    plt.close()
+
+                    end = int(input("Enter svd_rcond end number: "))
+                    svd_parameter.append(end)
+
+                # another cycle
+                if svd_parameter[-1] == -1:
+                    if svd_parameter[1] >= s_shape:
+                        svd_parameter[1] = 0
+                else:
+                    assert svd_parameter[-1] > 0
+                    if svd_parameter[1] >= svd_parameter[-1]:
+                        svd_parameter[1] = 0
+
+                start = svd_parameter[1]
+                svd_parameter[1] += svd_parameter[0]
+                if svd_parameter[-1] == -1:
+                    if svd_parameter[1] > s_shape:
+                        svd_parameter[1] = s_shape
+                else:
+                    assert svd_parameter[-1] > 0
+                    if svd_parameter[1] > svd_parameter[-1]:
+                        svd_parameter[1] = svd_parameter[-1]
+
+                end = svd_parameter[1]
+
+                self.svd_index = [start, end]
+
+                hess_inv = pdft.inv_pinv(hess, start, end)
+                dv = -np.dot(hess_inv, jac)
+
+            elif svd_rcond == "segments":
+                if svd_parameter is None:
+                    svd_parameter = [10, 0]
+                s = np.linalg.svd(hess)[1]
+                s_shape = s.shape[0]
+                start = svd_parameter[1]
+                svd_parameter[1] += int(s_shape / svd_parameter[0])
+                if svd_parameter[1] > s_shape:
+                    svd_parameter[1] = s_shape
                     converge_flag = True
-                    break
-                # Traditional WuYang
-                v_temp = self.v_output + beta * dv
-                L = self.Laplacian_WuYang(v=v_temp)
-                print(beta, L - L_old, mu * beta * np.sum(jac * dv))
-                if L - L_old <= mu * beta * np.sum(jac * dv) and beta * np.sum(jac * dv) < 0:
-                    L_old = L
-                    self.v_output = v_temp
-                    n = self.molecule.to_grid(self.molecule.Da.np+self.molecule.Db.np)
-                    new_dn = np.sum(np.abs(n_input - n) * self.molecule.w)
-                    break
+
+                end = svd_parameter[1]
+
+                self.svd_index = [start, end]
+
+                hess_inv = pdft.inv_pinv(hess, start, end)
+                dv = -np.dot(hess_inv, jac)
+
+            elif svd_rcond == "find_optimal_w_bruteforce":
+                back_tracking_method = None
+                mu = 1e-3
+                rcondlist = np.zeros(100)
+                dnlist = np.zeros(100)
+                Llist = np.zeros(100)
+
+                idx = 0
+
+                for rcond_idx in np.linspace(0, 10, 100):
+                    hess_inv = np.linalg.pinv(hess, rcond=10 ** -rcond_idx)
+                    dv = -np.dot(hess_inv, jac)
+
+                    beta = 2
+                    while True:
+                        beta *= 0.5
+                        if beta < BT_beta_threshold:
+                            break
+                        # Traditional WuYang
+                        v_temp = self.v_output + beta * dv
+                        L = self.Lagrangian_WuYang(v=v_temp)
+                        # n = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
+                        # dn = np.sum(np.abs(n - n_input) * self.molecule.w)
+                        # print(beta, L - L_old, dn - dn_before, mu * beta * np.sum(jac * dv))
+                        if L - L_old <= mu * beta * np.sum(jac * dv) and \
+                                beta * np.sum(jac * dv) < 0:
+                            # dn - dn_before <= - mu * beta * dn_before and \
+                            rcondlist[idx] = 10 ** -rcond_idx
+                            # dnlist[idx] = dn
+                            Llist[idx] = L
+                            break
+                    idx += 1
+
+                L_idx = np.argmin(L)
+                print(rcond_idx, L_idx)
+                hess_inv = np.linalg.pinv(hess,
+                                          rcond=10 ** -np.linspace(0, 10, 100)[L_idx])
+                dv = - np.dot(hess_inv, jac)
+                beta = 2
+                while True:
+                    beta *= 0.5
+                    if beta < BT_beta_threshold:
+                        break
+                    # Traditional WuYang
+                    v_temp = self.v_output + beta * dv
+                    L = self.Lagrangian_WuYang(v=v_temp)
+                    print(beta, L - L_old, mu * beta * np.sum(jac * dv))
+                    if L - L_old <= mu * beta * np.sum(jac * dv) and beta * np.sum(jac * dv) < 0:
+                        L_old = L
+                        self.v_output = v_temp
+                        n = self.molecule.to_grid(self.molecule.Da.np+self.molecule.Db.np)
+                        dn_before = np.sum(np.abs(n_input - n) * self.molecule.w)
+                        break
+
+            if back_tracking_method == "L":
+                beta = 2
+                while True:
+                    beta *= 0.5
+                    if beta < BT_beta_threshold:
+                        converge_flag = True
+                        break
+                    # Traditional WuYang
+                    v_temp = self.v_output + beta * dv
+                    L = self.Lagrangian_WuYang(v=v_temp)
+                    print(beta, L - L_old, mu * beta * np.sum(jac * dv))
+                    if L - L_old <= mu * beta * np.sum(jac * dv) and beta * np.sum(jac * dv) < 0:
+                        L_old = L
+                        self.v_output = v_temp
+                        n = self.molecule.to_grid(self.molecule.Da.np+self.molecule.Db.np)
+                        dn_before = np.sum(np.abs(n_input - n) * self.molecule.w)
+                        break
+            elif back_tracking_method == "D":
+                beta = 2
+                while True:
+                    beta *= 0.5
+                    if beta < BT_beta_threshold:
+                        converge_flag = True
+                        break
+                    # Traditional WuYang
+                    v_temp = self.v_output + beta * dv
+                    L = self.Lagrangian_WuYang(v=v_temp)
+                    n = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
+                    dn = np.sum(np.abs(n - n_input) * self.molecule.w)
+                    print(beta, L - L_old, dn - dn_before, mu * beta * np.sum(jac * dv))
+                    if dn - dn_before <= - mu * beta * dn_before and beta * np.sum(jac * dv) < 0:
+                        L_old = L
+                        dn_before = dn
+                        self.v_output = v_temp
+                        break
+            elif back_tracking_method == "LD":
+                beta = 2
+                while True:
+                    beta *= 0.5
+                    if beta < BT_beta_threshold:
+                        converge_flag = True
+                        break
+                    # Traditional WuYang
+                    v_temp = self.v_output + beta * dv
+                    L = self.Lagrangian_WuYang(v=v_temp)
+                    print(beta, L - L_old, mu * beta * np.sum(jac * dv))
+                    if L - L_old <= mu * beta * np.sum(jac * dv) and \
+                            beta * np.sum(jac * dv) < 0:
+                        n = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
+                        dn = np.sum(np.abs(n - n_input) * self.molecule.w)
+                        print(beta, L - L_old, dn - dn_before, mu * beta * np.sum(jac * dv))
+                        if dn - dn_before <= - mu * beta * dn_before:
+                            L_old = L
+                            dn_before = dn
+                            self.v_output = v_temp
+                            break
 
             print(
-                F'-------------------------SVD: {svd_rcond} Reg: {self.regul_const} Ortho: {self.ortho_basis}------------------------ \n'
-                F'Iter: {scf_step} beta: {beta} |jac|: {np.linalg.norm(jac)} L: {L_old} d_rho: {new_dn}\n')
-            if converge_flag:
-                print("BT stoped updating. Converged. beta:%e" % beta)
+                F'------BT: {back_tracking_method} SVD: {self.svd_index} Reg: {self.regul_const} '
+                F'Ortho: {self.ortho_basis} SVDmoveon: {beta < BT_beta_threshold} ------\n'
+                F'Iter: {scf_step} beta: {beta} |jac|: {np.linalg.norm(jac)} L: {L_old} d_rho: {dn_before}\n')
+
+            if converge_flag and \
+                    not (svd_rcond=="segments" or svd_rcond=="segment_cycle" or svd_rcond=="increase"):
+                print("Converge")
                 break
-            elif beta < 1e-7:
-                print("Break because even small step length can not improve.")
-                break
-            elif new_dn < 1e-3:
+            elif dn_before < 1e-3:
                 print("Break because rho difference (cost) is small.")
                 break
             elif scf_step == maxiter:
                 print("Maximum number of SCF cycles exceeded for vp.")
 
-        # self.get_vxc()
+        self.get_vxc()
+
+        if svd_rcond == "find_optimal_w_bruteforce":
+            return rcondlist, dnlist, Llist
+
+        print("Evaluation: ", self.L_counter, self.grad_counter, self.hess_counter)
+        self.L_counter = 0
+        self.grad_counter = 0
+        self.hess_counter = 0
         return
 
     def Lagrangian_constrainedoptimization(self, v=None):
@@ -647,6 +836,7 @@ class Inverser(pdft.U_Embedding):
         Return Lagrange Multipliers from Nafziger and Jensen's constrained optimization.
         :return: L
         """
+        self.L_counter += 1
 
         if self.three_overlap is None:
             self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
@@ -663,7 +853,7 @@ class Inverser(pdft.U_Embedding):
 
             Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.v_FermiAmaldi_input_Fock)
             Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.v_FermiAmaldi_input_Fock)
-            self.molecule.scf(1000, [Vks_a, Vks_b])
+            self.molecule.scf_inversion(1000, [Vks_a, Vks_b])
 
         dDa = self.molecule.Da.np - self.input_wfn.Da().np
         dDb = self.molecule.Db.np - self.input_wfn.Db().np
@@ -684,6 +874,8 @@ class Inverser(pdft.U_Embedding):
         --
         A: frag, a: spin, i: MO
         """
+        self.grad_counter += 1
+
         if v is not None:
             nbf = int(v.shape[0] / 2)
             v_output_a = v[:nbf]
@@ -692,7 +884,7 @@ class Inverser(pdft.U_Embedding):
             Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.v_FermiAmaldi_input_Fock)
             Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.v_FermiAmaldi_input_Fock)
 
-            self.molecule.scf(100, [Vks_a, Vks_b])
+            self.molecule.scf_inversion(100, [Vks_a, Vks_b])
 
         # gradient on grad
         jac_real_up = np.zeros((self.vp_basis.nbf, self.vp_basis.nbf))
@@ -754,6 +946,8 @@ class Inverser(pdft.U_Embedding):
             return np.concatenate((jac_up, jac_down))
 
     def hess_constrainedoptimization(self, v=None):
+        self.hess_counter += 1
+
         if v is not None:
             nbf = int(v.shape[0] / 2)
             v_output_a = v[:nbf]
@@ -762,9 +956,9 @@ class Inverser(pdft.U_Embedding):
             Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.v_FermiAmaldi_input_Fock)
             Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.v_FermiAmaldi_input_Fock)
 
-            self.molecule.scf(100, [Vks_a, Vks_b])
+            self.molecule.scf_inversion(100, [Vks_a, Vks_b])
 
-        hess = np.zeros((self.molecule.nbf*2, self.molecule.nbf*2))
+        hess = np.zeros((self.vp_basis.nbf*2, self.vp_basis.nbf*2))
 
         # Pre-calculate \int (n - nf)*phi_u*phi_v
         g_uv = - self.CO_weighted_cost()
@@ -808,7 +1002,7 @@ class Inverser(pdft.U_Embedding):
                 psii_psi_up = np.dot(A.Cocca.np[:,i:i+1], A.Ca.np[:,j:j+1].T) / (A.eig_a.np[i] - A.eig_a.np[j])
                 assert psii_psi_up.shape == pi_psi_up.shape
 
-                hess[0:self.molecule.nbf, 0:self.molecule.nbf] += np.einsum("mn,uv,mni,uvj->ij", pi_psi_up, psii_psi_up,
+                hess[0:self.vp_basis.nbf, 0:self.vp_basis.nbf] += np.einsum("mn,uv,mni,uvj->ij", pi_psi_up, psii_psi_up,
                                                                             self.three_overlap, self.three_overlap,
                                                                             optimize=True)
 
@@ -836,7 +1030,7 @@ class Inverser(pdft.U_Embedding):
                 # psi_i * psi_j / (Ei-Ej)
                 psii_psi_dw = np.dot(A.Coccb.np[:, i:i + 1], A.Cb.np[:, j:j + 1].T) / (A.eig_b.np[i] - A.eig_b.np[j])
 
-                hess[self.molecule.nbf:, self.molecule.nbf:] += np.einsum("mn,uv,mni,uvj->ij", pi_psi_dw, psii_psi_dw,
+                hess[self.vp_basis.nbf:, self.vp_basis.nbf:] += np.einsum("mn,uv,mni,uvj->ij", pi_psi_dw, psii_psi_dw,
                                                                           self.three_overlap, self.three_overlap,
                                                                           optimize=True)
         return hess
@@ -900,7 +1094,7 @@ class Inverser(pdft.U_Embedding):
             Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.v_FermiAmaldi_input_Fock)
             Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.v_FermiAmaldi_input_Fock)
 
-            self.molecule.scf(100, [Vks_a, Vks_b])
+            self.molecule.scf_inversion(100, [Vks_a, Vks_b])
 
         p_up = np.zeros((self.molecule.nbf, self.molecule.nalpha))
         p_dw = np.zeros((self.molecule.nbf, self.molecule.nbeta))
@@ -965,7 +1159,7 @@ class Inverser(pdft.U_Embedding):
 
         Vks_a = psi4.core.Matrix.from_array(self.v_FermiAmaldi_input_Fock)
         Vks_b = psi4.core.Matrix.from_array(self.v_FermiAmaldi_input_Fock)
-        self.molecule.scf(100, [Vks_a, Vks_b])
+        self.molecule.scf_inversion(100, [Vks_a, Vks_b])
 
         L = self.Lagrangian_constrainedoptimization()
         grad = self.grad_constrainedoptimization()[0]
@@ -1001,7 +1195,7 @@ class Inverser(pdft.U_Embedding):
 
         Vks_a = psi4.core.Matrix.from_array(self.v_FermiAmaldi_input_Fock)
         Vks_b = psi4.core.Matrix.from_array(self.v_FermiAmaldi_input_Fock)
-        self.molecule.scf(100, [Vks_a, Vks_b])
+        self.molecule.scf_inversion(100, [Vks_a, Vks_b])
 
         hess = self.hess_constrainedoptimization()
         grad = self.grad_constrainedoptimization()[0]
@@ -1064,7 +1258,7 @@ class Inverser(pdft.U_Embedding):
         Vks_b = psi4.core.Matrix.from_array(
             np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.v_FermiAmaldi_input_Fock)
 
-        self.molecule.scf(100, [Vks_a, Vks_b])
+        self.molecule.scf_inversion(100, [Vks_a, Vks_b])
         dDa = self.input_wfn.Da().np - self.molecule.Da.np
         dDb = self.input_wfn.Db().np - self.molecule.Db.np
         dn = self.molecule.to_grid(dDa+dDb)

@@ -2,112 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e8929c5c-1299-4f35-a2eb-9c0ff1560292" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/XC_Inversion.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/Be/Be_CO.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/Be/Be_testingSVDandReg.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/XC_Inversion/Be.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/XC_Inversion/Li2.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/XC_Inversion/N2.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/XC_Inversion/H2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/XC_Inversion.py" beforeDir="false" afterPath="$PROJECT_DIR$/XC_Inversion.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pdft.py" beforeDir="false" afterPath="$PROJECT_DIR$/pdft.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/Be/Be.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Be/Be.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/Be/Be2.psi4" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Be/Be2.psi4" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/H2.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/H2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/H2p/H2P.psi4" beforeDir="false" afterPath="$PROJECT_DIR$/tests/H2p/H2P.psi4" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/H2p/H2P.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/H2p/H2P.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/H2p/grid_esp.dat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2" beforeDir="false" afterPath="$PROJECT_DIR$/tests/He2/He2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/He2/He2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/He2/He2Curve.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/.ipynb_checkpoints/Fitting-checkpoint.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/C6 fitting.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/Energy.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/Fitting.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1000-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1033-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1066-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1100-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1133-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1166-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1200-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1233-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1266-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1300-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1333-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1366-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1400-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1433-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1466-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1500-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1533-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1566-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1600-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1633-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1666-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1700-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1733-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1766-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1800-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1833-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1866-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1900-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1933-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1966-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 2000-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 400-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 400-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 433-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 433-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 466-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 466-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 500-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 500-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 533-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 533-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 566-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 566-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 600-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 600-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 633-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 666-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 700-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 733-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 766-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 800-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 833-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 866-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 900-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 933-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 966-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn1400-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn1400-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn1456-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn1456-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn1513-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn1513-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn1569-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn1569-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn1626-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn1626-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn1682-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn1682-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn1739-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn1739-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn400-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn400-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2Curve.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/HeALL96" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/densitydifference.qbs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/error.dat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/jobfile.sl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/libcubeprop.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/log" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/output.dat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/pdft.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/save.p" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/timer.dat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/HeALL96" beforeDir="false" afterPath="$PROJECT_DIR$/tests/He2/HeALL96" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/formic/formic.psi4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/XC_Inversion/Li2.psi4" beforeDir="false" afterPath="$PROJECT_DIR$/tests/XC_Inversion/Li2.psi4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/XC_Inversion/Li2.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/XC_Inversion/Li2.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -116,14 +16,14 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.5469584">
+    <splitter split-orientation="horizontal" split-proportion="0.5480256">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/XC_Inversion.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="470">
-                  <caret line="594" column="52" selection-start-line="594" selection-start-column="30" selection-end-line="594" selection-end-column="52" />
+                <state relative-caret-position="490">
+                  <caret line="669" column="60" selection-start-line="669" selection-start-column="60" selection-end-line="669" selection-end-column="60" />
                   <folding>
                     <element signature="e#49#60#0" expanded="true" />
                   </folding>
@@ -134,8 +34,8 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/pdft.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="290">
-                  <caret line="1831" column="21" selection-start-line="1831" selection-start-column="16" selection-end-line="1831" selection-end-column="21" />
+                <state relative-caret-position="207">
+                  <caret line="3542" selection-start-line="3542" selection-end-line="3542" />
                   <folding>
                     <element signature="e#425#436#0" expanded="true" />
                   </folding>
@@ -162,38 +62,8 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/tests/He2/He2.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1500">
+                <state relative-caret-position="861">
                   <caret line="75" column="58" selection-start-line="75" selection-start-column="58" selection-end-line="75" selection-end-column="58" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/tests/Be/Be.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="2000">
-                  <caret line="104" column="25" selection-start-line="104" selection-start-column="25" selection-end-line="104" selection-end-column="25" />
-                  <folding>
-                    <element signature="e#0#11#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/tests/Be/Be_CO.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1660">
-                  <caret line="87" selection-start-line="87" selection-end-line="88" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/tests/Be/Be_testingSVDandReg.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1900">
-                  <caret line="99" column="51" selection-start-line="99" selection-start-column="51" selection-end-line="99" selection-end-column="51" />
                 </state>
               </provider>
             </entry>
@@ -213,8 +83,8 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/tests/XC_Inversion/N2.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="80">
-                  <caret line="8" selection-start-line="8" selection-end-line="8" />
+                <state relative-caret-position="201">
+                  <caret line="40" selection-start-line="40" selection-end-line="40" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
                   </folding>
@@ -225,11 +95,20 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/tests/XC_Inversion/Li2.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="360">
-                  <caret line="18" column="17" selection-start-line="18" selection-start-column="17" selection-end-line="18" selection-end-column="17" />
+                <state relative-caret-position="380">
+                  <caret line="19" column="19" selection-start-line="19" selection-start-column="19" selection-end-line="19" selection-end-column="19" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
                   </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/tests/XC_Inversion/H2.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="-833">
+                  <caret line="9" column="15" selection-start-line="9" selection-start-column="15" selection-end-line="9" selection-end-column="15" />
                 </state>
               </provider>
             </entry>
@@ -247,36 +126,36 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>def scf</find>
-      <find>class U_M</find>
-      <find>hess_1</find>
-      <find>i.</find>
-      <find>check_hess</find>
-      <find>vp</find>
-      <find>find_vp_re</find>
-      <find>constr</find>
-      <find>class I</find>
-      <find>four_overlap =</find>
-      <find>four</find>
-      <find>Coccb</find>
-      <find>get_v</find>
-      <find>(nocc-1)/nocc*</find>
-      <find>nocc</find>
-      <find>hess_W</find>
-      <find>nocc-</find>
-      <find>nocc-1</find>
-      <find>vp_basis</find>
-      <find>__ini</find>
-      <find>vp_T</find>
-      <find>vp_tester</find>
-      <find>to_grid</find>
-      <find>vp_basis.nalpha()</find>
-      <find>if self.three_overlap is None:</find>
-      <find>self.vp_basis))</find>
       <find>assert self.vp_basis is self.molecule.wfn.basisset()</find>
       <find>alse</find>
       <find>scipy</find>
       <find>esp</find>
+      <find>/2</find>
+      <find>nocc-1</find>
+      <find>scf(</find>
+      <find>def scf</find>
+      <find>vp</find>
+      <find>Li</find>
+      <find>pinv</find>
+      <find>molecule.Vpot)</find>
+      <find>svd_rcond</find>
+      <find>svd_search</find>
+      <find>svd_</find>
+      <find>i</find>
+      <find>Lag</find>
+      <find>WuYang</find>
+      <find>La</find>
+      <find>grad</find>
+      <find>grad_c</find>
+      <find>hess_</find>
+      <find>def hess_</find>
+      <find>svd_not_update_flag</find>
+      <find>converge_flag</find>
+      <find>self.molecule.nbf</find>
+      <find>v_output =</find>
+      <find>class U_E</find>
+      <find>circle</find>
+      <find>vp_</find>
     </findStrings>
     <replaceStrings>
       <replace>rho_molecule - rho_fragment</replace>
@@ -284,7 +163,6 @@
       <replace>Kr</replace>
       <replace>self</replace>
       <replace>self.Lagrange_mul</replace>
-      <replace>self.vp_basis.nbf</replace>
       <replace>np.zeros(self.vp_basis.nbf())</replace>
       <replace>np.zeros((self.vp_basis.nbf(), self.vp_basis.nbf()))</replace>
       <replace>v_output</replace>
@@ -297,6 +175,13 @@
       <replace>vp_basis.nbf</replace>
       <replace>if self.vp_basis is self.molecule:</replace>
       <replace>self.vp_basis.wfn.basisset()))</replace>
+      <replace>vxc_matrix</replace>
+      <replace>scf_inversion(</replace>
+      <replace>vxc</replace>
+      <replace>H</replace>
+      <replace>svd_parameter</replace>
+      <replace>cycle</replace>
+      <replace>self.vp_basis.nbf</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -315,24 +200,24 @@
         <option value="$PROJECT_DIR$/tests/XC_Inversion/N2.py" />
         <option value="$PROJECT_DIR$/tests/XC_Inversion/Be.py" />
         <option value="$PROJECT_DIR$/tests/Be/Be.py" />
+        <option value="$PROJECT_DIR$/tests/XC_Inversion/H2.py" />
         <option value="$PROJECT_DIR$/pdft.py" />
-        <option value="$PROJECT_DIR$/XC_Inversion.py" />
         <option value="$PROJECT_DIR$/tests/XC_Inversion/Li2.py" />
+        <option value="$PROJECT_DIR$/XC_Inversion.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="1920" />
-    <option name="y" value="-2" />
-    <option name="width" value="1920" />
-    <option name="height" value="1082" />
+  <component name="ProjectFrameBounds" extendedState="7">
+    <option name="x" value="2123" />
+    <option name="y" value="97" />
+    <option name="width" value="1717" />
+    <option name="height" value="965" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -340,27 +225,11 @@
               <item name="pdft" type="b2602c69:ProjectViewProjectNode" />
               <item name="pdft" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="pdft" type="b2602c69:ProjectViewProjectNode" />
-              <item name="pdft" type="462c0819:PsiDirectoryNode" />
-              <item name="tests" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="pdft" type="b2602c69:ProjectViewProjectNode" />
-              <item name="pdft" type="462c0819:PsiDirectoryNode" />
-              <item name="tests" type="462c0819:PsiDirectoryNode" />
-              <item name="Be" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="pdft" type="b2602c69:ProjectViewProjectNode" />
-              <item name="pdft" type="462c0819:PsiDirectoryNode" />
-              <item name="tests" type="462c0819:PsiDirectoryNode" />
-              <item name="XC_Inversion" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -377,12 +246,12 @@
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/tests" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/tests/XC_Inversion" />
       <recent name="$PROJECT_DIR$/tests/Be" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/tests" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -420,7 +289,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="Be" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="H2" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="pdft" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -428,12 +297,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/Be" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/XC_Inversion" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tests/Be/Be.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tests/XC_Inversion/H2.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -530,10 +399,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.Li2" />
+        <item itemvalue="Python.H2" />
         <item itemvalue="Python.N2" />
         <item itemvalue="Python.Be (1)" />
         <item itemvalue="Python.XC_Inversion" />
-        <item itemvalue="Python.Be" />
       </list>
     </recent_temporary>
   </component>
@@ -567,12 +436,17 @@
       <workItem from="1588975210073" duration="3896000" />
       <workItem from="1589200438734" duration="18690000" />
       <workItem from="1589235540021" duration="7184000" />
-      <workItem from="1589290276148" duration="15210000" />
+      <workItem from="1589290276148" duration="18037000" />
+      <workItem from="1589317067096" duration="52831000" />
+      <workItem from="1589470692818" duration="8871000" />
+      <workItem from="1589506869608" duration="6072000" />
+      <workItem from="1589549350118" duration="9078000" />
+      <workItem from="1589560158524" duration="20174000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="277795000" />
+    <option name="totallyTimeSpent" value="377648000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1920" y="-2" width="1920" height="1082" extended-state="7" />
@@ -592,11 +466,11 @@
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Terminal" order="11" />
-      <window_info active="true" anchor="bottom" x="0" y="55" width="1920" height="1025" id="Python Console" maximized="true" order="12" type="WINDOWED" visible="true" weight="0.32948583" />
+      <window_info anchor="bottom" x="0" y="403" width="1920" height="1025" id="Python Console" maximized="true" order="12" type="WINDOWED" visible="true" weight="0.32948583" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" x="0" y="55" width="1920" height="1025" id="SciView" maximized="true" order="3" type="WINDOWED" visible="true" weight="0.32977587" />
+      <window_info active="true" anchor="right" x="1920" y="28" width="1920" height="1052" id="SciView" maximized="true" order="3" type="WINDOWED" visible="true" weight="0.32977587" />
       <window_info anchor="right" x="0" y="0" width="430" height="882" id="Documentation" order="4" side_tool="true" weight="0.32977587" />
       <window_info anchor="right" id="Database" order="5" />
     </layout>
@@ -701,8 +575,8 @@
     </entry>
     <entry file="file://$USER_HOME$/anaconda3/envs/work/lib/python3.7/site-packages/numpy/linalg/linalg.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="219">
-          <caret line="1958" column="26" lean-forward="true" selection-start-line="1958" selection-start-column="26" selection-end-line="1958" selection-end-column="26" />
+        <state relative-caret-position="188">
+          <caret line="1965" column="7" selection-start-line="1965" selection-start-column="7" selection-end-line="1965" selection-end-column="7" />
         </state>
       </provider>
     </entry>
@@ -713,37 +587,6 @@
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/He2/He2.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1500">
-          <caret line="75" column="58" selection-start-line="75" selection-start-column="58" selection-end-line="75" selection-end-column="58" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/Be/Be.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2000">
-          <caret line="104" column="25" selection-start-line="104" selection-start-column="25" selection-end-line="104" selection-end-column="25" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/Be/Be_CO.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1660">
-          <caret line="87" selection-start-line="87" selection-end-line="88" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/Be/Be_testingSVDandReg.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1900">
-          <caret line="99" column="51" selection-start-line="99" selection-start-column="51" selection-end-line="99" selection-end-column="51" />
         </state>
       </provider>
     </entry>
@@ -759,40 +602,78 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/XC_Inversion/N2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="80">
-          <caret line="8" selection-start-line="8" selection-end-line="8" />
+        <state relative-caret-position="201">
+          <caret line="40" selection-start-line="40" selection-end-line="40" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/tests/Be/Be_testingSVDandReg.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="861">
+          <caret line="99" column="51" selection-start-line="99" selection-start-column="51" selection-end-line="99" selection-end-column="51" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/Be/Be_CO.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="861">
+          <caret line="87" selection-start-line="87" selection-end-line="88" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/Be/Be.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="861">
+          <caret line="104" column="25" selection-start-line="104" selection-start-column="25" selection-end-line="104" selection-end-column="25" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/He2/He2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="861">
+          <caret line="75" column="58" selection-start-line="75" selection-start-column="58" selection-end-line="75" selection-end-column="58" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/XC_Inversion/H2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-833">
+          <caret line="9" column="15" selection-start-line="9" selection-start-column="15" selection-end-line="9" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/pdft.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="290">
-          <caret line="1831" column="21" selection-start-line="1831" selection-start-column="16" selection-end-line="1831" selection-end-column="21" />
+        <state relative-caret-position="207">
+          <caret line="3542" selection-start-line="3542" selection-end-line="3542" />
           <folding>
             <element signature="e#425#436#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/XC_Inversion.py">
+    <entry file="file://$PROJECT_DIR$/tests/XC_Inversion/Li2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="470">
-          <caret line="594" column="52" selection-start-line="594" selection-start-column="30" selection-end-line="594" selection-end-column="52" />
+        <state relative-caret-position="380">
+          <caret line="19" column="19" selection-start-line="19" selection-start-column="19" selection-end-line="19" selection-end-column="19" />
           <folding>
-            <element signature="e#49#60#0" expanded="true" />
+            <element signature="e#0#11#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/XC_Inversion/Li2.py">
+    <entry file="file://$PROJECT_DIR$/XC_Inversion.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="18" column="17" selection-start-line="18" selection-start-column="17" selection-end-line="18" selection-end-column="17" />
+        <state relative-caret-position="490">
+          <caret line="669" column="60" selection-start-line="669" selection-start-column="60" selection-end-line="669" selection-end-column="60" />
           <folding>
-            <element signature="e#0#11#0" expanded="true" />
+            <element signature="e#49#60#0" expanded="true" />
           </folding>
         </state>
       </provider>

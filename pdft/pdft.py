@@ -3554,12 +3554,17 @@ def plot1d_x(data, Vpot, dimmer_length=None, title=None,
     if ax is None:
         plt.show()
 
-def inv_pinv(a, rcond):
+def inv_pinv(a, start, end):
     u, s, vt = np.linalg.svd(a, full_matrices=False, hermitian=False)
 
     # discard small singular values
-    cutoff = rcond * np.amax(s, axis=-1, keepdims=True)
-    large = s < cutoff
+    # cutoff_start = rcond_start * np.amax(s, axis=-1, keepdims=True)
+    # cutoff_end = rcond_end * np.amax(s, axis=-1, keepdims=True)
+    # large_start = s > cutoff_end
+    # large_end = s <= cutoff_start
+    # large = large_start * large_end
+    large = np.array([False]*s.shape[0])
+    large[start:end] = True
     s = np.divide(1, s, where=large, out=s)
     s[~large] = 0
     res = np.matmul(np.transpose(vt), np.multiply(s[..., None], np.transpose(u)))

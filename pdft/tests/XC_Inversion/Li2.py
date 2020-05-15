@@ -10,16 +10,20 @@ if __name__ == "__main__":
 separation = 5.122
 functional = 'svwn'
 basis = 'sto-3g'
-basis = 'cc-pvqz'
-# basis = 'aug-pcsseg-3'
-vp_basis = None
+basis = 'cc-pvtz'
+basis = 'aug-pcsseg-3'
+basis = 'cc-pvdz'
+basis = 'aug-cc-pvqz'
 
-ortho_basis = True
-svd = "increase_from_middle"
+vp_basis = 'cc-pvdz'
+
+ortho_basis = False
+svd = "segment_cycle"
 opt_method="BFGS"
 method = "WuYangMN"
-title = "Li2 "+ method + opt_method +" "+basis+" Ortho_basis: "\
-        + str(ortho_basis) +" svd " + str(svd)
+title = "Li2 "+ method + opt_method + " " + basis+"/"+ \
+        str(vp_basis) + " Ortho_basis: "\
+        + str(ortho_basis) + " svd " + str(svd)
 print(title)
 
 psi4.set_output_file("Li2.psi4")
@@ -45,13 +49,14 @@ psi4.set_options({
 E, input_wfn = psi4.energy(functional+"/"+basis, molecule=Full_Molec, return_wfn=True)
 
 mol = XC_Inversion.Molecule(Full_Molec, basis, functional)
-mol.scf(100)
-print("Number of Basis: ", mol.nbf)
+mol.scf_inversion(100)
 if vp_basis is not None:
     vp_basis = XC_Inversion.Molecule(Full_Molec, vp_basis, functional)
-    vp_basis.scf(100)
+    vp_basis.scf_inversion(100)
 else:
     vp_basis = mol
+
+print("Number of Basis: ", mol.nbf, vp_basis.nbf)
 
 inverser = XC_Inversion.Inverser(mol, input_wfn,
                                  ortho_basis=ortho_basis,
@@ -63,18 +68,19 @@ inverser = XC_Inversion.Inverser(mol, input_wfn,
 if method == "WuYangScipy":
     inverser.find_vxc_scipy_WuYang(opt_method=opt_method)
 elif method == "WuYangMN":
-    inverser.find_vxc_manualNewton(svd_rcond=svd)
+    # rcondlist, dnlist, Llist = inverser.find_vxc_manualNewton(svd_rcond=svd, back_tracking_method="LD")
+    inverser.find_vxc_manualNewton(svd_rcond=svd, back_tracking_method="LD")
 elif method == "COScipy":
     inverser.find_vxc_scipy_constrainedoptimization(opt_method=opt_method)
 
-dDa = input_wfn.Da().np - mol.Da.np
-dDb = input_wfn.Db().np - mol.Db.np
-dn = mol.to_grid(dDa + dDb)
+# dDa = input_wfn.Da().np - mol.Da.np
+# dDb = input_wfn.Db().np - mol.Db.np
+# dn = mol.to_grid(dDa + dDb)
 
 f,ax = plt.subplots(1,1,dpi=200)
 XC_Inversion.pdft.plot1d_x(inverser.input_vxc_a, input_wfn.V_potential(), ax=ax,
                            dimmer_length=separation, label="input_xc_a", title=title)
-XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, mol.Vpot, ax=ax, label="WuYang_xc_a", ls='--')
+XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vp_basis.Vpot, ax=ax, label="WuYang_xc_a", ls='--')
 # XC_Inversion.pdft.plot1d_x(np.log10(np.abs(dn)), mol.Vpot, ax=ax, label="logdn", ls='dotted')
 ax.legend()
 ax.set_xlim(-14,14)
