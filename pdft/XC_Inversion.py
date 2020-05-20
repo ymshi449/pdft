@@ -137,7 +137,7 @@ class Molecule(pdft.U_Molecule):
         return
 
 class Inverser(pdft.U_Embedding):
-    def __init__(self, molecule, input_wfn, vp_basis=None, ortho_basis=False):
+    def __init__(self, molecule, input_wfn, vp_basis=None, ortho_basis=False, v0="FermiAmaldi"):
         super().__init__([], molecule, vp_basis=vp_basis)
 
         self.input_wfn = input_wfn
@@ -163,8 +163,15 @@ class Inverser(pdft.U_Embedding):
         # v_ext
         self.vext = None
         self.vH_input = None
-        self.v_FermiAmaldi_input_Fock = None
+        self.v0_input_Fock = None
         self.get_vH_vext()
+
+        # v0
+        self.v0 = v0
+        if self.v0 == "FermiAmaldi":
+            self.get_FermiAmaldi_v0()
+        elif self.v0 == "Hartree":
+            self.get_Hartree_v0()
 
         # vH_mol
         self.vH_mol = None
@@ -182,6 +189,7 @@ class Inverser(pdft.U_Embedding):
 
     def get_input_vxc(self):
         self.input_vxc_a, self.input_vxc_b = pdft.U_xc(self.input_wfn.Da().np, self.input_wfn.Db().np,
+                                                       # self.molecule.Vpot)[-1]
                                                        self.input_wfn.V_potential())[-1]
 
     def get_input_esp(self):
@@ -254,19 +262,25 @@ class Inverser(pdft.U_Embedding):
         # Get vH_input and vFermiAmaldi_fock ---------------------------------------------------
         self.vH_input = self.esp_input - self.vext
         self.input_wfn.nalpha() + self.input_wfn.nbeta()
-        nocc = self.molecule.ndocc
-        self.v_FermiAmaldi_input_Fock = self.molecule.grid_to_fock((nocc-1)/nocc*self.vH_input)
-        # self.v_FermiAmaldi_input_Fock = self.molecule.grid_to_fock(self.vH_input)
+        # self.v0_input_Fock = self.molecule.grid_to_fock((nocc-1)/nocc*self.vH_input)
         return
     
 
-    def update_v0(self):
+    def get_FermiAmaldi_v0(self):
         """
         Transfer v0 from v_FermiAmaldi to v_H_exact.
         :return:
         """
         nocc = self.molecule.ndocc
-        self.v_FermiAmaldi_input_Fock *= nocc/(nocc-1)
+        self.v0_input_Fock = (nocc-1)/nocc*self.molecule.grid_to_fock(self.vH_input)
+        return
+
+    def get_Hartree_v0(self):
+        """
+        Transfer v0 from v_FermiAmaldi to v_H_exact.
+        :return:
+        """
+        self.v0_input_Fock = self.molecule.grid_to_fock(self.vH_input)
         return
 
 
@@ -293,10 +307,13 @@ class Inverser(pdft.U_Embedding):
 
             self.vxc_b_grid = self.vp_basis.to_grid(self.v_output_b)
 
-        self.vxc_a_grid += (nocc-1)/nocc*self.vH_input - self.vH_mol
-        # self.vxc_a_grid += self.vH_input - self.vH_mol
-        self.vxc_b_grid += (nocc-1)/nocc*self.vH_input - self.vH_mol
-        # self.vxc_b_grid += self.vH_input - self.vH_mol
+        if self.v0 == "FermiAmaldi":
+            self.vxc_a_grid += (nocc-1)/nocc*self.vH_input - self.vH_mol
+            self.vxc_b_grid += (nocc-1)/nocc*self.vH_input - self.vH_mol
+
+        elif self.v0 == "Hartree":
+            self.vxc_a_grid += self.vH_input - self.vH_mol
+            self.vxc_b_grid += self.vH_input - self.vH_mol
         return
 
 
@@ -320,8 +337,8 @@ class Inverser(pdft.U_Embedding):
             v_output_a = v[:nbf]
             v_output_b = v[nbf:]
 
-            Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.v_FermiAmaldi_input_Fock)
-            Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.v_FermiAmaldi_input_Fock)
+            Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.v0_input_Fock)
+            Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.v0_input_Fock)
             self.molecule.scf_inversion(1000, [Vks_a, Vks_b])
 
         L = - self.molecule.T.vector_dot(self.molecule.Da) - self.molecule.T.vector_dot(self.molecule.Db)
@@ -343,8 +360,8 @@ class Inverser(pdft.U_Embedding):
             v_output_a = v[:nbf]
             v_output_b = v[nbf:]
 
-            Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.v_FermiAmaldi_input_Fock)
-            Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.v_FermiAmaldi_input_Fock)
+            Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.v0_input_Fock)
+            Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.v0_input_Fock)
 
             self.molecule.scf_inversion(100, [Vks_a, Vks_b])
 
@@ -367,8 +384,8 @@ class Inverser(pdft.U_Embedding):
             v_output_a = v[:nbf]
             v_output_b = v[nbf:]
 
-            Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.v_FermiAmaldi_input_Fock)
-            Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.v_FermiAmaldi_input_Fock)
+            Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.v0_input_Fock)
+            Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.v0_input_Fock)
 
             self.molecule.scf_inversion(100, [Vks_a, Vks_b])
 
@@ -412,8 +429,8 @@ class Inverser(pdft.U_Embedding):
                 
                 self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.vp_basis.A.np)
 
-        Vks_a = psi4.core.Matrix.from_array(self.v_FermiAmaldi_input_Fock)
-        Vks_b = psi4.core.Matrix.from_array(self.v_FermiAmaldi_input_Fock)
+        Vks_a = psi4.core.Matrix.from_array(self.v0_input_Fock)
+        Vks_b = psi4.core.Matrix.from_array(self.v0_input_Fock)
         self.molecule.scf_inversion(100, [Vks_a, Vks_b])
 
         L = self.Lagrangian_WuYang()
@@ -448,8 +465,8 @@ class Inverser(pdft.U_Embedding):
                 
                 self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.vp_basis.A.np)
 
-        Vks_a = psi4.core.Matrix.from_array(self.v_FermiAmaldi_input_Fock)
-        Vks_b = psi4.core.Matrix.from_array(self.v_FermiAmaldi_input_Fock)
+        Vks_a = psi4.core.Matrix.from_array(self.v0_input_Fock)
+        Vks_b = psi4.core.Matrix.from_array(self.v0_input_Fock)
         self.molecule.scf_inversion(100, [Vks_a, Vks_b])
 
         hess = self.hess_WuYang()
@@ -483,6 +500,8 @@ class Inverser(pdft.U_Embedding):
             if self.ortho_basis:
                 
                 self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.vp_basis.A.np)
+        print("Initialize out_put: 0.")
+        self.v_output = np.zeros_like(self.v_output)
 
         print("<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<")
 
@@ -508,16 +527,23 @@ class Inverser(pdft.U_Embedding):
         v_output_b = vp_array.x[nbf:]
 
         Vks_a = psi4.core.Matrix.from_array(
-            np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.v_FermiAmaldi_input_Fock)
+            np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.v0_input_Fock)
         Vks_b = psi4.core.Matrix.from_array(
-            np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.v_FermiAmaldi_input_Fock)
+            np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.v0_input_Fock)
         self.molecule.scf_inversion(100, [Vks_a, Vks_b])
 
         dDa = self.input_wfn.Da().np - self.molecule.Da.np
         dDb = self.input_wfn.Db().np - self.molecule.Db.np
         dn = self.molecule.to_grid(dDa+dDb)
         print("|n| after", np.sum(np.abs(dn)*self.molecule.w), "L after", vp_array.fun)
-
+        print("Ts", self.molecule.Da.vector_dot(self.molecule.T)+self.molecule.Db.vector_dot(self.molecule.T))
+        print("dTs", np.trace(np.dot(self.input_wfn.Da().np+self.input_wfn.Db().np-
+                                     self.molecule.Da.np-self.molecule.Db.np, self.molecule.T.np)))
+        print("eigenA")
+        print(self.input_wfn.epsilon_a().np[:self.molecule.nalpha])
+        print(self.molecule.eig_a.np[:self.molecule.nalpha])
+        print("wfnDiff", self.input_wfn.Ca().vector_dot(self.molecule.Ca)
+              /np.linalg.norm(self.input_wfn.Ca().np)/np.linalg.norm(self.molecule.Ca.np))
         # Update info
         self.v_output = vp_array.x
         self.get_vxc()
@@ -525,7 +551,7 @@ class Inverser(pdft.U_Embedding):
 
     def find_vxc_manualNewton(self, maxiter=49, svd_rcond=None, mu=1e-4,
                               svd_parameter=None, back_tracking_method="L",
-                              BT_beta_threshold=1e-3):
+                              BT_beta_threshold=1e-7, rho_conv_threshold=1e-3):
         if self.three_overlap is None:
             self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
                                                                              self.molecule.wfn.basisset(),
@@ -534,11 +560,11 @@ class Inverser(pdft.U_Embedding):
 
                 self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.vp_basis.A.np)
 
-        # # Start a new calculation.
+        print("Initialize out_put: 0.")
         self.v_output = np.zeros_like(self.v_output)
 
-        Vks_a = psi4.core.Matrix.from_array(self.v_FermiAmaldi_input_Fock)
-        Vks_b = psi4.core.Matrix.from_array(self.v_FermiAmaldi_input_Fock)
+        Vks_a = psi4.core.Matrix.from_array(self.v0_input_Fock)
+        Vks_b = psi4.core.Matrix.from_array(self.v0_input_Fock)
         self.molecule.scf_inversion(100, [Vks_a, Vks_b])
 
         ## Tracking rho and changing beta
@@ -549,8 +575,13 @@ class Inverser(pdft.U_Embedding):
 
         print("Initial dn:", dn_before, "Initial L:",L_old)
 
-        converge_flag = False
+        BT_converge_flag = False
         beta = 2
+
+        ls = 0
+        ns = 0
+
+        cycle_n = np.inf
         print("<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion manual Newton<<<<<<<<<<<<<<<<<<<")
         for scf_step in range(1, maxiter + 1):
 
@@ -612,14 +643,27 @@ class Inverser(pdft.U_Embedding):
                 s = np.linalg.svd(hess)[1]
 
                 if scf_step == 1:
+                    print(repr(s))
+
+                    plt.figure(dpi=200)
+                    # plt.scatter(range(s.shape[0]), np.log10(s), s=2)
+                    plt.scatter(range(s.shape[0]), np.log10(s), s=2)
+                    plt.title(str(self.ortho_basis))
+                    plt.show()
+                    plt.close()
+
+                    end = int(input("Enter svd_rcond end number: "))
+                    svd_parameter.append(end)
+
+                if scf_step == 1:
                     self.svd_index = int(s.shape[0]*svd_parameter[0])
                 elif beta <= BT_beta_threshold:
                     # SVD move on
                     self.svd_index += int(svd_parameter[1])
 
-                if self.svd_index >= s.shape[0]:
-                    self.svd_index = s.shape[0]
-                    converge_flag = True
+                if self.svd_index >= svd_parameter[-1]:
+                    self.svd_index = svd_parameter[-1]
+                    BT_converge_flag = True
                     
                 svd = s[self.svd_index-1]
                 # print(svd)
@@ -628,10 +672,58 @@ class Inverser(pdft.U_Embedding):
                 hess_inv = np.linalg.pinv(hess, rcond=svd)
                 dv = -np.dot(hess_inv, jac)
 
+            elif svd_rcond == "cycle_segment":
+                if svd_parameter is None:
+                    # [seg step length, current start idx]
+                    svd_parameter = [0.1, 0]
+
+                s = np.linalg.svd(hess)[1]
+                # SVD move on
+                s_shape = s.shape[0]
+
+                if scf_step == 1:
+                    plt.figure(dpi=200)
+                    # plt.scatter(range(s.shape[0]), np.log10(s), s=2)
+                    plt.scatter(range(s.shape[0]), np.log10(s), s=2)
+                    plt.title(str(self.ortho_basis))
+                    plt.show()
+                    plt.close()
+
+                    end = int(input("Enter svd_rcond end number: "))
+                    svd_parameter.append(end)
+
+                # another cycle
+                elif beta <= BT_beta_threshold:
+                    if svd_parameter[-1] == -1:
+                        if svd_parameter[1] >= s_shape:
+                            svd_parameter[1] = 0
+                    else:
+                        assert svd_parameter[-1] > 0
+                        if svd_parameter[1] >= svd_parameter[-1]:
+                            svd_parameter[1] = 0
+
+                    start = svd_parameter[1]
+                    svd_parameter[1] += int(svd_parameter[0]*s_shape)
+
+                    if svd_parameter[-1] == -1:
+                        if svd_parameter[1] > s_shape:
+                            svd_parameter[1] = s_shape
+                    else:
+                        assert svd_parameter[-1] > 0
+                        if svd_parameter[1] > svd_parameter[-1]:
+                            svd_parameter[1] = svd_parameter[-1]
+
+                    end = svd_parameter[1]
+
+                self.svd_index = [start, end]
+
+                hess_inv = pdft.inv_pinv(hess, self.svd_index[0], self.svd_index[1])
+                dv = -np.dot(hess_inv, jac)
+
             elif svd_rcond == "segment_cycle":
                 if svd_parameter is None:
                     # [seg step length, current start idx]
-                    svd_parameter = [10, 0]
+                    svd_parameter = [0.1, 0]
 
                 s = np.linalg.svd(hess)[1]
                 # SVD move on
@@ -642,7 +734,7 @@ class Inverser(pdft.U_Embedding):
 
                     plt.figure(dpi=200)
                     # plt.scatter(range(s.shape[0]), np.log10(s), s=2)
-                    plt.scatter(range(s.shape[0]), np.log10(s), s=2)
+                    plt.scatter(range(s.shape[0]), np.log10(s), s=1)
                     plt.title(str(self.ortho_basis))
                     plt.show()
                     plt.close()
@@ -660,7 +752,8 @@ class Inverser(pdft.U_Embedding):
                         svd_parameter[1] = 0
 
                 start = svd_parameter[1]
-                svd_parameter[1] += svd_parameter[0]
+                svd_parameter[1] += int(svd_parameter[0]*s_shape)
+
                 if svd_parameter[-1] == -1:
                     if svd_parameter[1] > s_shape:
                         svd_parameter[1] = s_shape
@@ -673,8 +766,84 @@ class Inverser(pdft.U_Embedding):
 
                 self.svd_index = [start, end]
 
-                hess_inv = pdft.inv_pinv(hess, start, end)
+                hess_inv = pdft.inv_pinv(hess, self.svd_index[0], self.svd_index[1])
+
                 dv = -np.dot(hess_inv, jac)
+
+            elif svd_rcond == "input_segment_cycle":
+                s = np.linalg.svd(hess)[1]
+                # SVD move on
+                s_shape = s.shape[0]
+
+                if scf_step == 1:
+                    print(repr(s))
+
+                    plt.figure(dpi=200)
+                    # plt.scatter(range(s.shape[0]), np.log10(s), s=2)
+                    plt.scatter(range(s.shape[0]), np.log10(s), s=1)
+                    plt.title(str(self.ortho_basis))
+                    plt.show()
+                    plt.close()
+
+                    # Get the segment partation.
+                    svd_parameter = [0]
+                    ns = int(input("Enter number of segments: "))
+                    for i in range(0, ns):
+                        ele = int(input()) + 1
+                        svd_parameter.append(ele)  # adding the element
+
+                # Cycle number
+                # ns=4
+                # [0-10,10-20,20-30,30-40]
+                # svd_parameter = [0,10,20,30,40]
+                # start = [0, 10, 20, 30]
+                # end = [10, 20, 30, 40]
+                # cn = [1, 2, 3, 0]
+                cn = scf_step % ns
+
+                start = svd_parameter[:-1][cn-1]
+                end = svd_parameter[1:][cn-1]
+
+                self.svd_index = [start, end]
+
+                hess_inv = pdft.inv_pinv(hess, self.svd_index[0], self.svd_index[1])
+
+                dv = -np.dot(hess_inv, jac)
+
+            elif svd_rcond == "search_segment_cycle":
+                s = np.linalg.svd(hess)[1]
+                # SVD move on
+                s_shape = s.shape[0]
+
+                if svd_parameter is None:
+                    svd_parameter = 10  # the cutoff threshold.
+
+                # Segmentation
+                if scf_step==1 or ns==ls:
+                    if np.sum(np.abs(cycle_n-n)*self.molecule.w) < rho_conv_threshold:
+                        print("Break because n is not improved in this segment cycle.", np.abs(cycle_n-n))
+                        break
+                    cycle_n = n
+                    seg_list = [0]
+                    for i in range(1,s_shape):
+                        if s[i-1]/s[i] > svd_parameter:
+                            print(s[i], s[i-1])
+                            seg_list.append(i)
+                    seg_list.append(s_shape)
+                    ls = len(seg_list) - 1  # length of segments
+                    ns = 0  # segment number starts from 0
+                    print("\nSegment", seg_list)
+                    print("\n")
+                start = seg_list[ns]
+                end = seg_list[ns+1]
+
+                self.svd_index = [start, end]
+
+                hess_inv = pdft.inv_pinv(hess, self.svd_index[0], self.svd_index[1])
+
+                dv = -np.dot(hess_inv, jac)
+
+                ns += 1
 
             elif svd_rcond == "segments":
                 if svd_parameter is None:
@@ -685,11 +854,11 @@ class Inverser(pdft.U_Embedding):
                 svd_parameter[1] += int(s_shape / svd_parameter[0])
                 if svd_parameter[1] > s_shape:
                     svd_parameter[1] = s_shape
-                    converge_flag = True
+                    BT_converge_flag = True
 
                 end = svd_parameter[1]
 
-                self.svd_index = [start, end]
+                self.svd_index = [start, end+1]
 
                 hess_inv = pdft.inv_pinv(hess, start, end)
                 dv = -np.dot(hess_inv, jac)
@@ -753,7 +922,7 @@ class Inverser(pdft.U_Embedding):
                 while True:
                     beta *= 0.5
                     if beta < BT_beta_threshold:
-                        converge_flag = True
+                        BT_converge_flag = True
                         break
                     # Traditional WuYang
                     v_temp = self.v_output + beta * dv
@@ -770,7 +939,7 @@ class Inverser(pdft.U_Embedding):
                 while True:
                     beta *= 0.5
                     if beta < BT_beta_threshold:
-                        converge_flag = True
+                        BT_converge_flag = True
                         break
                     # Traditional WuYang
                     v_temp = self.v_output + beta * dv
@@ -788,7 +957,7 @@ class Inverser(pdft.U_Embedding):
                 while True:
                     beta *= 0.5
                     if beta < BT_beta_threshold:
-                        converge_flag = True
+                        BT_converge_flag = True
                         break
                     # Traditional WuYang
                     v_temp = self.v_output + beta * dv
@@ -810,11 +979,13 @@ class Inverser(pdft.U_Embedding):
                 F'Ortho: {self.ortho_basis} SVDmoveon: {beta < BT_beta_threshold} ------\n'
                 F'Iter: {scf_step} beta: {beta} |jac|: {np.linalg.norm(jac)} L: {L_old} d_rho: {dn_before}\n')
 
-            if converge_flag and \
-                    not (svd_rcond=="segments" or svd_rcond=="segment_cycle" or svd_rcond=="increase"):
+            if BT_converge_flag and \
+                    not (svd_rcond=="segments" or svd_rcond=="segment_cycle"
+                         or svd_rcond=="increase" or svd_rcond=="input_segment_cycle"
+                         or svd_rcond=="search_segment_cycle"):
                 print("Converge")
                 break
-            elif dn_before < 1e-3:
+            elif dn_before < rho_conv_threshold:
                 print("Break because rho difference (cost) is small.")
                 break
             elif scf_step == maxiter:
@@ -826,6 +997,13 @@ class Inverser(pdft.U_Embedding):
             return rcondlist, dnlist, Llist
 
         print("Evaluation: ", self.L_counter, self.grad_counter, self.hess_counter)
+        print("Ts", self.molecule.Da.vector_dot(self.molecule.T)+self.molecule.Db.vector_dot(self.molecule.T))
+        print("dTs", np.trace(np.dot(self.input_wfn.Da().np+self.input_wfn.Db().np-
+                                     self.molecule.Da.np-self.molecule.Db.np, self.molecule.T.np)))
+        print("eigenA input", self.input_wfn.epsilon_a().np[:self.molecule.nalpha])
+        print("eigenA mol", self.molecule.eig_a.np[:self.molecule.nalpha])
+        print("wfnDiff", self.input_wfn.Ca().vector_dot(self.molecule.Ca)
+              /np.linalg.norm(self.input_wfn.Ca().np)/np.linalg.norm(self.molecule.Ca.np))
         self.L_counter = 0
         self.grad_counter = 0
         self.hess_counter = 0
@@ -851,8 +1029,8 @@ class Inverser(pdft.U_Embedding):
             v_output_a = v[:nbf]
             v_output_b = v[nbf:]
 
-            Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.v_FermiAmaldi_input_Fock)
-            Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.v_FermiAmaldi_input_Fock)
+            Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.v0_input_Fock)
+            Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.v0_input_Fock)
             self.molecule.scf_inversion(1000, [Vks_a, Vks_b])
 
         dDa = self.molecule.Da.np - self.input_wfn.Da().np
@@ -881,8 +1059,8 @@ class Inverser(pdft.U_Embedding):
             v_output_a = v[:nbf]
             v_output_b = v[nbf:]
 
-            Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.v_FermiAmaldi_input_Fock)
-            Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.v_FermiAmaldi_input_Fock)
+            Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.v0_input_Fock)
+            Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.v0_input_Fock)
 
             self.molecule.scf_inversion(100, [Vks_a, Vks_b])
 
@@ -953,8 +1131,8 @@ class Inverser(pdft.U_Embedding):
             v_output_a = v[:nbf]
             v_output_b = v[nbf:]
 
-            Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.v_FermiAmaldi_input_Fock)
-            Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.v_FermiAmaldi_input_Fock)
+            Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.v0_input_Fock)
+            Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.v0_input_Fock)
 
             self.molecule.scf_inversion(100, [Vks_a, Vks_b])
 
@@ -1091,8 +1269,8 @@ class Inverser(pdft.U_Embedding):
             v_output_a = v[:nbf]
             v_output_b = v[nbf:]
 
-            Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.v_FermiAmaldi_input_Fock)
-            Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.v_FermiAmaldi_input_Fock)
+            Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.v0_input_Fock)
+            Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.v0_input_Fock)
 
             self.molecule.scf_inversion(100, [Vks_a, Vks_b])
 
@@ -1157,8 +1335,8 @@ class Inverser(pdft.U_Embedding):
                 
                 self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.vp_basis.A.np)
 
-        Vks_a = psi4.core.Matrix.from_array(self.v_FermiAmaldi_input_Fock)
-        Vks_b = psi4.core.Matrix.from_array(self.v_FermiAmaldi_input_Fock)
+        Vks_a = psi4.core.Matrix.from_array(self.v0_input_Fock)
+        Vks_b = psi4.core.Matrix.from_array(self.v0_input_Fock)
         self.molecule.scf_inversion(100, [Vks_a, Vks_b])
 
         L = self.Lagrangian_constrainedoptimization()
@@ -1193,8 +1371,8 @@ class Inverser(pdft.U_Embedding):
                 
                 self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.vp_basis.A.np)
 
-        Vks_a = psi4.core.Matrix.from_array(self.v_FermiAmaldi_input_Fock)
-        Vks_b = psi4.core.Matrix.from_array(self.v_FermiAmaldi_input_Fock)
+        Vks_a = psi4.core.Matrix.from_array(self.v0_input_Fock)
+        Vks_b = psi4.core.Matrix.from_array(self.v0_input_Fock)
         self.molecule.scf_inversion(100, [Vks_a, Vks_b])
 
         hess = self.hess_constrainedoptimization()
@@ -1229,6 +1407,9 @@ class Inverser(pdft.U_Embedding):
                 
                 self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.vp_basis.A.np)
 
+        print("Initialize out_put: 0.")
+        self.v_output = np.zeros_like(self.v_output)
+
         print("<<<<<<<<<<<<<<<<<<<<<<Constrained Optimization vxc Inversion<<<<<<<<<<<<<<<<<<<")
 
         dDa = self.input_wfn.Da().np - self.molecule.Da.np
@@ -1254,16 +1435,23 @@ class Inverser(pdft.U_Embedding):
         v_output_b = vp_array.x[nbf:]
 
         Vks_a = psi4.core.Matrix.from_array(
-            np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.v_FermiAmaldi_input_Fock)
+            np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.v0_input_Fock)
         Vks_b = psi4.core.Matrix.from_array(
-            np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.v_FermiAmaldi_input_Fock)
+            np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.v0_input_Fock)
 
         self.molecule.scf_inversion(100, [Vks_a, Vks_b])
         dDa = self.input_wfn.Da().np - self.molecule.Da.np
         dDb = self.input_wfn.Db().np - self.molecule.Db.np
         dn = self.molecule.to_grid(dDa+dDb)
         print("|n| after", np.sum(np.abs(dn)*self.molecule.w), "L after", vp_array.fun)
-
+        print("Ts", self.molecule.Da.vector_dot(self.molecule.T)+self.molecule.Db.vector_dot(self.molecule.T))
+        print("dTs", np.trace(np.dot(self.input_wfn.Da().np+self.input_wfn.Db().np-
+                                     self.molecule.Da.np-self.molecule.Db.np, self.molecule.T.np)))
+        print("eigenA")
+        print(self.input_wfn.epsilon_a().np[:self.molecule.nalpha])
+        print(self.molecule.eig_a.np[:self.molecule.nalpha])
+        print("wfnDiff", self.input_wfn.Ca().vector_dot(self.molecule.Ca)
+              /np.linalg.norm(self.input_wfn.Ca().np)/np.linalg.norm(self.molecule.Ca.np))
         # Update info
         self.v_output = vp_array.x
         self.get_vxc()

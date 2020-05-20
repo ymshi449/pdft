@@ -7,48 +7,50 @@ import numpy as np
 if __name__ == "__main__":
     psi4.set_num_threads(2)
 
-separation = 5.122
 functional = 'svwn'
 basis = 'sto-3g'
-basis = 'cc-pvtz'
 basis = 'aug-pcsseg-3'
 basis = 'cc-pvdz'
-basis = 'aug-cc-pvqz'
+basis = 'aug-cc-pv5z'
+basis = 'cc-pvtz'
 
 vp_basis = None
 
 ortho_basis = False
 svd = "search_segment_cycle"
-svd = "input_every"
 opt_method="BFGS"
-method = "WuYangMN"
-title = "Li2 "+ method +"/"+ opt_method + " " + basis+"/"+ \
-        str(vp_basis) + " OB:"\
-        + str(ortho_basis) + " svd:" + str(svd)
+method = "COScipy"
+v0 = "FermiAmaldi"
+v0 = "Hartree"
+
+title = method +"_"+ opt_method +"_"+v0+ "_" + basis+"_"+ \
+        str(vp_basis) + "_"\
+        + str(ortho_basis) + "_" + str(svd)
 print(title)
 
-psi4.set_output_file("Li2.psi4")
+psi4.set_output_file("Ne.psi4")
 
 Full_Molec = psi4.geometry("""
 nocom
 noreorient
-Li %f 0.0 0.00
-Li -%f 0.0 0.00
+Ne 0.0 0.0 0.0
 units bohr
 symmetry c1
-""" % (separation / 2, separation / 2))
+""")
 
-
-Full_Molec.set_name("Li2")
+Full_Molec.set_name("Ne")
 
 #Psi4 Options:
 psi4.set_options({
     'DFT_SPHERICAL_POINTS': 302,
     'DFT_RADIAL_POINTS': 77,
-    'REFERENCE' : 'UKS'
+    'REFERENCE' : 'RHF'
 })
-E, input_wfn = psi4.energy(functional+"/"+basis, molecule=Full_Molec, return_wfn=True)
-
+E, input_wfn = psi4.energy("CCSD"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+#Psi4 Options:
+psi4.set_options({
+    'REFERENCE' : 'UHF'
+})
 mol = XC_Inversion.Molecule(Full_Molec, basis, functional)
 mol.scf_inversion(100)
 if vp_basis is not None:
@@ -61,7 +63,9 @@ print("Number of Basis: ", mol.nbf, vp_basis.nbf)
 
 inverser = XC_Inversion.Inverser(mol, input_wfn,
                                  ortho_basis=ortho_basis,
-                                 vp_basis=vp_basis)
+                                 vp_basis=vp_basis,
+                                 v0=v0
+                                 )
 
 # grad, grad_app = inverser.check_gradient_constrainedoptimization()
 # hess, hess_app = inverser.check_hess_constrainedoptimization()
@@ -78,13 +82,11 @@ elif method == "COScipy":
 # dDb = input_wfn.Db().np - mol.Db.np
 # dn = mol.to_grid(dDa + dDb)
 
-# f,ax = plt.subplots(1,1,dpi=200)
-# XC_Inversion.pdft.plot1d_x(inverser.input_vxc_a, input_wfn.V_potential(), ax=ax,
-#                            dimmer_length=separation, label="input_xc_a", title=title)
-# XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vp_basis.Vpot, ax=ax, label="WuYang_xc_a", ls='--')
-# # XC_Inversion.pdft.plot1d_x(np.log10(np.abs(dn)), mol.Vpot, ax=ax, label="logdn", ls='dotted')
-# ax.legend()
-# ax.set_xlim(-14,14)
-# ax.set_ylim(-3,0.1)
-# f.show()
-# plt.close(f)
+f,ax = plt.subplots(1,1,dpi=200)
+XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vp_basis.Vpot, ax=ax, label="WuYang_xc_a", ls='--')
+# XC_Inversion.pdft.plot1d_x(np.log10(np.abs(dn)), mol.Vpot, ax=ax, label="logdn", ls='dotted')
+ax.legend()
+ax.set_xlim(-14,14)
+ax.set_ylim(-3,0.7)
+f.show()
+plt.close(f)
