@@ -1,6 +1,6 @@
 
 *** tstart() called on PartitionStation
-*** at Wed May 20 11:06:36 2020
+*** at Thu May 21 17:41:40 2020
 
    => Loading Basis Set <=
 
@@ -92,11 +92,11 @@
 
     BS radius alpha        =              1
     Pruning alpha          =              1
-    Radial Points          =             77
-    Spherical Points       =            302
-    Total Points           =          23254
-    Total Blocks           =            238
-    Max Points             =            255
+    Radial Points          =             81
+    Spherical Points       =            434
+    Total Points           =          35154
+    Total Blocks           =            334
+    Max Points             =            251
     Max Functions          =             80
 
    => Loading Basis Set <=
@@ -118,7 +118,7 @@
 
   ==> Integral Setup <==
 
-  DFHelper Memory: AOs need 0.004 GiB; user supplied 0.353 GiB. Using in-core AOs.
+  DFHelper Memory: AOs need 0.004 GiB; user supplied 0.346 GiB. Using in-core AOs.
 
   ==> MemDFJK: Density-Fitted J/K Matrices <==
 
@@ -126,7 +126,7 @@
     K tasked:                    No
     wK tasked:                   No
     OpenMP threads:               2
-    Memory [MiB]:               361
+    Memory [MiB]:               354
     Algorithm:                 Core
     Schwarz Cutoff:           1E-12
     Mask sparsity (%):       0.0000
@@ -142,7 +142,7 @@
     Spherical Harmonics?: true
     Max angular momentum: 3
 
-  Cached 100.0% of DFT collocation blocks in 0.014 [GiB].
+  Cached 100.0% of DFT collocation blocks in 0.020 [GiB].
 
   Minimum eigenvalue in the overlap matrix is 7.4948604206E-04.
   Using Symmetric Orthogonalization.
@@ -153,20 +153,20 @@
 
                            Total Energy        Delta E     RMS |[F,P]|
 
-   @DF-UKS iter   1:   -12.98710506916962   -1.29871e+01   2.19535e-02 DIIS
-   @DF-UKS iter   2:   -14.27455333884281   -1.28745e+00   6.52171e-03 DIIS
-   @DF-UKS iter   3:   -14.51474260195157   -2.40189e-01   8.91944e-04 DIIS
-   @DF-UKS iter   4:   -14.51981154351759   -5.06894e-03   5.90024e-05 DIIS
-   @DF-UKS iter   5:   -14.51981680689313   -5.26338e-06   9.96690e-06 DIIS
-   @DF-UKS iter   6:   -14.51981758792660   -7.81033e-07   4.70369e-07 DIIS
+   @DF-UKS iter   1:   -12.98710669421717   -1.29871e+01   2.19535e-02 DIIS
+   @DF-UKS iter   2:   -14.27416094512430   -1.28705e+00   6.52243e-03 DIIS
+   @DF-UKS iter   3:   -14.51472958799030   -2.40569e-01   8.93038e-04 DIIS
+   @DF-UKS iter   4:   -14.51981153496388   -5.08195e-03   5.90814e-05 DIIS
+   @DF-UKS iter   5:   -14.51981680129337   -5.26633e-06   1.00017e-05 DIIS
+   @DF-UKS iter   6:   -14.51981758794886   -7.86655e-07   4.72875e-07 DIIS
   Energy and wave function converged.
 
 
   ==> Post-Iterations <==
 
-   @Spin Contamination Metric:   3.552713679E-15
+   @Spin Contamination Metric:   2.220446049E-15
    @S^2 Expected:                0.000000000E+00
-   @S^2 Observed:                3.552713679E-15
+   @S^2 Observed:                2.220446049E-15
    @S   Expected:                0.000000000E+00
    @S   Observed:                0.000000000E+00
 
@@ -244,17 +244,17 @@
     DOCC [     2 ]
     SOCC [     0 ]
 
-  @DF-UKS Final Energy:   -14.51981758792660
+  @DF-UKS Final Energy:   -14.51981758794886
 
    => Energetics <=
 
     Nuclear Repulsion Energy =              0.0000000000000000
-    One-Electron Energy =                 -19.0571679482369021
-    Two-Electron Energy =                   7.1291979553794489
-    DFT Exchange-Correlation Energy =      -2.5918475950691473
+    One-Electron Energy =                 -19.0571683437687796
+    Two-Electron Energy =                   7.1291984602858740
+    DFT Exchange-Correlation Energy =      -2.5918477044659562
     Empirical Dispersion Energy =           0.0000000000000000
     VV10 Nonlocal Energy =                  0.0000000000000000
-    Total Energy =                        -14.5198175879265996
+    Total Energy =                        -14.5198175879488609
 
   UHF NO Occupations:
   HONO-1 :    1  A 2.0000000
@@ -276,24 +276,24 @@ Properties computed using the SCF density matrix
      X:     0.0000      Y:     0.0000      Z:     0.0000
 
   Electronic Dipole Moment: [e a0]
-     X:    -0.0000      Y:    -0.0000      Z:    -0.0000
+     X:    -0.0000      Y:    -0.0000      Z:     0.0000
 
   Dipole Moment: [e a0]
-     X:    -0.0000      Y:    -0.0000      Z:    -0.0000     Total:     0.0000
+     X:    -0.0000      Y:    -0.0000      Z:     0.0000     Total:     0.0000
 
   Dipole Moment: [D]
-     X:    -0.0000      Y:    -0.0000      Z:    -0.0000     Total:     0.0000
+     X:    -0.0000      Y:    -0.0000      Z:     0.0000     Total:     0.0000
 
 
-*** tstop() called on PartitionStation at Wed May 20 11:06:37 2020
+*** tstop() called on PartitionStation at Thu May 21 17:41:41 2020
 Module time:
-	user time   =       2.21 seconds =       0.04 minutes
-	system time =       0.06 seconds =       0.00 minutes
+	user time   =       1.94 seconds =       0.03 minutes
+	system time =       0.05 seconds =       0.00 minutes
 	total time  =          1 seconds =       0.02 minutes
 Total time:
-	user time   =       2.21 seconds =       0.04 minutes
-	system time =       0.06 seconds =       0.00 minutes
-	total time  =          1 seconds =       0.02 minutes
+	user time   =     141.33 seconds =       2.36 minutes
+	system time =       0.97 seconds =       0.02 minutes
+	total time  =        845 seconds =      14.08 minutes
    => Loading Basis Set <=
 
     Name: AUG-CC-PVQZ
@@ -384,11 +384,11 @@ Total time:
 
     BS radius alpha        =              1
     Pruning alpha          =              1
-    Radial Points          =             77
-    Spherical Points       =            302
-    Total Points           =          23254
-    Total Blocks           =            238
-    Max Points             =            255
+    Radial Points          =             81
+    Spherical Points       =            434
+    Total Points           =          35154
+    Total Blocks           =            334
+    Max Points             =            251
     Max Functions          =             80
 
   Using in-core PK algorithm.
@@ -418,6 +418,8 @@ Total time:
 
     OpenMP threads:              2
 
+  Threads set to 1 by Python driver.
+  Threads set to 2 by Python driver.
   Threads set to 1 by Python driver.
   Threads set to 2 by Python driver.
   Threads set to 1 by Python driver.

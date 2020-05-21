@@ -193,7 +193,7 @@ class Inverser(pdft.U_Embedding):
                                                        self.input_wfn.V_potential())[-1]
 
     def get_input_esp(self):
-        assert self.esp_input is None
+        # assert self.esp_input is None
 
         nthreads = psi4.get_num_threads()
         psi4.set_num_threads(1)
@@ -261,9 +261,23 @@ class Inverser(pdft.U_Embedding):
 
         # Get vH_input and vFermiAmaldi_fock ---------------------------------------------------
         self.vH_input = self.esp_input - self.vext
-        self.input_wfn.nalpha() + self.input_wfn.nbeta()
         # self.v0_input_Fock = self.molecule.grid_to_fock((nocc-1)/nocc*self.vH_input)
         return
+
+    def change_v0(self, v0: str):
+        self.v0 = v0
+        if self.v0 == "FermiAmaldi":
+            self.get_FermiAmaldi_v0()
+        elif self.v0 == "Hartree":
+            self.get_Hartree_v0()
+
+    def change_orthogonality(self, ortho: bool):
+        self.ortho_basis = ortho
+        self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
+                                                                         self.molecule.wfn.basisset(),
+                                                                         self.vp_basis.wfn.basisset()))
+        if self.ortho_basis:
+            self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.vp_basis.A.np)
     
 
     def get_FermiAmaldi_v0(self):
@@ -491,7 +505,7 @@ class Inverser(pdft.U_Embedding):
 
         return hess, hess_app
 
-    def find_vxc_scipy_WuYang(self, maxiter=1400, opt_method="BFGS"):
+    def find_vxc_scipy_WuYang(self, maxiter=14000, opt_method="BFGS"):
 
         if self.three_overlap is None:
             self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
@@ -502,6 +516,10 @@ class Inverser(pdft.U_Embedding):
                 self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.vp_basis.A.np)
         print("Initialize out_put: 0.")
         self.v_output = np.zeros_like(self.v_output)
+
+        Vks_a = psi4.core.Matrix.from_array(self.v0_input_Fock)
+        Vks_b = psi4.core.Matrix.from_array(self.v0_input_Fock)
+        self.molecule.scf_inversion(100, [Vks_a, Vks_b])
 
         print("<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<")
 

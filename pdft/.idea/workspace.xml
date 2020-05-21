@@ -21,14 +21,14 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.6632871">
+    <splitter split-orientation="horizontal" split-proportion="0.5795091">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/XC_Inversion.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="290">
-                  <caret line="192" column="55" selection-start-line="192" selection-start-column="55" selection-end-line="192" selection-end-column="55" />
+                <state relative-caret-position="-190">
+                  <caret line="507" column="8" selection-start-line="507" selection-start-column="8" selection-end-line="507" selection-end-column="8" />
                   <folding>
                     <element signature="e#49#60#0" expanded="true" />
                   </folding>
@@ -39,8 +39,8 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/pdft.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="71040">
-                  <caret line="3556" column="4" selection-start-line="3556" selection-start-column="4" selection-end-line="3556" selection-end-column="4" />
+                <state relative-caret-position="-103">
+                  <caret line="3546" column="32" selection-start-line="3546" selection-start-column="32" selection-end-line="3546" selection-end-column="32" />
                   <folding>
                     <element signature="e#425#436#0" expanded="true" />
                   </folding>
@@ -52,27 +52,6 @@
       </split-first>
       <split-second>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/tests/He2/He2.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1500">
-                  <caret line="75" column="58" selection-start-line="75" selection-start-column="58" selection-end-line="75" selection-end-column="58" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/tests/XC_Inversion/Be2.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="120">
-                  <caret line="10" selection-start-line="10" selection-end-line="11" />
-                  <folding>
-                    <element signature="e#0#11#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/tests/XC_Inversion/N2.py">
               <provider selected="true" editor-type-id="text-editor">
@@ -88,8 +67,8 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/tests/XC_Inversion/Li2.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="420">
-                  <caret line="21" column="16" selection-start-line="21" selection-start-column="16" selection-end-line="21" selection-end-column="16" />
+                <state relative-caret-position="480">
+                  <caret line="24" selection-start-line="24" selection-end-line="25" selection-end-column="14" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
                   </folding>
@@ -100,17 +79,17 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/tests/XC_Inversion/He.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="780">
+                <state relative-caret-position="1140">
                   <caret line="61" selection-start-line="61" selection-end-line="62" />
                 </state>
               </provider>
             </entry>
           </file>
-          <file pinned="false" current-in-tab="true">
+          <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/tests/XC_Inversion/Ne.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="620">
-                  <caret line="80" lean-forward="true" selection-start-line="73" selection-end-line="80" />
+                <state relative-caret-position="440">
+                  <caret line="26" selection-start-line="26" selection-end-line="28" selection-end-column="43" />
                 </state>
               </provider>
             </entry>
@@ -118,17 +97,20 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/tests/XC_Inversion/Ne_real.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-20">
+                <state relative-caret-position="220">
                   <caret line="15" selection-start-line="15" selection-end-line="15" />
                 </state>
               </provider>
             </entry>
           </file>
-          <file pinned="false" current-in-tab="false">
+          <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/tests/XC_Inversion/Be.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="520">
-                  <caret line="30" column="5" selection-start-line="30" selection-start-column="5" selection-end-line="30" selection-end-column="5" />
+                <state relative-caret-position="1487">
+                  <caret line="82" selection-start-line="82" selection-end-line="91" selection-end-column="14" />
+                  <folding>
+                    <element signature="e#0#11#0" expanded="true" />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -167,8 +149,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>/2</find>
-      <find>nocc-1</find>
       <find>scf(</find>
       <find>def scf</find>
       <find>vp</find>
@@ -197,6 +177,8 @@
       <find>eigenA</find>
       <find>converge_flag</find>
       <find>svd_parameter</find>
+      <find>change_</find>
+      <find>Vpot</find>
     </findStrings>
     <replaceStrings>
       <replace>rho_molecule - rho_fragment</replace>
@@ -244,17 +226,17 @@
         <option value="$PROJECT_DIR$/tests/XC_Inversion/N2.py" />
         <option value="$PROJECT_DIR$/tests/Be/Be.py" />
         <option value="$PROJECT_DIR$/tests/XC_Inversion/H2.py" />
-        <option value="$PROJECT_DIR$/pdft.py" />
-        <option value="$PROJECT_DIR$/tests/XC_Inversion/Be.py" />
         <option value="$PROJECT_DIR$/tests/XC_Inversion/He.py" />
         <option value="$PROJECT_DIR$/tests/XC_Inversion/Ne_real.py" />
-        <option value="$PROJECT_DIR$/tests/XC_Inversion/Li2.py" />
-        <option value="$PROJECT_DIR$/XC_Inversion.py" />
         <option value="$PROJECT_DIR$/tests/XC_Inversion/Ne.py" />
+        <option value="$PROJECT_DIR$/XC_Inversion.py" />
+        <option value="$PROJECT_DIR$/tests/XC_Inversion/Li2.py" />
+        <option value="$PROJECT_DIR$/pdft.py" />
+        <option value="$PROJECT_DIR$/tests/XC_Inversion/Be.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="2123" />
     <option name="y" value="97" />
     <option name="width" value="1717" />
@@ -324,7 +306,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.Ne">
+  <component name="RunManager" selected="Python.Be">
     <configuration name="Be" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="pdft" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -370,6 +352,9 @@
       <module name="pdft" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/XC_Inversion" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -408,6 +393,9 @@
       <module name="pdft" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/XC_Inversion" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -447,10 +435,10 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.Ne" />
-        <item itemvalue="Python.Li2" />
-        <item itemvalue="Python.He" />
         <item itemvalue="Python.Be" />
+        <item itemvalue="Python.Li2" />
+        <item itemvalue="Python.Ne" />
+        <item itemvalue="Python.He" />
         <item itemvalue="Python.H2" />
       </list>
     </recent_temporary>
@@ -493,16 +481,16 @@
       <workItem from="1589560158524" duration="20174000" />
       <workItem from="1589809851356" duration="18094000" />
       <workItem from="1589895752413" duration="25014000" />
-      <workItem from="1589983083017" duration="22794000" />
+      <workItem from="1589983083017" duration="23393000" />
+      <workItem from="1590067235691" duration="26816000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="443550000" />
+    <option name="totallyTimeSpent" value="470965000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1920" y="-2" width="1920" height="1082" extended-state="6" />
-    <editor active="true" />
+    <frame x="1920" y="-2" width="1920" height="1082" extended-state="7" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.2497332" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -519,11 +507,11 @@
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Terminal" order="11" />
-      <window_info anchor="bottom" x="0" y="403" width="1920" height="1025" id="Python Console" maximized="true" order="12" type="WINDOWED" weight="0.32948583" />
+      <window_info active="true" anchor="bottom" x="0" y="403" width="1920" height="1025" id="Python Console" maximized="true" order="12" type="WINDOWED" visible="true" weight="0.32948583" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" x="1920" y="28" width="1920" height="1052" id="SciView" maximized="true" order="3" type="WINDOWED" visible="true" weight="0.32977587" />
+      <window_info anchor="right" x="0" y="403" width="1920" height="1025" id="SciView" maximized="true" order="3" type="WINDOWED" visible="true" weight="0.32977587" />
       <window_info anchor="right" x="0" y="0" width="430" height="882" id="Documentation" order="4" side_tool="true" weight="0.32977587" />
       <window_info anchor="right" id="Database" order="5" />
     </layout>
@@ -654,16 +642,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pdft.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="71040">
-          <caret line="3556" column="4" selection-start-line="3556" selection-start-column="4" selection-end-line="3556" selection-end-column="4" />
-          <folding>
-            <element signature="e#425#436#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/H2p/H2P.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1260">
@@ -681,6 +659,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/tests/XC_Inversion/Be2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="10" selection-start-line="10" selection-end-line="11" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/tests/XC_Inversion/N2.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="720">
@@ -688,6 +676,20 @@
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/XC_Inversion/He.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1140">
+          <caret line="61" selection-start-line="61" selection-end-line="62" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/XC_Inversion/Ne_real.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="220">
+          <caret line="15" selection-start-line="15" selection-end-line="15" />
         </state>
       </provider>
     </entry>
@@ -708,61 +710,64 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/XC_Inversion/Be2.py">
+    <entry file="file://$PROJECT_DIR$/tests/XC_Inversion/Ne.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="10" selection-start-line="10" selection-end-line="11" />
+        <state relative-caret-position="440">
+          <caret line="26" selection-start-line="26" selection-end-line="28" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/anaconda3/envs/work/lib/python3.7/warnings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="308">
+          <caret line="290" column="4" selection-start-line="290" selection-start-column="4" selection-end-line="290" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/anaconda3/envs/work/lib/python3.7/site-packages/scipy/optimize/_minimize.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="288">
+          <caret line="503" column="10" lean-forward="true" selection-start-line="503" selection-start-column="10" selection-end-line="503" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/XC_Inversion/Li2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="480">
+          <caret line="24" selection-start-line="24" selection-end-line="25" selection-end-column="14" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/XC_Inversion/Be.py">
+    <entry file="file://$PROJECT_DIR$/pdft.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="520">
-          <caret line="30" column="5" selection-start-line="30" selection-start-column="5" selection-end-line="30" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/XC_Inversion/Ne_real.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-20">
-          <caret line="15" selection-start-line="15" selection-end-line="15" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/XC_Inversion/He.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="780">
-          <caret line="61" selection-start-line="61" selection-end-line="62" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/XC_Inversion/Li2.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
-          <caret line="21" column="16" selection-start-line="21" selection-start-column="16" selection-end-line="21" selection-end-column="16" />
+        <state relative-caret-position="-103">
+          <caret line="3546" column="32" selection-start-line="3546" selection-start-column="32" selection-end-line="3546" selection-end-column="32" />
           <folding>
-            <element signature="e#0#11#0" expanded="true" />
+            <element signature="e#425#436#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/XC_Inversion.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="290">
-          <caret line="192" column="55" selection-start-line="192" selection-start-column="55" selection-end-line="192" selection-end-column="55" />
+        <state relative-caret-position="-190">
+          <caret line="507" column="8" selection-start-line="507" selection-start-column="8" selection-end-line="507" selection-end-column="8" />
           <folding>
             <element signature="e#49#60#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/XC_Inversion/Ne.py">
+    <entry file="file://$PROJECT_DIR$/tests/XC_Inversion/Be.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="620">
-          <caret line="80" lean-forward="true" selection-start-line="73" selection-end-line="80" />
+        <state relative-caret-position="1487">
+          <caret line="82" selection-start-line="82" selection-end-line="91" selection-end-column="14" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
