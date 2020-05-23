@@ -146,7 +146,10 @@ class Inverser(pdft.U_Embedding):
         self.input_vxc_a = None
         self.input_vxc_b = None
         self.input_vxc_cube = None # To be implemented.
-        self.get_input_vxc()
+        try:
+            self.get_input_vxc()
+        except:
+            print("There is no Vpotential or vxc for input wfn.")
 
         # v_output = [v_output_a, v_output_b]
         self.v_output = np.zeros(int(self.vp_basis.nbf)*2)
@@ -505,7 +508,7 @@ class Inverser(pdft.U_Embedding):
 
         return hess, hess_app
 
-    def find_vxc_scipy_WuYang(self, maxiter=14000, opt_method="BFGS"):
+    def find_vxc_scipy_WuYang(self, maxiter=14000, opt_method="BFGS", opt=None):
 
         if self.three_overlap is None:
             self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
@@ -514,7 +517,7 @@ class Inverser(pdft.U_Embedding):
             if self.ortho_basis:
                 
                 self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.vp_basis.A.np)
-        print("Initialize out_put: 0.")
+        print("Zero the old result for a new calculation..")
         self.v_output = np.zeros_like(self.v_output)
 
         Vks_a = psi4.core.Matrix.from_array(self.v0_input_Fock)
@@ -527,13 +530,14 @@ class Inverser(pdft.U_Embedding):
         dDb = self.input_wfn.Db().np - self.molecule.Db.np
         dn = self.molecule.to_grid(dDa+dDb)
         print("|n| before", np.sum(np.abs(dn)*self.molecule.w))
-        opt = {
-            "disp": True,
-            "maxiter": maxiter,
-            # "eps": 1e-7
-            # "norm": 2,
-            "gtol": 1e-7
-        }
+        if opt is None:
+            opt = {
+                "disp": True,
+                "maxiter": maxiter,
+                # "eps": 1e-7
+                "norm": 2,
+                "gtol": 1e-7
+            }
 
         vp_array = optimizer.minimize(self.Lagrangian_WuYang, self.v_output,
                                       jac=self.grad_WuYang,
@@ -578,7 +582,7 @@ class Inverser(pdft.U_Embedding):
 
                 self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.vp_basis.A.np)
 
-        print("Initialize out_put: 0.")
+        print("Zero the old result for a new calculation..")
         self.v_output = np.zeros_like(self.v_output)
 
         Vks_a = psi4.core.Matrix.from_array(self.v0_input_Fock)
@@ -615,6 +619,14 @@ class Inverser(pdft.U_Embedding):
             elif type(svd_rcond) is float:
                 hess_inv = np.linalg.pinv(hess, rcond=svd_rcond)
                 dv = -np.dot(hess_inv, jac)
+            elif type(svd_rcond) is int:
+                s = np.linalg.svd(hess)[1]
+                self.svd_index = svd_rcond
+                svd = s[self.svd_index]
+                # print(svd)
+                svd = svd * 0.9999 / s[0]
+                hess_inv = np.linalg.pinv(hess, rcond=svd)
+                dv = -np.dot(hess_inv, jac)
             elif svd_rcond == "input_once":
                 s = np.linalg.svd(hess)[1]
 
@@ -628,10 +640,10 @@ class Inverser(pdft.U_Embedding):
                     plt.show()
                     plt.close()
 
-                    self.svd_index = int(input("Enter svd_rcond number: "))
+                    self.svd_index = int(input("Enter svd cut index (0-based indexing): "))
                 svd = s[self.svd_index]
                 # print(svd)
-                svd = svd * 0.95 / s[0]
+                svd = svd * 0.9999 / s[0]
 
                 hess_inv = np.linalg.pinv(hess, rcond=svd)
                 dv = -np.dot(hess_inv, jac)
@@ -647,7 +659,7 @@ class Inverser(pdft.U_Embedding):
                 plt.show()
                 plt.close()
 
-                self.svd_index = int(input("Enter svd_rcond number: "))
+                self.svd_index = int(input("Enter svd cut index (0-based indexing): "))
                 svd = s[self.svd_index]
                 # print(svd)
                 svd = svd * 0.95 / s[0]
@@ -1009,7 +1021,6 @@ class Inverser(pdft.U_Embedding):
             elif scf_step == maxiter:
                 print("Maximum number of SCF cycles exceeded for vp.")
 
-        self.get_vxc()
 
         if svd_rcond == "find_optimal_w_bruteforce":
             return rcondlist, dnlist, Llist
@@ -1025,6 +1036,9 @@ class Inverser(pdft.U_Embedding):
         self.L_counter = 0
         self.grad_counter = 0
         self.hess_counter = 0
+
+        self.get_vxc()
+
         return
 
     def Lagrangian_constrainedoptimization(self, v=None):
@@ -1107,7 +1121,7 @@ class Inverser(pdft.U_Embedding):
             #     f.show()
             #     plt.close()
             #
-            #     self.svd_index = int(input("Enter svd_rcond number: "))
+            #     self.svd_index = int(input("Enter svd cut index (0-based indexing): "))
             #
             # p = np.dot(np.linalg.pinv(LHS, rcond=s[self.svd_index]*1.01/s[0]), RHS)
 
@@ -1180,7 +1194,7 @@ class Inverser(pdft.U_Embedding):
             #     f.show()
             #     plt.close()
             #
-            #     self.svd_index = int(input("Enter svd_rcond number: "))
+            #     self.svd_index = int(input("Enter svd cut index (0-based indexing): "))
             #
             # p = np.dot(np.linalg.pinv(LHS, rcond=s[self.svd_index]*1.01/s[0]), RHS)
 
@@ -1316,7 +1330,7 @@ class Inverser(pdft.U_Embedding):
             #     f.show()
             #     plt.close()
             #
-            #     self.svd_index = int(input("Enter svd_rcond number: "))
+            #     self.svd_index = int(input("Enter svd cut index (0-based indexing): "))
             #
             # p = np.dot(np.linalg.pinv(LHS, rcond=s[self.svd_index]*1.01/s[0]), RHS)
 
@@ -1425,7 +1439,7 @@ class Inverser(pdft.U_Embedding):
                 
                 self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.vp_basis.A.np)
 
-        print("Initialize out_put: 0.")
+        print("Zero the old result for a new calculation..")
         self.v_output = np.zeros_like(self.v_output)
 
         print("<<<<<<<<<<<<<<<<<<<<<<Constrained Optimization vxc Inversion<<<<<<<<<<<<<<<<<<<")

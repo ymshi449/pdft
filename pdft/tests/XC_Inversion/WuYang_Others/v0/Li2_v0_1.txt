@@ -1,0 +1,384 @@
+/home/yuming/anaconda3/envs/work/bin/python /home/yuming/pycharm-2019.1.2/helpers/pydev/pydevconsole.py --mode=client --port=35329
+import sys; print('Python %s on %s' % (sys.version, sys.platform))
+sys.path.extend(['/home/yuming/PDFT/pdft/pdft'])
+Python 3.7.5 (default, Oct 25 2019, 15:51:11) 
+Type 'copyright', 'credits' or 'license' for more information
+IPython 7.9.0 -- An enhanced Interactive Python. Type '?' for help.
+PyDev console: using IPython 7.9.0
+Python 3.7.5 (default, Oct 25 2019, 15:51:11) 
+[GCC 7.3.0] on linux
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Li2.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+  Threads set to 2 by Python driver.
+WuYangScipy_BFGS_Hartree_aug-cc-pvqz_None_False_input_every
+Number of Basis:  160 160
+ESP fitting starts. This might take a while.
+ESP fitting done
+Initialize out_put: 0.
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 2.6133108308310815
+/home/yuming/anaconda3/envs/work/lib//python3.7/site-packages/scipy/optimize/_minimize.py:505: RuntimeWarning: Method BFGS does not use Hessian information (hess).
+  RuntimeWarning)
+Warning: Desired error not necessarily achieved due to precision loss.
+         Current function value: -14.500095
+         Iterations: 3576
+         Function evaluations: 3793
+         Gradient evaluations: 3782
+|n| after 0.0038820694458907815 L after -14.50009544273049
+Ts 14.501106262492996
+dTs -0.0009934326048314929
+eigenA
+[-1.85988017 -1.8595501  -0.13308527]
+[-2.00411001 -2.00379601 -0.26936949]
+wfnDiff 0.025517280263785226
+ESP fitting starts. This might take a while.
+ESP fitting done
+f,ax = plt.subplots(1,1,dpi=200)
+XC_Inversion.pdft.plot1d_x(inverser.input_vxc_a, input_wfn.V_potential(), ax=ax,
+                           dimmer_length=separation, label="input_xc_a", title=title)
+XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vp_basis.Vpot, ax=ax, label="WuYang_xc_a", ls='--')
+# XC_Inversion.pdft.plot1d_x(np.log10(np.abs(dn)), mol.Vpot, ax=ax, label="logdn", ls='dotted')
+ax.legend()
+ax.set_xlim(-14,14)
+ax.set_ylim(-3,0.1)
+f.show()
+plt.close(f)
+mol.V.np[:,0]
+Out[4]: 
+array([-8.64076139e+00,  8.23710833e-01, -1.71641109e+00, -1.07165658e+00,
+       -6.17623330e-01,  0.00000000e+00,  1.19167160e-02,  0.00000000e+00,
+        0.00000000e+00,  1.60630764e-02,  0.00000000e+00,  0.00000000e+00,
+        6.36510845e-03,  0.00000000e+00,  0.00000000e+00,  2.32962043e-03,
+        0.00000000e+00,  2.86203050e-03,  0.00000000e+00,  0.00000000e+00,
+       -4.95718224e-03,  0.00000000e+00,  1.62663452e-03,  0.00000000e+00,
+        0.00000000e+00, -2.81741364e-03,  0.00000000e+00,  6.85837956e-04,
+        0.00000000e+00,  0.00000000e+00, -1.18790619e-03,  0.00000000e+00,
+        0.00000000e+00, -7.78203179e-04,  0.00000000e+00,  0.00000000e+00,
+        0.00000000e+00,  1.00465598e-03,  0.00000000e+00,  0.00000000e+00,
+       -4.27441954e-04,  0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+        5.51825189e-04,  0.00000000e+00, -1.84876827e-04,  0.00000000e+00,
+        0.00000000e+00,  2.75598102e-04,  0.00000000e+00,  0.00000000e+00,
+        0.00000000e+00, -3.64582020e-04,  0.00000000e+00, -2.46030406e-01,
+        0.00000000e+00,  8.45865783e-04,  0.00000000e+00,  2.01761504e-04,
+        0.00000000e+00,  0.00000000e+00, -3.49461175e-04,  0.00000000e+00,
+        0.00000000e+00, -1.66897149e-04,  0.00000000e+00,  0.00000000e+00,
+        0.00000000e+00,  2.15463293e-04,  0.00000000e+00, -9.51523240e-05,
+        0.00000000e+00,  0.00000000e+00,  1.41844710e-04,  0.00000000e+00,
+        0.00000000e+00,  0.00000000e+00, -1.87642913e-04,  0.00000000e+00,
+       -1.24684849e-03, -3.18771423e-01, -1.67194350e-01, -3.20021658e-01,
+       -3.49479606e-01,  0.00000000e+00, -5.86573475e-01,  0.00000000e+00,
+        0.00000000e+00, -3.62720316e-01,  0.00000000e+00,  0.00000000e+00,
+       -6.89436716e-01,  0.00000000e+00,  0.00000000e+00, -4.50008198e-01,
+        0.00000000e+00,  2.07065658e-02,  0.00000000e+00,  0.00000000e+00,
+       -3.58648240e-02,  0.00000000e+00,  2.46271424e-01,  0.00000000e+00,
+        0.00000000e+00, -4.26554620e-01,  0.00000000e+00,  4.68612114e-01,
+        0.00000000e+00,  0.00000000e+00, -8.11659991e-01,  0.00000000e+00,
+        0.00000000e+00,  1.93622889e-01,  0.00000000e+00,  0.00000000e+00,
+        0.00000000e+00, -2.49966075e-01,  0.00000000e+00,  0.00000000e+00,
+        6.32483898e-01,  0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+       -8.16533201e-01,  0.00000000e+00, -1.81260231e-01,  0.00000000e+00,
+        0.00000000e+00,  2.70206798e-01,  0.00000000e+00,  0.00000000e+00,
+        0.00000000e+00, -3.57449995e-01,  0.00000000e+00, -2.08630925e-01,
+        0.00000000e+00, -2.02931775e-01,  0.00000000e+00,  2.75043362e-01,
+        0.00000000e+00,  0.00000000e+00, -4.76389078e-01,  0.00000000e+00,
+        0.00000000e+00,  5.78762307e-01,  0.00000000e+00,  0.00000000e+00,
+        0.00000000e+00, -7.47178925e-01,  0.00000000e+00, -4.76314229e-01,
+        0.00000000e+00,  0.00000000e+00,  7.10047329e-01,  0.00000000e+00,
+        0.00000000e+00,  0.00000000e+00, -9.39304326e-01,  0.00000000e+00])
+temp = np.array([-1.74303135e+00, -2.55061914e-01, -6.05273144e-01, -5.98747073e-01,
+       -4.92215875e-01, -3.80927397e-15,  4.29999325e-01,  5.67649756e-15,
+       -3.52820652e-15,  4.41590934e-01,  7.98590348e-15, -2.25814057e-15,
+        4.16972317e-01,  3.26051605e-15, -4.01599259e-15,  2.53440023e-01,
+       -1.28902906e-15,  6.58837670e-02,  1.24096858e-15,  2.02030130e-17,
+       -1.14114032e-01, -2.52584585e-15,  1.10312558e-01,  1.63658969e-15,
+        2.00410709e-16, -1.91066955e-01, -2.92222871e-15,  1.20989972e-01,
+        1.27943157e-15,  6.85178943e-16, -2.09560780e-01, -2.24520369e-15,
+       -1.61577163e-16, -4.69733534e-02, -1.18813467e-15, -7.08201717e-17,
+       -9.37815777e-17,  6.06423384e-02,  3.58268843e-15, -3.90123705e-16,
+       -7.70010094e-02, -6.36271680e-16,  3.53983033e-16, -2.75879198e-16,
+        9.94078757e-02,  3.69006688e-15, -1.05462903e-02, -8.52091602e-17,
+       -1.23074177e-16,  1.57215276e-02,  6.34939847e-16, -3.81745642e-16,
+       -2.40638347e-16, -2.07975999e-02, -2.95536718e-15, -2.42135499e-01,
+       -1.51081161e-14,  1.24942933e-01, -1.50182303e-14,  7.32584251e-02,
+        2.13166742e-17,  5.99536288e-16, -1.26887314e-01, -1.97281770e-15,
+       -3.03592769e-16, -6.65889252e-02, -9.03343104e-17,  5.07145763e-16,
+       -4.07221330e-16,  8.59659328e-02,  2.37993901e-15, -2.66760176e-02,
+       -4.24876562e-16, -9.08877161e-17,  3.97662737e-02,  5.14445161e-17,
+       -1.00929497e-16, -1.96374551e-16, -5.26058272e-02, -3.03636227e-15,
+       -1.74303135e+00, -2.55061914e-01, -6.05273144e-01, -5.98747073e-01,
+       -4.92215875e-01, -2.56661490e-15, -4.29999325e-01,  2.88685297e-15,
+       -1.20190053e-15, -4.41590934e-01,  4.38584349e-15, -1.63275555e-15,
+       -4.16972317e-01,  2.70911987e-15, -3.95641502e-15, -2.53440023e-01,
+       -4.27364861e-16,  6.58837670e-02,  5.52640227e-17, -8.77258959e-16,
+       -1.14114032e-01,  3.68849398e-15,  1.10312558e-01, -8.25954966e-16,
+       -1.89562825e-16, -1.91066955e-01,  4.11004898e-15,  1.20989972e-01,
+       -1.62734079e-15,  5.16840862e-16, -2.09560780e-01,  3.17043408e-15,
+        1.56955286e-15,  4.69733534e-02, -6.16980467e-16, -3.59219236e-16,
+       -8.49382363e-18, -6.06423384e-02,  3.10883766e-15,  1.61807156e-15,
+        7.70010094e-02, -1.03883895e-16, -9.03067667e-16,  3.01779639e-16,
+       -9.94078757e-02,  3.84874262e-15, -1.05462903e-02,  2.10373281e-15,
+       -1.37873903e-16,  1.57215276e-02, -7.74779129e-16, -1.43675410e-15,
+       -3.06517829e-16, -2.07975999e-02,  3.41583425e-15, -2.42135499e-01,
+       -1.51195072e-14, -1.24942933e-01, -1.15896318e-14,  7.32584251e-02,
+       -2.78800254e-16,  5.56916417e-16, -1.26887314e-01,  1.75002337e-15,
+        9.32102996e-16,  6.65889252e-02,  1.67410544e-16, -6.26360339e-16,
+        5.27053467e-16, -8.59659328e-02,  2.75162308e-15, -2.66760176e-02,
+        2.41301530e-15, -1.58276070e-16,  3.97662737e-02, -1.12329704e-15,
+       -1.98638519e-15, -5.12876618e-17, -5.26058272e-02,  4.87034834e-15,
+       -1.74303135e+00, -2.55061914e-01, -6.05273144e-01, -5.98747073e-01,
+       -4.92215875e-01, -3.83173418e-15,  4.29999325e-01,  5.62974370e-15,
+       -3.55149809e-15,  4.41590934e-01,  7.92095296e-15, -2.26727065e-15,
+        4.16972317e-01,  3.24467385e-15, -4.02081006e-15,  2.53440023e-01,
+       -1.29027012e-15,  6.58837670e-02,  1.25400000e-15,  2.12029647e-17,
+       -1.14114032e-01, -2.30014356e-15,  1.10312558e-01,  1.64244561e-15,
+        2.00576568e-16, -1.91066955e-01, -2.83493519e-15,  1.20989972e-01,
+        1.28554205e-15,  6.85036706e-16, -2.09560780e-01, -2.23213373e-15,
+       -1.69045666e-16, -4.69733534e-02, -1.13528770e-15, -6.23853283e-17,
+       -9.26418469e-17,  6.06423384e-02,  3.55427915e-15, -3.87140254e-16,
+       -7.70010094e-02, -6.20245625e-16,  3.50076474e-16, -2.74972609e-16,
+        9.94078757e-02,  3.69531129e-15, -1.05462903e-02, -8.44690343e-17,
+       -1.23469286e-16,  1.57215276e-02,  6.25937416e-16, -3.83306458e-16,
+       -2.41501693e-16, -2.07975999e-02, -2.95464888e-15, -2.42135499e-01,
+       -1.51190895e-14,  1.24942933e-01, -1.50208796e-14,  7.32584251e-02,
+        2.41935723e-17,  5.99374032e-16, -1.26887314e-01, -1.97858854e-15,
+       -2.98870402e-16, -6.65889252e-02, -9.14373770e-17,  5.01333224e-16,
+       -4.06788579e-16,  8.59659328e-02,  2.40374476e-15, -2.66760176e-02,
+       -4.35609038e-16, -9.06663221e-17,  3.97662737e-02,  6.19378753e-17,
+       -9.20501633e-17, -1.96798688e-16, -5.26058272e-02, -3.06902270e-15,
+       -1.74303135e+00, -2.55061914e-01, -6.05273144e-01, -5.98747073e-01,
+       -4.92215875e-01, -2.59125792e-15, -4.29999325e-01,  2.94745969e-15,
+       -1.22562573e-15, -4.41590934e-01,  4.46146482e-15, -1.64184730e-15,
+       -4.16972317e-01,  2.72632094e-15, -3.96215656e-15, -2.53440023e-01,
+       -4.25746934e-16,  6.58837670e-02,  4.37928848e-17, -8.77518267e-16,
+       -1.14114032e-01,  3.52440473e-15,  1.10312558e-01, -8.31615038e-16,
+       -1.89770682e-16, -1.91066955e-01,  4.01600151e-15,  1.20989972e-01,
+       -1.63359363e-15,  5.16406412e-16, -2.09560780e-01,  3.12118417e-15,
+        1.56235304e-15,  4.69733534e-02, -5.98285619e-16, -3.50942581e-16,
+       -9.72609140e-18, -6.06423384e-02,  3.07713215e-15,  1.62147911e-15,
+        7.70010094e-02, -8.55393053e-17, -9.07100528e-16,  3.01198190e-16,
+       -9.94078757e-02,  3.79297072e-15, -1.05462903e-02,  2.10345591e-15,
+       -1.29218595e-16,  1.57215276e-02, -7.62075987e-16, -1.43292910e-15,
+       -3.05772203e-16, -2.07975999e-02,  3.39145838e-15, -2.42135499e-01,
+       -1.51341156e-14, -1.24942933e-01, -1.16028706e-14,  7.32584251e-02,
+       -2.81290330e-16,  5.56567393e-16, -1.26887314e-01,  1.73609279e-15,
+        9.36795672e-16,  6.65889252e-02,  1.76140728e-16, -6.31891322e-16,
+        5.27023772e-16, -8.59659328e-02,  2.72334190e-15, -2.66760176e-02,
+        2.42363210e-15, -1.55588056e-16,  3.97662737e-02, -1.09940672e-15,
+       -1.99448637e-15, -5.11814747e-17, -5.26058272e-02,  4.81817982e-15])
+np.linalg.norm(temp - inverser.v_output)
+Out[6]: 88.7952035459365
+vxc_a_H_tq = np.copy(inverser.vxc_a_grid)
+vxc_b_H_tq = np.copy(inverser.vxc_b_grid)
+inverser.change_v0("FermiAmaldi")
+inverser.find_vxc_scipy_WuYang(14000, opt_method=opt_method);
+Initialize out_put: 0.
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 2.3619723315600676
+/home/yuming/anaconda3/envs/work/lib//python3.7/site-packages/scipy/optimize/_minimize.py:505: RuntimeWarning: Method BFGS does not use Hessian information (hess).
+  RuntimeWarning)
+Warning: Desired error not necessarily achieved due to precision loss.
+         Current function value: -14.500029
+         Iterations: 1113
+         Function evaluations: 1255
+         Gradient evaluations: 1244
+|n| after 0.9107819669033322 L after -14.50002858644306
+Ts 14.281730101527573
+dTs 0.21838272836059702
+eigenA
+[-1.85988017 -1.8595501  -0.13308527]
+[-1.98264632 -1.98141823 -0.25283802]
+wfnDiff 0.1852988173150826
+ESP fitting starts. This might take a while.
+ESP fitting done
+vxc_a_FA_aq = np.copy(inverser.vxc_a_grid)
+vxc_b_FA_aq = np.copy(inverser.vxc_b_grid)
+vxc_a_input_aq = np.copy(inverser.input_vxc_a)
+vxc_b_input_aq = np.copy(inverser.input_vxc_b)
+xyzw_input_aq = input_wfn.V_potential().get_np_xyzw()
+xyzw_mol_aq = mol.Vpot.get_np_xyzw()
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Li2.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+WuYangScipy_BFGS_Hartree_aug-cc-pvtz_None_False_input_every
+Number of Basis:  92 92
+ESP fitting starts. This might take a while.
+ESP fitting done
+Initialize out_put: 0.
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 2.782813521298808
+/home/yuming/anaconda3/envs/work/lib//python3.7/site-packages/scipy/optimize/_minimize.py:505: RuntimeWarning: Method BFGS does not use Hessian information (hess).
+  RuntimeWarning)
+Warning: Desired error not necessarily achieved due to precision loss.
+         Current function value: -14.228157
+         Iterations: 5
+         Function evaluations: 73
+         Gradient evaluations: 68
+|n| after 2.6719280667512586 L after -14.228156621404072
+Ts 16.560712542989272
+dTs -2.071184030481944
+eigenA
+[-1.85980277 -1.8594294  -0.13315016]
+[-2.32979803 -2.32965146 -0.22104702]
+wfnDiff 0.1922229978078826
+ESP fitting starts. This might take a while.
+ESP fitting done
+vxc_a_H_aq = vxc_a_H_tq
+vxc_b_H_aq = vxc_b_H_tq
+vxc_a_H_at = np.copy(inverser.vxc_a_grid)
+vxc_b_H_at = np.copy(inverser.vxc_b_grid)
+inverser.change_v0("FermiAmaldi")
+inverser.find_vxc_scipy_WuYang(14000, opt_method=opt_method);
+Initialize out_put: 0.
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 2.5385652584450895
+/home/yuming/anaconda3/envs/work/lib//python3.7/site-packages/scipy/optimize/_minimize.py:505: RuntimeWarning: Method BFGS does not use Hessian information (hess).
+  RuntimeWarning)
+Warning: Desired error not necessarily achieved due to precision loss.
+         Current function value: -14.479701
+         Iterations: 4
+         Function evaluations: 68
+         Gradient evaluations: 63
+|n| after 0.6109517817272492 L after -14.479700574007385
+Ts 14.259680849187951
+dTs 0.2298476633193643
+eigenA
+[-1.85980277 -1.8594294  -0.13315016]
+[-1.93196928 -1.93159334 -0.23146827]
+wfnDiff -0.07659868202156693
+ESP fitting starts. This might take a while.
+ESP fitting done
+vxc_a_FA_at = np.copy(inverser.vxc_a_grid)
+vxc_b_FA_at = np.copy(inverser.vxc_b_grid)
+vxc_a_input_at = np.copy(inverser.input_vxc_a)
+vxc_b_input_at = np.copy(inverser.input_vxc_b)
+xyzw_input_at = input_wfn.V_potential().get_np_xyzw()
+xyzw_mol_at = mol.Vpot.get_np_xyzw()
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Li2.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+WuYangScipy_BFGS_Hartree_cc-pvdz_None_False_input_every
+Number of Basis:  28 28
+ESP fitting starts. This might take a while.
+ESP fitting done
+Initialize out_put: 0.
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 3.326202076389368
+/home/yuming/anaconda3/envs/work/lib//python3.7/site-packages/scipy/optimize/_minimize.py:505: RuntimeWarning: Method BFGS does not use Hessian information (hess).
+  RuntimeWarning)
+Optimization terminated successfully.
+         Current function value: -14.869142
+         Iterations: 104
+         Function evaluations: 107
+         Gradient evaluations: 107
+|n| after 0.022673348605912094 L after -14.869142324663372
+Ts 14.873600540833877
+dTs -0.0042736555106387426
+eigenA
+[-1.83997812 -1.83947331 -0.13254582]
+[-1.89442252 -1.89393342 -0.20359452]
+wfnDiff -0.26819078965437587
+ESP fitting starts. This might take a while.
+ESP fitting done
+vxc_a_H_d = np.copy(inverser.vxc_a_grid)
+vxc_b_H_d = np.copy(inverser.vxc_b_grid)
+inverser.change_v0("FermiAmaldi")
+inverser.find_vxc_scipy_WuYang(14000, opt_method=opt_method);
+Initialize out_put: 0.
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 0.10762895178330883
+Optimization terminated successfully.
+         Current function value: -14.869299
+         Iterations: 90
+         Function evaluations: 93
+         Gradient evaluations: 93
+|n| after 0.008917077105391172 L after -14.869298884048922
+Ts 14.870983689961085
+dTs -0.0016568046378442542
+eigenA
+[-1.83997812 -1.83947331 -0.13254582]
+[-1.90992833 -1.90943534 -0.169761  ]
+wfnDiff 0.13373859766454183
+ESP fitting starts. This might take a while.
+ESP fitting done
+vxc_a_FA_d = np.copy(inverser.vxc_a_grid)
+vxc_b_FA_d = np.copy(inverser.vxc_b_grid)
+vxc_a_input_d = np.copy(inverser.input_vxc_a)
+vxc_b_input_d = np.copy(inverser.input_vxc_b)
+xyzw_input_d = input_wfn.V_potential().get_np_xyzw()
+xyzw_mol_d = mol.Vpot.get_np_xyzw()
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Li2.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+WuYangScipy_BFGS_Hartree_6-31G_None_False_input_every
+Number of Basis:  18 18
+ESP fitting starts. This might take a while.
+ESP fitting done
+Initialize out_put: 0.
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 2.6153476746983824
+Optimization terminated successfully.
+         Current function value: -14.899825
+         Iterations: 80
+         Function evaluations: 82
+         Gradient evaluations: 82
+|n| after 0.017528706222895915 L after -14.899824869090489
+Ts 14.904060717796385
+dTs -0.00409689255776909
+eigenA
+[-1.83499643 -1.83451802 -0.1308712 ]
+[-1.82543503 -1.8250398  -0.1293442 ]
+wfnDiff -0.8257014329416394
+ESP fitting starts. This might take a while.
+ESP fitting done
+vxc_a_H_631G = np.copy(inverser.vxc_a_grid)
+vxc_b_H_631G = np.copy(inverser.vxc_b_grid)
+inverser.change_v0("FermiAmaldi")
+inverser.find_vxc_scipy_WuYang(14000, opt_method=opt_method);
+Initialize out_put: 0.
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 0.11603438157159796
+Optimization terminated successfully.
+         Current function value: -14.899956
+         Iterations: 64
+         Function evaluations: 67
+         Gradient evaluations: 67
+|n| after 0.004155271840161898 L after -14.899955855232061
+Ts 14.90092024995154
+dTs -0.0009564247129220728
+eigenA
+[-1.83499643 -1.83451802 -0.1308712 ]
+[-1.90485049 -1.90439821 -0.16458113]
+wfnDiff -0.44104668626293725
+ESP fitting starts. This might take a while.
+ESP fitting done
+vxc_a_FA_631G = np.copy(inverser.vxc_a_grid)
+vxc_b_FA_631G = np.copy(inverser.vxc_b_grid)
+vxc_a_input_631G = np.copy(inverser.input_vxc_a)
+vxc_b_input_631G = np.copy(inverser.input_vxc_b)
+xyzw_input_631G = input_wfn.V_potential().get_np_xyzw()
+xyzw_mol_631G = mol.Vpot.get_np_xyzw()
+f,ax = plt.subplots(2,2,dpi=200, sharex='col', sharey='row',
+                        gridspec_kw={'hspace': 0, 'wspace': 0})
+XC_Inversion.pdft.plot1d_x(vxc_a_H_631G, xyzw=xyzw_input_631G, ax=ax[0,0])
+XC_Inversion.pdft.plot1d_x(vxc_a_H_d, xyzw=xyzw_input_d, ax=ax[0,1])
+XC_Inversion.pdft.plot1d_x(vxc_a_H_at, xyzw=xyzw_input_at, ax=ax[1,0])
+XC_Inversion.pdft.plot1d_x(vxc_a_H_aq, xyzw=xyzw_input_aq, ax=ax[1,1])
+XC_Inversion.pdft.plot1d_x(vxc_a_FA_631G, xyzw=xyzw_input_631G, ax=ax[0,0])
+XC_Inversion.pdft.plot1d_x(vxc_a_FA_d, xyzw=xyzw_input_d, ax=ax[0,1])
+XC_Inversion.pdft.plot1d_x(vxc_a_FA_at, xyzw=xyzw_input_at, ax=ax[1,0])
+XC_Inversion.pdft.plot1d_x(vxc_a_FA_aq, xyzw=xyzw_input_aq, ax=ax[1,1])
+XC_Inversion.pdft.plot1d_x(vxc_a_input_631G, xyzw=xyzw_input_631G, ax=ax[0,0], color="black", ls="dotted")
+XC_Inversion.pdft.plot1d_x(vxc_a_input_d, xyzw=xyzw_input_d, ax=ax[0,1], color="black", ls="dotted")
+XC_Inversion.pdft.plot1d_x(vxc_a_input_at, xyzw=xyzw_input_at, ax=ax[1,0], color="black", ls="dotted")
+XC_Inversion.pdft.plot1d_x(vxc_a_input_aq, xyzw=xyzw_input_aq, ax=ax[1,1], color="black", ls="dotted")
+f.show()
+for i in range(2):
+    for j in range(2):
+        ax[i, j].set_xlim(0, 17)
+        ax[i, j].set_ylim(-3, 0.5)
+f.show()
+for i in range(2):
+    for j in range(2):
+        ax[i, j].set_xlim(0, 21)
+        ax[i, j].set_ylim(-3, 0.5)
+f.show()
+for i in range(2):
+    for j in range(2):
+        ax[i, j].set_xlim(0, 18)
+        ax[i, j].set_ylim(-3, 0.5)
+f.show()
+f.savefig("Li2v0_2")
+

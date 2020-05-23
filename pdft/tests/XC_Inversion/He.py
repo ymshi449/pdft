@@ -13,6 +13,7 @@ basis = 'cc-pvtz'
 basis = 'aug-pcsseg-3'
 basis = 'cc-pvdz'
 basis = 'aug-cc-pvqz'
+basis = '6-31G'
 
 vp_basis = None
 

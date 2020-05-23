@@ -1,0 +1,493 @@
+/home/yuming/anaconda3/envs/work/bin/python /home/yuming/pycharm-2019.1.2/helpers/pydev/pydevconsole.py --mode=client --port=36489
+import sys; print('Python %s on %s' % (sys.version, sys.platform))
+sys.path.extend(['/home/yuming/PDFT/pdft/pdft'])
+Python 3.7.5 (default, Oct 25 2019, 15:51:11) 
+Type 'copyright', 'credits' or 'license' for more information
+IPython 7.9.0 -- An enhanced Interactive Python. Type '?' for help.
+PyDev console: using IPython 7.9.0
+Python 3.7.5 (default, Oct 25 2019, 15:51:11) 
+[GCC 7.3.0] on linux
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Li2.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+  Threads set to 2 by Python driver.
+WuYangScipy_BFGS_FermiAmaldi_6-31G_None_True_input_every
+Number of Basis:  18 18
+ESP fitting starts. This might take a while.
+ESP fitting done
+Initialize out_put: 0.
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 0.11603438157160034
+/home/yuming/anaconda3/envs/work/lib//python3.7/site-packages/scipy/optimize/_minimize.py:505: RuntimeWarning: Method BFGS does not use Hessian information (hess).
+  RuntimeWarning)
+Optimization terminated successfully.
+         Current function value: -14.899956
+         Iterations: 65
+         Function evaluations: 67
+         Gradient evaluations: 67
+|n| after 0.00415568936478401 L after -14.899955855231212
+Ts 14.900919783763072
+dTs -0.000955958524429421
+eigenA
+[-1.83499643 -1.83451802 -0.1308712 ]
+[-1.9048516  -1.90439932 -0.16458279]
+wfnDiff -0.4442314674721152
+ESP fitting starts. This might take a while.
+ESP fitting done
+vxc_a_T_at = np.copy(inverser.vxc_a_grid)
+vxc_b_T_at = np.copy(inverser.vxc_b_grid)
+inverser.change_orthogonality(False)
+inverser.find_vxc_scipy_WuYang(14000, opt_method=opt_method);
+Initialize out_put: 0.
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 0.11603438157160034
+Optimization terminated successfully.
+         Current function value: -14.899956
+         Iterations: 64
+         Function evaluations: 67
+         Gradient evaluations: 67
+|n| after 0.004155268798924422 L after -14.899955855232081
+Ts 14.900920251776364
+dTs -0.0009564265377226661
+eigenA
+[-1.83499643 -1.83451802 -0.1308712 ]
+[-1.90485046 -1.90439819 -0.16458111]
+wfnDiff 0.2545287688394397
+ESP fitting starts. This might take a while.
+ESP fitting done
+vxc_a_F_d = np.copy(inverser.vxc_a_grid)
+vxc_b_F_d = np.copy(inverser.vxc_b_grid)
+vxc_a_input_d = np.copy(inverser.input_vxc_a)
+vxc_b_input_d = np.copy(inverser.input_vxc_b)
+xyzw_input_d = input_wfn.V_potential().get_np_xyzw()
+xyzw_mol_d = mol.Vpot.get_np_xyzw()
+vxc_a_T_d = np.copy(vxc_a_T_at)
+vxc_b_T_d = np.copy(vxc_b_T_at)
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Li2.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+WuYangScipy_BFGS_FermiAmaldi_cc-pvdz_None_True_input_every
+Number of Basis:  28 28
+ESP fitting starts. This might take a while.
+ESP fitting done
+Initialize out_put: 0.
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 0.10762895178333924
+Optimization terminated successfully.
+         Current function value: -14.869299
+         Iterations: 74
+         Function evaluations: 77
+         Gradient evaluations: 77
+|n| after 0.008917167134217885 L after -14.869298884048952
+Ts 14.87098369469427
+dTs -0.00165680937103175
+eigenA
+[-1.83997812 -1.83947331 -0.13254582]
+[-1.9099275  -1.90943451 -0.1697617 ]
+wfnDiff -0.09703058295889244
+ESP fitting starts. This might take a while.
+ESP fitting done
+vxc_a_T_d = np.copy(inverser.vxc_a_grid)
+vxc_b_T_d = np.copy(inverser.vxc_b_grid)
+inverser.change_orthogonality(False)
+inverser.find_vxc_scipy_WuYang(14000, opt_method=opt_method);
+Initialize out_put: 0.
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 0.10762895178333924
+Optimization terminated successfully.
+         Current function value: -14.869299
+         Iterations: 88
+         Function evaluations: 91
+         Gradient evaluations: 91
+|n| after 0.008917133609210712 L after -14.869298884048948
+Ts 14.87098367070493
+dTs -0.001656785381689946
+eigenA
+[-1.83997812 -1.83947331 -0.13254582]
+[-1.90992756 -1.90943448 -0.16976154]
+wfnDiff -0.8668720058030941
+ESP fitting starts. This might take a while.
+ESP fitting done
+vxc_a_F_d = np.copy(inverser.vxc_a_grid)
+vxc_b_F_d = np.copy(inverser.vxc_b_grid)
+vxc_a_input_d = np.copy(inverser.input_vxc_a)
+vxc_b_input_d = np.copy(inverser.input_vxc_b)
+xyzw_input_d = input_wfn.V_potential().get_np_xyzw()
+xyzw_mol_d = mol.Vpot.get_np_xyzw()
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Li2.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+WuYangScipy_BFGS_FermiAmaldi_6-31G_None_True_input_every
+Number of Basis:  18 18
+ESP fitting starts. This might take a while.
+ESP fitting done
+Initialize out_put: 0.
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 0.11603438157160376
+Optimization terminated successfully.
+         Current function value: -14.899956
+         Iterations: 66
+         Function evaluations: 68
+         Gradient evaluations: 68
+|n| after 0.004155683005960547 L after -14.899955855232042
+Ts 14.900919761909185
+dTs -0.0009559366705633894
+eigenA
+[-1.83499643 -1.83451802 -0.1308712 ]
+[-1.90485153 -1.90439927 -0.16458276]
+wfnDiff 0.20183812797448233
+ESP fitting starts. This might take a while.
+ESP fitting done
+vxc_a_T_631G = np.copy(inverser.vxc_a_grid)
+vxc_b_T_631G = np.copy(inverser.vxc_b_grid)
+inverser.change_orthogonality(False)
+inverser.find_vxc_scipy_WuYang(14000, opt_method=opt_method);
+Initialize out_put: 0.
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 0.11603438157160376
+Optimization terminated successfully.
+         Current function value: -14.899956
+         Iterations: 64
+         Function evaluations: 67
+         Gradient evaluations: 67
+|n| after 0.004155267991408702 L after -14.899955855232054
+Ts 14.900920252253947
+dTs -0.000956427015325265
+eigenA
+[-1.83499643 -1.83451802 -0.1308712 ]
+[-1.90485048 -1.90439821 -0.16458111]
+wfnDiff -0.4878826558401435
+ESP fitting starts. This might take a while.
+ESP fitting done
+vxc_a_F_631G = np.copy(inverser.vxc_a_grid)
+vxc_b_F_631G = np.copy(inverser.vxc_b_grid)
+vxc_a_input_631G = np.copy(inverser.input_vxc_a)
+vxc_b_input_631G = np.copy(inverser.input_vxc_b)
+xyzw_input_631G = input_wfn.V_potential().get_np_xyzw()
+xyzw_mol_631G = mol.Vpot.get_np_xyzw()
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Li2.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+WuYangScipy_BFGS_FermiAmaldi_6-31G_None_True_input_every
+Number of Basis:  18 18
+ESP fitting starts. This might take a while.
+ESP fitting done
+Initialize out_put: 0.
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 0.11603438157159121
+Optimization terminated successfully.
+         Current function value: -14.899956
+         Iterations: 65
+         Function evaluations: 67
+         Gradient evaluations: 67
+|n| after 0.004155689964610652 L after -14.89995585523122
+Ts 14.900919791134818
+dTs -0.0009559658961648483
+eigenA
+[-1.83499643 -1.83451802 -0.1308712 ]
+[-1.90485157 -1.9043993  -0.16458276]
+wfnDiff -0.19271266919265417
+ESP fitting starts. This might take a while.
+ESP fitting done
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Li2.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+WuYangScipy_BFGS_FermiAmaldi_aug-cc-pvtz_None_True_input_every
+Number of Basis:  92 92
+ESP fitting starts. This might take a while.
+ESP fitting done
+Initialize out_put: 0.
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 2.538565258449132
+Warning: Desired error not necessarily achieved due to precision loss.
+         Current function value: -14.489458
+         Iterations: 1132
+         Function evaluations: 1374
+         Gradient evaluations: 1352
+|n| after 1.7342077319456188 L after -14.489458446123987
+Ts 14.104711132910847
+dTs 0.3848173795964684
+eigenA
+[-1.85980277 -1.8594294  -0.13315016]
+[-1.97052238 -1.9701617  -0.23862635]
+wfnDiff -0.10048235697146535
+ESP fitting starts. This might take a while.
+ESP fitting done
+vxc_a_T_at = np.copy(inverser.vxc_a_grid)
+vxc_b_T_at = np.copy(inverser.vxc_b_grid)
+inverser.change_orthogonality(False)
+inverser.find_vxc_scipy_WuYang(14000, opt_method=opt_method);
+Initialize out_put: 0.
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 2.538565258449132
+/home/yuming/anaconda3/envs/work/lib//python3.7/site-packages/scipy/optimize/_minimize.py:505: RuntimeWarning: Method BFGS does not use Hessian information (hess).
+  RuntimeWarning)
+Warning: Desired error not necessarily achieved due to precision loss.
+         Current function value: -14.489461
+         Iterations: 1457
+         Function evaluations: 1552
+         Gradient evaluations: 1540
+|n| after 0.008594021927110023 L after -14.489461311069967
+Ts 14.49229223636047
+dTs -0.002763723853161452
+eigenA
+[-1.85980277 -1.8594294  -0.13315016]
+[-1.9861168  -1.98576197 -0.25388415]
+wfnDiff -0.0015469824108332855
+ESP fitting starts. This might take a while.
+ESP fitting done
+vxc_a_F_at = np.copy(inverser.vxc_a_grid)
+vxc_b_F_at = np.copy(inverser.vxc_b_grid)
+vxc_a_input_at = np.copy(inverser.input_vxc_a)
+vxc_b_input_at = np.copy(inverser.input_vxc_b)
+xyzw_input_at = input_wfn.V_potential().get_np_xyzw()
+xyzw_mol_at = mol.Vpot.get_np_xyzw()
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Li2.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+WuYangScipy_BFGS_FermiAmaldi_aug-cc-pvqz_None_True_input_every
+Number of Basis:  160 160
+ESP fitting starts. This might take a while.
+ESP fitting done
+Initialize out_put: 0.
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 2.3619723315517342
+/home/yuming/anaconda3/envs/work/lib//python3.7/site-packages/scipy/optimize/_minimize.py:505: RuntimeWarning: Method BFGS does not use Hessian information (hess).
+  RuntimeWarning)
+Warning: Desired error not necessarily achieved due to precision loss.
+         Current function value: -14.500102
+         Iterations: 1965
+         Function evaluations: 2062
+         Gradient evaluations: 2051
+|n| after 0.0030103632114839305 L after -14.500102100710793
+Ts 14.50088318111503
+dTs -0.0007703512265898674
+eigenA
+[-1.85988017 -1.8595501  -0.13308527]
+[-1.99082366 -1.99050506 -0.25879373]
+wfnDiff 0.03908819492801736
+ESP fitting starts. This might take a while.
+ESP fitting done
+vxc_a_T_aq = np.copy(inverser.vxc_a_grid)
+vxc_b_T_aq = np.copy(inverser.vxc_b_grid)
+inverser.change_orthogonality(False)
+inverser.find_vxc_scipy_WuYang(14000, opt_method=opt_method);
+Initialize out_put: 0.
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 2.3619723315517342
+/home/yuming/anaconda3/envs/work/lib//python3.7/site-packages/scipy/optimize/_minimize.py:505: RuntimeWarning: Method BFGS does not use Hessian information (hess).
+  RuntimeWarning)
+Warning: Desired error not necessarily achieved due to precision loss.
+         Current function value: -14.500043
+         Iterations: 1177
+         Function evaluations: 1372
+         Gradient evaluations: 1360
+|n| after 0.8091548291950578 L after -14.500042999524268
+Ts 14.307115880388054
+dTs 0.19299694950038637
+eigenA
+[-1.85988017 -1.8595501  -0.13308527]
+[-1.98547143 -1.98290354 -0.25400462]
+wfnDiff -0.04650555895475842
+ESP fitting starts. This might take a while.
+ESP fitting done
+f,ax = plt.subplots(2,2,dpi=200, sharex='col', sharey='row',
+                        gridspec_kw={'hspace': 0, 'wspace': 0})
+XC_Inversion.pdft.plot1d_x(vxc_a_T_631G, xyzw=xyzw_input_631G, ax=ax[0,0])
+XC_Inversion.pdft.plot1d_x(vxc_a_T_d, xyzw=xyzw_input_d, ax=ax[0,1])
+XC_Inversion.pdft.plot1d_x(vxc_a_T_at, xyzw=xyzw_input_at, ax=ax[1,0])
+XC_Inversion.pdft.plot1d_x(vxc_a_T_aq, xyzw=xyzw_input_aq, ax=ax[1,1])
+XC_Inversion.pdft.plot1d_x(vxc_a_F_631G, xyzw=xyzw_input_631G, ax=ax[0,0])
+XC_Inversion.pdft.plot1d_x(vxc_a_F_d, xyzw=xyzw_input_d, ax=ax[0,1])
+XC_Inversion.pdft.plot1d_x(vxc_a_F_at, xyzw=xyzw_input_at, ax=ax[1,0])
+XC_Inversion.pdft.plot1d_x(vxc_a_F_aq, xyzw=xyzw_input_aq, ax=ax[1,1])
+XC_Inversion.pdft.plot1d_x(vxc_a_input_631G, xyzw=xyzw_input_631G, ax=ax[0,0], color="black", ls="dotted")
+XC_Inversion.pdft.plot1d_x(vxc_a_input_d, xyzw=xyzw_input_d, ax=ax[0,1], color="black", ls="dotted")
+XC_Inversion.pdft.plot1d_x(vxc_a_input_at, xyzw=xyzw_input_at, ax=ax[1,0], color="black", ls="dotted")
+XC_Inversion.pdft.plot1d_x(vxc_a_input_aq, xyzw=xyzw_input_aq, ax=ax[1,1], color="black", ls="dotted")
+f.show()
+Traceback (most recent call last):
+  File "/home/yuming/anaconda3/envs/work/lib/python3.7/site-packages/IPython/core/interactiveshell.py", line 3326, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+  File "<ipython-input-18-1db94045ac68>", line 6, in <module>
+    XC_Inversion.pdft.plot1d_x(vxc_a_T_aq, xyzw=xyzw_input_aq, ax=ax[1,1])
+NameError: name 'xyzw_input_aq' is not defined
+vxc_a_F_aq = np.copy(inverser.vxc_a_grid)
+vxc_b_F_aq = np.copy(inverser.vxc_b_grid)
+vxc_a_input_aq = np.copy(inverser.input_vxc_a)
+vxc_b_input_aq = np.copy(inverser.input_vxc_b)
+xyzw_input_aq = input_wfn.V_potential().get_np_xyzw()
+xyzw_mol_aq = mol.Vpot.get_np_xyzw()
+f,ax = plt.subplots(2,2,dpi=200, sharex='col', sharey='row',
+                        gridspec_kw={'hspace': 0, 'wspace': 0})
+XC_Inversion.pdft.plot1d_x(vxc_a_T_631G, xyzw=xyzw_input_631G, ax=ax[0,0])
+XC_Inversion.pdft.plot1d_x(vxc_a_T_d, xyzw=xyzw_input_d, ax=ax[0,1])
+XC_Inversion.pdft.plot1d_x(vxc_a_T_at, xyzw=xyzw_input_at, ax=ax[1,0])
+XC_Inversion.pdft.plot1d_x(vxc_a_T_aq, xyzw=xyzw_input_aq, ax=ax[1,1])
+XC_Inversion.pdft.plot1d_x(vxc_a_F_631G, xyzw=xyzw_input_631G, ax=ax[0,0])
+XC_Inversion.pdft.plot1d_x(vxc_a_F_d, xyzw=xyzw_input_d, ax=ax[0,1])
+XC_Inversion.pdft.plot1d_x(vxc_a_F_at, xyzw=xyzw_input_at, ax=ax[1,0])
+XC_Inversion.pdft.plot1d_x(vxc_a_F_aq, xyzw=xyzw_input_aq, ax=ax[1,1])
+XC_Inversion.pdft.plot1d_x(vxc_a_input_631G, xyzw=xyzw_input_631G, ax=ax[0,0], color="black", ls="dotted")
+XC_Inversion.pdft.plot1d_x(vxc_a_input_d, xyzw=xyzw_input_d, ax=ax[0,1], color="black", ls="dotted")
+XC_Inversion.pdft.plot1d_x(vxc_a_input_at, xyzw=xyzw_input_at, ax=ax[1,0], color="black", ls="dotted")
+XC_Inversion.pdft.plot1d_x(vxc_a_input_aq, xyzw=xyzw_input_aq, ax=ax[1,1], color="black", ls="dotted")
+f.show()
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Li2.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+WuYangScipy_BFGS_FermiAmaldi_aug-cc-pvtz_None_True_input_every
+Number of Basis:  92 92
+ESP fitting starts. This might take a while.
+ESP fitting done
+Initialize out_put: 0.
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 2.538565258447567
+/home/yuming/anaconda3/envs/work/lib//python3.7/site-packages/scipy/optimize/_minimize.py:505: RuntimeWarning: Method BFGS does not use Hessian information (hess).
+  RuntimeWarning)
+Warning: Desired error not necessarily achieved due to precision loss.
+         Current function value: -14.489460
+         Iterations: 3045
+         Function evaluations: 3687
+         Gradient evaluations: 3674
+|n| after 0.7125416100963586 L after -14.489459948606827
+Ts 14.333231737376481
+dTs 0.15629677513104354
+eigenA
+[-1.85980277 -1.8594294  -0.13315016]
+[-1.97251335 -1.97215009 -0.24056085]
+wfnDiff 0.17817576730822107
+ESP fitting starts. This might take a while.
+ESP fitting done
+vxc_a_H_at = np.copy(inverser.vxc_a_grid)
+vxc_b_H_at = np.copy(inverser.vxc_b_grid)
+inverser.change_v0("FermiAmaldi")
+inverser.find_vxc_scipy_WuYang(14000, opt_method=opt_method);
+Initialize out_put: 0.
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 2.538565258447567
+/home/yuming/anaconda3/envs/work/lib//python3.7/site-packages/scipy/optimize/_minimize.py:505: RuntimeWarning: Method BFGS does not use Hessian information (hess).
+  RuntimeWarning)
+Warning: Desired error not necessarily achieved due to precision loss.
+         Current function value: -14.489460
+         Iterations: 3045
+         Function evaluations: 3687
+         Gradient evaluations: 3674
+|n| after 0.7125416100963586 L after -14.489459948606827
+Ts 14.333231737376481
+dTs 0.15629677513104354
+eigenA
+[-1.85980277 -1.8594294  -0.13315016]
+[-1.97251335 -1.97215009 -0.24056085]
+wfnDiff 0.17817576730822107
+ESP fitting starts. This might take a while.
+ESP fitting done
+vxc_a_T_at = np.copy(inverser.vxc_a_grid)
+vxc_b_T_at = np.copy(inverser.vxc_b_grid)
+inverser.change_orthogonality(False)
+inverser.find_vxc_scipy_WuYang(14000, opt_method=opt_method);
+Initialize out_put: 0.
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 2.538565258447567
+/home/yuming/anaconda3/envs/work/lib//python3.7/site-packages/scipy/optimize/_minimize.py:505: RuntimeWarning: Method BFGS does not use Hessian information (hess).
+  RuntimeWarning)
+Warning: Desired error not necessarily achieved due to precision loss.
+         Current function value: -14.480800
+         Iterations: 7
+         Function evaluations: 124
+         Gradient evaluations: 115
+|n| after 2.271536144690754 L after -14.480800180046117
+Ts 13.640596282584696
+dTs 0.8489322299228301
+eigenA
+[-1.85980277 -1.8594294  -0.13315016]
+[-1.9354728  -1.93510185 -0.22973621]
+wfnDiff 0.43294335266955347
+ESP fitting starts. This might take a while.
+ESP fitting done
+vxc_a_F_at = np.copy(inverser.vxc_a_grid)
+vxc_b_F_at = np.copy(inverser.vxc_b_grid)
+vxc_a_input_at = np.copy(inverser.input_vxc_a)
+vxc_b_input_at = np.copy(inverser.input_vxc_b)
+xyzw_input_at = input_wfn.V_potential().get_np_xyzw()
+xyzw_mol_at = mol.Vpot.get_np_xyzw()
+f,ax = plt.subplots(2,2,dpi=200, sharex='col', sharey='row',
+                        gridspec_kw={'hspace': 0, 'wspace': 0})
+XC_Inversion.pdft.plot1d_x(vxc_a_T_631G, xyzw=xyzw_input_631G, ax=ax[0,0])
+XC_Inversion.pdft.plot1d_x(vxc_a_T_d, xyzw=xyzw_input_d, ax=ax[0,1])
+XC_Inversion.pdft.plot1d_x(vxc_a_T_at, xyzw=xyzw_input_at, ax=ax[1,0])
+XC_Inversion.pdft.plot1d_x(vxc_a_T_aq, xyzw=xyzw_input_aq, ax=ax[1,1])
+XC_Inversion.pdft.plot1d_x(vxc_a_F_631G, xyzw=xyzw_input_631G, ax=ax[0,0])
+XC_Inversion.pdft.plot1d_x(vxc_a_F_d, xyzw=xyzw_input_d, ax=ax[0,1])
+XC_Inversion.pdft.plot1d_x(vxc_a_F_at, xyzw=xyzw_input_at, ax=ax[1,0])
+XC_Inversion.pdft.plot1d_x(vxc_a_F_aq, xyzw=xyzw_input_aq, ax=ax[1,1])
+XC_Inversion.pdft.plot1d_x(vxc_a_input_631G, xyzw=xyzw_input_631G, ax=ax[0,0], color="black", ls="dotted")
+XC_Inversion.pdft.plot1d_x(vxc_a_input_d, xyzw=xyzw_input_d, ax=ax[0,1], color="black", ls="dotted")
+XC_Inversion.pdft.plot1d_x(vxc_a_input_at, xyzw=xyzw_input_at, ax=ax[1,0], color="black", ls="dotted")
+XC_Inversion.pdft.plot1d_x(vxc_a_input_aq, xyzw=xyzw_input_aq, ax=ax[1,1], color="black", ls="dotted")
+f.show()
+for i in range(2):
+    for j in range(2):
+        ax[i, j].set_xlim(0, 18)
+        ax[i, j].set_ylim(-2.5, 0.5)
+f.show()
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Li2.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+WuYangScipy_BFGS_FermiAmaldi_aug-cc-pvtz_None_True_input_every
+Number of Basis:  92 92
+ESP fitting starts. This might take a while.
+ESP fitting done
+Initialize out_put: 0.
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 2.5385652584486413
+/home/yuming/anaconda3/envs/work/lib//python3.7/site-packages/scipy/optimize/_minimize.py:505: RuntimeWarning: Method BFGS does not use Hessian information (hess).
+  RuntimeWarning)
+Warning: Desired error not necessarily achieved due to precision loss.
+         Current function value: -14.489459
+         Iterations: 2030
+         Function evaluations: 2407
+         Gradient evaluations: 2396
+|n| after 0.20877976283699093 L after -14.489458845813836
+Ts 14.44616290698179
+dTs 0.04336560552559081
+eigenA
+[-1.85980277 -1.8594294  -0.13315016]
+[-1.96955039 -1.96916949 -0.23766809]
+wfnDiff 0.0966774639089267
+ESP fitting starts. This might take a while.
+ESP fitting done
+vxc_a_T_at = np.copy(inverser.vxc_a_grid)
+vxc_b_T_at = np.copy(inverser.vxc_b_grid)
+inverser.change_orthogonality(False)
+inverser.find_vxc_scipy_WuYang(14000, opt_method=opt_method);
+Initialize out_put: 0.
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 2.5385652584486413
+/home/yuming/anaconda3/envs/work/lib//python3.7/site-packages/scipy/optimize/_minimize.py:505: RuntimeWarning: Method BFGS does not use Hessian information (hess).
+  RuntimeWarning)
+Warning: Desired error not necessarily achieved due to precision loss.
+         Current function value: -14.489461
+         Iterations: 1401
+         Function evaluations: 1547
+         Gradient evaluations: 1536
+|n| after 0.00859400843774304 L after -14.489461312594063
+Ts 14.492292209389056
+dTs -0.002763696881670876
+eigenA
+[-1.85980277 -1.8594294  -0.13315016]
+[-1.98612794 -1.98577442 -0.25387073]
+wfnDiff 0.17768812940667444
+ESP fitting starts. This might take a while.
+ESP fitting done
+vxc_a_F_at = np.copy(inverser.vxc_a_grid)
+vxc_b_F_at = np.copy(inverser.vxc_b_grid)
+vxc_a_input_at = np.copy(inverser.input_vxc_a)
+vxc_b_input_at = np.copy(inverser.input_vxc_b)
+xyzw_input_at = input_wfn.V_potential().get_np_xyzw()
+xyzw_mol_at = mol.Vpot.get_np_xyzw()
+f,ax = plt.subplots(2,2,dpi=200, sharex='col', sharey='row',
+                        gridspec_kw={'hspace': 0, 'wspace': 0})
+XC_Inversion.pdft.plot1d_x(vxc_a_T_631G, xyzw=xyzw_input_631G, ax=ax[0,0])
+XC_Inversion.pdft.plot1d_x(vxc_a_T_d, xyzw=xyzw_input_d, ax=ax[0,1])
+XC_Inversion.pdft.plot1d_x(vxc_a_T_at, xyzw=xyzw_input_at, ax=ax[1,0])
+XC_Inversion.pdft.plot1d_x(vxc_a_T_aq, xyzw=xyzw_input_aq, ax=ax[1,1])
+XC_Inversion.pdft.plot1d_x(vxc_a_F_631G, xyzw=xyzw_input_631G, ax=ax[0,0])
+XC_Inversion.pdft.plot1d_x(vxc_a_F_d, xyzw=xyzw_input_d, ax=ax[0,1])
+XC_Inversion.pdft.plot1d_x(vxc_a_F_at, xyzw=xyzw_input_at, ax=ax[1,0])
+XC_Inversion.pdft.plot1d_x(vxc_a_F_aq, xyzw=xyzw_input_aq, ax=ax[1,1])
+XC_Inversion.pdft.plot1d_x(vxc_a_input_631G, xyzw=xyzw_input_631G, ax=ax[0,0], color="black", ls="dotted")
+XC_Inversion.pdft.plot1d_x(vxc_a_input_d, xyzw=xyzw_input_d, ax=ax[0,1], color="black", ls="dotted")
+XC_Inversion.pdft.plot1d_x(vxc_a_input_at, xyzw=xyzw_input_at, ax=ax[1,0], color="black", ls="dotted")
+XC_Inversion.pdft.plot1d_x(vxc_a_input_aq, xyzw=xyzw_input_aq, ax=ax[1,1], color="black", ls="dotted")
+for i in range(2):
+    for j in range(2):
+        ax[i, j].set_xlim(0, 18)
+        ax[i, j].set_ylim(-2.5, 0.5)
+f.show()
+f.savefig("Li2Ortho_2")
+

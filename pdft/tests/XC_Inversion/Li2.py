@@ -11,19 +11,20 @@ separation = 5.122
 functional = 'svwn'
 basis = 'sto-3g'
 basis = 'aug-pcsseg-3'
-basis = 'aug-cc-pvqz'
 basis = 'cc-pvdz'
+basis = '6-31G'
+basis = 'aug-cc-pvqz'
 basis = 'aug-cc-pvtz'
 
 vp_basis = None
 
-ortho_basis = False
+ortho_basis = True
 svd = "search_segment_cycle"
 svd = "input_every"
 opt_method="BFGS"
 method = "WuYangScipy"
-v0 = "FermiAmaldi"
 v0 = "Hartree"
+v0 = "FermiAmaldi"
 
 title = method +"_"+ opt_method +"_"+v0+ "_" + basis+"_"+ \
         str(vp_basis) + "_"\
@@ -83,13 +84,13 @@ elif method == "COScipy":
 # dDb = input_wfn.Db().np - mol.Db.np
 # dn = mol.to_grid(dDa + dDb)
 
-f,ax = plt.subplots(1,1,dpi=200)
-XC_Inversion.pdft.plot1d_x(inverser.input_vxc_a, input_wfn.V_potential(), ax=ax,
-                           dimmer_length=separation, label="input_xc_a", title=title)
-XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vp_basis.Vpot, ax=ax, label="WuYang_xc_a", ls='--')
-# XC_Inversion.pdft.plot1d_x(np.log10(np.abs(dn)), mol.Vpot, ax=ax, label="logdn", ls='dotted')
-ax.legend()
-ax.set_xlim(-14,14)
-ax.set_ylim(-3,0.1)
-f.show()
-plt.close(f)
+# f,ax = plt.subplots(1,1,dpi=200)
+# XC_Inversion.pdft.plot1d_x(inverser.input_vxc_a, input_wfn.V_potential(), ax=ax,
+#                            dimmer_length=separation, label="input_xc_a", title=title)
+# XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vp_basis.Vpot, ax=ax, label="WuYang_xc_a", ls='--')
+# # XC_Inversion.pdft.plot1d_x(np.log10(np.abs(dn)), mol.Vpot, ax=ax, label="logdn", ls='dotted')
+# ax.legend()
+# ax.set_xlim(-14,14)
+# ax.set_ylim(-3,0.1)
+# f.show()
+# plt.close(f)

@@ -11,17 +11,18 @@ functional = 'svwn'
 basis = 'sto-3g'
 basis = 'aug-pcsseg-3'
 basis = 'cc-pvdz'
-basis = 'aug-cc-pv5z'
 basis = 'cc-pvtz'
+basis = 'aug-cc-pv5z'
+basis = 'cc-pvqz'
 
 vp_basis = None
 
 ortho_basis = False
 svd = "search_segment_cycle"
 opt_method="BFGS"
-method = "COScipy"
-v0 = "FermiAmaldi"
+method = "WuYangScipy"
 v0 = "Hartree"
+v0 = "FermiAmaldi"
 
 title = method +"_"+ opt_method +"_"+v0+ "_" + basis+"_"+ \
         str(vp_basis) + "_"\
