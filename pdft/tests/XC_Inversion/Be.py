@@ -18,11 +18,11 @@ basis = 'aug-cc-pvqz'
 vp_basis = None
 
 ortho_basis = False
-svd = "search_segment_cycle"
+svd = "search_cycle_segment"
 opt_method="BFGS"
 method = "WuYangMN"
-v0 = "Hartree"
 v0 = "FermiAmaldi"
+v0 = "Hartree"
 
 title = "Be "+ method +"/"+ opt_method + " " + basis+"/"+ \
         str(vp_basis) + " OB:"\
@@ -73,7 +73,7 @@ if method == "WuYangScipy":
     inverser.find_vxc_scipy_WuYang(14000, opt_method=opt_method)
 elif method == "WuYangMN":
     # rcondlist, dnlist, Llist = inverser.find_vxc_manualNewton(svd_rcond=svd, back_tracking_method="LD")
-    inverser.find_vxc_manualNewton(svd_rcond=svd, back_tracking_method="LD")
+    inverser.find_vxc_manualNewton(svd_rcond=svd, back_tracking_method="StrongWolfeD")
 elif method == "COScipy":
     inverser.find_vxc_scipy_constrainedoptimization(opt_method=opt_method)
 

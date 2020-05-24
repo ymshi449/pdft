@@ -11,13 +11,13 @@ functional = 'svwn'
 basis = 'sto-3g'
 basis = 'cc-pvdz'
 basis = 'cc-pvtz'
-basis = 'aug-cc-pv5z'
 basis = 'aug-pcsseg-4'
+basis = 'aug-cc-pv5z'
 
 vp_basis = None
 
 ortho_basis = False
-svd = "search_segment_cycle"
+svd = "search_cycle_segment"
 svd = "input_every"
 opt_method="BFGS"
 method = "WuYangMN"
@@ -75,7 +75,7 @@ if method == "WuYangScipy":
     inverser.find_vxc_scipy_WuYang(opt_method=opt_method)
 elif method == "WuYangMN":
     # rcondlist, dnlist, Llist = inverser.find_vxc_manualNewton(svd_rcond=svd, back_tracking_method="LD")
-    inverser.find_vxc_manualNewton(svd_rcond=svd, back_tracking_method="L", rho_conv_threshold=1e-8)
+    inverser.find_vxc_manualNewton(svd_rcond=svd, back_tracking_method="StrongWolfeD")
 elif method == "COScipy":
     inverser.find_vxc_scipy_constrainedoptimization(opt_method=opt_method)
 

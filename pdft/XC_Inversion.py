@@ -571,7 +571,7 @@ class Inverser(pdft.U_Embedding):
         self.get_vxc()
         return vp_array
 
-    def find_vxc_manualNewton(self, maxiter=49, svd_rcond=None, mu=1e-4,
+    def find_vxc_manualNewton(self, maxiter=49, svd_rcond=None, c1=1e-4, c2=0.9, c3=1e-2,
                               svd_parameter=None, back_tracking_method="L",
                               BT_beta_threshold=1e-7, rho_conv_threshold=1e-3):
         if self.three_overlap is None:
@@ -595,15 +595,25 @@ class Inverser(pdft.U_Embedding):
         dn_before = np.sum(np.abs(n - n_input) * self.molecule.w)
         L_old = self.Lagrangian_WuYang()
 
-        print("Initial dn:", dn_before, "Initial L:",L_old)
+        print("Initial dn:", dn_before, "Initial L:", L_old)
 
         BT_converge_flag = False
         beta = 2
 
-        ls = 0
-        ns = 0
+        ls = 0  # length segment list
+        ns = 0  # current pointer on the segment list
 
-        cycle_n = np.inf
+        cycle_n = np.inf  # Density of last segment cycle
+
+        if back_tracking_method == "StrongWolfeD":
+            def density_improvement_test(alpha, x, f, g):
+                #  alpha, x, f, g in principle are not needed.
+                n = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
+                dn = np.sum(np.abs(n - n_input) * self.molecule.w)
+                if not dn - dn_before < - c3 * dn_before:
+                    print("Density improvement?", dn - dn_before, - c3 * dn_before)
+                return dn - dn_before < - c3 * dn_before
+
         print("<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion manual Newton<<<<<<<<<<<<<<<<<<<")
         for scf_step in range(1, maxiter + 1):
 
@@ -841,6 +851,7 @@ class Inverser(pdft.U_Embedding):
                 dv = -np.dot(hess_inv, jac)
 
             elif svd_rcond == "search_segment_cycle":
+                # Segment move on in each iter
                 s = np.linalg.svd(hess)[1]
                 # SVD move on
                 s_shape = s.shape[0]
@@ -851,19 +862,20 @@ class Inverser(pdft.U_Embedding):
                 # Segmentation
                 if scf_step==1 or ns==ls:
                     if np.sum(np.abs(cycle_n-n)*self.molecule.w) < rho_conv_threshold:
-                        print("Break because n is not improved in this segment cycle.", np.abs(cycle_n-n))
+                        print("Break because n is not improved in this segment cycle.",
+                              np.sum(np.abs(cycle_n-n)*self.molecule.w))
                         break
                     cycle_n = n
                     seg_list = [0]
                     for i in range(1,s_shape):
                         if s[i-1]/s[i] > svd_parameter:
-                            print(s[i], s[i-1])
+                            # print(s[i], s[i-1])
                             seg_list.append(i)
                     seg_list.append(s_shape)
                     ls = len(seg_list) - 1  # length of segments
                     ns = 0  # segment number starts from 0
                     print("\nSegment", seg_list)
-                    print("\n")
+                    # print("\n")
                 start = seg_list[ns]
                 end = seg_list[ns+1]
 
@@ -874,6 +886,44 @@ class Inverser(pdft.U_Embedding):
                 dv = -np.dot(hess_inv, jac)
 
                 ns += 1
+
+            elif svd_rcond == "search_cycle_segment":
+                #  Segment move on when not improved
+                s = np.linalg.svd(hess)[1]
+                # SVD move on
+                s_shape = s.shape[0]
+
+                if svd_parameter is None:
+                    svd_parameter = 10  # the cutoff threshold.
+
+                if BT_converge_flag:
+                    ns += 1
+
+                # Segmentation
+                if scf_step==1 or ns==ls and (BT_converge_flag):
+                    if np.sum(np.abs(cycle_n-n)*self.molecule.w) < rho_conv_threshold:
+                        print("Break because n is not improved in this segment cycle.", np.abs(cycle_n-n))
+                        break
+                    cycle_n = n
+                    seg_list = [0]
+                    for i in range(1,s_shape):
+                        if s[i-1]/s[i] > svd_parameter:
+                            # print(s[i], s[i-1])
+                            seg_list.append(i)
+                    seg_list.append(s_shape)
+                    ls = len(seg_list) - 1  # length of segments
+                    ns = 0  # segment number starts from 0
+                    print("\nSegment", seg_list)
+                    # print("\n")
+                start = seg_list[ns]
+                end = seg_list[ns+1]
+
+                self.svd_index = [start, end]
+
+                hess_inv = pdft.inv_pinv(hess, self.svd_index[0], self.svd_index[1])
+
+                dv = -np.dot(hess_inv, jac)
+
 
             elif svd_rcond == "segments":
                 if svd_parameter is None:
@@ -893,62 +943,67 @@ class Inverser(pdft.U_Embedding):
                 hess_inv = pdft.inv_pinv(hess, start, end)
                 dv = -np.dot(hess_inv, jac)
 
-            elif svd_rcond == "find_optimal_w_bruteforce":
-                back_tracking_method = None
-                mu = 1e-3
-                rcondlist = np.zeros(100)
-                dnlist = np.zeros(100)
-                Llist = np.zeros(100)
-
-                idx = 0
-
-                for rcond_idx in np.linspace(0, 10, 100):
-                    hess_inv = np.linalg.pinv(hess, rcond=10 ** -rcond_idx)
-                    dv = -np.dot(hess_inv, jac)
-
-                    beta = 2
-                    while True:
-                        beta *= 0.5
-                        if beta < BT_beta_threshold:
-                            break
-                        # Traditional WuYang
-                        v_temp = self.v_output + beta * dv
-                        L = self.Lagrangian_WuYang(v=v_temp)
-                        # n = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
-                        # dn = np.sum(np.abs(n - n_input) * self.molecule.w)
-                        # print(beta, L - L_old, dn - dn_before, mu * beta * np.sum(jac * dv))
-                        if L - L_old <= mu * beta * np.sum(jac * dv) and \
-                                beta * np.sum(jac * dv) < 0:
-                            # dn - dn_before <= - mu * beta * dn_before and \
-                            rcondlist[idx] = 10 ** -rcond_idx
-                            # dnlist[idx] = dn
-                            Llist[idx] = L
-                            break
-                    idx += 1
-
-                L_idx = np.argmin(L)
-                print(rcond_idx, L_idx)
-                hess_inv = np.linalg.pinv(hess,
-                                          rcond=10 ** -np.linspace(0, 10, 100)[L_idx])
-                dv = - np.dot(hess_inv, jac)
-                beta = 2
-                while True:
-                    beta *= 0.5
-                    if beta < BT_beta_threshold:
-                        break
-                    # Traditional WuYang
-                    v_temp = self.v_output + beta * dv
-                    L = self.Lagrangian_WuYang(v=v_temp)
-                    print(beta, L - L_old, mu * beta * np.sum(jac * dv))
-                    if L - L_old <= mu * beta * np.sum(jac * dv) and beta * np.sum(jac * dv) < 0:
-                        L_old = L
-                        self.v_output = v_temp
-                        n = self.molecule.to_grid(self.molecule.Da.np+self.molecule.Db.np)
-                        dn_before = np.sum(np.abs(n_input - n) * self.molecule.w)
-                        break
+            # elif svd_rcond == "find_optimal_w_bruteforce":
+            #     back_tracking_method = None
+            #     c1 = 1e-3
+            #     rcondlist = np.zeros(100)
+            #     dnlist = np.zeros(100)
+            #     Llist = np.zeros(100)
+            #
+            #     idx = 0
+            #
+            #     for rcond_idx in np.linspace(0, 10, 100):
+            #         hess_inv = np.linalg.pinv(hess, rcond=10 ** -rcond_idx)
+            #         dv = -np.dot(hess_inv, jac)
+            #
+            #         beta = 2
+            #         BT_converge_flag = False
+            #
+            #         while True:
+            #             beta *= 0.5
+            #             if beta < BT_beta_threshold:
+            #                 break
+            #             # Traditional WuYang
+            #             v_temp = self.v_output + beta * dv
+            #             L = self.Lagrangian_WuYang(v=v_temp)
+            #             # n = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
+            #             # dn = np.sum(np.abs(n - n_input) * self.molecule.w)
+            #             # print(beta, L - L_old, dn - dn_before, c1 * beta * np.sum(jac * dv))
+            #             if L - L_old <= c1 * beta * np.sum(jac * dv) and \
+            #                     beta * np.sum(jac * dv) < 0:
+            #                 # dn - dn_before <= - c1 * beta * dn_before and \
+            #                 rcondlist[idx] = 10 ** -rcond_idx
+            #                 # dnlist[idx] = dn
+            #                 Llist[idx] = L
+            #                 break
+            #         idx += 1
+            #
+            #     L_idx = np.argmin(L)
+            #     print(rcond_idx, L_idx)
+            #     hess_inv = np.linalg.pinv(hess,
+            #                               rcond=10 ** -np.linspace(0, 10, 100)[L_idx])
+            #     dv = - np.dot(hess_inv, jac)
+            #     beta = 2
+            #     BT_converge_flag = False
+            #
+            #     while True:
+            #         beta *= 0.5
+            #         if beta < BT_beta_threshold:
+            #             break
+            #         # Traditional WuYang
+            #         v_temp = self.v_output + beta * dv
+            #         L = self.Lagrangian_WuYang(v=v_temp)
+            #         print(beta, L - L_old, c1 * beta * np.sum(jac * dv))
+            #         if L - L_old <= c1 * beta * np.sum(jac * dv) and beta * np.sum(jac * dv) < 0:
+            #             L_old = L
+            #             self.v_output = v_temp
+            #             n = self.molecule.to_grid(self.molecule.Da.np+self.molecule.Db.np)
+            #             dn_before = np.sum(np.abs(n_input - n) * self.molecule.w)
+            #             break
 
             if back_tracking_method == "L":
                 beta = 2
+                BT_converge_flag = False
                 while True:
                     beta *= 0.5
                     if beta < BT_beta_threshold:
@@ -957,8 +1012,8 @@ class Inverser(pdft.U_Embedding):
                     # Traditional WuYang
                     v_temp = self.v_output + beta * dv
                     L = self.Lagrangian_WuYang(v=v_temp)
-                    print(beta, L - L_old, mu * beta * np.sum(jac * dv))
-                    if L - L_old <= mu * beta * np.sum(jac * dv) and beta * np.sum(jac * dv) < 0:
+                    print(beta, L - L_old, c1 * beta * np.sum(jac * dv))
+                    if L - L_old <= c1 * beta * np.sum(jac * dv) and beta * np.sum(jac * dv) < 0:
                         L_old = L
                         self.v_output = v_temp
                         n = self.molecule.to_grid(self.molecule.Da.np+self.molecule.Db.np)
@@ -966,6 +1021,8 @@ class Inverser(pdft.U_Embedding):
                         break
             elif back_tracking_method == "D":
                 beta = 2
+                BT_converge_flag = False
+
                 while True:
                     beta *= 0.5
                     if beta < BT_beta_threshold:
@@ -976,14 +1033,16 @@ class Inverser(pdft.U_Embedding):
                     L = self.Lagrangian_WuYang(v=v_temp)
                     n = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
                     dn = np.sum(np.abs(n - n_input) * self.molecule.w)
-                    print(beta, L - L_old, dn - dn_before, mu * beta * np.sum(jac * dv))
-                    if dn - dn_before <= - mu * beta * dn_before and beta * np.sum(jac * dv) < 0:
+                    print(beta, L - L_old, dn - dn_before, c1 * beta * np.sum(jac * dv))
+                    if dn - dn_before <= - c1 * beta * dn_before and beta * np.sum(jac * dv) < 0:
                         L_old = L
                         dn_before = dn
                         self.v_output = v_temp
                         break
             elif back_tracking_method == "LD":
                 beta = 2
+                BT_converge_flag = False
+
                 while True:
                     beta *= 0.5
                     if beta < BT_beta_threshold:
@@ -992,27 +1051,65 @@ class Inverser(pdft.U_Embedding):
                     # Traditional WuYang
                     v_temp = self.v_output + beta * dv
                     L = self.Lagrangian_WuYang(v=v_temp)
-                    print(beta, L - L_old, mu * beta * np.sum(jac * dv))
-                    if L - L_old <= mu * beta * np.sum(jac * dv) and \
+                    print(beta, L - L_old, c1 * beta * np.sum(jac * dv))
+                    if L - L_old <= c1 * beta * np.sum(jac * dv) and \
                             beta * np.sum(jac * dv) < 0:
                         n = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
                         dn = np.sum(np.abs(n - n_input) * self.molecule.w)
-                        print(beta, L - L_old, dn - dn_before, mu * beta * np.sum(jac * dv))
-                        if dn - dn_before <= - mu * beta * dn_before:
+                        print(beta, L - L_old, dn - dn_before, c1 * beta * np.sum(jac * dv))
+                        if dn - dn_before <= - c1 * beta * dn_before:
                             L_old = L
                             dn_before = dn
                             self.v_output = v_temp
                             break
+            elif back_tracking_method == "StrongWolfe":
+                BT_converge_flag = False
+
+                beta,_,_,L,_,_ = optimizer.line_search(self.Lagrangian_WuYang,
+                                                       self.grad_WuYang, self.v_output, dv,
+                                                       old_fval=L_old, gfk=jac, maxiter=100,
+                                                       c1=c1,
+                                                       c2=c2)
+                if beta is None:
+                    BT_converge_flag = True
+                else:
+                    self.v_output += beta * dv
+                    n = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
+                    dn = np.sum(np.abs(n - n_input) * self.molecule.w)
+                    print(beta, L - L_old, dn - dn_before)
+                    dn_before = dn
+                    L_old = L
+
+            elif back_tracking_method == "StrongWolfeD":
+                BT_converge_flag = False
+
+                beta,_,_,L,_,_ = optimizer.line_search(self.Lagrangian_WuYang,
+                                                       self.grad_WuYang, self.v_output, dv,
+                                                       old_fval=L_old, gfk=jac, maxiter=100,
+                                                       c1=c1,
+                                                       c2=c2,
+                                                       extra_condition=density_improvement_test)
+                if beta is None:
+                    BT_converge_flag = True
+                else:
+                    self.v_output += beta * dv
+                    n = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
+                    dn = np.sum(np.abs(n - n_input) * self.molecule.w)
+                    print(beta, L - L_old, dn - dn_before)
+                    dn_before = dn
+                    L_old = L
 
             print(
                 F'------BT: {back_tracking_method} SVD: {self.svd_index} Reg: {self.regul_const} '
-                F'Ortho: {self.ortho_basis} SVDmoveon: {beta < BT_beta_threshold} ------\n'
+                F'Ortho: {self.ortho_basis} SVDmoveon: {BT_converge_flag} ------\n'
                 F'Iter: {scf_step} beta: {beta} |jac|: {np.linalg.norm(jac)} L: {L_old} d_rho: {dn_before}\n')
 
             if BT_converge_flag and \
                     not (svd_rcond=="segments" or svd_rcond=="segment_cycle"
                          or svd_rcond=="increase" or svd_rcond=="input_segment_cycle"
-                         or svd_rcond=="search_segment_cycle"):
+                         or svd_rcond=="search_segment_cycle"
+                         # or svd_rcond=="search_cycle_segment"
+                    ):
                 print("Converge")
                 break
             elif dn_before < rho_conv_threshold:
@@ -1022,8 +1119,8 @@ class Inverser(pdft.U_Embedding):
                 print("Maximum number of SCF cycles exceeded for vp.")
 
 
-        if svd_rcond == "find_optimal_w_bruteforce":
-            return rcondlist, dnlist, Llist
+        # if svd_rcond == "find_optimal_w_bruteforce":
+        #     return rcondlist, dnlist, Llist
 
         print("Evaluation: ", self.L_counter, self.grad_counter, self.hess_counter)
         print("Ts", self.molecule.Da.vector_dot(self.molecule.T)+self.molecule.Db.vector_dot(self.molecule.T))
