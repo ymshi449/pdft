@@ -142,15 +142,6 @@ class Inverser(pdft.U_Embedding):
 
         self.input_wfn = input_wfn
 
-        # Get reference vxc
-        self.input_vxc_a = None
-        self.input_vxc_b = None
-        self.input_vxc_cube = None # To be implemented.
-        try:
-            self.get_input_vxc()
-        except:
-            print("There is no Vpotential or vxc for input wfn.")
-
         # v_output = [v_output_a, v_output_b]
         self.v_output = np.zeros(int(self.vp_basis.nbf)*2)
         self.v_output_a = None
@@ -175,6 +166,16 @@ class Inverser(pdft.U_Embedding):
             self.get_FermiAmaldi_v0()
         elif self.v0 == "Hartree":
             self.get_Hartree_v0()
+
+        # Get reference vxc
+        self.input_vxc_a = None
+        self.input_vxc_b = None
+        self.input_vxc_cube = None # To be implemented.
+        try:
+            self.get_input_vxc()
+        except:
+            print("Get Hartree+LDA as v0")
+            self.get_HartreeLDA_v0()
 
         # vH_mol
         self.vH_mol = None
@@ -285,7 +286,7 @@ class Inverser(pdft.U_Embedding):
 
     def get_FermiAmaldi_v0(self):
         """
-        Transfer v0 from v_FermiAmaldi to v_H_exact.
+        Use v_FermiAmaldi as v0.
         :return:
         """
         nocc = self.molecule.ndocc
@@ -294,10 +295,33 @@ class Inverser(pdft.U_Embedding):
 
     def get_Hartree_v0(self):
         """
-        Transfer v0 from v_FermiAmaldi to v_H_exact.
+        Use vH as v0.
         :return:
         """
         self.v0_input_Fock = self.molecule.grid_to_fock(self.vH_input)
+        return
+
+    def get_HartreeLDA_v0(self):
+        """
+        Use vH + vLDA as v0.
+        :return:
+        """
+        # Da = np.copy(self.molecule.Da.np)
+        # Db = np.copy(self.molecule.Db.np)
+        # self.molecule.Da.np[:] = np.copy(self.input_wfn.Da().np)
+        # self.molecule.Db.np[:] = np.copy(self.input_wfn.Db().np)
+        self.v0 = "HartreeLDA"
+        self.molecule.Vpot.set_D([self.input_wfn.Da(), self.input_wfn.Db()])
+        self.molecule.Vpot.properties()[0].set_pointers(self.input_wfn.Da(), self.input_wfn.Db())
+        self.input_vxc_a, self.input_vxc_b = pdft.U_xc(self.input_wfn.Da().np, self.input_wfn.Db().np,
+                                                       self.molecule.Vpot)[-1]
+        self.molecule.Vpot.set_D([self.molecule.Da, self.molecule.Db])
+        self.molecule.Vpot.properties()[0].set_pointers(self.molecule.Da, self.molecule.Db)
+
+        assert self.molecule.nbeta == self.molecule.nalpha, "Currently can only handle close shell."
+        assert np.allclose(self.input_vxc_a, self.input_vxc_b), "Currently can only handle close shell."
+
+        self.v0_input_Fock = self.molecule.grid_to_fock(self.vH_input+self.input_vxc_a)
         return
 
 
@@ -331,6 +355,9 @@ class Inverser(pdft.U_Embedding):
         elif self.v0 == "Hartree":
             self.vxc_a_grid += self.vH_input - self.vH_mol
             self.vxc_b_grid += self.vH_input - self.vH_mol
+        elif self.v0 == "HartreeLDA":
+        self.vxc_a_grid += self.vH_input - self.vH_mol - self.input_vxc_a
+        self.vxc_b_grid += self.vH_input - self.vH_mol - self.input_vxc_b
         return
 
 
@@ -572,7 +599,7 @@ class Inverser(pdft.U_Embedding):
         return vp_array
 
     def find_vxc_manualNewton(self, maxiter=49, svd_rcond=None, c1=1e-4, c2=0.9, c3=1e-2,
-                              svd_parameter=None, back_tracking_method="L",
+                              svd_parameter=None, line_search_method="StrongWolfe",
                               BT_beta_threshold=1e-7, rho_conv_threshold=1e-3):
         if self.three_overlap is None:
             self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
@@ -597,7 +624,7 @@ class Inverser(pdft.U_Embedding):
 
         print("Initial dn:", dn_before, "Initial L:", L_old)
 
-        BT_converge_flag = False
+        LineSearch_converge_flag = False
         beta = 2
 
         ls = 0  # length segment list
@@ -605,7 +632,7 @@ class Inverser(pdft.U_Embedding):
 
         cycle_n = np.inf  # Density of last segment cycle
 
-        if back_tracking_method == "StrongWolfeD":
+        if line_search_method == "StrongWolfeD":
             def density_improvement_test(alpha, x, f, g):
                 #  alpha, x, f, g in principle are not needed.
                 n = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
@@ -703,7 +730,7 @@ class Inverser(pdft.U_Embedding):
 
                 if self.svd_index >= svd_parameter[-1]:
                     self.svd_index = svd_parameter[-1]
-                    BT_converge_flag = True
+                    LineSearch_converge_flag = True
                     
                 svd = s[self.svd_index-1]
                 # print(svd)
@@ -888,7 +915,7 @@ class Inverser(pdft.U_Embedding):
                 ns += 1
 
             elif svd_rcond == "search_cycle_segment":
-                #  Segment move on when not improved
+                # Segment move on when not improved
                 s = np.linalg.svd(hess)[1]
                 # SVD move on
                 s_shape = s.shape[0]
@@ -896,11 +923,11 @@ class Inverser(pdft.U_Embedding):
                 if svd_parameter is None:
                     svd_parameter = 10  # the cutoff threshold.
 
-                if BT_converge_flag:
+                if LineSearch_converge_flag:
                     ns += 1
 
                 # Segmentation
-                if scf_step==1 or ns==ls and (BT_converge_flag):
+                if scf_step==1 or ns==ls and (LineSearch_converge_flag):
                     if np.sum(np.abs(cycle_n-n)*self.molecule.w) < rho_conv_threshold:
                         print("Break because n is not improved in this segment cycle.", np.abs(cycle_n-n))
                         break
@@ -934,7 +961,7 @@ class Inverser(pdft.U_Embedding):
                 svd_parameter[1] += int(s_shape / svd_parameter[0])
                 if svd_parameter[1] > s_shape:
                     svd_parameter[1] = s_shape
-                    BT_converge_flag = True
+                    LineSearch_converge_flag = True
 
                 end = svd_parameter[1]
 
@@ -944,7 +971,7 @@ class Inverser(pdft.U_Embedding):
                 dv = -np.dot(hess_inv, jac)
 
             # elif svd_rcond == "find_optimal_w_bruteforce":
-            #     back_tracking_method = None
+            #     line_search_method = None
             #     c1 = 1e-3
             #     rcondlist = np.zeros(100)
             #     dnlist = np.zeros(100)
@@ -957,7 +984,7 @@ class Inverser(pdft.U_Embedding):
             #         dv = -np.dot(hess_inv, jac)
             #
             #         beta = 2
-            #         BT_converge_flag = False
+            #         LineSearch_converge_flag = False
             #
             #         while True:
             #             beta *= 0.5
@@ -984,7 +1011,7 @@ class Inverser(pdft.U_Embedding):
             #                               rcond=10 ** -np.linspace(0, 10, 100)[L_idx])
             #     dv = - np.dot(hess_inv, jac)
             #     beta = 2
-            #     BT_converge_flag = False
+            #     LineSearch_converge_flag = False
             #
             #     while True:
             #         beta *= 0.5
@@ -1001,13 +1028,13 @@ class Inverser(pdft.U_Embedding):
             #             dn_before = np.sum(np.abs(n_input - n) * self.molecule.w)
             #             break
 
-            if back_tracking_method == "L":
+            if line_search_method == "BackTracking":
                 beta = 2
-                BT_converge_flag = False
+                LineSearch_converge_flag = False
                 while True:
                     beta *= 0.5
                     if beta < BT_beta_threshold:
-                        BT_converge_flag = True
+                        LineSearch_converge_flag = True
                         break
                     # Traditional WuYang
                     v_temp = self.v_output + beta * dv
@@ -1019,14 +1046,14 @@ class Inverser(pdft.U_Embedding):
                         n = self.molecule.to_grid(self.molecule.Da.np+self.molecule.Db.np)
                         dn_before = np.sum(np.abs(n_input - n) * self.molecule.w)
                         break
-            elif back_tracking_method == "D":
+            elif line_search_method == "D":
                 beta = 2
-                BT_converge_flag = False
+                LineSearch_converge_flag = False
 
                 while True:
                     beta *= 0.5
                     if beta < BT_beta_threshold:
-                        BT_converge_flag = True
+                        LineSearch_converge_flag = True
                         break
                     # Traditional WuYang
                     v_temp = self.v_output + beta * dv
@@ -1039,14 +1066,14 @@ class Inverser(pdft.U_Embedding):
                         dn_before = dn
                         self.v_output = v_temp
                         break
-            elif back_tracking_method == "LD":
+            elif line_search_method == "BackTrackingD":
                 beta = 2
-                BT_converge_flag = False
+                LineSearch_converge_flag = False
 
                 while True:
                     beta *= 0.5
                     if beta < BT_beta_threshold:
-                        BT_converge_flag = True
+                        LineSearch_converge_flag = True
                         break
                     # Traditional WuYang
                     v_temp = self.v_output + beta * dv
@@ -1062,16 +1089,17 @@ class Inverser(pdft.U_Embedding):
                             dn_before = dn
                             self.v_output = v_temp
                             break
-            elif back_tracking_method == "StrongWolfe":
-                BT_converge_flag = False
+            elif line_search_method == "StrongWolfe":
+                LineSearch_converge_flag = False
 
                 beta,_,_,L,_,_ = optimizer.line_search(self.Lagrangian_WuYang,
                                                        self.grad_WuYang, self.v_output, dv,
                                                        old_fval=L_old, gfk=jac, maxiter=100,
                                                        c1=c1,
-                                                       c2=c2)
+                                                       c2=c2,
+                                                       amax=1)
                 if beta is None:
-                    BT_converge_flag = True
+                    LineSearch_converge_flag = True
                 else:
                     self.v_output += beta * dv
                     n = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
@@ -1080,17 +1108,18 @@ class Inverser(pdft.U_Embedding):
                     dn_before = dn
                     L_old = L
 
-            elif back_tracking_method == "StrongWolfeD":
-                BT_converge_flag = False
+            elif line_search_method == "StrongWolfeD":
+                LineSearch_converge_flag = False
 
                 beta,_,_,L,_,_ = optimizer.line_search(self.Lagrangian_WuYang,
                                                        self.grad_WuYang, self.v_output, dv,
                                                        old_fval=L_old, gfk=jac, maxiter=100,
                                                        c1=c1,
                                                        c2=c2,
-                                                       extra_condition=density_improvement_test)
+                                                       extra_condition=density_improvement_test,
+                                                       amax=1)
                 if beta is None:
-                    BT_converge_flag = True
+                    LineSearch_converge_flag = True
                 else:
                     self.v_output += beta * dv
                     n = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
@@ -1100,15 +1129,15 @@ class Inverser(pdft.U_Embedding):
                     L_old = L
 
             print(
-                F'------BT: {back_tracking_method} SVD: {self.svd_index} Reg: {self.regul_const} '
-                F'Ortho: {self.ortho_basis} SVDmoveon: {BT_converge_flag} ------\n'
+                F'------BT: {line_search_method} SVD: {self.svd_index} Reg: {self.regul_const} '
+                F'Ortho: {self.ortho_basis} SVDmoveon: {LineSearch_converge_flag} ------\n'
                 F'Iter: {scf_step} beta: {beta} |jac|: {np.linalg.norm(jac)} L: {L_old} d_rho: {dn_before}\n')
 
-            if BT_converge_flag and \
+            if LineSearch_converge_flag and \
                     not (svd_rcond=="segments" or svd_rcond=="segment_cycle"
                          or svd_rcond=="increase" or svd_rcond=="input_segment_cycle"
                          or svd_rcond=="search_segment_cycle"
-                         # or svd_rcond=="search_cycle_segment"
+                         or svd_rcond=="search_cycle_segment"
                     ):
                 print("Converge")
                 break
@@ -1538,6 +1567,10 @@ class Inverser(pdft.U_Embedding):
 
         print("Zero the old result for a new calculation..")
         self.v_output = np.zeros_like(self.v_output)
+
+        Vks_a = psi4.core.Matrix.from_array(self.v0_input_Fock)
+        Vks_b = psi4.core.Matrix.from_array(self.v0_input_Fock)
+        self.molecule.scf_inversion(100, [Vks_a, Vks_b])
 
         print("<<<<<<<<<<<<<<<<<<<<<<Constrained Optimization vxc Inversion<<<<<<<<<<<<<<<<<<<")
 

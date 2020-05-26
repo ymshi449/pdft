@@ -3570,9 +3570,9 @@ def inv_pinv(a, start, end):
     large = np.array([False]*s.shape[0])
     large[start:end] = True
 
-    # Rescale
-    rescale = s[0]/s[start]
-    s *= rescale
+    # # Rescale
+    # rescale = s[0]/s[start]
+    # s *= rescale
 
     s = np.divide(1, s, where=large, out=s)
     s[~large] = 0

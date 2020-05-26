@@ -12,8 +12,8 @@ basis = 'sto-3g'
 basis = 'aug-pcsseg-3'
 basis = 'cc-pvdz'
 basis = 'cc-pvtz'
+basis = 'aug-cc-pvqz'
 basis = 'aug-cc-pv5z'
-basis = 'cc-pvqz'
 
 vp_basis = None
 
@@ -74,8 +74,8 @@ inverser = XC_Inversion.Inverser(mol, input_wfn,
 if method == "WuYangScipy":
     inverser.find_vxc_scipy_WuYang(opt_method=opt_method)
 elif method == "WuYangMN":
-    # rcondlist, dnlist, Llist = inverser.find_vxc_manualNewton(svd_rcond=svd, back_tracking_method="LD")
-    inverser.find_vxc_manualNewton(svd_rcond=svd, back_tracking_method="L")
+    # rcondlist, dnlist, Llist = inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="LD")
+    inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="L")
 elif method == "COScipy":
     inverser.find_vxc_scipy_constrainedoptimization(opt_method=opt_method)
 

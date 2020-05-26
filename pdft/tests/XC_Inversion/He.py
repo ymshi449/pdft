@@ -8,20 +8,20 @@ if __name__ == "__main__":
     psi4.set_num_threads(2)
 
 functional = 'svwn'
-basis = 'sto-3g'
 basis = 'cc-pvtz'
 basis = 'aug-pcsseg-3'
 basis = 'cc-pvdz'
 basis = 'aug-cc-pvqz'
+basis = 'sto-3g'
 basis = '6-31G'
 
 vp_basis = None
 
 ortho_basis = False
-svd = "search_segment_cycle"
+svd = "search_cycle_segment"
 opt_method="BFGS"
-method = "WuYangScipy"
-title = "Li2 "+ method +"/"+ opt_method + " " + basis+"/"+ \
+method = "WuYangMN"
+title = method +"/"+ opt_method + " " + basis+"/"+ \
         str(vp_basis) + " OB:"\
         + str(ortho_basis) + " svd:" + str(svd)
 print(title)
@@ -69,9 +69,9 @@ inverser = XC_Inversion.Inverser(mol, input_wfn,
 if method == "WuYangScipy":
     inverser.find_vxc_scipy_WuYang(opt_method=opt_method)
 elif method == "WuYangMN":
-    # rcondlist, dnlist, Llist = inverser.find_vxc_manualNewton(svd_rcond=svd, back_tracking_method="LD")
-    inverser.find_vxc_manualNewton(svd_rcond=svd, back_tracking_method="L",
-                                   rho_conv_threshold=1e-10, svd_parameter=5)
+    # rcondlist, dnlist, Llist = inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="LD")
+    inverser.find_vxc_manualNewton(svd_rcond=svd,
+                                   line_search_method="StrongWolfeD")
 elif method == "COScipy":
     inverser.find_vxc_scipy_constrainedoptimization(opt_method=opt_method)
 
@@ -79,7 +79,6 @@ elif method == "COScipy":
 # dDb = input_wfn.Db().np - mol.Db.np
 # dn = mol.to_grid(dDa + dDb)
 
-inverser.get_vxc()
 f,ax = plt.subplots(1,1,dpi=200)
 XC_Inversion.pdft.plot1d_x(inverser.input_vxc_a, input_wfn.V_potential(), ax=ax,
                            label="input_xc_a", title=title)

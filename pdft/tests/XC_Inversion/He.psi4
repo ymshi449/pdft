@@ -1,13 +1,13 @@
 
 *** tstart() called on PartitionStation
-*** at Wed May 20 12:06:44 2020
+*** at Mon May 25 15:21:43 2020
 
    => Loading Basis Set <=
 
-    Name: AUG-CC-PVQZ
+    Name: 6-31G
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1 entry HE         line    68 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvqz.gbs 
+    atoms 1 entry HE         line    34 file /home/yuming/anaconda3/envs/work/share/psi4/basis/6-31g.gbs 
 
 
          ---------------------------------------------------------
@@ -52,13 +52,13 @@
 
   ==> Primary Basis <==
 
-  Basis Set: AUG-CC-PVQZ
-    Blend: AUG-CC-PVQZ
-    Number of shells: 14
-    Number of basis function: 46
-    Number of Cartesian functions: 55
-    Spherical Harmonics?: true
-    Max angular momentum: 3
+  Basis Set: 6-31G
+    Blend: 6-31G
+    Number of shells: 2
+    Number of basis function: 2
+    Number of Cartesian functions: 2
+    Spherical Harmonics?: false
+    Max angular momentum: 0
 
   ==> DFT Potential <==
 
@@ -94,14 +94,14 @@
     Pruning alpha          =              1
     Radial Points          =             77
     Spherical Points       =            302
-    Total Points           =          23254
-    Total Blocks           =            228
-    Max Points             =            255
-    Max Functions          =             46
+    Total Points           =          21744
+    Total Blocks           =            217
+    Max Points             =            243
+    Max Functions          =              2
 
    => Loading Basis Set <=
 
-    Name: (AUG-CC-PVQZ AUX)
+    Name: (6-31G AUX)
     Role: JKFIT
     Keyword: DF_BASIS_SCF
     atoms 1 entry HE         line    39 file /home/yuming/anaconda3/envs/work/share/psi4/basis/def2-qzvpp-jkfit.gbs 
@@ -111,14 +111,14 @@
    -------------------------------------------------------
     Irrep   Nso     Nmo     Nalpha   Nbeta   Ndocc  Nsocc
    -------------------------------------------------------
-     A         46      46       0       0       0       0
+     A          2       2       0       0       0       0
    -------------------------------------------------------
-    Total      46      46       1       1       1       0
+    Total       2       2       1       1       1       0
    -------------------------------------------------------
 
   ==> Integral Setup <==
 
-  DFHelper Memory: AOs need 0.001 GiB; user supplied 0.359 GiB. Using in-core AOs.
+  DFHelper Memory: AOs need 0.000 GiB; user supplied 0.366 GiB. Using in-core AOs.
 
   ==> MemDFJK: Density-Fitted J/K Matrices <==
 
@@ -126,7 +126,7 @@
     K tasked:                    No
     wK tasked:                   No
     OpenMP threads:               2
-    Memory [MiB]:               367
+    Memory [MiB]:               374
     Algorithm:                 Core
     Schwarz Cutoff:           1E-12
     Mask sparsity (%):       0.0000
@@ -134,17 +134,17 @@
 
    => Auxiliary Basis Set <=
 
-  Basis Set: (AUG-CC-PVQZ AUX)
+  Basis Set: (6-31G AUX)
     Blend: DEF2-QZVPP-JKFIT
     Number of shells: 9
-    Number of basis function: 23
+    Number of basis function: 25
     Number of Cartesian functions: 25
-    Spherical Harmonics?: true
+    Spherical Harmonics?: false
     Max angular momentum: 2
 
-  Cached 100.0% of DFT collocation blocks in 0.007 [GiB].
+  Cached 100.0% of DFT collocation blocks in 0.000 [GiB].
 
-  Minimum eigenvalue in the overlap matrix is 3.1408536236E-02.
+  Minimum eigenvalue in the overlap matrix is 3.6585226133E-01.
   Using Symmetric Orthogonalization.
 
   SCF Guess: Core (One-Electron) Hamiltonian.
@@ -153,19 +153,19 @@
 
                            Total Energy        Delta E     RMS |[F,P]|
 
-   @DF-UKS iter   1:    -2.73330442539705   -2.73330e+00   1.25737e-02 DIIS
-   @DF-UKS iter   2:    -2.84892318755706   -1.15619e-01   5.07983e-03 DIIS
-   @DF-UKS iter   3:    -2.87206257150716   -2.31394e-02   1.55736e-04 DIIS
-   @DF-UKS iter   4:    -2.87209018153579   -2.76100e-05   1.37772e-05 DIIS
-   @DF-UKS iter   5:    -2.87209032310120   -1.41565e-07   1.72417e-07 DIIS
+   @DF-UKS iter   1:    -2.72661291901917   -2.72661e+00   2.66868e-01 DIIS
+   @DF-UKS iter   2:    -2.84741815059667   -1.20805e-01   9.65405e-02 DIIS
+   @DF-UKS iter   3:    -2.86418681925890   -1.67687e-02   5.32244e-04 DIIS
+   @DF-UKS iter   4:    -2.86418732784271   -5.08584e-07   1.20959e-06 DIIS
+   @DF-UKS iter   5:    -2.86418732784534   -2.62723e-12   1.79101e-09 DIIS
   Energy and wave function converged.
 
 
   ==> Post-Iterations <==
 
-   @Spin Contamination Metric:   3.552713679E-15
+   @Spin Contamination Metric:   2.220446049E-16
    @S^2 Expected:                0.000000000E+00
-   @S^2 Observed:                3.552713679E-15
+   @S^2 Observed:                2.220446049E-16
    @S   Expected:                0.000000000E+00
    @S   Observed:                0.000000000E+00
 
@@ -174,71 +174,40 @@
 
     Alpha Occupied:                                                       
 
-       1A     -0.589175  
+       1A     -0.575320  
 
     Alpha Virtual:                                                        
 
-       2A      0.042798     3A      0.208570     4A      0.208570  
-       5A      0.208570     6A      0.521433     7A      0.952056  
-       8A      0.952056     9A      0.952056    10A      0.952056  
-      11A      0.952056    12A      1.199827    13A      1.199827  
-      14A      1.199827    15A      2.554534    16A      2.728025  
-      17A      2.728025    18A      2.728025    19A      2.728025  
-      20A      2.728025    21A      2.728025    22A      2.728025  
-      23A      4.155305    24A      4.155305    25A      4.155305  
-      26A      4.155305    27A      4.155305    28A      4.631329  
-      29A      4.631329    30A      4.631329    31A     11.948671  
-      32A     11.948671    33A     11.948671    34A     11.948671  
-      35A     11.948671    36A     11.948671    37A     11.948671  
-      38A     12.781862    39A     15.901382    40A     15.901382  
-      41A     15.901382    42A     15.901382    43A     15.901382  
-      44A     17.252438    45A     17.252438    46A     17.252438  
+       2A      1.070691  
 
     Beta Occupied:                                                        
 
-       1A     -0.589175  
+       1A     -0.575320  
 
     Beta Virtual:                                                         
 
-       2A      0.042798     3A      0.208570     4A      0.208570  
-       5A      0.208570     6A      0.521433     7A      0.952056  
-       8A      0.952056     9A      0.952056    10A      0.952056  
-      11A      0.952056    12A      1.199827    13A      1.199827  
-      14A      1.199827    15A      2.554534    16A      2.728025  
-      17A      2.728025    18A      2.728025    19A      2.728025  
-      20A      2.728025    21A      2.728025    22A      2.728025  
-      23A      4.155305    24A      4.155305    25A      4.155305  
-      26A      4.155305    27A      4.155305    28A      4.631329  
-      29A      4.631329    30A      4.631329    31A     11.948671  
-      32A     11.948671    33A     11.948671    34A     11.948671  
-      35A     11.948671    36A     11.948671    37A     11.948671  
-      38A     12.781862    39A     15.901382    40A     15.901382  
-      41A     15.901382    42A     15.901382    43A     15.901382  
-      44A     17.252438    45A     17.252438    46A     17.252438  
+       2A      1.070691  
 
     Final Occupation by Irrep:
               A 
     DOCC [     1 ]
     SOCC [     0 ]
 
-  @DF-UKS Final Energy:    -2.87209032310120
+  @DF-UKS Final Energy:    -2.86418732784534
 
    => Energetics <=
 
     Nuclear Repulsion Energy =              0.0000000000000000
-    One-Electron Energy =                  -3.8583635451145515
-    Two-Electron Energy =                   1.9975841976056126
-    DFT Exchange-Correlation Energy =      -1.0113109755922587
+    One-Electron Energy =                  -3.8644001963768626
+    Two-Electron Energy =                   2.0199831344152326
+    DFT Exchange-Correlation Energy =      -1.0197702658837073
     Empirical Dispersion Energy =           0.0000000000000000
     VV10 Nonlocal Energy =                  0.0000000000000000
-    Total Energy =                         -2.8720903231011974
+    Total Energy =                         -2.8641873278453374
 
   UHF NO Occupations:
   HONO-0 :    1  A 2.0000000
-  LUNO+0 :    2  A 0.0000000
-  LUNO+1 :    3  A 0.0000000
-  LUNO+2 :    4  A 0.0000000
-  LUNO+3 :    5  A 0.0000000
+  LUNO+0 :    2  A -0.0000000
 
 
 Computation Completed
@@ -252,30 +221,30 @@ Properties computed using the SCF density matrix
      X:     0.0000      Y:     0.0000      Z:     0.0000
 
   Electronic Dipole Moment: [e a0]
-     X:    -0.0000      Y:     0.0000      Z:    -0.0000
+     X:     0.0000      Y:     0.0000      Z:     0.0000
 
   Dipole Moment: [e a0]
-     X:    -0.0000      Y:     0.0000      Z:    -0.0000     Total:     0.0000
+     X:     0.0000      Y:     0.0000      Z:     0.0000     Total:     0.0000
 
   Dipole Moment: [D]
-     X:    -0.0000      Y:     0.0000      Z:    -0.0000     Total:     0.0000
+     X:     0.0000      Y:     0.0000      Z:     0.0000     Total:     0.0000
 
 
-*** tstop() called on PartitionStation at Wed May 20 12:06:44 2020
+*** tstop() called on PartitionStation at Mon May 25 15:21:44 2020
 Module time:
-	user time   =       1.08 seconds =       0.02 minutes
-	system time =       0.02 seconds =       0.00 minutes
-	total time  =          0 seconds =       0.00 minutes
+	user time   =       0.71 seconds =       0.01 minutes
+	system time =       0.04 seconds =       0.00 minutes
+	total time  =          1 seconds =       0.02 minutes
 Total time:
-	user time   =       1.08 seconds =       0.02 minutes
-	system time =       0.02 seconds =       0.00 minutes
-	total time  =          0 seconds =       0.00 minutes
+	user time   =       0.71 seconds =       0.01 minutes
+	system time =       0.04 seconds =       0.00 minutes
+	total time  =          1 seconds =       0.02 minutes
    => Loading Basis Set <=
 
-    Name: AUG-CC-PVQZ
+    Name: 6-31G
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1 entry HE         line    68 file /home/yuming/anaconda3/envs/work/share/psi4/basis/aug-cc-pvqz.gbs 
+    atoms 1 entry HE         line    34 file /home/yuming/anaconda3/envs/work/share/psi4/basis/6-31g.gbs 
 
 
          ---------------------------------------------------------
@@ -320,13 +289,13 @@ Total time:
 
   ==> Primary Basis <==
 
-  Basis Set: AUG-CC-PVQZ
-    Blend: AUG-CC-PVQZ
-    Number of shells: 14
-    Number of basis function: 46
-    Number of Cartesian functions: 55
-    Spherical Harmonics?: true
-    Max angular momentum: 3
+  Basis Set: 6-31G
+    Blend: 6-31G
+    Number of shells: 2
+    Number of basis function: 2
+    Number of Cartesian functions: 2
+    Spherical Harmonics?: false
+    Max angular momentum: 0
 
   ==> DFT Potential <==
 
@@ -362,27 +331,27 @@ Total time:
     Pruning alpha          =              1
     Radial Points          =             77
     Spherical Points       =            302
-    Total Points           =          23254
-    Total Blocks           =            228
-    Max Points             =            255
-    Max Functions          =             46
+    Total Points           =          21744
+    Total Blocks           =            217
+    Max Points             =            243
+    Max Functions          =              2
 
   Using in-core PK algorithm.
    Calculation information:
       Number of atoms:                   1
-      Number of AO shells:              14
-      Number of primitives:             17
-      Number of atomic orbitals:        55
-      Number of basis functions:        46
+      Number of AO shells:               2
+      Number of primitives:              4
+      Number of atomic orbitals:         2
+      Number of basis functions:         2
 
       Integral cutoff                 1.00e-12
       Number of threads:                 2
 
   Performing in-core PK
-  Using 1169642 doubles for integral storage.
-  We computed 6265 shell quartets total.
-  Whereas there are 5565 unique shell quartets.
-    12.58 percent of shell quartets recomputed by reordering.
+  Using 12 doubles for integral storage.
+  We computed 8 shell quartets total.
+  Whereas there are 6 unique shell quartets.
+    33.33 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -398,5 +367,10 @@ Total time:
   Threads set to 2 by Python driver.
   Threads set to 1 by Python driver.
   Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
+   => Loading Basis Set <=
+
+    Name: (6-31G AUX)
+    Role: JKFIT
+    Keyword: DF_BASIS_SCF
+    atoms 1 entry HE         line    39 file /home/yuming/anaconda3/envs/work/share/psi4/basis/def2-qzvpp-jkfit.gbs 
+
