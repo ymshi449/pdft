@@ -44,7 +44,7 @@ psi4.set_options({
     'DFT_RADIAL_POINTS': 77,
     'REFERENCE' : 'RHF'
 })
-E, input_wfn = psi4.energy('ccsd'+"/"+basis, molecule=Full_Molec, return_wfn=True)
+E, input_density_wfn = psi4.energy('ccsd'+"/"+basis, molecule=Full_Molec, return_wfn=True)
 
 psi4.set_options({
     'DFT_SPHERICAL_POINTS': 302,
@@ -60,7 +60,7 @@ if vp_basis is not None:
 else:
     vp_basis = mol
 
-inverser = XC_Inversion.Inverser(mol, input_wfn,
+inverser = XC_Inversion.Inverser(mol, input_density_wfn,
                                  ortho_basis=ortho_basis,
                                  vp_basis=vp_basis)
 
@@ -74,12 +74,12 @@ elif method == "WuYangMN":
 elif method == "COScipy":
     inverser.find_vxc_scipy_constrainedoptimization(opt_method=opt_method)
 
-dDa = input_wfn.Da().np - mol.Da.np
-dDb = input_wfn.Db().np - mol.Db.np
+dDa = input_density_wfn.Da().np - mol.Da.np
+dDb = input_density_wfn.Db().np - mol.Db.np
 dn = mol.to_grid(dDa + dDb)
 
 # f,ax = plt.subplots(1,1,dpi=200)
-# XC_Inversion.pdft.plot1d_x(inverser.input_vxc_a, input_wfn.V_potential(), ax=ax,
+# XC_Inversion.pdft.plot1d_x(inverser.input_vxc_a, input_density_wfn.V_potential(), ax=ax,
 #                            dimmer_length=separation, label="input_xc_a", title=title)
 # XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, mol.Vpot, ax=ax, label="WuYang_xc_a", ls='--')
 # # XC_Inversion.pdft.plot1d_x(np.log10(np.abs(dn)), mol.Vpot, ax=ax, label="logdn", ls='dotted')

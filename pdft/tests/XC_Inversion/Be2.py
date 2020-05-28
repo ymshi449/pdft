@@ -33,7 +33,7 @@ Full_Molec.set_name("Be2")
 psi4.set_options({
     'REFERENCE' : 'UKS'
 })
-E, input_wfn = psi4.energy(functional+"/"+basis, molecule=Full_Molec, return_wfn=True)
+E, input_density_wfn = psi4.energy(functional+"/"+basis, molecule=Full_Molec, return_wfn=True)
 
 mol = XC_Inversion.Molecule(Full_Molec, basis, functional)
 mol.scf(100)
@@ -44,12 +44,12 @@ if vp_basis is not None:
 else:
     vp_tester = mol
 
-inverser = XC_Inversion.Inverser(mol, input_wfn)
+inverser = XC_Inversion.Inverser(mol, input_density_wfn)
 
 inverser.find_vxc_scipy()
 
 f,ax = plt.subplots(1,1,dpi=200)
-XC_Inversion.pdft.plot1d_x(inverser.input_vxc_a, input_wfn.V_potential(), ax=ax,
+XC_Inversion.pdft.plot1d_x(inverser.input_vxc_a, input_density_wfn.V_potential(), ax=ax,
                            dimmer_length=separation, label="input_xc_a", title=title)
 XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, mol.Vpot, ax=ax, label="WuYang_xc_a", ls='--')
 ax.legend()

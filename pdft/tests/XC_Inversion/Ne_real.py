@@ -34,7 +34,7 @@ psi4.set_output_file("Ne.psi4")
 Full_Molec = psi4.geometry("""
 nocom
 noreorient
-Ne 0.0 0.0 0.0
+Ar 0.0 0.0 0.0
 units bohr
 symmetry c1
 """)
@@ -47,7 +47,10 @@ psi4.set_options({
     'DFT_RADIAL_POINTS': 77,
     'REFERENCE' : 'RHF'
 })
-E, input_wfn = psi4.energy("CCSD"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+#  Get wfn for target density
+E_input, input_density_wfn = psi4.energy("CCSD"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+#  Get wfn for v0 using HF
+E_v0, v0_wfn = psi4.energy("scf"+"/"+basis, molecule=Full_Molec, return_wfn=True)
 #Psi4 Options:
 psi4.set_options({
     'REFERENCE' : 'UHF'
@@ -62,10 +65,11 @@ else:
 
 print("Number of Basis: ", mol.nbf, vp_basis.nbf)
 
-inverser = XC_Inversion.Inverser(mol, input_wfn,
+inverser = XC_Inversion.Inverser(mol, input_density_wfn,
                                  ortho_basis=ortho_basis,
                                  vp_basis=vp_basis,
-                                 v0=v0
+                                 v0=v0,
+                                 v0_wfn=v0_wfn
                                  )
 
 # grad, grad_app = inverser.check_gradient_constrainedoptimization()
@@ -79,8 +83,8 @@ elif method == "WuYangMN":
 elif method == "COScipy":
     inverser.find_vxc_scipy_constrainedoptimization(opt_method=opt_method)
 
-# dDa = input_wfn.Da().np - mol.Da.np
-# dDb = input_wfn.Db().np - mol.Db.np
+# dDa = input_density_wfn.Da().np - mol.Da.np
+# dDb = input_density_wfn.Db().np - mol.Db.np
 # dn = mol.to_grid(dDa + dDb)
 
 f,ax = plt.subplots(1,1,dpi=200)
