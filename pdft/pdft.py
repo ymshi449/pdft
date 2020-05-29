@@ -3523,17 +3523,17 @@ class U_Embedding:
         print(np.sum(grad*grad_app)/np.linalg.norm(grad)/np.linalg.norm(grad_app))
         return grad, grad_app
 
-def plot1d_x(data, Vpot=None, xyzw=None, dimmer_length=None, title=None,
+def plot1d_x(data, Vpot=None, xyz=None, dimmer_length=None, title=None,
              ax=None, label=None, color=None, ls=None, lw=None):
     """
     Plot on x direction
     :param data: Any f(r) on grid
     """
-    assert not (Vpot is None and xyzw is None), "One of Vpot and xyzw has to be given."
+    assert not (Vpot is None and xyz is None), "One of Vpot and xyz has to be given."
     if Vpot is not None:
-        x, y, z, w = Vpot.get_np_xyzw()
+        x, y, z = Vpot.get_np_xyz()[:-1]
     else:
-        x, y, z, w = xyzw
+        x, y, z = xyz
     # filter to get points on z axis
     mask = np.isclose(abs(y), 0, atol=1E-11)
     mask2 = np.isclose(abs(z), 0, atol=1E-11)

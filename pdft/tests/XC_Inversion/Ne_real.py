@@ -10,12 +10,14 @@ if __name__ == "__main__":
 functional = 'svwn'
 basis = 'sto-3g'
 basis = 'aug-pcsseg-3'
-basis = 'cc-pvdz'
 basis = 'cc-pvtz'
+basis = 'aug-cc-pvqz'
+basis = 'aug-cc-pvdz'
+basis = 'aug-cc-pvtz'
 basis = 'aug-cc-pvqz'
 basis = 'aug-cc-pv5z'
 
-vp_basis = None
+vxc_basis = "cc-pvdz"
 
 ortho_basis = False
 svd = "search_segment_cycle"
@@ -25,7 +27,7 @@ v0 = "Hartree"
 v0 = "FermiAmaldi"
 
 title = method +"_"+ opt_method +"_"+v0+ "_" + basis+"_"+ \
-        str(vp_basis) + "_"\
+        str(vxc_basis) + "_"\
         + str(ortho_basis) + "_" + str(svd)
 print(title)
 
@@ -34,7 +36,7 @@ psi4.set_output_file("Ne.psi4")
 Full_Molec = psi4.geometry("""
 nocom
 noreorient
-Ar 0.0 0.0 0.0
+Ne 0.0 0.0 0.0
 units bohr
 symmetry c1
 """)
@@ -57,17 +59,17 @@ psi4.set_options({
 })
 mol = XC_Inversion.Molecule(Full_Molec, basis, functional)
 mol.scf_inversion(100)
-if vp_basis is not None:
-    vp_basis = XC_Inversion.Molecule(Full_Molec, vp_basis, functional)
-    vp_basis.scf_inversion(100)
+if vxc_basis is not None:
+    vxc_basis = XC_Inversion.Molecule(Full_Molec, vxc_basis, functional)
+    vxc_basis.scf_inversion(100)
 else:
-    vp_basis = mol
+    vxc_basis = mol
 
-print("Number of Basis: ", mol.nbf, vp_basis.nbf)
+print("Number of Basis: ", mol.nbf, vxc_basis.nbf)
 
 inverser = XC_Inversion.Inverser(mol, input_density_wfn,
                                  ortho_basis=ortho_basis,
-                                 vp_basis=vp_basis,
+                                 vxc_basis=vxc_basis,
                                  v0=v0,
                                  v0_wfn=v0_wfn
                                  )
@@ -79,7 +81,7 @@ if method == "WuYangScipy":
     inverser.find_vxc_scipy_WuYang(opt_method=opt_method)
 elif method == "WuYangMN":
     # rcondlist, dnlist, Llist = inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="LD")
-    inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="L")
+    inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="StrongWolfe")
 elif method == "COScipy":
     inverser.find_vxc_scipy_constrainedoptimization(opt_method=opt_method)
 
@@ -87,11 +89,11 @@ elif method == "COScipy":
 # dDb = input_density_wfn.Db().np - mol.Db.np
 # dn = mol.to_grid(dDa + dDb)
 
-f,ax = plt.subplots(1,1,dpi=200)
-XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vp_basis.Vpot, ax=ax, label="WuYang_xc_a", ls='--')
-# XC_Inversion.pdft.plot1d_x(np.log10(np.abs(dn)), mol.Vpot, ax=ax, label="logdn", ls='dotted')
-ax.legend()
-ax.set_xlim(-14,14)
-ax.set_ylim(-3,0.7)
-f.show()
-plt.close(f)
+# f,ax = plt.subplots(1,1,dpi=200)
+# XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vxc_basis.Vpot, ax=ax, label="WuYang_xc_a", ls='--')
+# # XC_Inversion.pdft.plot1d_x(np.log10(np.abs(dn)), mol.Vpot, ax=ax, label="logdn", ls='dotted')
+# ax.legend()
+# ax.set_xlim(-14,14)
+# ax.set_ylim(-3,0.7)
+# f.show()
+# plt.close(f)

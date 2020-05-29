@@ -1,0 +1,507 @@
+/home/yuming/anaconda3/envs/work/bin/python /home/yuming/pycharm-2019.1.2/helpers/pydev/pydevconsole.py --mode=client --port=42099
+import sys; print('Python %s on %s' % (sys.version, sys.platform))
+sys.path.extend(['/home/yuming/PDFT/pdft/pdft'])
+Python 3.7.5 (default, Oct 25 2019, 15:51:11) 
+Type 'copyright', 'credits' or 'license' for more information
+IPython 7.9.0 -- An enhanced Interactive Python. Type '?' for help.
+PyDev console: using IPython 7.9.0
+Python 3.7.5 (default, Oct 25 2019, 15:51:11) 
+[GCC 7.3.0] on linux
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Ne_real.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+  Threads set to 2 by Python driver.
+WuYangMN_BFGS_FermiAmaldi_aug-cc-pv5z_None_False_search_segment_cycle
+Number of Basis:  127 127
+ESP fitting starts. This might take a while.
+ESP fitting done
+no xc
+Zero the old result for a new calculation..
+Initial dn: 1.0761730210940226 Initial L: -128.4140249275046
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion manual Newton<<<<<<<<<<<<<<<<<<<
+Segment [0, 246, 254]
+1.0 -0.12509511440796928 -0.9123571564605764
+------Iter: 1 BT: StrongWolfe SVD: [0, 246] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.5397515019988468 L: -128.53912004191258 d_rho: 0.16381586463344616 eHOMO: (-0.6315952845664924, -0.6315952845665493)
+1.0 -0.0007597817155442499 0.017866980135908483
+------Iter: 2 BT: StrongWolfe SVD: [246, 254] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.050303097560824996 L: -128.53987982362813 d_rho: 0.18168284476935465 eHOMO: (-0.116076286036525, -0.11607628608293409)
+Segment [0, 246, 254]
+1.0 -0.004241686365304531 -0.14762391103428069
+------Iter: 3 BT: StrongWolfe SVD: [0, 246] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.05498230598704799 L: -128.54412150999343 d_rho: 0.034058933735073946 eHOMO: (-0.23033185136328221, -0.23033185141981452)
+1.0 -8.287958252140015e-05 -0.001295938762337162
+------Iter: 4 BT: StrongWolfe SVD: [246, 254] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.008623956565651998 L: -128.54420438957595 d_rho: 0.032762994972736784 eHOMO: (-0.11005286102456825, -0.11005286106774251)
+Segment [0, 246, 254]
+1.0 -0.0005684479286856003 -0.020197407267980493
+------Iter: 5 BT: StrongWolfe SVD: [0, 246] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.008854435129466749 L: -128.54477283750464 d_rho: 0.012565587704756293 eHOMO: (-0.23401993703588686, -0.23401993708341082)
+1.0 -7.336633615295796e-06 0.0006641476255370166
+------Iter: 6 BT: StrongWolfe SVD: [246, 254] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.0016881391844043956 L: -128.54478017413825 d_rho: 0.01322973533029331 eHOMO: (-0.2783618152501406, -0.2783618152698329)
+Segment [0, 246, 254]
+1.0 -6.792404002453623e-05 -0.002516716463024848
+------Iter: 7 BT: StrongWolfe SVD: [0, 246] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.0017054295545568699 L: -128.54484809817828 d_rho: 0.010713018867268461 eHOMO: (-0.34305629907207685, -0.34305629908784996)
+1.0 -2.248207266575264e-06 2.965836924979752e-05
+------Iter: 8 BT: StrongWolfe SVD: [246, 254] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.00019409974766813838 L: -128.54485034638554 d_rho: 0.010742677236518259 eHOMO: (-0.37419923355611895, -0.3741992335566389)
+Segment [0, 246, 254]
+1.0 -8.917205320813082e-07 1.4706198177583465e-05
+------Iter: 9 BT: StrongWolfe SVD: [0, 246] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.0001997053916922993 L: -128.54485123810608 d_rho: 0.010757383434695842 eHOMO: (-0.3826342279967456, -0.3826342279943402)
+1.0 -6.456588153014309e-09 6.46410611911466e-06
+------Iter: 10 BT: StrongWolfe SVD: [246, 254] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 2.591813279423417e-06 L: -128.54485124456266 d_rho: 0.010763847540814957 eHOMO: (-0.38441867904162824, -0.3844186790401805)
+Break because n is not improved in this segment cycle. 0.0007757161865012191
+Evaluation:  11 21 11
+Ts 128.57738392376626
+dTs -0.03132993842535904
+eigenA input [-32.77255358  -1.93044997  -0.85043009  -0.85043009  -0.85043009]
+eigenA mol [-30.54221615  -1.25393949  -0.38441868  -0.38441868  -0.38441868]
+wfnDiff -0.4722619958664201
+ESP fitting starts. This might take a while.
+ESP fitting done
+xyzw_a5 = mol.Vpot.get_np_xyzw()
+eig_a5 = np.copy(mol.eig_a.np)
+vxc_a5 = np.copy(inverser.vxc_a_grid)
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Ne_real.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+WuYangMN_BFGS_FermiAmaldi_aug-cc-pvqz_None_False_search_segment_cycle
+Number of Basis:  80 80
+ESP fitting starts. This might take a while.
+ESP fitting done
+no xc
+Zero the old result for a new calculation..
+Initial dn: 1.0724046056984111 Initial L: -128.406987103944
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion manual Newton<<<<<<<<<<<<<<<<<<<
+Segment [0, 158, 160]
+1.0 -0.12230174532518845 -0.9078251103207547
+------Iter: 1 BT: StrongWolfe SVD: [0, 158] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.492422627401323 L: -128.5292888492692 d_rho: 0.1645794953776564 eHOMO: (-0.5793902379546586, -0.5793902379546728)
+1.0 -0.00025461680903049455 0.001986453832346885
+------Iter: 2 BT: StrongWolfe SVD: [158, 160] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.043579276408192896 L: -128.52954346607822 d_rho: 0.16656594921000328 eHOMO: (-0.8496771041054656, -0.8496771041044666)
+Segment [0, 158, 160]
+1.0 -0.003911905183770159 -0.14016246073930932
+------Iter: 3 BT: StrongWolfe SVD: [0, 158] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.04394581728039798 L: -128.533455371262 d_rho: 0.026403488470693955 eHOMO: (-0.9978550779671743, -0.9978550779661645)
+1.0 -0.00018857707033248516 -0.00042614888032644835
+------Iter: 4 BT: StrongWolfe SVD: [158, 160] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.005881160828072336 L: -128.53364394833233 d_rho: 0.025977339590367507 eHOMO: (-1.3165295554242902, -1.3165295554286878)
+Segment [0, 158, 160]
+1.0 -0.00030062402416319856 -0.011181771358385847
+------Iter: 5 BT: StrongWolfe SVD: [0, 158] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.006136646243667543 L: -128.5339445723565 d_rho: 0.01479556823198166 eHOMO: (-1.4257901539697457, -1.4257901539746052)
+1.0 -2.277567497799282e-05 -0.0009310374886040678
+------Iter: 6 BT: StrongWolfe SVD: [158, 160] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.0005658238042381824 L: -128.53396734803147 d_rho: 0.013864530743377592 eHOMO: (-1.5642035874883322, -1.5642035874901057)
+Segment [0, 158, 160]
+1.0 -4.908469350084488e-06 -0.0005063453450529151
+------Iter: 7 BT: StrongWolfe SVD: [0, 158] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.0005980515639086247 L: -128.53397225650082 d_rho: 0.013358185398324677 eHOMO: (-1.5811071397055945, -1.5811071397073724)
+1.0 -6.369538141370867e-08 -3.5103234414062684e-05
+------Iter: 8 BT: StrongWolfe SVD: [158, 160] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 9.558601849133775e-06 L: -128.5339723201962 d_rho: 0.013323082163910614 eHOMO: (-1.588898906279532, -1.5888989062789785)
+Segment [0, 158, 160]
+1.0 -1.1606005045905476e-09 -3.6241497454528315e-06
+------Iter: 9 BT: StrongWolfe SVD: [0, 158] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 9.646104894902506e-06 L: -128.5339723213568 d_rho: 0.013319458014165161 eHOMO: (-1.5891628492139018, -1.5891628492141183)
+1.0 -1.9895196601282805e-13 -5.9435039934802036e-08
+------Iter: 10 BT: StrongWolfe SVD: [158, 160] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 2.3759006174065273e-09 L: -128.533972321357 d_rho: 0.013319398579125227 eHOMO: (-1.5891760304199771, -1.5891760304253917)
+Break because n is not improved in this segment cycle. 3.865103533815791e-05
+Evaluation:  11 21 11
+Ts 128.57944449172106
+dTs -0.04374040463700389
+eigenA input [-32.77421191  -1.93120725  -0.85065367  -0.85065367  -0.85065367]
+eigenA mol [-31.62196619  -2.45303573  -1.58917603  -1.58917603  -1.58917603]
+wfnDiff -0.5079760297022783
+ESP fitting starts. This might take a while.
+ESP fitting done
+xyzw_aq = mol.Vpot.get_np_xyzw()
+eig_aq = np.copy(mol.eig_a.np)
+vxc_aq = np.copy(inverser.vxc_a_grid)
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Ne_real.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+WuYangMN_BFGS_FermiAmaldi_aug-cc-pvtz_None_False_search_segment_cycle
+Number of Basis:  46 46
+ESP fitting starts. This might take a while.
+ESP fitting done
+no xc
+Zero the old result for a new calculation..
+Initial dn: 1.0638059051298407 Initial L: -128.36438860052868
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion manual Newton<<<<<<<<<<<<<<<<<<<
+Segment [0, 90, 92]
+1.0 -0.1159877007450234 -0.907795548838481
+------Iter: 1 BT: StrongWolfe SVD: [0, 90] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.3602323114519373 L: -128.4803763012737 d_rho: 0.1560103562913598 eHOMO: (-0.5824743808104367, -0.5824743808104293)
+1.0 -1.262449973182811e-05 -0.0005739419932078715
+------Iter: 2 BT: StrongWolfe SVD: [90, 92] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.038660705678992505 L: -128.48038892577344 d_rho: 0.15543641429815191 eHOMO: (-0.5309715651158051, -0.5309715651173815)
+Segment [0, 90, 92]
+1.0 -0.0036016380870478315 -0.13311098413229758
+------Iter: 3 BT: StrongWolfe SVD: [0, 90] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.03867547513626714 L: -128.4839905638605 d_rho: 0.022325430165854344 eHOMO: (-0.6613526582541182, -0.6613526582558974)
+1.0 -0.00015167220323064612 0.0019546300661867078
+------Iter: 4 BT: StrongWolfe SVD: [90, 92] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.005131335951987815 L: -128.48414223606372 d_rho: 0.024280060232041052 eHOMO: (-0.8830030461249351, -0.88300304612199)
+Segment [0, 90, 92]
+1.0 -0.00027163526408457983 -0.01976402347230184
+------Iter: 5 BT: StrongWolfe SVD: [0, 90] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.005295005666738726 L: -128.4844138713278 d_rho: 0.004516036759739214 eHOMO: (-0.9486902628638995, -0.9486902628607062)
+1.0 -1.1063058934723813e-05 -0.0005871605420844231
+------Iter: 6 BT: StrongWolfe SVD: [90, 92] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.000443306131181115 L: -128.48442493438674 d_rho: 0.003928876217654791 eHOMO: (-1.0182308244789928, -1.0182308244786542)
+Segment [0, 90, 92]
+1.0 -2.413564686776226e-06 -0.0001386493211331056
+------Iter: 7 BT: StrongWolfe SVD: [0, 90] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.00045568171089220214 L: -128.48442734795142 d_rho: 0.0037902268965216857 eHOMO: (-1.025262785520472, -1.0252627855201408)
+1.0 -7.624208819834166e-09 -1.3283378337550743e-05
+------Iter: 8 BT: StrongWolfe SVD: [90, 92] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 4.105269571022591e-06 L: -128.48442735557563 d_rho: 0.003776943518184135 eHOMO: (-1.027141597192389, -1.0271415971946232)
+Segment [0, 90, 92]
+1.0 -1.844284724938916e-10 2.502765411627455e-06
+------Iter: 9 BT: StrongWolfe SVD: [0, 90] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 4.108085298573229e-06 L: -128.48442735576006 d_rho: 0.0037794462835957624 eHOMO: (-1.0272035916844848, -1.0272035916867348)
+1.0 -1.4210854715202004e-13 -5.180824120838007e-09
+------Iter: 10 BT: StrongWolfe SVD: [90, 92] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 3.2809690247898014e-10 L: -128.4844273557602 d_rho: 0.0037794411027716416 eHOMO: (-1.0272043254606158, -1.0272043254594665)
+Break because n is not improved in this segment cycle. 1.9636951343800923e-05
+Evaluation:  11 21 11
+Ts 128.49944979211932
+dTs -0.014686526651205952
+eigenA input [-32.77902366  -1.93341306  -0.85121267  -0.85121267  -0.85121267]
+eigenA mol [-30.97231855  -1.90013368  -1.02720433  -1.02720433  -1.02720433]
+wfnDiff -0.09209549363001882
+ESP fitting starts. This might take a while.
+ESP fitting done
+xyzw_at = mol.Vpot.get_np_xyzw()
+eig_at = np.copy(mol.eig_a.np)
+vxc_at = np.copy(inverser.vxc_a_grid)
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Ne_real.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+WuYangMN_BFGS_FermiAmaldi_aug-cc-pvdz_None_False_search_segment_cycle
+Number of Basis:  23 23
+ESP fitting starts. This might take a while.
+ESP fitting done
+no xc
+Zero the old result for a new calculation..
+Initial dn: 1.001034697875966 Initial L: -128.3356424208172
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion manual Newton<<<<<<<<<<<<<<<<<<<
+Segment [0, 44, 46]
+1.0 -0.0704391825612447 -0.8586648560791263
+------Iter: 1 BT: StrongWolfe SVD: [0, 44] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.22316325280369365 L: -128.40608160337845 d_rho: 0.1423698417968398 eHOMO: (-0.7011032159941614, -0.701103215994157)
+1.0 -0.00015102772420050314 0.0004036778152252951
+------Iter: 2 BT: StrongWolfe SVD: [44, 46] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.022810658014419113 L: -128.40623263110265 d_rho: 0.1427735196120651 eHOMO: (-0.4423907484551926, -0.4423907484572302)
+Segment [0, 38, 44, 46]
+1.0 -0.004599917139216814 -0.10923360936270579
+------Iter: 3 BT: StrongWolfe SVD: [0, 38] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.02301153472682072 L: -128.41083254824187 d_rho: 0.03353991024935932 eHOMO: (-0.5759579262073268, -0.5759579262094985)
+0.020833333333333336 -2.842170943040401e-14 2.0469737016526324e-15
+------Iter: 4 BT: StrongWolfe SVD: [38, 44] Reg: None Ortho: False SVDmoveon: False ------
+beta: 0.020833333333333336 |jac|: 0.0051451773872451 L: -128.4108325482419 d_rho: 0.033539910249361364 eHOMO: (-0.5759579262073267, -0.5759579262094978)
+1.0 -0.0005852604375036208 0.0036471014949392075
+------Iter: 5 BT: StrongWolfe SVD: [44, 46] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.005145177387246546 L: -128.4114178086794 d_rho: 0.03718701174430057 eHOMO: (-1.1804314073065896, -1.1804314073089617)
+Segment [0, 44, 46]
+1.0 -0.00039747171820181393 -0.02449196853228482
+------Iter: 6 BT: StrongWolfe SVD: [0, 44] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.005692315577553372 L: -128.4118152803976 d_rho: 0.012695043212015752 eHOMO: (-1.2382710793220288, -1.2382710793244636)
+1.0 -6.175588947598953e-05 -0.0014499505815979141
+------Iter: 7 BT: StrongWolfe SVD: [44, 46] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.00042528166431921087 L: -128.41187703628708 d_rho: 0.011245092630417838 eHOMO: (-1.4824635291237636, -1.4824635291207706)
+Segment [0, 44, 46]
+1.0 -2.866523061584303e-06 -0.0007606050616453218
+------Iter: 8 BT: StrongWolfe SVD: [0, 44] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.00048647133902932966 L: -128.41187990281014 d_rho: 0.010484487568772516 eHOMO: (-1.488021250918074, -1.4880212509150659)
+1.0 -1.7625060877435317e-07 -9.152951546981605e-05
+------Iter: 9 BT: StrongWolfe SVD: [44, 46] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 3.215651774343538e-06 L: -128.41188007906075 d_rho: 0.0103929580533027 eHOMO: (-1.501949201768184, -1.5019492017624951)
+Segment [0, 44, 46]
+1.0 -1.1883116712851916e-10 1.096466316866107e-06
+------Iter: 10 BT: StrongWolfe SVD: [0, 44] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 3.279843091906196e-06 L: -128.41188007917958 d_rho: 0.010394054519619566 eHOMO: (-1.5019852097396322, -1.501985209733861)
+1.0 -8.810729923425242e-13 -2.1432020224677883e-07
+------Iter: 11 BT: StrongWolfe SVD: [44, 46] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 2.0561857403266774e-09 L: -128.41188007918046 d_rho: 0.01039384019941732 eHOMO: (-1.502017909992359, -1.5020179099912518)
+Break because n is not improved in this segment cycle. 1.8701457840760695e-05
+Evaluation:  18 23 12
+Ts 128.3918750671872
+dTs 0.021336845966243537
+eigenA input [-32.79495088  -1.94042088  -0.85304014  -0.85304014  -0.85304014]
+eigenA mol [-32.41859987  -2.32775763  -1.50201791  -1.50201791  -1.50201791]
+wfnDiff 0.07553318395048073
+ESP fitting starts. This might take a while.
+ESP fitting done
+xyzw_ad = mol.Vpot.get_np_xyzw()
+eig_ad = np.copy(mol.eig_a.np)
+vxc_ad = np.copy(inverser.vxc_a_grid)
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Ne_real.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+WuYangMN_BFGS_FermiAmaldi_cc-pvdz_None_False_search_segment_cycle
+Number of Basis:  14 14
+ESP fitting starts. This might take a while.
+ESP fitting done
+no xc
+Zero the old result for a new calculation..
+Initial dn: 0.6670039984382683 Initial L: -128.43956039451012
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion manual Newton<<<<<<<<<<<<<<<<<<<
+Segment [0, 26, 28]
+1.0 -0.04841875353494629 -0.648887117442669
+------Iter: 1 BT: StrongWolfe SVD: [0, 26] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.16014708054769972 L: -128.48797914804507 d_rho: 0.018116880995599303 eHOMO: (-0.6068176495435, -0.6068176495435)
+1.0 -0.0006864265490094112 -0.007353382649609103
+------Iter: 2 BT: StrongWolfe SVD: [26, 28] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.005362278135530788 L: -128.48866557459408 d_rho: 0.0107634983459902 eHOMO: (-0.157602379370569, -0.1576023793715779)
+Segment [0, 26, 28]
+1.0 -0.00019392916550486916 -0.009965608057009672
+------Iter: 3 BT: StrongWolfe SVD: [0, 26] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.005490639719538737 L: -128.48885950375958 d_rho: 0.0007978902889805281 eHOMO: (-0.15184745481625428, -0.15184745481726122)
+Break because rho difference (cost) is small.
+Evaluation:  4 6 3
+Ts 128.48820457201802
+dTs 0.0006579100530421791
+eigenA input [-32.76563542  -1.91879823  -0.83209725  -0.83209725  -0.83209725]
+eigenA mol [-31.02013807  -0.94695684  -0.15184745  -0.15184745  -0.15184745]
+wfnDiff 0.3875901933426721
+ESP fitting starts. This might take a while.
+ESP fitting done
+xyzw_d = mol.Vpot.get_np_xyzw()
+eig_d = np.copy(mol.eig_a.np)
+vxc_d = np.copy(inverser.vxc_a_grid)
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Ne_real.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+WuYangMN_BFGS_FermiAmaldi_cc-pvtz_None_False_search_segment_cycle
+Number of Basis:  30 30
+ESP fitting starts. This might take a while.
+ESP fitting done
+no xc
+Zero the old result for a new calculation..
+Initial dn: 0.8903314948087465 Initial L: -128.425550562197
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion manual Newton<<<<<<<<<<<<<<<<<<<
+Segment [0, 58, 60]
+1.0 -0.10379709111342095 -0.7702127369910763
+------Iter: 1 BT: StrongWolfe SVD: [0, 58] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.31935851509571017 L: -128.52934765331042 d_rho: 0.1201187578176702 eHOMO: (-0.802129143261066, -0.8021291432610663)
+1.0 -0.0003790693484688745 0.0009431555194681085
+------Iter: 2 BT: StrongWolfe SVD: [58, 60] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.030112392266684794 L: -128.5297267226589 d_rho: 0.12106191333713831 eHOMO: (-0.6336809665667471, -0.6336809665672708)
+Segment [0, 58, 60]
+1.0 -0.0017509950769465377 -0.11588738290503045
+------Iter: 3 BT: StrongWolfe SVD: [0, 58] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.030247290507518745 L: -128.53147771773584 d_rho: 0.005174530432107861 eHOMO: (-0.6912178208713895, -0.6912178208719134)
+1.0 -1.6835471683407377e-07 3.625042673152234e-05
+------Iter: 4 BT: StrongWolfe SVD: [58, 60] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.0010231656099275357 L: -128.53147788609056 d_rho: 0.005210780858839383 eHOMO: (-0.6948677775969055, -0.6948677775970259)
+Segment [0, 58, 60]
+1.0 -1.6740963530992303e-06 -0.0025697563068487047
+------Iter: 5 BT: StrongWolfe SVD: [0, 58] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.0010232201104078795 L: -128.5314795601869 d_rho: 0.0026410245519906785 eHOMO: (-0.6966645175708626, -0.6966645175709951)
+1.0 -4.973799150320701e-12 5.331743871852916e-07
+------Iter: 6 BT: StrongWolfe SVD: [58, 60] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 1.093490569893007e-06 L: -128.53147956019188 d_rho: 0.0026415577263778638 eHOMO: (-0.6966842907042761, -0.6966842907042009)
+Segment [0, 58, 60]
+1.0 -2.1600499167107046e-12 -1.1815318017704274e-06
+------Iter: 7 BT: StrongWolfe SVD: [0, 58] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 1.093234527166494e-06 L: -128.53147956019404 d_rho: 0.0026403761945760934 eHOMO: (-0.6966863073452092, -0.6966863073451179)
+0.03125 -5.684341886080802e-14 5.299840427630542e-14
+------Iter: 8 BT: StrongWolfe SVD: [58, 60] Reg: None Ortho: False SVDmoveon: False ------
+beta: 0.03125 |jac|: 1.3678276285135996e-12 L: -128.5314795601941 d_rho: 0.0026403761946290918 eHOMO: (-0.6966863073471496, -0.696686307347079)
+Break because n is not improved in this segment cycle. 4.5145740304480076e-06
+Evaluation:  14 17 9
+Ts 128.54293115384098
+dTs -0.011232841526310256
+eigenA input [-32.76911071  -1.9270833   -0.84541551  -0.84541551  -0.84541551]
+eigenA mol [-30.66490589  -1.5699322   -0.69668631  -0.69668631  -0.69668631]
+wfnDiff -0.29091301144842063
+ESP fitting starts. This might take a while.
+ESP fitting done
+xyzw_t = mol.Vpot.get_np_xyzw()
+eig_t = np.copy(mol.eig_a.np)
+vxc_t = np.copy(inverser.vxc_a_grid)
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Ne_real.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+WuYangMN_BFGS_FermiAmaldi_cc-pvqz_None_False_search_segment_cycle
+Number of Basis:  55 55
+ESP fitting starts. This might take a while.
+ESP fitting done
+no xc
+Zero the old result for a new calculation..
+Initial dn: 0.9840016440810854 Initial L: -128.4209730396456
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion manual Newton<<<<<<<<<<<<<<<<<<<
+Segment [0, 108, 110]
+1.0 -0.11732499958517906 -0.8439889797013332
+------Iter: 1 BT: StrongWolfe SVD: [0, 108] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.46852152582549006 L: -128.53829803923077 d_rho: 0.14001266437975213 eHOMO: (-0.6825892450727656, -0.6825892450727562)
+1.0 -0.0006979480505151514 -6.08585249106397e-05
+------Iter: 2 BT: StrongWolfe SVD: [108, 110] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.0353596082785697 L: -128.53899598728128 d_rho: 0.1399518058548415 eHOMO: (-0.42224245300376045, -0.42224245300551694)
+Segment [0, 108, 110]
+1.0 -0.0025343489581928225 -0.12431933339961705
+------Iter: 3 BT: StrongWolfe SVD: [0, 108] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.03587521146921669 L: -128.54153033623948 d_rho: 0.01563247245522444 eHOMO: (-0.5165262477428528, -0.5165262477446878)
+1.0 -2.5082133561227238e-06 2.3413035939653937e-05
+------Iter: 4 BT: StrongWolfe SVD: [108, 110] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.0027416002560771407 L: -128.54153284445283 d_rho: 0.015655885491164093 eHOMO: (-0.5328437233089157, -0.5328437233092905)
+Segment [0, 108, 110]
+1.0 -1.4203343539520574e-05 -0.0013844882350292128
+------Iter: 5 BT: StrongWolfe SVD: [0, 108] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.002743370916673109 L: -128.54154704779637 d_rho: 0.01427139725613488 eHOMO: (-0.5403524736982765, -0.5403524736986043)
+1.0 -8.340350632352056e-10 -1.1135830047300649e-06
+------Iter: 6 BT: StrongWolfe SVD: [108, 110] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 1.6574229238965905e-05 L: -128.5415470486304 d_rho: 0.01427028367313015 eHOMO: (-0.5406518351363402, -0.5406518351364824)
+Segment [0, 108, 110]
+1.0 -5.143192538525909e-10 1.114085822457797e-05
+------Iter: 7 BT: StrongWolfe SVD: [0, 108] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 1.6574085886393643e-05 L: -128.54154704914473 d_rho: 0.014281424531354728 eHOMO: (-0.540697173596364, -0.5406971735965136)
+0.0625 -2.842170943040401e-14 -4.654268290216201e-12
+------Iter: 8 BT: StrongWolfe SVD: [108, 110] Reg: None Ortho: False SVDmoveon: False ------
+beta: 0.0625 |jac|: 6.045244477257098e-10 L: -128.54154704914475 d_rho: 0.01428142452670046 eHOMO: (-0.540697174849246, -0.5406971748493525)
+Break because n is not improved in this segment cycle. 6.406695727579076e-05
+Evaluation:  13 17 9
+Ts 128.5907177231374
+dTs -0.04729771454715945
+eigenA input [-32.77149624  -1.92933764  -0.84895896  -0.84895896  -0.84895896]
+eigenA mol [-30.52026536  -1.40340955  -0.54069717  -0.54069717  -0.54069717]
+wfnDiff -0.6256515849170498
+ESP fitting starts. This might take a while.
+ESP fitting done
+xyzw_q = mol.Vpot.get_np_xyzw()
+eig_q = np.copy(mol.eig_a.np)
+vxc_q = np.copy(inverser.vxc_a_grid)
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Ne_real.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+WuYangMN_BFGS_FermiAmaldi_cc-pv6z_None_False_search_segment_cycle
+QcdbException BasisSetNotFound: BasisSet::construct: Unable to find a basis set for atom 1 for key JKFIT among:
+  Shell Entries: ['NE']
+  Basis Sets: []
+  File Path: , /home/yuming/anaconda3/envs/work/share/psi4/basis
+  Input Blocks: 
+Traceback (most recent call last):
+  File "/home/yuming/anaconda3/envs/work/lib/python3.7/site-packages/IPython/core/interactiveshell.py", line 3326, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+  File "<ipython-input-16-5508493f4336>", line 1, in <module>
+    runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Ne_real.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+  File "/home/yuming/pycharm-2019.1.2/helpers/pydev/_pydev_bundle/pydev_umd.py", line 197, in runfile
+    pydev_imports.execfile(filename, global_vars, local_vars)  # execute the script
+  File "/home/yuming/pycharm-2019.1.2/helpers/pydev/_pydev_imps/_pydev_execfile.py", line 18, in execfile
+    exec(compile(contents+"\n", file, 'exec'), glob, loc)
+  File "/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Ne_real.py", line 55, in <module>
+    E_v0, v0_wfn = psi4.energy("scf"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+  File "/home/yuming/anaconda3/envs/work/lib/python3.7/site-packages/psi4/driver/driver.py", line 508, in energy
+    return driver_cbs._cbs_gufunc(energy, name, ptype='energy', **kwargs)
+  File "/home/yuming/anaconda3/envs/work/lib/python3.7/site-packages/psi4/driver/driver_cbs.py", line 1949, in _cbs_gufunc
+    ptype_value, wfn = func(method_name, return_wfn=True, molecule=molecule, **kwargs)
+  File "/home/yuming/anaconda3/envs/work/lib/python3.7/site-packages/psi4/driver/driver.py", line 556, in energy
+    wfn = procedures['energy'][lowername](lowername, molecule=molecule, **kwargs)
+  File "/home/yuming/anaconda3/envs/work/lib/python3.7/site-packages/psi4/driver/procrouting/proc.py", line 2002, in run_scf
+    scf_wfn = scf_helper(name, post_scf=False, **kwargs)
+  File "/home/yuming/anaconda3/envs/work/lib/python3.7/site-packages/psi4/driver/procrouting/proc.py", line 1281, in scf_helper
+    scf_wfn = scf_wavefunction_factory(name, base_wfn, core.get_option('SCF', 'REFERENCE'), **kwargs)
+  File "/home/yuming/anaconda3/envs/work/lib/python3.7/site-packages/psi4/driver/procrouting/proc.py", line 1046, in scf_wavefunction_factory
+    puream=wfn.basisset().has_puream())
+  File "/home/yuming/anaconda3/envs/work/lib/python3.7/site-packages/psi4/driver/p4util/python_helpers.py", line 80, in _pybuild_basis
+    mol.to_dict(), key, resolved_target, fitrole, other, return_dict=True, return_atomlist=return_atomlist)
+  File "/home/yuming/anaconda3/envs/work/lib/python3.7/site-packages/psi4/driver/qcdb/libmintsbasisset.py", line 679, in pyconstruct
+    verbose=verbose)
+  File "/home/yuming/anaconda3/envs/work/lib/python3.7/site-packages/psi4/driver/qcdb/libmintsbasisset.py", line 897, in construct
+    (at + 1, key, text2))
+psi4.driver.qcdb.exceptions.BasisSetNotFound: BasisSet::construct: Unable to find a basis set for atom 1 for key JKFIT among:
+  Shell Entries: ['NE']
+  Basis Sets: []
+  File Path: , /home/yuming/anaconda3/envs/work/share/psi4/basis
+  Input Blocks: 
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Ne_real.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+WuYangMN_BFGS_FermiAmaldi_cc-pv5z_None_False_search_segment_cycle
+QcdbException BasisSetNotFound: BasisSet::construct: Unable to find a basis set for atom 1 for key JKFIT among:
+  Shell Entries: ['NE']
+  Basis Sets: []
+  File Path: , /home/yuming/anaconda3/envs/work/share/psi4/basis
+  Input Blocks: 
+Traceback (most recent call last):
+  File "/home/yuming/anaconda3/envs/work/lib/python3.7/site-packages/IPython/core/interactiveshell.py", line 3326, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+  File "<ipython-input-17-5508493f4336>", line 1, in <module>
+    runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Ne_real.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+  File "/home/yuming/pycharm-2019.1.2/helpers/pydev/_pydev_bundle/pydev_umd.py", line 197, in runfile
+    pydev_imports.execfile(filename, global_vars, local_vars)  # execute the script
+  File "/home/yuming/pycharm-2019.1.2/helpers/pydev/_pydev_imps/_pydev_execfile.py", line 18, in execfile
+    exec(compile(contents+"\n", file, 'exec'), glob, loc)
+  File "/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Ne_real.py", line 60, in <module>
+    mol = XC_Inversion.Molecule(Full_Molec, basis, functional)
+  File "/home/yuming/PDFT/pdft/pdft/XC_Inversion.py", line 18, in __init__
+    super().__init__(geometry, basis, method)
+  File "/home/yuming/PDFT/pdft/pdft/pdft.py", line 464, in __init__
+    self.wfn = psi4.driver.proc.scf_wavefunction_factory(self.method, self.wfn, "UKS")
+  File "/home/yuming/anaconda3/envs/work/lib/python3.7/site-packages/psi4/driver/procrouting/proc.py", line 1046, in scf_wavefunction_factory
+    puream=wfn.basisset().has_puream())
+  File "/home/yuming/anaconda3/envs/work/lib/python3.7/site-packages/psi4/driver/p4util/python_helpers.py", line 80, in _pybuild_basis
+    mol.to_dict(), key, resolved_target, fitrole, other, return_dict=True, return_atomlist=return_atomlist)
+  File "/home/yuming/anaconda3/envs/work/lib/python3.7/site-packages/psi4/driver/qcdb/libmintsbasisset.py", line 679, in pyconstruct
+    verbose=verbose)
+  File "/home/yuming/anaconda3/envs/work/lib/python3.7/site-packages/psi4/driver/qcdb/libmintsbasisset.py", line 897, in construct
+    (at + 1, key, text2))
+psi4.driver.qcdb.exceptions.BasisSetNotFound: BasisSet::construct: Unable to find a basis set for atom 1 for key JKFIT among:
+  Shell Entries: ['NE']
+  Basis Sets: []
+  File Path: , /home/yuming/anaconda3/envs/work/share/psi4/basis
+  Input Blocks: 
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Ne_real.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+WuYangMN_BFGS_FermiAmaldi_cc-pv5z_None_False_search_segment_cycle
+QcdbException BasisSetNotFound: BasisSet::construct: Unable to find a basis set for atom 1 for key JKFIT among:
+  Shell Entries: ['NE']
+  Basis Sets: []
+  File Path: , /home/yuming/anaconda3/envs/work/share/psi4/basis
+  Input Blocks: 
+Traceback (most recent call last):
+  File "/home/yuming/anaconda3/envs/work/lib/python3.7/site-packages/IPython/core/interactiveshell.py", line 3326, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+  File "<ipython-input-18-5508493f4336>", line 1, in <module>
+    runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Ne_real.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+  File "/home/yuming/pycharm-2019.1.2/helpers/pydev/_pydev_bundle/pydev_umd.py", line 197, in runfile
+    pydev_imports.execfile(filename, global_vars, local_vars)  # execute the script
+  File "/home/yuming/pycharm-2019.1.2/helpers/pydev/_pydev_imps/_pydev_execfile.py", line 18, in execfile
+    exec(compile(contents+"\n", file, 'exec'), glob, loc)
+  File "/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Ne_real.py", line 60, in <module>
+    mol = XC_Inversion.Molecule(Full_Molec, basis, functional)
+  File "/home/yuming/PDFT/pdft/pdft/XC_Inversion.py", line 18, in __init__
+    super().__init__(geometry, basis, method)
+  File "/home/yuming/PDFT/pdft/pdft/pdft.py", line 464, in __init__
+    self.wfn = psi4.driver.proc.scf_wavefunction_factory(self.method, self.wfn, "UKS")
+  File "/home/yuming/anaconda3/envs/work/lib/python3.7/site-packages/psi4/driver/procrouting/proc.py", line 1046, in scf_wavefunction_factory
+    puream=wfn.basisset().has_puream())
+  File "/home/yuming/anaconda3/envs/work/lib/python3.7/site-packages/psi4/driver/p4util/python_helpers.py", line 80, in _pybuild_basis
+    mol.to_dict(), key, resolved_target, fitrole, other, return_dict=True, return_atomlist=return_atomlist)
+  File "/home/yuming/anaconda3/envs/work/lib/python3.7/site-packages/psi4/driver/qcdb/libmintsbasisset.py", line 679, in pyconstruct
+    verbose=verbose)
+  File "/home/yuming/anaconda3/envs/work/lib/python3.7/site-packages/psi4/driver/qcdb/libmintsbasisset.py", line 897, in construct
+    (at + 1, key, text2))
+psi4.driver.qcdb.exceptions.BasisSetNotFound: BasisSet::construct: Unable to find a basis set for atom 1 for key JKFIT among:
+  Shell Entries: ['NE']
+  Basis Sets: []
+  File Path: , /home/yuming/anaconda3/envs/work/share/psi4/basis
+  Input Blocks: 
+f,ax = plt.subplots(1,1,dpi=200)
+XC_Inversion.pdft.plot1d_x(vxc_a5, xyzw=xyzw_a5, ax=ax, label="a5", ls='--')
+XC_Inversion.pdft.plot1d_x(vxc_aq, xyzw=xyzw_aq, ax=ax, label="aq", ls='--')
+XC_Inversion.pdft.plot1d_x(vxc_at, xyzw=xyzw_at, ax=ax, label="at", ls='--')
+XC_Inversion.pdft.plot1d_x(vxc_ad, xyzw=xyzw_ad, ax=ax, label="ad", ls='--')
+XC_Inversion.pdft.plot1d_x(vxc_d, xyzw=xyzw_d, ax=ax, label="d", ls='--')
+XC_Inversion.pdft.plot1d_x(vxc_t, xyzw=xyzw_t, ax=ax, label="t", ls='--')
+XC_Inversion.pdft.plot1d_x(vxc_q, xyzw=xyzw_q, ax=ax, label="q", ls='--')
+# XC_Inversion.pdft.plot1d_x(vxc_5, xyzw=xyzw_5, ax=ax, label="5", ls='--')
+ax.legend()
+ax.set_xlim(1e-3,10)
+ax.set_xscale("log")
+f.show()
+plt.close(f)
+f,ax = plt.subplots(1,1,dpi=200)
+XC_Inversion.pdft.plot1d_x(vxc_a5, xyzw=xyzw_a5, ax=ax, label="A5", ls='--')
+XC_Inversion.pdft.plot1d_x(vxc_aq, xyzw=xyzw_aq, ax=ax, label="AQ", ls='--')
+XC_Inversion.pdft.plot1d_x(vxc_at, xyzw=xyzw_at, ax=ax, label="AT", ls='--')
+XC_Inversion.pdft.plot1d_x(vxc_ad, xyzw=xyzw_ad, ax=ax, label="AD", ls='--')
+XC_Inversion.pdft.plot1d_x(vxc_d, xyzw=xyzw_d, ax=ax, label="D", ls='--')
+XC_Inversion.pdft.plot1d_x(vxc_t, xyzw=xyzw_t, ax=ax, label="T", ls='--')
+XC_Inversion.pdft.plot1d_x(vxc_q, xyzw=xyzw_q, ax=ax, label="Q", ls='--')
+# XC_Inversion.pdft.plot1d_x(vxc_5, xyzw=xyzw_5, ax=ax, label="5", ls='--')
+ax.legend()
+ax.set_xlim(1e-3,10)
+ax.set_xscale("log")
+f.savefig("NeBasis_Segment")
+Process finished with exit code 0
+
