@@ -3531,7 +3531,7 @@ def plot1d_x(data, Vpot=None, xyz=None, dimmer_length=None, title=None,
     """
     assert not (Vpot is None and xyz is None), "One of Vpot and xyz has to be given."
     if Vpot is not None:
-        x, y, z = Vpot.get_np_xyz()[:-1]
+        x, y, z = Vpot.get_np_xyzw()[:-1]
     else:
         x, y, z = xyz
     # filter to get points on z axis

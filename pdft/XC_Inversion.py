@@ -276,16 +276,16 @@ class Inverser(pdft.U_Embedding):
         # self.v0_Fock = self.molecule.grid_to_fock((nocc-1)/nocc*self.vH4v0)
         return
 
-    def change_vxc_basis(self, vxc):
-        self.vp_basis = vxc
-
-        self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
-                                                                         self.molecule.wfn.basisset(),
-                                                                         self.vp_basis.wfn.basisset()))
-        if self.ortho_basis:
-            self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.vp_basis.A.np)
-
-        print("vxc basis set is changed to be: ", vxc.wfn.basisset().name())
+    # def change_vxc_basis(self, vxc):
+    #     self.vp_basis = vxc
+    #
+    #     self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
+    #                                                                      self.molecule.wfn.basisset(),
+    #                                                                      self.vp_basis.wfn.basisset()))
+    #     if self.ortho_basis:
+    #         self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.vp_basis.A.np)
+    #
+    #     print("vxc basis set is changed to be: ", vxc.wfn.basisset().name())
 
     def change_v0(self, v0: str):
         self.v0 = v0
@@ -598,8 +598,8 @@ class Inverser(pdft.U_Embedding):
                 "disp": True,
                 "maxiter": maxiter,
                 # "eps": 1e-7
-                "norm": 2,
-                "gtol": 1e-7
+                # "norm": 2,
+                # "gtol": 1e-7
             }
 
         vp_array = optimizer.minimize(self.Lagrangian_WuYang, self.v_output,

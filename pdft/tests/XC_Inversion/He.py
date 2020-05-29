@@ -11,14 +11,16 @@ functional = 'svwn'
 basis = 'cc-pvtz'
 basis = 'aug-pcsseg-3'
 basis = 'cc-pvdz'
-basis = 'aug-cc-pvqz'
 basis = 'sto-3g'
 basis = '6-31G'
+basis = 'aug-cc-pvqz'
+
+v0 = "FermiAmaldi"
 
 vp_basis = None
 
 ortho_basis = False
-svd = "search_cycle_segment"
+svd = "input_once"
 opt_method="BFGS"
 method = "WuYangMN"
 title = method +"/"+ opt_method + " " + basis+"/"+ \
@@ -59,8 +61,8 @@ print("Number of Basis: ", mol.nbf, vp_basis.nbf)
 
 inverser = XC_Inversion.Inverser(mol, input_density_wfn,
                                  ortho_basis=ortho_basis,
-                                 vp_basis=vp_basis,
-                                 v0="Hartree"
+                                 vxc_basis=vp_basis,
+                                 v0=v0
                                  )
 
 # grad, grad_app = inverser.check_gradient_constrainedoptimization()

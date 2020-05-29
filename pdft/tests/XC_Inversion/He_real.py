@@ -5,17 +5,17 @@ import libcubeprop
 import numpy as np
 
 if __name__ == "__main__":
-    psi4.set_num_threads(3)
+    psi4.set_num_threads(2)
 
 functional = 'svwn'
 basis = 'sto-3g'
+basis = 'aug-pcsseg-3'
 basis = 'cc-pvtz'
 basis = 'aug-cc-pvqz'
 basis = 'aug-cc-pvdz'
 basis = 'aug-cc-pvtz'
+basis = 'aug-cc-pv6z'
 basis = 'aug-cc-pvqz'
-basis = 'pcsseg-3'
-basis = 'aug-cc-pv5z'
 
 vxc_basis = None
 
@@ -31,31 +31,26 @@ title = method +"_"+ opt_method +"_"+v0+ "_" + basis+"_"+ \
         + str(ortho_basis) + "_" + str(svd)
 print(title)
 
-psi4.set_output_file("Ne.psi4")
+psi4.set_output_file("He.psi4")
 
 Full_Molec = psi4.geometry("""
 nocom
 noreorient
-Ar
+He 0.0 0.0 0.0
 units bohr
 symmetry c1
 """)
 
-Full_Molec.set_name("Ne")
+Full_Molec.set_name("He")
 
 #Psi4 Options:
 psi4.set_options({
     'DFT_SPHERICAL_POINTS': 302,
     'DFT_RADIAL_POINTS': 77,
-    'R_CONVERGENCE': 1e-11,
-    'E_Convergence': 1e-11,
-    'MAXITER': 1000,
-    'BASIS': basis,
-    'REFERENCE': 'RHF'
-
+    'REFERENCE' : 'RHF'
 })
 #  Get wfn for target density
-E_input, input_density_wfn = psi4.energy("CCSD(T)"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+E_input, input_density_wfn = psi4.energy("CCSD"+"/"+basis, molecule=Full_Molec, return_wfn=True)
 #  Get wfn for v0 using HF
 E_v0, v0_wfn = psi4.energy("scf"+"/"+basis, molecule=Full_Molec, return_wfn=True)
 #Psi4 Options:
@@ -76,7 +71,7 @@ inverser = XC_Inversion.Inverser(mol, input_density_wfn,
                                  ortho_basis=ortho_basis,
                                  vxc_basis=vxc_basis,
                                  v0=v0,
-                                 # v0_wfn=v0_wfn
+                                 v0_wfn=v0_wfn
                                  )
 
 # grad, grad_app = inverser.check_gradient_constrainedoptimization()
@@ -85,8 +80,8 @@ inverser = XC_Inversion.Inverser(mol, input_density_wfn,
 if method == "WuYangScipy":
     inverser.find_vxc_scipy_WuYang(opt_method=opt_method)
 elif method == "WuYangMN":
-    # rcondlist, dnlist, Llist = inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="LD")
-    inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="StrongWolfe")
+    # rcondlist, dnlist, Llist = inverser.find_vxc_manualHewton(svd_rcond=svd, line_search_method="LD")
+    inverser.find_vxc_manualHewton(svd_rcond=svd, line_search_method="StrongWolfe")
 elif method == "COScipy":
     inverser.find_vxc_scipy_constrainedoptimization(opt_method=opt_method)
 
