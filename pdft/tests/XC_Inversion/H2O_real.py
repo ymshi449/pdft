@@ -5,7 +5,7 @@ import libcubeprop
 import numpy as np
 
 if __name__ == "__main__":
-    psi4.set_num_threads(2)
+    psi4.set_num_threads(4)
 
 functional = 'svwn'
 basis = 'sto-3g'
@@ -14,7 +14,7 @@ basis = 'cc-pvtz'
 basis = 'aug-cc-pvqz'
 basis = 'aug-cc-pvdz'
 basis = 'aug-cc-pvtz'
-basis = 'aug-cc-pvqz'
+basis = 'aug-cc-pv6z'
 basis = 'aug-cc-pv5z'
 
 vxc_basis = None
@@ -36,7 +36,10 @@ psi4.set_output_file("He.psi4")
 Full_Molec = psi4.geometry("""
 nocom
 noreorient
-Ar
+0 1
+O
+H 1 1.0
+H 1 1.0 2 104.5
 units bohr
 symmetry c1
 """)
@@ -52,7 +55,7 @@ psi4.set_options({
 #  Get wfn for target density
 E_input, input_density_wfn = psi4.energy("CCSD"+"/"+basis, molecule=Full_Molec, return_wfn=True)
 #  Get wfn for v0 using HF
-# E_v0, v0_wfn = psi4.energy("scf"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+E_v0, v0_wfn = psi4.energy("scf"+"/"+basis, molecule=Full_Molec, return_wfn=True)
 #Psi4 Options:
 psi4.set_options({
     'REFERENCE' : 'UHF'
@@ -71,7 +74,7 @@ inverser = XC_Inversion.Inverser(mol, input_density_wfn,
                                  ortho_basis=ortho_basis,
                                  vxc_basis=vxc_basis,
                                  v0=v0,
-                                 # v0_wfn=v0_wfn
+                                 v0_wfn=v0_wfn
                                  )
 
 # grad, grad_app = inverser.check_gradient_constrainedoptimization()
@@ -83,7 +86,7 @@ elif method == "WuYangMN":
     # rcondlist, dnlist, Llist = inverser.find_vxc_manualHewton(svd_rcond=svd, line_search_method="LD")
     inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="StrongWolfe", find_vxc_grid=False)
 elif method == "COScipy":
-    inverser.find_vxc_scipy_constrainedoptimization(opt_method=opt_method, find_vxc_grid=False)
+    inverser.find_vxc_scipy_constrainedoptimization(opt_method=opt_method)
 
 # dDa = input_density_wfn.Da().np - mol.Da.np
 # dDb = input_density_wfn.Db().np - mol.Db.np

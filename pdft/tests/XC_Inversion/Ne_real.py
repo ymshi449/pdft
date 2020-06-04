@@ -6,6 +6,7 @@ import numpy as np
 
 if __name__ == "__main__":
     psi4.set_num_threads(3)
+    psi4.set_memory('4 GB')
 
 functional = 'svwn'
 basis = 'sto-3g'
@@ -20,9 +21,9 @@ basis = 'aug-cc-pv5z'
 vxc_basis = None
 
 ortho_basis = False
-svd = "search_segment_cycle"
+svd = "segment_cycle_cutoff"
 opt_method="BFGS"
-method = "WuYangScipy"
+method = "WuYangMN"
 v0 = "Hartree"
 v0 = "FermiAmaldi"
 
@@ -36,7 +37,7 @@ psi4.set_output_file("Ne.psi4")
 Full_Molec = psi4.geometry("""
 nocom
 noreorient
-Ar
+Ne 0.0 0.0 0.0
 units bohr
 symmetry c1
 """)
@@ -55,9 +56,9 @@ psi4.set_options({
 
 })
 #  Get wfn for target density
-E_input, input_density_wfn = psi4.energy("CCSD(T)"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+E_input, input_density_wfn = psi4.energy("CCSD"+"/"+basis, molecule=Full_Molec, return_wfn=True)
 #  Get wfn for v0 using HF
-E_v0, v0_wfn = psi4.energy("scf"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+# E_v0, v0_wfn = psi4.energy("scf"+"/"+basis, molecule=Full_Molec, return_wfn=True)
 #Psi4 Options:
 psi4.set_options({
     'REFERENCE' : 'UHF'
@@ -86,7 +87,7 @@ if method == "WuYangScipy":
     inverser.find_vxc_scipy_WuYang(opt_method=opt_method)
 elif method == "WuYangMN":
     # rcondlist, dnlist, Llist = inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="LD")
-    inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="StrongWolfe")
+    hess, jac = inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="StrongWolfe")
 elif method == "COScipy":
     inverser.find_vxc_scipy_constrainedoptimization(opt_method=opt_method)
 
@@ -98,7 +99,6 @@ elif method == "COScipy":
 # XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vxc_basis.Vpot, ax=ax, label="WuYang_xc_a", ls='--')
 # # XC_Inversion.pdft.plot1d_x(np.log10(np.abs(dn)), mol.Vpot, ax=ax, label="logdn", ls='dotted')
 # ax.legend()
-# ax.set_xlim(-14,14)
-# ax.set_ylim(-3,0.7)
+# ax.set_xlim(0,14)
 # f.show()
 # plt.close(f)

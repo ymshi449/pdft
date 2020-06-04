@@ -316,7 +316,7 @@ class Molecule():
         Constructs a psi4 JK object from input basis
         """
         jk = psi4.core.JK.build(self.wfn.basisset())
-        jk.set_memory(int(1.25e8)) #1GB
+        jk.set_memory(int(4*1.25e8)) #1GB
         jk.set_do_K(K)
         jk.initialize()
         jk.print_header()
@@ -535,7 +535,7 @@ class U_Molecule():
         Constructs a psi4 JK object from input basis
         """
         jk = psi4.core.JK.build(self.wfn.basisset())
-        jk.set_memory(int(1.25e8)) #1GB
+        jk.set_memory(int(4*1.25e8)) #1GB
         jk.set_do_K(K)
         jk.initialize()
         jk.print_header()

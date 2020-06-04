@@ -182,7 +182,6 @@ class Inverser(pdft.U_Embedding):
             self.get_input_vxc()
         except:
             print("no xc")
-            # print("Get Hartree+LDA as v0")
             # self.get_HartreeLDA_v0()
 
         # vH_mol
@@ -308,6 +307,7 @@ class Inverser(pdft.U_Embedding):
         Use v_FermiAmaldi as v0.
         :return:
         """
+        self.v0 = "FermiAmaldi"
         # Grid to fock method
         nocc = self.molecule.ndocc
         # self.v0_Fock = (nocc-1)/nocc*self.molecule.grid_to_fock(self.vH4v0)
@@ -327,6 +327,8 @@ class Inverser(pdft.U_Embedding):
         Use vH as v0.
         :return:
         """
+        self.v0 = "Hartree"
+
         # self.v0_Fock = self.molecule.grid_to_fock(self.vH4v0)
 
         Cocca = psi4.core.Matrix.from_array(self.v0_wfn.Ca().np[:,:self.molecule.nalpha])
@@ -349,6 +351,7 @@ class Inverser(pdft.U_Embedding):
         # self.molecule.Da.np[:] = np.copy(self.input_density_wfn.Da().np)
         # self.molecule.Db.np[:] = np.copy(self.input_density_wfn.Db().np)
         self.v0 = "HartreeLDA"
+        print("Get Hartree+LDA as v0")
         self.molecule.Vpot.set_D([self.input_density_wfn.Da(), self.input_density_wfn.Db()])
         self.molecule.Vpot.properties()[0].set_pointers(self.input_density_wfn.Da(), self.input_density_wfn.Db())
         self.input_vxc_a, self.input_vxc_b = pdft.U_xc(self.input_density_wfn.Da().np, self.input_density_wfn.Db().np,
@@ -570,7 +573,8 @@ class Inverser(pdft.U_Embedding):
 
         return hess, hess_app
 
-    def find_vxc_scipy_WuYang(self, maxiter=14000, opt_method="BFGS", opt=None, countinue_opt=False):
+    def find_vxc_scipy_WuYang(self, maxiter=14000, opt_method="BFGS", opt=None,
+                              countinue_opt=False, find_vxc_grid=True):
 
         if self.three_overlap is None:
             self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
@@ -620,7 +624,7 @@ class Inverser(pdft.U_Embedding):
         dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
         dDb = self.input_density_wfn.Db().np - self.molecule.Db.np
         dn = self.molecule.to_grid(dDa+dDb)
-        print("|n| after", np.sum(np.abs(dn)*self.molecule.w), "L after", vp_array.fun)
+        print("|jac|", np.linalg.norm(vp_array.jac), "|n|", np.sum(np.abs(dn)*self.molecule.w), "L after", vp_array.fun)
         print("Ts", self.molecule.Da.vector_dot(self.molecule.T)+self.molecule.Db.vector_dot(self.molecule.T))
         print("dTs", np.trace(np.dot(self.input_density_wfn.Da().np+self.input_density_wfn.Db().np-
                                      self.molecule.Da.np-self.molecule.Db.np, self.molecule.T.np)))
@@ -631,13 +635,15 @@ class Inverser(pdft.U_Embedding):
               /np.linalg.norm(self.input_density_wfn.Ca().np)/np.linalg.norm(self.molecule.Ca.np))
         # Update info
         self.v_output = vp_array.x
-        self.get_vxc()
+
+        if find_vxc_grid:
+            self.get_vxc()
         return vp_array
 
     def find_vxc_manualNewton(self, maxiter=49, svd_rcond=None, c1=1e-4, c2=0.99, c3=1e-2,
                               svd_parameter=None, line_search_method="StrongWolfe",
                               BT_beta_threshold=1e-7, rho_conv_threshold=1e-3,
-                              countinue_opt=False):
+                              countinue_opt=False, find_vxc_grid=True):
         if self.three_overlap is None:
             self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
                                                                              self.molecule.wfn.basisset(),
@@ -699,7 +705,7 @@ class Inverser(pdft.U_Embedding):
                 self.svd_index = svd_rcond
                 svd = s[self.svd_index]
                 # print(svd)
-                svd = svd * 0.9999 / s[0]
+                svd = svd * 1.0001 / s[0]
                 hess_inv = np.linalg.pinv(hess, rcond=svd)
                 dv = -np.dot(hess_inv, jac)
             elif svd_rcond == "input_once":
@@ -955,6 +961,63 @@ class Inverser(pdft.U_Embedding):
 
                 ns += 1
 
+            elif svd_rcond == "segment_cycle_cutoff":
+                # Segment move on in each iter
+                s = np.linalg.svd(hess)[1]
+                # SVD move on
+                s_shape = s.shape[0]
+
+                if svd_parameter is None:
+                    svd_parameter = [10]  # the cutoff threshold.
+
+                if scf_step==1:
+                    print(repr(s))
+
+                    plt.figure(dpi=200)
+                    # plt.scatter(range(s.shape[0]), np.log10(s), s=2)
+                    plt.scatter(range(s.shape[0]), np.log10(s), s=2)
+                    plt.title(str(self.ortho_basis))
+                    plt.show()
+                    plt.close()
+
+                    svd_cutoff = int(input("Enter svd cut index (0-based indexing): "))
+                    svd_parameter.append(svd_cutoff)
+
+                # Segmentation
+                if scf_step==1 or ns==ls:
+                    if np.sum(np.abs(cycle_n-n)*self.molecule.w) < rho_conv_threshold:
+                        print("Break because n is not improved in this segment cycle.",
+                              np.sum(np.abs(cycle_n-n)*self.molecule.w))
+                        break
+                    cycle_n = n
+                    seg_list = [0]
+                    # for i in range(1, s_shape):
+                    #     if s[i-1]/s[i] > svd_parameter[0]:
+                    #         # print(s[i], s[i-1])
+                    #         seg_list.append(i)
+                    #     if i==svd_parameter[-1]+1:
+                    #         seg_list.append(svd_parameter[-1]+1)
+                    # seg_list.append(s_shape)
+                    for i in range(1, svd_parameter[-1]+1):
+                        if s[i-1]/s[i] > svd_parameter[0]:
+                            # print(s[i], s[i-1])
+                            seg_list.append(i)
+                    seg_list.append(svd_parameter[-1]+1)
+                    ls = len(seg_list) - 1  # length of segments
+                    ns = 0  # segment number starts from 0
+                    print("\nSegment", seg_list)
+                    # print("\n")
+                start = seg_list[ns]
+                end = seg_list[ns+1]
+
+                self.svd_index = [start, end]
+
+                hess_inv = pdft.inv_pinv(hess, self.svd_index[0], self.svd_index[1])
+
+                dv = -np.dot(hess_inv, jac)
+
+                ns += 1
+
             elif svd_rcond == "search_cycle_segment":
                 # Segment move on when not improved
                 s = np.linalg.svd(hess)[1]
@@ -1180,6 +1243,7 @@ class Inverser(pdft.U_Embedding):
                          or svd_rcond=="increase" or svd_rcond=="input_segment_cycle"
                          or svd_rcond=="search_segment_cycle"
                          or svd_rcond=="search_cycle_segment"
+                         or svd_rcond=="segment_cycle_cutoff"
                     ):
                 print("Converge")
                 break
@@ -1205,9 +1269,10 @@ class Inverser(pdft.U_Embedding):
         self.grad_counter = 0
         self.hess_counter = 0
 
-        self.get_vxc()
+        if find_vxc_grid:
+            self.get_vxc()
 
-        return
+        return hess, jac
 
     def Lagrangian_constrainedoptimization(self, v=None):
         """
@@ -1597,7 +1662,8 @@ class Inverser(pdft.U_Embedding):
         print("SIMILARITY", np.linalg.norm(hess - hess_app))
         return hess, hess_app
 
-    def find_vxc_scipy_constrainedoptimization(self, maxiter=1400, opt_method="BFGS", countinue_opt=False):
+    def find_vxc_scipy_constrainedoptimization(self, maxiter=1400, opt_method="BFGS",
+                                               countinue_opt=False, find_vxc_grid=True):
 
         if self.three_overlap is None:
             self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
@@ -1648,7 +1714,7 @@ class Inverser(pdft.U_Embedding):
         dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
         dDb = self.input_density_wfn.Db().np - self.molecule.Db.np
         dn = self.molecule.to_grid(dDa+dDb)
-        print("|n| after", np.sum(np.abs(dn)*self.molecule.w), "L after", vp_array.fun)
+        print("|jac|", np.linalg.norm(vp_array.jac), "|n|", np.sum(np.abs(dn)*self.molecule.w), "L after", vp_array.fun)
         print("Ts", self.molecule.Da.vector_dot(self.molecule.T)+self.molecule.Db.vector_dot(self.molecule.T))
         print("dTs", np.trace(np.dot(self.input_density_wfn.Da().np+self.input_density_wfn.Db().np-
                                      self.molecule.Da.np-self.molecule.Db.np, self.molecule.T.np)))
@@ -1659,5 +1725,7 @@ class Inverser(pdft.U_Embedding):
               /np.linalg.norm(self.input_density_wfn.Ca().np)/np.linalg.norm(self.molecule.Ca.np))
         # Update info
         self.v_output = vp_array.x
-        self.get_vxc()
+
+        if find_vxc_grid:
+            self.get_vxc()
         return vp_array

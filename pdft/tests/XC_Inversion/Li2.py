@@ -19,7 +19,7 @@ basis = 'aug-cc-pvqz'
 vp_basis = None
 
 ortho_basis = False
-svd = "search_segment_cycle"
+svd = "segment_cycle_cutoff"
 opt_method="BFGS"
 method = "WuYangMN"
 v0 = "Hartree"
@@ -46,8 +46,8 @@ Full_Molec.set_name("Li2")
 
 #Psi4 Options:
 psi4.set_options({
-    'DFT_SPHERICAL_POINTS': 302,
-    'DFT_RADIAL_POINTS': 77,
+    'DFT_SPHERICAL_POINTS': 590,
+    'DFT_RADIAL_POINTS': 140,
     'REFERENCE' : 'UKS'
 })
 E, input_density_wfn = psi4.energy(functional+"/"+basis, molecule=Full_Molec, return_wfn=True)
@@ -64,7 +64,7 @@ print("Number of Basis: ", mol.nbf, vp_basis.nbf)
 
 inverser = XC_Inversion.Inverser(mol, input_density_wfn,
                                  ortho_basis=ortho_basis,
-                                 vp_basis=vp_basis,
+                                 vxc_basis=vp_basis,
                                  v0=v0
                                  )
 

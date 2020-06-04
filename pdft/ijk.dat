@@ -1,0 +1,5 @@
+Total number of IJK combinations =: 125
+Num. of IJK with (Gi,Gj,Gk)=(0,0,0) =: 125
+    thread 0: first_ijk=0,  last_ijk=41
+    thread 1: first_ijk=42,  last_ijk=83
+    thread 2: first_ijk=84,  last_ijk=124
