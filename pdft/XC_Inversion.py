@@ -56,7 +56,7 @@ class Molecule(pdft.U_Molecule):
         E_conv = psi4.core.get_option("SCF", "E_CONVERGENCE")
         E_conv = 1e-9
         D_conv = psi4.core.get_option("SCF", "D_CONVERGENCE")
-
+        dRMS = -1
         for SCF_ITER in range(maxiter+1):
             #Bring core matrix
             F_a = self.H.clone()
@@ -64,16 +64,17 @@ class Molecule(pdft.U_Molecule):
             F_a.axpy(1.0, V_a)
             F_b.axpy(1.0, V_b)
 
-            #DIIS
-            diisa_e = psi4.core.triplet(F_a, D_a, self.S, False, False, False)
-            diisa_e.subtract(psi4.core.triplet(self.S, D_a, F_a, False, False, False))
-            diisa_e = psi4.core.triplet(self.A, diisa_e, self.A, False, False, False)
-            diisa_obj.add(F_a, diisa_e)
+            if V is not None:
+                #DIIS
+                diisa_e = psi4.core.triplet(F_a, D_a, self.S, False, False, False)
+                diisa_e.subtract(psi4.core.triplet(self.S, D_a, F_a, False, False, False))
+                diisa_e = psi4.core.triplet(self.A, diisa_e, self.A, False, False, False)
+                diisa_obj.add(F_a, diisa_e)
 
-            diisb_e = psi4.core.triplet(F_b, D_b, self.S, False, False, False)
-            diisb_e.subtract(psi4.core.triplet(self.S, D_b, F_b, False, False, False))
-            diisb_e = psi4.core.triplet(self.A, diisb_e, self.A, False, False, False)
-            diisb_obj.add(F_b, diisb_e)
+                diisb_e = psi4.core.triplet(F_b, D_b, self.S, False, False, False)
+                diisb_e.subtract(psi4.core.triplet(self.S, D_b, F_b, False, False, False))
+                diisb_e = psi4.core.triplet(self.A, diisb_e, self.A, False, False, False)
+                diisb_obj.add(F_b, diisb_e)
 
             Core = 1.0 * self.H.vector_dot(D_a) + 1.0 * self.H.vector_dot(D_b)
             # This is not the correct Eks but Eks - Eext
@@ -83,18 +84,22 @@ class Molecule(pdft.U_Molecule):
             SCF_E += fake_Eks
             SCF_E += self.Enuc
 
-            dRMS = 0.5 * (np.mean(diisa_e.np**2)**0.5 + np.mean(diisb_e.np**2)**0.5)
+            if V is not None:
+                dRMS = 0.5 * (np.mean(diisa_e.np**2)**0.5 + np.mean(diisb_e.np**2)**0.5)
 
-            if (abs(SCF_E - Eold) < E_conv) and (dRMS < D_conv):
+            if V is not None:
+                break
+            elif (abs(SCF_E - Eold) < E_conv) and (dRMS < D_conv):
                 if print_energies is True:
                     print(F'SCF Convergence: NUM_ITER = {SCF_ITER} dE = {abs(SCF_E - Eold)} dDIIS = {dRMS}')
                 break
 
             Eold = SCF_E
 
-            #DIIS extrapolate
-            F_a = diisa_obj.extrapolate()
-            F_b = diisb_obj.extrapolate()
+            if V is not None:
+                #DIIS extrapolate
+                F_a = diisa_obj.extrapolate()
+                F_b = diisb_obj.extrapolate()
 
             #Diagonalize Fock matrix
             C_a, Cocc_a, D_a, eigs_a = pdft.build_orbitals(F_a, self.A, self.nalpha)
@@ -137,12 +142,13 @@ class Molecule(pdft.U_Molecule):
         return
 
 class Inverser(pdft.U_Embedding):
-    def __init__(self, molecule, input_density_wfn, v0_wfn=None,
+    def __init__(self, molecule, input_density_wfn, input_E=None, v0_wfn=None,
                  vxc_basis=None, ortho_basis=False,
                  v0="FermiAmaldi"):
         super().__init__([], molecule, vp_basis=vxc_basis)
 
         self.input_density_wfn = input_density_wfn
+        self.input_E = input_E
         if v0_wfn is None:
             self.v0_wfn = self.input_density_wfn
         else:
@@ -427,6 +433,16 @@ class Inverser(pdft.U_Embedding):
         L += - self.molecule.vks_a.vector_dot(self.molecule.Da) - self.molecule.vks_b.vector_dot(self.molecule.Db)
         L += self.molecule.vks_a.vector_dot(self.input_density_wfn.Da()) + self.molecule.vks_b.vector_dot(self.input_density_wfn.Db())
 
+        if self.regul_const is not None:
+            T = self.vp_basis.T.np
+            if v is not None:
+                norm = 2 * np.dot(np.dot(v_output_a, T), v_output_a) + 2 * np.dot(np.dot(v_output_b, T), v_output_b)
+            else:
+                nbf = int(self.v_output.shape[0] / 2)
+                norm = 2 * np.dot(np.dot(self.v_output[:nbf], T), self.v_output[:nbf]) + \
+                       2 * np.dot(np.dot(self.v_output[nbf:], T), self.v_output[nbf:])
+            L += norm * self.regul_const
+            self.regul_norm = norm
         return L
 
     def grad_WuYang(self, v=None):
@@ -454,6 +470,17 @@ class Inverser(pdft.U_Embedding):
         grad_b = np.einsum("uv,uvi->i", dDb, self.three_overlap, optimize=True)
 
         grad = np.concatenate((grad_a, grad_b))
+
+        # Regularization
+        if self.regul_const is not None:
+            T = self.vp_basis.T.np
+            if v is not None:
+                grad[:nbf] += 4*self.regul_const*np.dot(T, v_output_a)
+                grad[nbf:] += 4*self.regul_const*np.dot(T, v_output_b)
+            else:
+                nbf = int(self.v_output.shape[0] / 2)
+                grad[:nbf] += 4*self.regul_const*np.dot(T, self.v_output[:nbf])
+                grad[nbf:] += 4*self.regul_const*np.dot(T, self.v_output[nbf:])
         return grad
 
     def hess_WuYang(self, v=None):
@@ -497,10 +524,91 @@ class Inverser(pdft.U_Embedding):
                                                                                            self.three_overlap, optimize=True)
         hess = (hess + hess.T)
 
-        # Ugly TSVD preparation
-        # hess = np.linalg.inv(np.linalg.pinv(hess, rcond=1e-3))
+        # Regularization
+        if self.regul_const is not None:
+            T = self.vp_basis.T.np
+            T = 0.5 * (T + T.T)
+            hess[self.vp_basis.nbf:, self.vp_basis.nbf:] += 4 * self.regul_const*T
+            hess[0:self.vp_basis.nbf, 0:self.vp_basis.nbf] += 4 * self.regul_const*T
 
         return hess
+
+    def L_curve_regularization(self, rgl_bs=2.0, rgl_epn=15, scipy_opt_method="L-BFGS-B", print_flag=False):
+        if self.three_overlap is None:
+            self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
+                                                                             self.molecule.wfn.basisset(),
+                                                                             self.vp_basis.wfn.basisset()))
+            if self.ortho_basis:
+                self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.vp_basis.A.np)
+
+        v_zero_initial = np.zeros_like(self.v_output)
+
+        L_list = []
+        rgl_order = np.array(range(rgl_epn))
+        rgl_list = rgl_bs**-rgl_order
+        np.append(rgl_list, 0)
+        norm_list = []
+        E_list = []
+        print("Start L-curve search for regularization constant lambda. This might take a while..")
+        for regul_const in rgl_list:
+            self.regul_const = regul_const
+            Vks_a = psi4.core.Matrix.from_array(self.v0_Fock)
+            Vks_b = psi4.core.Matrix.from_array(self.v0_Fock)
+            self.molecule.scf_inversion(100, [Vks_a, Vks_b])
+
+            opt = {
+                "disp": False,
+                "maxiter": 10000,
+                # "eps": 1e-7
+                # "norm": 2,
+                # "gtol": 1e-7
+            }
+
+            v_result = optimizer.minimize(self.Lagrangian_WuYang, v_zero_initial,
+                                          jac=self.grad_WuYang,
+                                          hess=self.hess_WuYang,
+                                          method=scipy_opt_method,
+                                          options=opt)
+
+            v = v_result.x
+            nbf = int(v.shape[0]/2)
+            v_output_a = v[:nbf]
+            v_output_b = v[nbf:]
+            Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.v0_Fock)
+            Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.v0_Fock)
+            self.molecule.scf_inversion(1000, [Vks_a, Vks_b])
+
+            E_list.append(self.molecule.energy)
+            L_list.append(v_result.fun)
+            norm_list.append(self.regul_norm)
+            if print_flag:
+                print("=============L-curve, lambda: %e, W %f, reg %f==============="
+                      %(self.regul_const, L_list[-1], norm_list[-1]))
+
+        x = np.abs(np.array(E_list) - self.input_E)
+        y = norm_list
+
+        drv = x/y/rgl_list
+        self.regul_const = rgl_list[np.argmin(drv)]
+        print("Regularization constant lambda from L-curve is ", self.regul_const)
+        if print_flag:
+            f, ax = plt.subplots(1,1, dpi=200)
+            ax.scatter(x, y)
+            ax.set_xscale("log")
+            ax.set_yscale("log")
+            ax.set_xlim(min(x)*0.999, max(x)*1.001)
+            ax.set_ylim(min(y)*0.999, max(y)*1.001)
+            idx = 0
+            for i, j in zip(x, y):
+                # ax.annotate("%.1e"%rgl_list[idx], xy=(i, j*0.9))
+                if idx == 0:
+                    idx += 1
+                    continue
+                ax.annotate("%.1e"%drv[idx-1], xy=(i, j*1.1))
+                idx += 1
+            f.show()
+        return rgl_list, L_list, norm_list, E_list
+
 
     def check_gradient_WuYang(self, dv=None):
         if self.three_overlap is None:

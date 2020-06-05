@@ -7,6 +7,7 @@ import numpy as np
 if __name__ == "__main__":
     psi4.set_num_threads(3)
     psi4.set_memory('4 GB')
+separation = 5.122
 
 functional = 'svwn'
 basis = 'sto-3g'
@@ -18,7 +19,7 @@ basis = 'aug-cc-pvqz'
 basis = 'pcsseg-3'
 basis = 'cc-pCVDZ'
 
-vxc_basis = None
+vxc_basis = 'cc-pCVQZ'
 
 ortho_basis = False
 svd = "segment_cycle_cutoff"
@@ -37,12 +38,12 @@ psi4.set_output_file("Ne.psi4")
 Full_Molec = psi4.geometry("""
 nocom
 noreorient
-Ar 0.0 0.0 0.0
-@H -1 0 0
-@H 1 0 0
+Li %f 0.0 0.00
+Li -%f 0.0 0.00
 units bohr
 symmetry c1
-""")
+""" % (separation / 2, separation / 2))
+
 
 Full_Molec.set_name("Ne")
 
@@ -50,8 +51,6 @@ Full_Molec.set_name("Ne")
 psi4.set_options({
     'DFT_SPHERICAL_POINTS': 302,
     'DFT_RADIAL_POINTS': 77,
-    'R_CONVERGENCE': 1e-11,
-    'E_Convergence': 1e-11,
     'MAXITER': 1000,
     'BASIS': basis,
     'REFERENCE': 'RHF'
@@ -76,6 +75,7 @@ else:
 print("Number of Basis: ", mol.nbf, vxc_basis.nbf)
 
 inverser = XC_Inversion.Inverser(mol, input_density_wfn,
+                                 input_E=E_input,
                                  ortho_basis=ortho_basis,
                                  vxc_basis=vxc_basis,
                                  v0=v0,

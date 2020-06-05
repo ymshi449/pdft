@@ -14,13 +14,13 @@ basis = 'aug-pcsseg-3'
 basis = 'cc-pvdz'
 basis = '6-31G'
 basis = 'aug-cc-pvtz'
-basis = 'aug-cc-pvqz'
+basis = 'cc-pcvdz'
 
-vp_basis = None
+vp_basis = 'cc-pcvqz'
 
 ortho_basis = False
 svd = "segment_cycle_cutoff"
-opt_method="BFGS"
+opt_method="L-BFGS-B"
 method = "WuYangMN"
 v0 = "Hartree"
 v0 = "FermiAmaldi"
@@ -50,7 +50,7 @@ psi4.set_options({
     'DFT_RADIAL_POINTS': 140,
     'REFERENCE' : 'UKS'
 })
-E, input_density_wfn = psi4.energy(functional+"/"+basis, molecule=Full_Molec, return_wfn=True)
+input_E, input_density_wfn = psi4.energy(functional+"/"+basis, molecule=Full_Molec, return_wfn=True)
 
 mol = XC_Inversion.Molecule(Full_Molec, basis, functional)
 mol.scf_inversion(100)
@@ -63,6 +63,7 @@ else:
 print("Number of Basis: ", mol.nbf, vp_basis.nbf)
 
 inverser = XC_Inversion.Inverser(mol, input_density_wfn,
+                                 input_E=E,
                                  ortho_basis=ortho_basis,
                                  vxc_basis=vp_basis,
                                  v0=v0
@@ -70,7 +71,7 @@ inverser = XC_Inversion.Inverser(mol, input_density_wfn,
 
 # grad, grad_app = inverser.check_gradient_constrainedoptimization()
 # hess, hess_app = inverser.check_hess_constrainedoptimization()
-
+rgl_list, L_list, norm_list, E_list = inverser.L_curve_regularization()
 if method == "WuYangScipy":
     inverser.find_vxc_scipy_WuYang(14000, opt_method=opt_method)
 elif method == "WuYangMN":
@@ -90,7 +91,7 @@ elif method == "COScipy":
 # XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vp_basis.Vpot, ax=ax, label="WuYang_xc_a", ls='--')
 # # XC_Inversion.pdft.plot1d_x(np.log10(np.abs(dn)), mol.Vpot, ax=ax, label="logdn", ls='dotted')
 # ax.legend()
-# ax.set_xlim(-14,14)
-# ax.set_ylim(-3,0.1)
+# ax.set_xlim(1e-3,10)
+# ax.set_xscale("log")
 # f.show()
 # plt.close(f)

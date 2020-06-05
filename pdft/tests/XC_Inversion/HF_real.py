@@ -69,6 +69,7 @@ else:
 print("Number of Basis: ", mol.nbf, vxc_basis.nbf)
 
 inverser = XC_Inversion.Inverser(mol, input_density_wfn,
+                                 input_E=E_input,
                                  ortho_basis=ortho_basis,
                                  vxc_basis=vxc_basis,
                                  v0=v0,

@@ -1038,6 +1038,7 @@ class U_Embedding:
 
         # Regularization Constant
         self.regul_const = None
+        self.regul_norm = None
 
         # Constrained Optimization W exponent
         self.CO_weight_exponent = None
@@ -2109,7 +2110,7 @@ class U_Embedding:
         if self.regul_const is not None:
             T = self.vp_basis.T.np
             T = 0.5 * (T + T.T)
-            hess -= 4*4*self.regul_const*T
+            hess += 4*4*self.regul_const*T
         return hess
 
     def jac_1basis(self, vp=None, update_vp=True, calculate_scf=True):
