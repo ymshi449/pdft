@@ -1,0 +1,29 @@
+data 1-3 For the a = (1,1,1),  t= (2,4,6) series the error is 3.134e-02; the exponential terms are a_i exp(-1/t_i)/(\sum_k a_k)
+data 4-6 3.322e-02
+
+For these exact is: 3.134e-02
+data1/o2^13_covarrr_wt0 j_blocking_level, err, err_formula= 13                  3.311E-02 <-- This is the final result
+data1/o2^13_covarrr_wt1 j_blocking_level, err, err_formula= 13                  3.229E-02 <-- This is the final result
+data1/o2^13_covarrr_wt2 j_blocking_level, err, err_formula= 13                  3.191E-02 <-- This is the final result
+
+data2/o2^13_covarrr_wt0 j_blocking_level, err, err_formula= 13                  4.335E-02 <-- This is the final result
+data2/o2^13_covarrr_wt1 j_blocking_level, err, err_formula= 13                  3.891E-02 <-- This is the final result
+data2/o2^13_covarrr_wt2 j_blocking_level, err, err_formula= 13                  3.687E-02 <-- This is the final result
+
+data3/o2^13_covarrr_wt0 j_blocking_level, err, err_formula= 13                  2.414E-01 <-- This is the final result
+data3/o2^13_covarrr_wt1 j_blocking_level, err, err_formula= 13                  3.052E-02 <-- This is the final result
+data3/o2^13_covarrr_wt2 j_blocking_level, err, err_formula= 13                  3.069E-02 <-- This is the final result
+
+For these exact is: 3.322e-02
+data4/o2^13_covarrr_wt0 j_blocking_level, err, err_formula= 13                  4.321E-02 <-- This is the final result
+data4/o2^13_covarrr_wt1 j_blocking_level, err, err_formula= 13                  3.553E-02 <-- This is the final result
+data4/o2^13_covarrr_wt2 j_blocking_level, err, err_formula= 13                  3.840E-02 <-- This is the final result
+
+data5/o2^13_covarrr_wt0 j_blocking_level, err, err_formula= 13                  3.900E-02 <-- This is the final result
+data5/o2^13_covarrr_wt1 j_blocking_level, err, err_formula= 13                  4.039E-02 <-- This is the final result
+data5/o2^13_covarrr_wt2 j_blocking_level, err, err_formula= 13                  3.859E-02 <-- This is the final result
+
+data6/o2^13_covarrr_wt0 j_blocking_level, err, err_formula= 13                  3.492E-02 <-- This is the final result
+data6/o2^13_covarrr_wt1 j_blocking_level, err, err_formula= 13                  3.281E-02 <-- This is the final result
+data6/o2^13_covarrr_wt2 j_blocking_level, err, err_formula= 13                  3.307E-02 <-- This is the final result
+

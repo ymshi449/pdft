@@ -1,5 +1,54 @@
-Total number of IJK combinations =: 35
-Num. of IJK with (Gi,Gj,Gk)=(0,0,0) =: 35
-    thread 0: first_ijk=0,  last_ijk=11
-    thread 1: first_ijk=12,  last_ijk=23
-    thread 2: first_ijk=24,  last_ijk=34
+Spin Case: ABB
+Number of IJK combintions: 50
+
+Current IJK Combination:
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50

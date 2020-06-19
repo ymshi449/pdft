@@ -21,8 +21,8 @@ vxc_basis = None
 
 ortho_basis = False
 svd = "segment_cycle_cutoff"
-opt_method="BFGS"
-method = "WuYangMN"
+opt_method="trust-krylov"
+method = "WuYangScipy"
 v0 = "Hartree"
 v0 = "FermiAmaldi"
 

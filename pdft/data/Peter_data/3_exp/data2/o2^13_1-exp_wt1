@@ -1,0 +1,55 @@
+Input energy_filename, covariance_filename
+Input nskip, N_MC, nparm
+nskip, N_MC, nparm =        0     8192   1
+weighting, fit_what =  1 error   
+weighting = 0 => fit upto some blocking level without wts,
+          = 1 => fit all blocking levels with weight sqrt(nblk-1)
+          = 2 => fit all blocking levels with weight (nblk-1)
+fit_what  = "variance" => fit RHS of Eq. 15 in beyond_FN.tex
+          = "error" => fit sqrt of RHS of Eq. 15 in beyond_FN.tex
+
+iset=       1
+i_blocking_level_best, err_blocking=  7  3.37846673E-02
+TT_corr_blocking_biased, r1_initial      9.22 0.80436
+ndata=       13
+r1=  0.8043564904622796
+r1, func=  8.0435649046227964E-01  1.0148354238195103E-02
+r1, func=  8.0435646537306804E-01  1.0148344724709638E-02
+r1=  0.7721786238353902
+r1, func=  7.7217862383539015E-01  4.0226846985493463E-03
+r1, func=  7.7217859730851279E-01  4.0226840311418880E-03
+r1=  0.7691912146122698
+r1, func=  7.6919121461226980E-01  3.9871375138433975E-03
+r1, func=  7.6919118796373531E-01  3.9871375460570260E-03
+r1=  0.7693309454759000
+r1, func=  7.6933094547589997E-01  3.9870533429971931E-03
+r1, func=  7.6933091883301363E-01  3.9870533428860129E-03
+r1=  0.7693304514443992
+r1, func=  7.6933045144439915E-01  3.9870533419386778E-03
+r1, func=  7.6932202616393908E-01  3.9870536503184961E-03
+r1, func=  7.6933887661712708E-01  3.9870536502722891E-03
+r1=  0.7693304518471555
+r1, func=  7.6933045184715554E-01  3.9870533419386735E-03
+r1=  0.7693304518471555
+r1, func=  7.6933045184715554E-01  3.9870533419386735E-03
+r1=  0.769330
+correlation length=       3.813
+chisq=0.398705D-02    13 func evals, convergence: pr        
+j_blocking_level, err, err_formula=  0  1.112E-02  1.112E-02  0.00E+00  1.000 <--
+j_blocking_level, err, err_formula=  1  1.469E-02  1.480E-02  1.07E-04  0.872
+j_blocking_level, err, err_formula=  2  1.889E-02  1.918E-02  2.99E-04  0.720
+j_blocking_level, err, err_formula=  3  2.315E-02  2.360E-02  4.50E-04  0.541
+j_blocking_level, err, err_formula=  4  2.634E-02  2.700E-02  6.58E-04  0.350
+j_blocking_level, err, err_formula=  5  2.845E-02  2.894E-02  4.97E-04  0.204
+j_blocking_level, err, err_formula=  6  3.119E-02  2.989E-02 -1.30E-03  0.123
+j_blocking_level, err, err_formula=  7  3.378E-02  3.036E-02 -3.43E-03  0.072 <--
+j_blocking_level, err, err_formula=  8  3.169E-02  3.059E-02 -1.10E-03  0.032
+j_blocking_level, err, err_formula=  9  3.849E-02  3.070E-02 -7.79E-03  0.023
+j_blocking_level, err, err_formula= 10  3.573E-02  3.076E-02 -4.97E-03  0.010
+j_blocking_level, err, err_formula= 11  4.926E-02  3.079E-02 -1.85E-02  0.010
+j_blocking_level, err, err_formula= 12  4.377E-02  3.080E-02 -1.30E-02  0.004
+j_blocking_level, err, err_formula= 13             3.082E-02 <-- This is the final result
+aver, variance, TT_corr, err_blocking, err_formula  6.650791E-02 1.013723E+00    7.7 3.38E-02 3.08E-02
+r1_ave, r1_sigma= 0.769330      NaN
+variance_ave, variance_sigma=  1.013723E+00  0.000000E+00
+#N_MC, nset=    8192       1 err_blocking_ave, err_blocking_sigma, err_formula_ave, err_formula_sigma=  0.033785  0.000000  0.030816  0.000000

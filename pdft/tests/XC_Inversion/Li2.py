@@ -14,14 +14,14 @@ basis = 'aug-pcsseg-3'
 basis = 'cc-pvdz'
 basis = '6-31G'
 basis = 'aug-cc-pvtz'
-basis = 'cc-pcvdz'
+basis = 'cc-pvdz'
 
 vp_basis = 'cc-pcvqz'
 
 ortho_basis = False
 svd = "segment_cycle_cutoff"
-opt_method="L-BFGS-B"
-method = "WuYangMN"
+opt_method="trust-exact"
+method = "WuYangScipy"
 v0 = "Hartree"
 v0 = "FermiAmaldi"
 
@@ -46,7 +46,7 @@ Full_Molec.set_name("Li2")
 
 #Psi4 Options:
 psi4.set_options({
-    'DFT_SPHERICAL_POINTS': 590,
+    'DFT_SPHERICAL_POINTS': 302,
     'DFT_RADIAL_POINTS': 140,
     'REFERENCE' : 'UKS'
 })
@@ -63,21 +63,20 @@ else:
 print("Number of Basis: ", mol.nbf, vp_basis.nbf)
 
 inverser = XC_Inversion.Inverser(mol, input_density_wfn,
-                                 input_E=E,
+                                 input_E=input_E,
                                  ortho_basis=ortho_basis,
                                  vxc_basis=vp_basis,
-                                 v0=v0
+                                 v0=v0,
+                                 # eHOMO=input_density_wfn.epsilon_a().np[2]
                                  )
 
 # grad, grad_app = inverser.check_gradient_constrainedoptimization()
 # hess, hess_app = inverser.check_hess_constrainedoptimization()
-rgl_list, L_list, norm_list, E_list = inverser.L_curve_regularization()
+# rgl_list, L_list, norm_list, E_list = inverser.L_curve_regularization()
 if method == "WuYangScipy":
     inverser.find_vxc_scipy_WuYang(14000, opt_method=opt_method)
 elif method == "WuYangMN":
-    # rcondlist, dnlist, Llist = inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="LD")
-    inverser.find_vxc_manualNewton(svd_rcond=svd,
-                                   line_search_method="StrongWolfeD")
+    inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="StrongWolfeD")
 elif method == "COScipy":
     inverser.find_vxc_scipy_constrainedoptimization(opt_method=opt_method)
 

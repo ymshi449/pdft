@@ -1,0 +1,9 @@
+#for file in i2^23_covar* i2^22_covar* i2^21_covar* i2^20_covar* i2^19_covar* i2^18_covar* i2^17_covar* i2^16_covar* i2^15_covar* i2^14_covar* i2^13_covar* i2^12_covar* i2^11_covar* i2^10_covar* i2^09_covar* i2^08_covar* i2^07_covar* i2^06_covar*
+#for file in i2^23_covar* i2^22_covar* i2^21_covar* i2^20_covar* i2^19_covar* i2^18_covar* i2^17_covar* i2^16_covar*
+for file in $*
+do
+out=`echo $file | sed -e 's/i/o/'`
+#echo $file $out
+#~/sqmc_runs/chem/C2/v3z_nocore/r1.24253/taum_.05a/covar < $file > $out
+~/papers/mine/AR_models_Elton_peter/paper/Peter_data/covar < $file > $out
+done

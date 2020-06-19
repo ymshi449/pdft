@@ -1,0 +1,606 @@
+/home/yuming/anaconda3/envs/work/bin/python /home/yuming/pycharm-2019.1.2/helpers/pydev/pydevconsole.py --mode=client --port=37803
+import sys; print('Python %s on %s' % (sys.version, sys.platform))
+sys.path.extend(['/home/yuming/PDFT/pdft/pdft'])
+Python 3.7.5 (default, Oct 25 2019, 15:51:11) 
+Type 'copyright', 'credits' or 'license' for more information
+IPython 7.9.0 -- An enhanced Interactive Python. Type '?' for help.
+PyDev console: using IPython 7.9.0
+Python 3.7.5 (default, Oct 25 2019, 15:51:11) 
+[GCC 7.3.0] on linux
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Ar.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+  Threads set to 2 by Python driver.
+WuYangMN_L-BFGS-B_FermiAmaldi_aug-cc-pv5z_None_False_segment_cycle_cutoff
+Number of Basis:  131 131
+ESP fitting starts. This might take a while.
+ESP fitting done
+Zero the old result for a new calculation..
+Initial dn: 1.1526591457789142 Initial L: -526.1143925982072
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion manual Newton<<<<<<<<<<<<<<<<<<<
+TSVE segment cutoff ratio is chosen to be:  3
+array([7.37789657e-01, 7.37789657e-01, 5.60048035e-01, 5.60048035e-01,
+       5.60048035e-01, 5.60048035e-01, 5.60048035e-01, 5.60048035e-01,
+       2.96550031e-01, 2.96550031e-01, 2.34600076e-01, 2.34600076e-01,
+       2.34600076e-01, 2.34600076e-01, 2.34600076e-01, 2.34600076e-01,
+       2.25292886e-01, 2.25292886e-01, 2.25292886e-01, 2.25292886e-01,
+       2.25292886e-01, 2.25292886e-01, 2.25292886e-01, 2.25292886e-01,
+       2.25292886e-01, 2.25292886e-01, 2.01460403e-01, 2.01460403e-01,
+       2.01460403e-01, 2.01460403e-01, 2.01460403e-01, 2.01460403e-01,
+       2.01460403e-01, 2.01460403e-01, 2.01460402e-01, 2.01460402e-01,
+       2.01460402e-01, 2.01460402e-01, 2.01460402e-01, 2.01460402e-01,
+       8.68714661e-02, 8.68714661e-02, 6.31585288e-02, 6.31585288e-02,
+       6.31585288e-02, 6.31585288e-02, 6.31585286e-02, 6.31585286e-02,
+       6.31585286e-02, 6.31585286e-02, 6.31585286e-02, 6.31585286e-02,
+       6.31585286e-02, 6.31585286e-02, 6.31585285e-02, 6.31585285e-02,
+       6.31585285e-02, 6.31585285e-02, 6.31585285e-02, 6.31585285e-02,
+       5.52753283e-02, 5.52753283e-02, 5.52753283e-02, 5.52753283e-02,
+       5.52753282e-02, 5.52753282e-02, 5.52753282e-02, 5.52753282e-02,
+       5.52753282e-02, 5.52753282e-02, 2.97545449e-02, 2.97545449e-02,
+       2.97545449e-02, 2.97545449e-02, 2.97545449e-02, 2.97545449e-02,
+       2.54339303e-02, 2.54339303e-02, 2.54339303e-02, 2.54339303e-02,
+       2.54339302e-02, 2.54339302e-02, 2.54339302e-02, 2.54339302e-02,
+       2.54339302e-02, 2.54339302e-02, 2.54339302e-02, 2.54339302e-02,
+       2.54339302e-02, 2.54339302e-02, 2.54339302e-02, 2.54339302e-02,
+       2.54339302e-02, 2.54339302e-02, 2.54339301e-02, 2.54339301e-02,
+       2.54339301e-02, 2.54339301e-02, 2.03962252e-02, 2.03962252e-02,
+       2.03962252e-02, 2.03962252e-02, 2.03962252e-02, 2.03962252e-02,
+       2.03962252e-02, 2.03962252e-02, 2.03962252e-02, 2.03962252e-02,
+       2.03962252e-02, 2.03962252e-02, 2.03962252e-02, 2.03962252e-02,
+       1.36704024e-02, 1.36704024e-02, 1.36704024e-02, 1.36704024e-02,
+       1.36704024e-02, 1.36704024e-02, 1.36704024e-02, 1.36704024e-02,
+       1.36704023e-02, 1.36704023e-02, 9.72906088e-03, 9.72906088e-03,
+       9.72906088e-03, 9.72906088e-03, 9.72906087e-03, 9.72906087e-03,
+       9.72906087e-03, 9.72906087e-03, 9.72906086e-03, 9.72906086e-03,
+       9.72906086e-03, 9.72906086e-03, 9.72906086e-03, 9.72906086e-03,
+       9.72906085e-03, 9.72906085e-03, 9.72906085e-03, 9.72906085e-03,
+       6.18699153e-03, 6.18699153e-03, 3.48434594e-03, 3.48434594e-03,
+       3.48434593e-03, 3.48434593e-03, 3.48434593e-03, 3.48434593e-03,
+       2.30136692e-03, 2.30136692e-03, 2.30136692e-03, 2.30136692e-03,
+       2.30136692e-03, 2.30136692e-03, 2.30136692e-03, 2.30136692e-03,
+       2.30136692e-03, 2.30136692e-03, 2.07923922e-03, 2.07923922e-03,
+       2.07923922e-03, 2.07923922e-03, 2.07923922e-03, 2.07923922e-03,
+       2.07923922e-03, 2.07923922e-03, 2.07923922e-03, 2.07923922e-03,
+       2.07923922e-03, 2.07923922e-03, 2.07923922e-03, 2.07923922e-03,
+       1.29422207e-03, 1.29422207e-03, 1.29422207e-03, 1.29422207e-03,
+       1.29422207e-03, 1.29422207e-03, 1.29422207e-03, 1.29422207e-03,
+       1.29422207e-03, 1.29422207e-03, 1.29422207e-03, 1.29422207e-03,
+       1.29422207e-03, 1.29422207e-03, 1.29422207e-03, 1.29422207e-03,
+       1.29422207e-03, 1.29422207e-03, 1.29422207e-03, 1.29422207e-03,
+       1.29422207e-03, 1.29422207e-03, 4.85855263e-04, 4.85855263e-04,
+       4.85855263e-04, 4.85855263e-04, 4.85855263e-04, 4.85855263e-04,
+       4.85855263e-04, 4.85855263e-04, 4.85855263e-04, 4.85855263e-04,
+       4.85855263e-04, 4.85855263e-04, 4.85855263e-04, 4.85855263e-04,
+       4.85855263e-04, 4.85855263e-04, 4.85855263e-04, 4.85855263e-04,
+       4.60144247e-04, 4.60144247e-04, 2.73698142e-04, 2.73698142e-04,
+       2.73698141e-04, 2.73698141e-04, 2.73698141e-04, 2.73698141e-04,
+       2.12245355e-04, 2.12245355e-04, 2.12245355e-04, 2.12245355e-04,
+       2.12245355e-04, 2.12245355e-04, 2.12245354e-04, 2.12245354e-04,
+       2.12245354e-04, 2.12245354e-04, 8.96542643e-05, 8.96542643e-05,
+       8.96542643e-05, 8.96542643e-05, 8.96542642e-05, 8.96542642e-05,
+       8.96542642e-05, 8.96542642e-05, 8.96542642e-05, 8.96542642e-05,
+       8.96542641e-05, 8.96542641e-05, 8.96542641e-05, 8.96542641e-05,
+       2.68995136e-05, 2.68995136e-05, 9.60148072e-06, 9.60148072e-06,
+       9.60148070e-06, 9.60148070e-06, 9.60148070e-06, 9.60148070e-06,
+       7.79783398e-06, 7.79783398e-06, 4.47067779e-06, 4.47067779e-06,
+       4.47067773e-06, 4.47067773e-06, 4.47067772e-06, 4.47067772e-06,
+       7.12097363e-07, 7.12097363e-07])
+Enter svd cut index (0-based indexing): >? 243
+Segment [0, 244]
+1.0 -0.14814949560866353 -1.0068230442518853
+------Iter: 1 BT: StrongWolfeD SVD: [0, 244] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.45206648868314214 L: -526.2625420938159 d_rho: 0.14583610152702894 eHOMO: (-0.4458248697031654, -0.4458248697031733)
+Segment [0, 194, 244]
+1.0 -0.0017852137663112444 -0.09668274908151994
+------Iter: 2 BT: StrongWolfeD SVD: [0, 194] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.024149325870908175 L: -526.2643273075822 d_rho: 0.049153352445509 eHOMO: (-0.4858225834785401, -0.485822583478503)
+1.0 -0.0004220409373374423 -0.021112914501930098
+------Iter: 3 BT: StrongWolfeD SVD: [194, 244] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.0013097127891932717 L: -526.2647493485196 d_rho: 0.028040437943578904 eHOMO: (-0.5316995732885832, -0.5316995732888607)
+Segment [0, 40, 194, 244]
+1.0 -1.9711804952748935e-06 -0.0020032107935468446
+------Iter: 4 BT: StrongWolfeD SVD: [0, 40] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.0014432836896903713 L: -526.2647513197 d_rho: 0.02603722715003206 eHOMO: (-0.5321908977719849, -0.5321908977722037)
+1.0 -5.79129039124382e-06 -0.005948314994085418
+------Iter: 5 BT: StrongWolfeD SVD: [40, 194] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.0005093941034321562 L: -526.2647571109904 d_rho: 0.02008891215594664 eHOMO: (-0.5350008905993614, -0.5350008905999475)
+Density improvement? 0.001176794968122622 -0.00020088912155946643
+/home/yuming/anaconda3/envs/work/lib//python3.7/site-packages/scipy/optimize/linesearch.py:426: LineSearchWarning: The line search algorithm could not find a solution less than or equal to amax: 1
+  warn(msg, LineSearchWarning)
+/home/yuming/anaconda3/envs/work/lib//python3.7/site-packages/scipy/optimize/linesearch.py:314: LineSearchWarning: The line search algorithm did not converge
+  warn('The line search algorithm did not converge', LineSearchWarning)
+------Iter: 6 BT: StrongWolfeD SVD: [194, 244] Reg: None Ortho: False SVDmoveon: True ------
+beta: None |jac|: 0.00010579860744855111 L: -526.2647571109904 d_rho: 0.02008891215594664 eHOMO: (-0.5367904158208885, -0.5367904158212525)
+Segment [0, 40, 194, 244]
+Density improvement? -1.372318324113081e-06 -0.00020088912155946643
+------Iter: 7 BT: StrongWolfeD SVD: [0, 40] Reg: None Ortho: False SVDmoveon: True ------
+beta: None |jac|: 0.00010579860744855111 L: -526.2647571109904 d_rho: 0.02008891215594664 eHOMO: (-0.5350021345601477, -0.5350021345606513)
+Density improvement? -1.0974012953971629e-05 -0.00020088912155946643
+------Iter: 8 BT: StrongWolfeD SVD: [40, 194] Reg: None Ortho: False SVDmoveon: True ------
+beta: None |jac|: 0.00010579860744855111 L: -526.2647571109904 d_rho: 0.02008891215594664 eHOMO: (-0.5350086799897699, -0.5350086799900071)
+Density improvement? 0.001176794968122622 -0.00020088912155946643
+------Iter: 9 BT: StrongWolfeD SVD: [194, 244] Reg: None Ortho: False SVDmoveon: True ------
+beta: None |jac|: 0.00010579860744855111 L: -526.2647571109904 d_rho: 0.02008891215594664 eHOMO: (-0.5367904158208885, -0.5367904158212525)
+Break because n is not improved in this segment cycle. 0.0
+Evaluation:  14 19 10
+Ts 526.0996685437747
+dTs 0.16612303596832725
+eigenA input [-113.80364347  -10.8147398    -8.46504402   -8.46504401   -8.46504401
+   -0.90159426   -0.40027032   -0.40027031   -0.40027031]
+eigenA mol [-113.45801874  -10.86491443   -8.57153904   -8.57153904   -8.57153904
+   -1.03048579   -0.5350009    -0.53500089   -0.53500089]
+wfnDiff -0.29022150865632446
+Constant potential:  0
+ESP fitting starts. This might take a while.
+ESP fitting done
+f,ax = plt.subplots(1,1,dpi=200)
+XC_Inversion.pdft.plot1d_x(inverser.input_vxc_a, input_density_wfn.V_potential(), ax=ax,
+                           label="input_xc_a", title=title)
+XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vp_basis.Vpot, ax=ax, label="WuYang_xc_a", ls='--')
+# XC_Inversion.pdft.plot1d_x(np.log10(np.abs(dn)), mol.Vpot, ax=ax, label="logdn", ls='dotted')
+ax.legend()
+ax.set_xlim(0, 14)
+f.show()
+plt.close(f)
+xyz_E_H = input_density_wfn.V_potential().get_np_xyzw()[:-1]
+vxc_E_a5 = np.copy(inverser.input_vxc_a)
+vxc_N_a5 = np.copy(inverser.vxc_a_grid)
+xyz_a5 = mol.Vpot.get_np_xyzw()[:-1]
+inverser.find_vxc_manualNewton(svd_rcond=None, line_search_method="StrongWolfe");
+Zero the old result for a new calculation..
+Initial dn: 1.1526591457789142 Initial L: -526.1143925982072
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion manual Newton<<<<<<<<<<<<<<<<<<<
+1.0 -0.1488274276074435 -1.0131234836248824
+------Iter: 1 BT: StrongWolfe SVD: [194, 244] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.45206648868314214 L: -526.2632200258147 d_rho: 0.1395356621540317 eHOMO: (-0.38619013448875383, -0.38619013448869394)
+1.0 -0.0022643156080448534 -0.12443991843998414
+------Iter: 2 BT: StrongWolfe SVD: [194, 244] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.02439303987805767 L: -526.2654843414227 d_rho: 0.015095743714047573 eHOMO: (-0.5651000990808869, -0.5651000990795443)
+1.0 -5.387066744333424e-05 -0.0066963027619389
+------Iter: 3 BT: StrongWolfe SVD: [194, 244] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.0018280200953447953 L: -526.2655382120902 d_rho: 0.008399440952108672 eHOMO: (-0.6488121494421191, -0.6488121494399681)
+1.0 -1.491271291342855e-06 -0.00040265288990992167
+------Iter: 4 BT: StrongWolfe SVD: [194, 244] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 9.528948442019106e-05 L: -526.2655397033615 d_rho: 0.00799678806219875 eHOMO: (-0.6721928162780727, -0.6721928162791363)
+1.0 -2.083538674924057e-09 -8.387424115866016e-06
+------Iter: 5 BT: StrongWolfe SVD: [194, 244] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 2.9758216981706154e-06 L: -526.265539705445 d_rho: 0.007988400638082885 eHOMO: (-0.6731159085232665, -0.67311590852925)
+------Iter: 6 BT: StrongWolfe SVD: [194, 244] Reg: None Ortho: False SVDmoveon: True ------
+beta: None |jac|: 4.296304396180686e-09 L: -526.265539705445 d_rho: 0.007988400638082885 eHOMO: (-0.6731159150089874, -0.6731159150151017)
+Converge
+Evaluation:  18 12 6
+Ts 526.2751229514647
+dTs -0.009331371721878697
+eigenA input [-113.80364347  -10.8147398    -8.46504402   -8.46504401   -8.46504401
+   -0.90159426   -0.40027032   -0.40027031   -0.40027031]
+eigenA mol [-113.72311003  -11.0436248    -8.71878619   -8.71878619   -8.71878618
+   -1.17223117   -0.67311593   -0.67311592   -0.67311592]
+wfnDiff -0.4919241043174841
+Constant potential:  0
+ESP fitting starts. This might take a while.
+ESP fitting done
+vxc_NN_a5 = np.copy(inverser.vxc_a_grid)
+inverser.find_vxc_scipy_WuYang(opt_method=opt_method);
+Zero the old result for a new calculation..
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 1.152659145778913
+/home/yuming/anaconda3/envs/work/lib//python3.7/site-packages/scipy/optimize/_minimize.py:505: RuntimeWarning: Method L-BFGS-B does not use Hessian information (hess).
+  RuntimeWarning)
+ This problem is unconstrained.
+RUNNING THE L-BFGS-B CODE
+           * * *
+Machine precision = 2.220D-16
+ N =          262     M =           10
+At X0         0 variables are exactly at the bounds
+At iterate    0    f= -5.26114D+02    |proj g|=  2.46158D-01
+At iterate    1    f= -5.26208D+02    |proj g|=  1.37504D-01
+At iterate    2    f= -5.26256D+02    |proj g|=  8.04327D-03
+At iterate    3    f= -5.26256D+02    |proj g|=  5.61228D-03
+At iterate    4    f= -5.26257D+02    |proj g|=  6.28910D-03
+At iterate    5    f= -5.26258D+02    |proj g|=  6.43524D-03
+At iterate    6    f= -5.26260D+02    |proj g|=  6.87209D-03
+At iterate    7    f= -5.26262D+02    |proj g|=  1.52519D-02
+At iterate    8    f= -5.26264D+02    |proj g|=  3.72750D-03
+At iterate    9    f= -5.26265D+02    |proj g|=  1.83140D-03
+At iterate   10    f= -5.26265D+02    |proj g|=  1.75755D-04
+At iterate   11    f= -5.26265D+02    |proj g|=  6.07520D-05
+           * * *
+Tit   = total number of iterations
+Tnf   = total number of function evaluations
+Tnint = total number of segments explored during Cauchy searches
+Skip  = number of BFGS updates skipped
+Nact  = number of active bounds at final generalized Cauchy point
+Projg = norm of the final projected gradient
+F     = final function value
+           * * *
+   N    Tit     Tnf  Tnint  Skip  Nact     Projg        F
+  262     11     12      1     0     0   6.075D-05  -5.263D+02
+  F =  -526.26473726544896     
+CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH             
+ Cauchy                time 0.000E+00 seconds.
+ Subspace minimization time 0.000E+00 seconds.
+ Line search           time 0.000E+00 seconds.
+ Total User time 0.000E+00 seconds.
+|jac| 0.00015570472305168637 |n| 0.02985935614684335 L after -526.264737265449
+Ts 526.1033604208562
+dTs 0.16243115888687934
+eigenA
+[-113.80364347  -10.8147398    -8.46504402   -8.46504401   -8.46504401
+   -0.90159426   -0.40027032   -0.40027031   -0.40027031]
+[-113.49679038  -10.89134338   -8.59636064   -8.59636063   -8.59636061
+   -1.04678552   -0.55143841   -0.55143841   -0.55143841]
+wfnDiff 0.4005781586711364
+Constant potential:  0
+ESP fitting starts. This might take a while.
+ESP fitting done
+vxc_LBFGS_a5 = np.copy(inverser.vxc_a_grid)
+inverser.find_vxc_scipy_WuYang(opt_method="BFGS");
+Zero the old result for a new calculation..
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 1.152659145778913
+/home/yuming/anaconda3/envs/work/lib//python3.7/site-packages/scipy/optimize/_minimize.py:505: RuntimeWarning: Method BFGS does not use Hessian information (hess).
+  RuntimeWarning)
+Optimization terminated successfully.
+         Current function value: -526.265456
+         Iterations: 70
+         Function evaluations: 71
+         Gradient evaluations: 71
+|jac| 2.4874556768545614e-05 |n| 0.012980285237933396 L after -526.2654560094097
+Ts 526.2667051653078
+dTs -0.0009135855650324722
+eigenA
+[-113.80364347  -10.8147398    -8.46504402   -8.46504401   -8.46504401
+   -0.90159426   -0.40027032   -0.40027031   -0.40027031]
+[-113.44662847  -10.82276196   -8.50389355   -8.50387946   -8.50383194
+   -1.00121567   -0.50196738   -0.50195944   -0.50193495]
+wfnDiff 0.39273143837426594
+Constant potential:  0
+ESP fitting starts. This might take a while.
+ESP fitting done
+inverser.vout_constant
+Out[10]: 0
+vxc_BFGS_a5 = np.copy(inverser.vxc_a_grid)
+inverser.find_vxc_scipy_WuYang(opt_method="dogleg");
+Zero the old result for a new calculation..
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 1.152659145778913
+Optimization terminated successfully.
+         Current function value: -526.265540
+         Iterations: 6
+         Function evaluations: 7
+         Gradient evaluations: 7
+         Hessian evaluations: 6
+|jac| 5.7883862426308915e-06 |n| 0.00799961672154604 L after -526.2655397012502
+Ts 526.2750044023048
+dTs -0.009212822561849264
+eigenA
+[-113.80364347  -10.8147398    -8.46504402   -8.46504401   -8.46504401
+   -0.90159426   -0.40027032   -0.40027031   -0.40027031]
+[-113.72164519  -11.04226479   -8.71743712   -8.71743712   -8.71743712
+   -1.17095621   -0.67184125   -0.67184124   -0.67184124]
+wfnDiff -0.5108338567731103
+Constant potential:  0
+ESP fitting starts. This might take a while.
+ESP fitting done
+vxc_dogleg_a5 = np.copy(inverser.vxc_a_grid)
+f,ax = plt.subplots(1,2,dpi=200, sharey='row', gridspec_kw={'wspace': 0})
+XC_Inversion.pdft.plot1d_x(vxc_E_a5, xyz=xyz_E_H, ax=ax[1], label="LDA")
+XC_Inversion.pdft.plot1d_x(vxc_N_a5, xyz=xyz_a5, ax=ax[1], label="Newton")
+XC_Inversion.pdft.plot1d_x(vxc_NN_a5, xyz=xyz_a5, ax=ax[1], label="Newton noTSVD", ls="--")
+XC_Inversion.pdft.plot1d_x(vxc_LBFGS_a5, xyz=xyz_a5, ax=ax[1], label="L-BFGS-B", ls="-.")
+XC_Inversion.pdft.plot1d_x(vxc_BFGS_a5, xyz=xyz_a5, ax=ax[1], label="BFGS", ls="--")
+XC_Inversion.pdft.plot1d_x(vxc_dogleg_a5, xyz=xyz_a5, ax=ax[1], label="dogleg", ls="dotted")
+ax[1].legend()
+ax[1].set_xlim(0,20)
+Out[14]: (0, 20)
+f.show()
+f1,ax1 = plt.subplots(1,2,dpi=200, sharey='row', gridspec_kw={'wspace': 0})
+XC_Inversion.pdft.plot1d_x(vxc_E_a5, xyz=xyz_E_H, ax=ax1[1], label="LDA")
+XC_Inversion.pdft.plot1d_x(vxc_N_a5, xyz=xyz_a5, ax=ax1[1], label="Newton")
+XC_Inversion.pdft.plot1d_x(vxc_NN_a5, xyz=xyz_a5, ax=ax1[1], label="Newton noTSVD", ls="--")
+XC_Inversion.pdft.plot1d_x(vxc_LBFGS_a5, xyz=xyz_a5, ax=ax1[1], label="L-BFGS-B", ls="-.")
+XC_Inversion.pdft.plot1d_x(vxc_BFGS_a5, xyz=xyz_a5, ax=ax1[1], label="BFGS", ls="--")
+XC_Inversion.pdft.plot1d_x(vxc_dogleg_a5, xyz=xyz_a5, ax=ax1[1], label="dogleg", ls="dotted")
+ax1[1].legend()
+ax1[1].set_xlim(1e-2,14)
+f1.show()
+ax1[1].set_xscale("log")
+f1.show()
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Ar.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+WuYangMN_L-BFGS-B_FermiAmaldi_cc-pvdz_None_False_segment_cycle_cutoff
+Number of Basis:  18 18
+ESP fitting starts. This might take a while.
+ESP fitting done
+Zero the old result for a new calculation..
+Initial dn: 0.8938415447454043 Initial L: -526.1737856817495
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion manual Newton<<<<<<<<<<<<<<<<<<<
+TSVE segment cutoff ratio is chosen to be:  3
+array([1.76721920e-01, 1.76721920e-01, 1.10121731e-01, 1.10121731e-01,
+       1.10121731e-01, 1.10121731e-01, 1.10121731e-01, 1.10121731e-01,
+       4.89021267e-02, 4.89021267e-02, 4.24849350e-02, 4.24849350e-02,
+       4.24849350e-02, 4.24849350e-02, 4.24849350e-02, 4.24849350e-02,
+       4.24849350e-02, 4.24849350e-02, 4.24849350e-02, 4.24849350e-02,
+       4.00489341e-02, 4.00489341e-02, 4.00489341e-02, 4.00489341e-02,
+       4.00489341e-02, 4.00489341e-02, 1.36664664e-02, 1.36664664e-02,
+       2.78143082e-03, 2.78143082e-03, 2.78143082e-03, 2.78143082e-03,
+       2.78143082e-03, 2.78143082e-03, 7.17759537e-05, 7.17759537e-05])
+Enter svd cut index (0-based indexing): >? 33
+Segment [0, 28, 34]
+1.0 -0.06164818013621698 -0.8387593142637098
+------Iter: 1 BT: StrongWolfeD SVD: [0, 28] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.14240256587229055 L: -526.2354338618857 d_rho: 0.05508223048169456 eHOMO: (-0.4560461697528676, -0.45604616975287227)
+Density improvement? -3.314015728506092e-14 -0.0005508223048169456
+------Iter: 2 BT: StrongWolfeD SVD: [28, 34] Reg: None Ortho: False SVDmoveon: True ------
+beta: None |jac|: 0.015369325064255288 L: -526.2354338618857 d_rho: 0.05508223048169456 eHOMO: (-0.45604616975285867, -0.45604616975285467)
+Segment [0, 26, 28, 34]
+1.0 -0.0010773527592391474 -0.04138702422243676
+------Iter: 3 BT: StrongWolfeD SVD: [0, 26] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.015369325064255288 L: -526.2365112146449 d_rho: 0.013695206259257804 eHOMO: (-0.45438924826057464, -0.4543892482605859)
+1.0 -2.624584351451631e-05 -0.001401743089429459
+------Iter: 4 BT: StrongWolfeD SVD: [26, 28] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.0008492880081774387 L: -526.2365374604884 d_rho: 0.012293463169828345 eHOMO: (-0.45439130206220274, -0.4543913020621895)
+Density improvement? 1.7555401576885288e-15 -0.00012293463169828344
+------Iter: 5 BT: StrongWolfeD SVD: [28, 34] Reg: None Ortho: False SVDmoveon: True ------
+beta: None |jac|: 0.00046904070614756446 L: -526.2365374604884 d_rho: 0.012293463169828345 eHOMO: (-0.45439130206215544, -0.4543913020621758)
+Segment [0, 26, 28, 34]
+1.0 -8.858304454406607e-07 -0.0001392291067062474
+------Iter: 6 BT: StrongWolfeD SVD: [0, 26] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.00046904070614756446 L: -526.2365383463189 d_rho: 0.012154234063122098 eHOMO: (-0.4543737756564082, -0.45437377565637566)
+Density improvement? 5.259265088441295e-06 -0.00012154234063122098
+------Iter: 7 BT: StrongWolfeD SVD: [26, 28] Reg: None Ortho: False SVDmoveon: True ------
+beta: None |jac|: 0.00016038147054688346 L: -526.2365383463189 d_rho: 0.012154234063122098 eHOMO: (-0.4543737843517155, -0.4543737843517012)
+Density improvement? -1.7867651802561113e-16 -0.00012154234063122098
+------Iter: 8 BT: StrongWolfeD SVD: [28, 34] Reg: None Ortho: False SVDmoveon: True ------
+beta: None |jac|: 0.00016038147054688346 L: -526.2365383463189 d_rho: 0.012154234063122098 eHOMO: (-0.45437377565638004, -0.454373775656381)
+Segment [0, 26, 28, 34]
+Density improvement? 7.991280177865878e-08 -0.00012154234063122098
+------Iter: 9 BT: StrongWolfeD SVD: [0, 26] Reg: None Ortho: False SVDmoveon: True ------
+beta: None |jac|: 0.00016038147054688346 L: -526.2365383463189 d_rho: 0.012154234063122098 eHOMO: (-0.4543737422101228, -0.45437374221012217)
+Density improvement? 5.259265088441295e-06 -0.00012154234063122098
+------Iter: 10 BT: StrongWolfeD SVD: [26, 28] Reg: None Ortho: False SVDmoveon: True ------
+beta: None |jac|: 0.00016038147054688346 L: -526.2365383463189 d_rho: 0.012154234063122098 eHOMO: (-0.4543737843517155, -0.4543737843517012)
+Density improvement? -1.7867651802561113e-16 -0.00012154234063122098
+------Iter: 11 BT: StrongWolfeD SVD: [28, 34] Reg: None Ortho: False SVDmoveon: True ------
+beta: None |jac|: 0.00016038147054688346 L: -526.2365383463189 d_rho: 0.012154234063122098 eHOMO: (-0.45437377565638004, -0.454373775656381)
+Break because n is not improved in this segment cycle. 0.0
+Evaluation:  49 23 12
+Ts 526.2449424173735
+dTs -0.008160484505172882
+eigenA input [-113.80333839  -10.80455346   -8.45508765   -8.45508765   -8.45508765
+   -0.8924278    -0.39047232   -0.39047232   -0.39047232]
+eigenA mol [-113.94711292  -10.95048871   -8.63623286   -8.63623286   -8.63623286
+   -0.95264857   -0.45437378   -0.45437378   -0.45437378]
+wfnDiff 0.2988949989940868
+Constant potential:  0
+ESP fitting starts. This might take a while.
+ESP fitting done
+xyz_E_d = input_density_wfn.V_potential().get_np_xyzw()[:-1]
+vxc_E_d = np.copy(inverser.input_vxc_a)
+vxc_N_d = np.copy(inverser.vxc_a_grid)
+xyz_d = mol.Vpot.get_np_xyzw()[:-1]
+inverser.find_vxc_manualNewton(svd_rcond=NOne, line_search_method="StrongWolfe");
+Traceback (most recent call last):
+  File "/home/yuming/anaconda3/envs/work/lib/python3.7/site-packages/IPython/core/interactiveshell.py", line 3326, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+  File "<ipython-input-21-75dab67fb17d>", line 1, in <module>
+    inverser.find_vxc_manualNewton(svd_rcond=NOne, line_search_method="StrongWolfe");
+NameError: name 'NOne' is not defined
+inverser.find_vxc_manualNewton(svd_rcond=None, line_search_method="StrongWolfe");
+Zero the old result for a new calculation..
+Initial dn: 0.8938415447454043 Initial L: -526.1737856817495
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion manual Newton<<<<<<<<<<<<<<<<<<<
+1.0 -0.06094942833760797 -0.8501550593214842
+------Iter: 1 BT: StrongWolfe SVD: [28, 34] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.14240256587229055 L: -526.2347351100871 d_rho: 0.043686485423920215 eHOMO: (-0.3654559974010613, -0.3654559974010613)
+1.0 -0.0020211752844261355 -0.037674428430823755
+------Iter: 2 BT: StrongWolfe SVD: [28, 34] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.013599024094739643 L: -526.2367562853715 d_rho: 0.006012056993096458 eHOMO: (-0.5335039290885203, -0.5335039290885203)
+1.0 -3.567305157048395e-06 -0.005559162053685545
+------Iter: 3 BT: StrongWolfe SVD: [28, 34] Reg: None Ortho: False SVDmoveon: False ------
+beta: 1.0 |jac|: 0.0007195254823066468 L: -526.2367598526766 d_rho: 0.0004528949394109129 eHOMO: (-0.5401826886970649, -0.5401826886970649)
+Break because rho difference (cost) is small.
+Evaluation:  4 6 3
+Ts 526.2340713851673
+dTs 0.0027105477010909325
+eigenA input [-113.80333839  -10.80455346   -8.45508765   -8.45508765   -8.45508765
+   -0.8924278    -0.39047232   -0.39047232   -0.39047232]
+eigenA mol [-114.34713288  -10.98732367   -8.66992338   -8.66992338   -8.66992338
+   -1.03747753   -0.54018269   -0.54018269   -0.54018269]
+wfnDiff -0.21445872366910548
+Constant potential:  0
+ESP fitting starts. This might take a while.
+ESP fitting done
+vxc_NN_d = np.copy(inverser.vxc_a_grid)
+inverser.find_vxc_scipy_WuYang(opt_method=opt_method);
+Zero the old result for a new calculation..
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 0.8938415447454043
+RUNNING THE L-BFGS-B CODE
+           * * *
+Machine precision = 2.220D-16
+ N =           36     M =           10
+At X0         0 variables are exactly at the bounds
+ This problem is unconstrained.
+At iterate    0    f= -5.26174D+02    |proj g|=  7.53655D-02
+At iterate    1    f= -5.26236D+02    |proj g|=  6.05384D-03
+At iterate    2    f= -5.26236D+02    |proj g|=  1.26269D-03
+At iterate    3    f= -5.26236D+02    |proj g|=  6.90569D-04
+At iterate    4    f= -5.26236D+02    |proj g|=  9.73612D-04
+At iterate    5    f= -5.26237D+02    |proj g|=  8.51391D-04
+At iterate    6    f= -5.26237D+02    |proj g|=  4.02755D-04
+At iterate    7    f= -5.26237D+02    |proj g|=  9.45435D-05
+At iterate    8    f= -5.26237D+02    |proj g|=  1.07248D-04
+           * * *
+Tit   = total number of iterations
+Tnf   = total number of function evaluations
+Tnint = total number of segments explored during Cauchy searches
+Skip  = number of BFGS updates skipped
+Nact  = number of active bounds at final generalized Cauchy point
+Projg = norm of the final projected gradient
+F     = final function value
+           * * *
+   N    Tit     Tnf  Tnint  Skip  Nact     Projg        F
+   36      8      9      1     0     0   1.072D-04  -5.262D+02
+  F =  -526.23654369104122     
+CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH             
+ Cauchy                time 0.000E+00 seconds.
+ Subspace minimization time 0.000E+00 seconds.
+ Line search           time 0.000E+00 seconds.
+ Total User time 0.000E+00 seconds.
+|jac| 0.00020029501926051337 |n| 0.012000572540740054 L after -526.2365436910412
+Ts 526.2491710418847
+dTs -0.012389109016247169
+eigenA
+[-113.80333839  -10.80455346   -8.45508765   -8.45508765   -8.45508765
+   -0.8924278    -0.39047232   -0.39047232   -0.39047232]
+[-113.9362716   -10.95253013   -8.63887267   -8.63887267   -8.63887267
+   -0.95367877   -0.45544472   -0.45544472   -0.45544472]
+wfnDiff -0.20826119528175807
+Constant potential:  0
+ESP fitting starts. This might take a while.
+ESP fitting done
+vxc_LBFGS_d = np.copy(inverser.vxc_a_grid)
+inverser.find_vxc_scipy_WuYang(opt_method="BFGS");
+Zero the old result for a new calculation..
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 0.8938415447454043
+Optimization terminated successfully.
+         Current function value: -526.236760
+         Iterations: 36
+         Function evaluations: 37
+         Gradient evaluations: 37
+|jac| 5.527800601413176e-06 |n| 0.00041895252047798005 L after -526.2367598377105
+Ts 526.2340164011284
+dTs 0.002765531740065044
+eigenA
+[-113.80333839  -10.80455346   -8.45508765   -8.45508765   -8.45508765
+   -0.8924278    -0.39047232   -0.39047232   -0.39047232]
+[-114.34934488  -10.98762556   -8.67021664   -8.67021664   -8.67021664
+   -1.03821724   -0.54092968   -0.54092968   -0.54092968]
+wfnDiff 0.19866980390527283
+Constant potential:  0
+ESP fitting starts. This might take a while.
+ESP fitting done
+vxc_BFGS_d = np.copy(inverser.vxc_a_grid)
+inverser.find_vxc_scipy_WuYang(opt_method="dogleg");
+Zero the old result for a new calculation..
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 0.8938415447454043
+Optimization terminated successfully.
+         Current function value: -526.236760
+         Iterations: 3
+         Function evaluations: 4
+         Gradient evaluations: 4
+         Hessian evaluations: 3
+|jac| 1.98594792198376e-05 |n| 0.0005400209815392698 L after -526.2367598458833
+Ts 526.2334201915555
+dTs 0.003361741312866571
+eigenA
+[-113.80333839  -10.80455346   -8.45508765   -8.45508765   -8.45508765
+   -0.8924278    -0.39047232   -0.39047232   -0.39047232]
+[-114.34496181  -10.98710535   -8.66972577   -8.66972577   -8.66972577
+   -1.03707292   -0.53977981   -0.53977981   -0.53977981]
+wfnDiff 0.11009273807620867
+Constant potential:  0
+ESP fitting starts. This might take a while.
+ESP fitting done
+vxc_dogleg_d = np.copy(inverser.vxc_a_grid)
+vxc_dogleg_a5 = np.copy(inverser.vxc_a_grid)
+XC_Inversion.pdft.plot1d_x(vxc_E_d, xyz=xyz_E_d, ax=ax[0], label="LDA")
+XC_Inversion.pdft.plot1d_x(vxc_N_d, xyz=xyz_d, ax=ax[0], label="Newton")
+XC_Inversion.pdft.plot1d_x(vxc_NN_d, xyz=xyz_d, ax=ax[0], label="Newton noTSVD", ls="--")
+XC_Inversion.pdft.plot1d_x(vxc_LBFGS_d, xyz=xyz_d, ax=ax[0], label="L-BFGS-B", ls="-.")
+XC_Inversion.pdft.plot1d_x(vxc_BFGS_d, xyz=xyz_d, ax=ax[0], label="BFGS", ls="--")
+XC_Inversion.pdft.plot1d_x(vxc_dogleg_d, xyz=xyz_d, ax=ax[0], label="dogleg", ls="dotted")
+ax[0].legend()
+ax[0].set_xlim(0,20)
+XC_Inversion.pdft.plot1d_x(vxc_E_d, xyz=xyz_E_d, ax=ax1[0], label="LDA")
+XC_Inversion.pdft.plot1d_x(vxc_N_d, xyz=xyz_d, ax=ax1[0], label="Newton")
+XC_Inversion.pdft.plot1d_x(vxc_NN_d, xyz=xyz_d, ax=ax1[0], label="Newton noTSVD", ls="--")
+XC_Inversion.pdft.plot1d_x(vxc_LBFGS_d, xyz=xyz_d, ax=ax1[0], label="L-BFGS-B", ls="-.")
+XC_Inversion.pdft.plot1d_x(vxc_BFGS_d, xyz=xyz_d, ax=ax1[0], label="BFGS", ls="--")
+XC_Inversion.pdft.plot1d_x(vxc_dogleg_d, xyz=xyz_d, ax=ax1[0], label="dogleg", ls="dotted")
+ax1[0].legend()
+ax1[0].set_xlim(1e-2,14)
+ax1[0]
+ax1[0].set_xscale("log")
+f.show()
+ax[0].set_xlim(0,10)
+Out[32]: (0, 10)
+ax[1].set_xlim(0,10)
+Out[33]: (0, 10)
+ax1[1].set_xlim(1e-2,10)
+Out[34]: (0.01, 10)
+ax1[0].set_xlim(1e-2,10)
+Out[35]: (0.01, 10)
+f.show()
+f1.show()
+ax[0].set_title("cc-pVDZ")
+Out[38]: Text(0.5, 1, 'cc-pVDZ')
+ax1[0].set_title("cc-pVDZ")
+Out[39]: Text(0.5, 1, 'cc-pVDZ')
+ax1[1].set_title("aug-cc-pV5Z")
+Out[40]: Text(0.5, 1, 'aug-cc-pV5Z')
+ax1[0].set_title("aug-cc-pV5Z")
+Out[41]: Text(0.5, 1, 'aug-cc-pV5Z')
+f.savefig("Ar_DvsA5")
+f1.savefig("Ar_DvsA5_log")
+inverser.find_vxc_scipy_WuYang(opt_method="trust-exact");
+Zero the old result for a new calculation..
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 0.8938415447454043
+Optimization terminated successfully.
+         Current function value: -526.236760
+         Iterations: 3
+         Function evaluations: 4
+         Gradient evaluations: 4
+         Hessian evaluations: 4
+|jac| 2.1850710809101597e-05 |n| 0.0005672573129339617 L after -526.2367598433231
+Ts 526.2334798903396
+dTs 0.0033020425288358014
+eigenA
+[-113.80333839  -10.80455346   -8.45508765   -8.45508765   -8.45508765
+   -0.8924278    -0.39047232   -0.39047232   -0.39047232]
+[-114.34689574  -10.98708254   -8.66966285   -8.66966285   -8.66966285
+   -1.03702341   -0.53972786   -0.53972786   -0.53972786]
+wfnDiff -0.2267437215160997
+Constant potential:  0
+ESP fitting starts. This might take a while.
+ESP fitting done
+f.show()
+ax[1].set_title("aug-cc-pV5Z")
+Out[46]: Text(0.5, 1, 'aug-cc-pV5Z')
+f.show()
+f.savefig("Ar_DvsA5")
+f1.show()
+ax1[0].set_title("cc-pVDZ")
+Out[50]: Text(0.5, 1, 'cc-pVDZ')
+f1.show()
+f1.savefig("Ar_DvsA5_log")
+f,ax = plt.subplots(1,1,dpi=200)
+XC_Inversion.pdft.plot1d_x(inverser.input_vxc_a, input_density_wfn.V_potential(), ax=ax,
+                           label="input_xc_a", title=title)
+XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vp_basis.Vpot, ax=ax, label="WuYang_xc_a", ls='--')
+ax.legend()
+ax.set_xlim(0, 14)
+f.show()
+plt.close(f)
+f,ax = plt.subplots(1,1,dpi=200)
+XC_Inversion.pdft.plot1d_x(inverser.input_vxc_a, input_density_wfn.V_potential(), ax=ax,
+                           label="input_xc_a", title=title)
+XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vp_basis.Vpot, ax=ax, label="WuYang_xc_a", ls='--')
+XC_Inversion.pdft.plot1d_x(vxc_dogleg_d, vp_basis.Vpot, ax=ax, label="WuYang_xc_a", ls='--')
+ax.legend()
+ax.set_xlim(1e-2, 10)
+f.show()
+plt.close(f)
+f,ax = plt.subplots(1,1,dpi=200)
+XC_Inversion.pdft.plot1d_x(inverser.input_vxc_a, input_density_wfn.V_potential(), ax=ax,
+                           label="input_xc_a", title=title)
+XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vp_basis.Vpot, ax=ax, label="WuYang_xc_a", ls='--')
+XC_Inversion.pdft.plot1d_x(vxc_dogleg_d, vp_basis.Vpot, ax=ax, label="WuYang_xc_a", ls='--')
+ax.legend()
+ax.set_xlim(1e-2, 10)
+ax.set_xscale("log")
+f.show()
+plt.close(f)
+Process finished with exit code 0
+

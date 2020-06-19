@@ -15,7 +15,7 @@ basis = 'aug-cc-pvqz'
 basis = 'aug-cc-pvdz'
 basis = 'aug-cc-pvtz'
 basis = 'aug-cc-pv6z'
-basis = 'aug-cc-pv5z'
+basis = 'aug-cc-pvqz'
 
 vxc_basis = None
 
@@ -83,7 +83,7 @@ if method == "WuYangScipy":
     inverser.find_vxc_scipy_WuYang(opt_method=opt_method, find_vxc_grid=False)
 elif method == "WuYangMN":
     # rcondlist, dnlist, Llist = inverser.find_vxc_manualHewton(svd_rcond=svd, line_search_method="LD")
-    inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="StrongWolfe", find_vxc_grid=False)
+    inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="StrongWolfeD", find_vxc_grid=False)
 elif method == "COScipy":
     inverser.find_vxc_scipy_constrainedoptimization(opt_method=opt_method)
 

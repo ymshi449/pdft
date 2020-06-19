@@ -13,16 +13,16 @@ basis = 'aug-pcsseg-3'
 basis = 'cc-pvdz'
 basis = 'aug-cc-pvtz'
 basis = '6-31G'
-basis = 'aug-cc-pvqz'
+basis = 'aug-cc-pVDZ'
 
 vp_basis = None
 
 ortho_basis = False
-svd = "search_cycle_segment"
-opt_method="BFGS"
-method = "WuYangMN"
-v0 = "FermiAmaldi"
+svd = "segment_cycle_cutoff"
+opt_method="dogleg"
+method = "WuYangScipy"
 v0 = "Hartree"
+v0 = "FermiAmaldi"
 
 title = "Be "+ method +"/"+ opt_method + " " + basis+"/"+ \
         str(vp_basis) + " OB:"\
@@ -34,7 +34,7 @@ psi4.set_output_file("Be.psi4")
 Full_Molec = psi4.geometry("""
 nocom
 noreorient
-Be 0.0 0.0 0.0
+Be
 units bohr
 symmetry c1
 """)
@@ -44,7 +44,7 @@ Full_Molec.set_name("Be")
 
 #Psi4 Options:
 psi4.set_options({
-    'DFT_SPHERICAL_POINTS': 434,
+    'DFT_SPHERICAL_POINTS': 302,
     'DFT_RADIAL_POINTS': 81,
     'REFERENCE' : 'UKS'
 })
@@ -62,20 +62,20 @@ print("Number of Basis: ", mol.nbf, vp_basis.nbf)
 
 inverser = XC_Inversion.Inverser(mol, input_density_wfn,
                                  ortho_basis=ortho_basis,
-                                 vp_basis=vp_basis,
+                                 vxc_basis=vp_basis,
                                  v0=v0
                                  )
 
 # grad, grad_app = inverser.check_gradient_constrainedoptimization()
 # hess, hess_app = inverser.check_hess_constrainedoptimization()
 
-if method == "WuYangScipy":
-    inverser.find_vxc_scipy_WuYang(14000, opt_method=opt_method)
-elif method == "WuYangMN":
-    # rcondlist, dnlist, Llist = inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="LD")
-    inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="StrongWolfeD")
-elif method == "COScipy":
-    inverser.find_vxc_scipy_constrainedoptimization(opt_method=opt_method)
+# if method == "WuYangScipy":
+#     inverser.find_vxc_scipy_WuYang(14000, opt_method=opt_method)
+# elif method == "WuYangMN":
+#     # rcondlist, dnlist, Llist = inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="LD")
+#     inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="StrongWolfeD")
+# elif method == "COScipy":
+#     inverser.find_vxc_scipy_constrainedoptimization(opt_method=opt_method)
 
 # dDa = input_density_wfn.Da().np - mol.Da.np
 # dDb = input_density_wfn.Db().np - mol.Db.np

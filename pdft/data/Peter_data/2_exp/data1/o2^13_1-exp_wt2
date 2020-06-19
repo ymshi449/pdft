@@ -1,0 +1,41 @@
+Input energy_filename, covariance_filename
+Input nskip, N_MC, nparm
+nskip, N_MC, nparm =        0     8192   1
+weighting, fit_what =  2 error   
+weighting = 0 => fit upto some blocking level without wts,
+          = 1 => fit all blocking levels with weight sqrt(nblk-1)
+          = 2 => fit all blocking levels with weight (nblk-1)
+fit_what  = "variance" => fit RHS of Eq. 15 in beyond_FN.tex
+          = "error" => fit sqrt of RHS of Eq. 15 in beyond_FN.tex
+
+iset=       1
+i_blocking_level_best, err_blocking=  6  2.78269811E-02
+TT_corr_blocking_biased, r1_initial      6.35 0.72789
+ndata=       13
+r1=  0.7278873953728122
+r1=  0.7029901988684931
+r1=  0.7025590696867633
+r1=  0.7025621202554472
+r1=  0.7025621199858905
+r1=  0.7025621199858905
+r1=  0.702562
+correlation length=       2.833
+chisq=0.197271D+00    11 func evals, convergence: pr        
+j_blocking_level, err, err_formula=  0  1.104E-02  1.104E-02  0.00E+00  1.000 <--
+j_blocking_level, err, err_formula=  1  1.436E-02  1.441E-02  4.58E-05  0.846
+j_blocking_level, err, err_formula=  2  1.812E-02  1.822E-02  9.72E-05  0.673
+j_blocking_level, err, err_formula=  3  2.188E-02  2.169E-02 -1.90E-04  0.491
+j_blocking_level, err, err_formula=  4  2.416E-02  2.403E-02 -1.29E-04  0.299
+j_blocking_level, err, err_formula=  5  2.531E-02  2.525E-02 -5.61E-05  0.164
+j_blocking_level, err, err_formula=  6  2.783E-02  2.584E-02 -1.98E-03  0.099 <--
+j_blocking_level, err, err_formula=  7  2.772E-02  2.614E-02 -1.58E-03  0.049
+j_blocking_level, err, err_formula=  8  2.802E-02  2.628E-02 -1.74E-03  0.025
+j_blocking_level, err, err_formula=  9  2.274E-02  2.635E-02  3.62E-03  0.008
+j_blocking_level, err, err_formula= 10  2.668E-02  2.639E-02 -2.94E-04  0.006
+j_blocking_level, err, err_formula= 11  3.300E-02  2.641E-02 -6.59E-03  0.004
+j_blocking_level, err, err_formula= 12  4.399E-02  2.641E-02 -1.76E-02  0.004
+j_blocking_level, err, err_formula= 13             2.642E-02 <-- This is the final result
+aver, variance, TT_corr, err_blocking, err_formula  9.557471E-03 9.988547E-01    5.7 2.78E-02 2.64E-02
+r1_ave, r1_sigma= 0.702562      NaN
+variance_ave, variance_sigma=  9.988547E-01  0.000000E+00
+#N_MC, nset=    8192       1 err_blocking_ave, err_blocking_sigma, err_formula_ave, err_formula_sigma=  0.027827       NaN  0.026423       NaN

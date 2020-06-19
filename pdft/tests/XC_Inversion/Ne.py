@@ -19,8 +19,8 @@ vp_basis = None
 
 ortho_basis = False
 svd = "segment_cycle_cutoff"
-opt_method="BFGS"
-method = "WuYangMN"
+opt_method="L-BFGS-B"
+method = "WuYangScipy"
 v0 = "Hartree"
 v0 = "FermiAmaldi"
 
@@ -34,7 +34,7 @@ psi4.set_output_file("Ne.psi4")
 Full_Molec = psi4.geometry("""
 nocom
 noreorient
-Ne 0.0 0.0 0.0
+Ne
 units bohr
 symmetry c1
 """)
@@ -43,8 +43,8 @@ Full_Molec.set_name("Ne")
 
 #Psi4 Options:
 psi4.set_options({
-    'DFT_SPHERICAL_POINTS': 590,
-    'DFT_RADIAL_POINTS': 140,
+    'DFT_SPHERICAL_POINTS': 302,
+    'DFT_RADIAL_POINTS': 77,
     'REFERENCE' : 'UHF'
 })
 E, input_density_wfn = psi4.energy(functional+"/"+basis, molecule=Full_Molec, return_wfn=True)
@@ -65,7 +65,8 @@ print("Number of Basis: ", mol.nbf, vp_basis.nbf)
 inverser = XC_Inversion.Inverser(mol, input_density_wfn,
                                  ortho_basis=ortho_basis,
                                  vxc_basis=vp_basis,
-                                 v0=v0
+                                 v0=v0,
+                                 # eHOMO=input_density_wfn.epsilon_a().np[4]
                                  )
 
 # grad, grad_app = inverser.check_gradient_constrainedoptimization()
