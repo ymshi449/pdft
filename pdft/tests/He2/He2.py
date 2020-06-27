@@ -82,7 +82,7 @@ pdfter.find_vp_densitydifference(140)
 #                                            ortho_basis=Orthogonal_basis,
 #                                            beta_method="Density",
 #                                            svd_rcond=svdc,
-#                                            regul_const=regulc,
+#                                            regularization_constant=regulc,
 #                                            a_rho_var=1e-5,
 #                                            mu=1e-7
 #                                            )

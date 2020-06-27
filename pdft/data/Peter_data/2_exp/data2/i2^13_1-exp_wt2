@@ -1,3 +1,0 @@
-walkalize          covariance   energy_filename, covariance_filename
-0      8192  1                  nskip, ndata, nparm
-2 'error'                       weighting, fit_what

@@ -1037,7 +1037,7 @@ class U_Embedding:
         self.ef_conv = []
 
         # Regularization Constant
-        self.regul_const = None
+        self.regularization_constant = None
         self.regul_norm = None
 
         # Constrained Optimization W exponent
@@ -1745,10 +1745,10 @@ class U_Embedding:
         hess = - 0.5 * (hess + hess.T)
 
         # Regularization
-        if self.regul_const is not None:
+        if self.regularization_constant is not None:
             T = self.twogradtwo.reshape(self.vp_basis.nbf()**2, self.vp_basis.nbf()**2)
             T = 0.5 * (T + T.T)
-            hess -= 4*4*self.regul_const*T
+            hess -= 4*4*self.regularization_constant*T
 
         # print("Response", np.linalg.norm(hess))
         # print(hess)
@@ -1782,10 +1782,10 @@ class U_Embedding:
                         self.four_overlap.reshape(self.vp_basis.nbf()**2, self.vp_basis.nbf()**2), optimize=True)
 
         # Regularization
-        if self.regul_const is not None:
+        if self.regularization_constant is not None:
             T = self.twogradtwo.reshape(self.vp_basis.nbf()**2, self.vp_basis.nbf()**2)
             T = 0.5 * (T + T.T)
-            jac -= 4*4*self.regul_const*np.dot(T, vp_array)
+            jac -= 4*4*self.regularization_constant*np.dot(T, vp_array)
 
         # print("Jac norm:", np.linalg.norm(jac))
         return jac
@@ -1812,11 +1812,11 @@ class U_Embedding:
         L += np.sum(self.vp_fock[0].np*(density_difference_a + density_difference_b))
 
         # Regularization
-        if self.regul_const is not None:
+        if self.regularization_constant is not None:
             T = self.twogradtwo.reshape(self.vp_basis.nbf()**2, self.vp_basis.nbf()**2)
             T = 0.5 * (T + T.T)
             print(L, T.shape, vp.shape)
-            L -= 4*4*self.regul_const*np.dot(np.dot(vp_array, T), vp_array)
+            L -= 4*4*self.regularization_constant*np.dot(np.dot(vp_array, T), vp_array)
 
         _, _, _, w = self.molecule.Vpot.get_np_xyzw()
         rho_molecule = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
@@ -1830,7 +1830,7 @@ class U_Embedding:
         print("L:", L, "Int_vp_drho:", L-Ef, "Ef:", Ef, "Ep: ", Ep, "drho:", rho_conv)
         return L
 
-    def find_vp_scipy(self, maxiter=21, guess=None, regul_const=None, opt_method="Newton-CG"):
+    def find_vp_scipy(self, maxiter=21, guess=None, regularization_constant=None, opt_method="Newton-CG"):
         """
         Scipy Newton-CG
         :param maxiter:
@@ -1864,8 +1864,8 @@ class U_Embedding:
 
             self.fragments_scf(1000, vp=True, vp_fock=True)
 
-        self.regul_const = regul_const
-        if self.twogradtwo is None and self.regul_const is not None:
+        self.regularization_constant = regularization_constant
+        if self.twogradtwo is None and self.regularization_constant is not None:
             self.twogradtwo = self.molecule.two_gradtwo_grid_overlap()
 
         opt = {
@@ -1880,7 +1880,7 @@ class U_Embedding:
 
     def find_vp_response(self, maxiter, beta=None, guess=None, beta_update=None,
                          vp_nad_iter=None,
-                         svd_rcond=None, regul_const=None, a_rho_var=1e-4, vp_norm_conv=1e-6, printflag=False):
+                         svd_rcond=None, regularization_constant=None, a_rho_var=1e-4, vp_norm_conv=1e-6, printflag=False):
         """
         Using the inverse of static response function to update dvp from a dn.
         This version describe vp = sum b_ij*phi_i*phi_j. phi is ao.
@@ -1892,7 +1892,7 @@ class U_Embedding:
         :param vp_nad_component: True. If False, will not calculate vp_Hext_nad.
         :param vp_nad_iter: 1. The number of iterations vp_Hext will be updated
         :param svd_rcond np.lingal.pinv rcond for hess psudo-inverse
-        :param regul_const regularization constant.
+        :param regularization_constant regularization constant.
         :param a_rho_var convergence threshold for last 5 drho std
         :param vp_norm_conv convergence threshold vp coefficient norm
         :param printflag printing flag
@@ -1946,12 +1946,12 @@ class U_Embedding:
         if beta is None:
             beta = 0.1
 
-        self.regul_const = regul_const
+        self.regularization_constant = regularization_constant
 
         if svd_rcond is None:
             svd_rcond = 1e-3
 
-        if self.twogradtwo is None and self.regul_const is not None:
+        if self.twogradtwo is None and self.regularization_constant is not None:
             self.twogradtwo = self.molecule.two_gradtwo_grid_overlap()
 
         print("<<<<<<<<<<<<<<<<<<<<<<Compute_Method_Response Method 2<<<<<<<<<<<<<<<<<<<")
@@ -2107,10 +2107,10 @@ class U_Embedding:
         hess = - 0.5 * (hess + hess.T)
 
         # Regularization
-        if self.regul_const is not None:
+        if self.regularization_constant is not None:
             T = self.vp_basis.T.np
             T = 0.5 * (T + T.T)
-            hess += 4*4*self.regul_const*T
+            hess += 4*4*self.regularization_constant*T
         return hess
 
     def jac_1basis(self, vp=None, update_vp=True, calculate_scf=True):
@@ -2154,11 +2154,11 @@ class U_Embedding:
         jac = - self.Lagrange_mul * np.einsum("uv,uvi->i", (density_difference_a + density_difference_b), self.three_overlap, optimize=True)
 
         # Regularization
-        if self.regul_const is not None:
+        if self.regularization_constant is not None:
 
             T = self.vp_basis.T.np
             T = 0.5 * (T + T.T)
-            jac += 4*4*self.regul_const*np.dot(T, vp)
+            jac += 4*4*self.regularization_constant*np.dot(T, vp)
 
         # print("Jac norm:", np.linalg.norm(jac))
 
@@ -2224,20 +2224,20 @@ class U_Embedding:
         # plt.close(f)
 
         # Regularization
-        if self.regul_const is not None:
+        if self.regularization_constant is not None:
             T = self.vp_basis.T.np
             T = 0.5 * (T + T.T)
             norm = 4 * 4 * np.dot(np.dot(vp, T), vp)
             # if not np.isclose(norm, 0):
-            #     # self.regul_const = L / norm * 1e-4
-            #     print("L", L, norm, L / norm, self.regul_const)
-            L += norm * self.regul_const
+            #     # self.regularization_constant = L / norm * 1e-4
+            #     print("L", L, norm, L / norm, self.regularization_constant)
+            L += norm * self.regularization_constant
 
         self.lagrange.append(L)
         # print("L:", L, "Int_vp_drho:", self.Lagrange_mul * (L+Ef), "Ef:", Ef, "Ep: ", Ep, "dn", np.sum(np.abs(dn)*w))
         return L
 
-    def find_vp_scipy_1basis(self, maxiter=21, guess=None, regul_const=None, opt_method="trust-exact",
+    def find_vp_scipy_1basis(self, maxiter=21, guess=None, regularization_constant=None, opt_method="trust-exact",
                              ortho_basis=True, printflag=False):
         """
         Scipy Newton-CG
@@ -2246,7 +2246,7 @@ class U_Embedding:
         :param guess:
         :return:
         """
-        self.regul_const = regul_const
+        self.regularization_constant = regularization_constant
 
         self.ortho_basis = ortho_basis
 
@@ -2313,7 +2313,7 @@ class U_Embedding:
     def find_vp_response_1basis(self, maxiter=21, guess=None, beta_method="Density",
                                 vp_nad_iter=None, Qtype='nf', vstype='nf',
                                 svd_rcond=None, ortho_basis=True,mu=1e-4,
-                                regul_const=None, a_rho_var=1e-4,
+                                regularization_constant=None, a_rho_var=1e-4,
                                 vp_norm_conv=1e-6, printflag=False):
         """
         Using the inverse of static response function to update dvp from a dn.
@@ -2326,13 +2326,13 @@ class U_Embedding:
                      If "Lagrangian", BackTracking to optimize density difference.
         :param vp_nad_iter: 1. The number of iterations vp_Hext will be updated. If None, will not use vp_nad components.
         :param svd_rcond np.lingal.pinv rcond for hess psudo-inverse
-        :param regul_const regularization constant.
+        :param regularization_constant regularization constant.
         :param a_rho_var convergence threshold for last 5 drho std
         :param vp_norm_conv convergence threshold vp coefficient norm
         :param printflag printing flag
         :return:
         """
-        self.regul_const = regul_const
+        self.regularization_constant = regularization_constant
 
         self.ortho_basis = ortho_basis
 
@@ -2530,7 +2530,7 @@ class U_Embedding:
 
 
             print(
-                F'--------------------------------------------SVD: {svd_rcond} Reg: {self.regul_const} Ortho: {self.ortho_basis}------------------------ \n'
+                F'--------------------------------------------SVD: {svd_rcond} Reg: {self.regularization_constant} Ortho: {self.ortho_basis}------------------------ \n'
                 F'Iter: {scf_step} beta: {beta} Ef: {self.ef_conv[-1]} Ep: {self.ep_conv[-1]}\n'
                 F'|jac|: {np.linalg.norm(jac)} L: {self.lagrange[-1]} d_rho: {self.drho_conv[-1]}')
             if converge_flag:
@@ -2774,7 +2774,7 @@ class U_Embedding:
                      If "Lagrangian", BackTracking to optimize density difference.
         :param vp_nad_iter: 1. The number of iterations vp_Hext will be updated. If None, will not use vp_nad components.
         :param svd_rcond np.lingal.pinv rcond for hess psudo-inverse
-        :param regul_const regularization constant.
+        :param regularization_constant regularization constant.
         :param a_rho_var convergence threshold for last 5 drho std
         :param vp_norm_conv convergence threshold vp coefficient norm
         :param printflag printing flag
@@ -3314,7 +3314,7 @@ class U_Embedding:
         jac = np.einsum("uv,uvw->w", jac_real, self.three_overlap)
         return jac
 
-    def find_vp_scipy_constrainedoptimization(self, maxiter=21, guess=None, regul_const=None,
+    def find_vp_scipy_constrainedoptimization(self, maxiter=21, guess=None, regularization_constant=None,
                                               opt_method="BFGS", ortho_basis=True, printflag=False):
         """
         Scipy Newton-CG
@@ -3324,7 +3324,7 @@ class U_Embedding:
         :return:
         """
 
-        self.regul_const = regul_const
+        self.regularization_constant = regularization_constant
 
         self.ortho_basis = ortho_basis
 

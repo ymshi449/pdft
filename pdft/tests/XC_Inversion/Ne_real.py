@@ -9,15 +9,14 @@ if __name__ == "__main__":
     psi4.set_memory('4 GB')
 
 functional = 'svwn'
-basis = 'cc-pCV5Z'
+basis = 'cc-pCVDZ'
 
 vxc_basis = 'cc-pCV5Z'
 
 ortho_basis = False
-svd = "segment_cycle_cutoff"
-opt_method="L-BFGS-B"
-method = "WuYangScipy"
-v0 = "Hartree"
+svd = "input_once"
+opt_method="trust-krylov"
+method = "WuYangMN"
 v0 = "FermiAmaldi"
 
 title = method +"_"+ opt_method +"_"+v0+ "_" + basis+"_"+ \
@@ -37,21 +36,22 @@ symmetry c1
 
 Full_Molec.set_name("Ne")
 
+# Exact
+Ne = np.genfromtxt('/home/yuming/PDFT/pdft/pdft/data/Atom0/ne.new8/Data')
+
 #Psi4 Options:
 psi4.set_options({
     'DFT_SPHERICAL_POINTS': 302,
     'DFT_RADIAL_POINTS': 77,
-    'R_CONVERGENCE': 1e-11,
-    'E_Convergence': 1e-11,
     'MAXITER': 1000,
     'BASIS': basis,
     'REFERENCE': 'RHF'
-
 })
 #  Get wfn for target density
 E_input, input_density_wfn = psi4.energy("CCSD"+"/"+basis, molecule=Full_Molec, return_wfn=True)
-#  Get wfn for v0 using HF
-# E_v0, v0_wfn = psi4.energy("scf"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+print("Target Density Calculation Finished.")
+
+
 #Psi4 Options:
 psi4.set_options({
     'REFERENCE' : 'UHF'
@@ -82,16 +82,12 @@ if method == "WuYangScipy":
 elif method == "WuYangMN":
     hess, jac = inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="StrongWolfe")
 elif method == "COScipy":
-    inverser.find_vxc_scipy_constrainedoptimization(opt_method=opt_method)
-
-# dDa = input_density_wfn.Da().np - mol.Da.np
-# dDb = input_density_wfn.Db().np - mol.Db.np
-# dn = mol.to_grid(dDa + dDb)
-
+    inverser.find_vxc_scipy_constrainedoptimization(opt_method="L-BFGS-B")
+#
 # f,ax = plt.subplots(1,1,dpi=200)
-# XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vxc_basis.Vpot, ax=ax, label="WuYang_xc_a", ls='--')
-# # XC_Inversion.pdft.plot1d_x(np.log10(np.abs(dn)), mol.Vpot, ax=ax, label="logdn", ls='dotted')
+# ax.plot(Ne[:, 1], Ne[:, 3], label="Exact")
+# XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vxc_basis.Vpot, ax=ax, label="WuYang", ls='--')
 # ax.legend()
-# ax.set_xlim(0,14)
+# ax.set_xlim(1e-3, 14)
+# ax.set_xscale("log")
 # f.show()
-# plt.close(f)

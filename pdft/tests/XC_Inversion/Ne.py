@@ -8,20 +8,14 @@ if __name__ == "__main__":
     psi4.set_num_threads(2)
 
 functional = 'svwn'
-basis = 'sto-3g'
-basis = 'cc-pvdz'
-basis = 'cc-pvtz'
-basis = 'aug-pcsseg-4'
-basis = 'aug-cc-pvqz'
-basis = 'aug-cc-pv5z'
+basis = 'cc-pCVDZ'
 
-vp_basis = None
+vp_basis = 'cc-pCV5Z'
 
 ortho_basis = False
 svd = "segment_cycle_cutoff"
-opt_method="L-BFGS-B"
+opt_method="trust-krylov"
 method = "WuYangScipy"
-v0 = "Hartree"
 v0 = "FermiAmaldi"
 
 title = method +"_"+ opt_method +"_"+v0+ "_" + basis+"_"+ \
@@ -65,8 +59,7 @@ print("Number of Basis: ", mol.nbf, vp_basis.nbf)
 inverser = XC_Inversion.Inverser(mol, input_density_wfn,
                                  ortho_basis=ortho_basis,
                                  vxc_basis=vp_basis,
-                                 v0=v0,
-                                 # eHOMO=input_density_wfn.epsilon_a().np[4]
+                                 v0=v0
                                  )
 
 # grad, grad_app = inverser.check_gradient_constrainedoptimization()
@@ -79,17 +72,15 @@ elif method == "WuYangMN":
     inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="StrongWolfeD")
 elif method == "COScipy":
     inverser.find_vxc_scipy_constrainedoptimization(opt_method=opt_method)
-
-# dDa = input_density_wfn.Da().np - mol.Da.np
-# dDb = input_density_wfn.Db().np - mol.Db.np
-# dn = mol.to_grid(dDa + dDb)
-
+#
+# # dDa = input_density_wfn.Da().np - mol.Da.np
+# # dDb = input_density_wfn.Db().np - mol.Db.np
+# # dn = mol.to_grid(dDa + dDb)
+#
 # f,ax = plt.subplots(1,1,dpi=200)
-# XC_Inversion.pdft.plot1d_x(inverser.input_vxc_a, input_density_wfn.V_potential(), ax=ax,
-#                            label="input_xc_a", title=title)
-# XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vp_basis.Vpot, ax=ax, label="WuYang_xc_a", ls='--')
-# # XC_Inversion.pdft.plot1d_x(np.log10(np.abs(dn)), mol.Vpot, ax=ax, label="logdn", ls='dotted')
+# XC_Inversion.pdft.plot1d_x(inverser.input_vxc_a, input_density_wfn.V_potential(), ax=ax, label="LDA")
+# XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vp_basis.Vpot, ax=ax, label="WuYang", ls='--')
 # ax.legend()
-# ax.set_xlim(0, 14)
+# ax.set_xlim(1e-3, 10)
+# ax.set_xscale("log")
 # f.show()
-# plt.close(f)

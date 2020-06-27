@@ -1,0 +1,329 @@
+/home/yuming/anaconda3/envs/work/bin/python /home/yuming/pycharm-2019.1.2/helpers/pydev/pydevconsole.py --mode=client --port=46477
+import sys; print('Python %s on %s' % (sys.version, sys.platform))
+sys.path.extend(['/home/yuming/PDFT/pdft/pdft'])
+Python 3.7.5 (default, Oct 25 2019, 15:51:11) 
+Type 'copyright', 'credits' or 'license' for more information
+IPython 7.9.0 -- An enhanced Interactive Python. Type '?' for help.
+PyDev console: using IPython 7.9.0
+Python 3.7.5 (default, Oct 25 2019, 15:51:11) 
+[GCC 7.3.0] on linux
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Ne_real.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+  Threads set to 3 by Python driver.
+  Memory set to   3.725 GiB by Python driver.
+WuYangScipy_L-BFGS-B_FermiAmaldi_cc-pCVDZ_cc-pCV5Z_False_segment_cycle_cutoff
+Number of Basis:  18 145
+ESP fitting starts. This might take a while.
+ESP fitting done
+no xc
+Zero the old result for a new calculation..
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion L-BFGS-B<<<<<<<<<<<<<<<<<<<
+|n| before 0.6765881868756274
+/home/yuming/anaconda3/envs/work/lib//python3.7/site-packages/scipy/optimize/_minimize.py:505: RuntimeWarning: Method L-BFGS-B does not use Hessian information (hess).
+  RuntimeWarning)
+RUNNING THE L-BFGS-B CODE
+           * * *
+Machine precision = 2.220D-16
+ N =          290     M =           10
+ This problem is unconstrained.
+At X0         0 variables are exactly at the bounds
+At iterate    0    f= -1.28420D+02    |proj g|=  2.65066D-01
+At iterate    1    f= -1.28504D+02    |proj g|=  3.94401D-02
+At iterate    2    f= -1.28506D+02    |proj g|=  2.94336D-02
+At iterate    3    f= -1.28509D+02    |proj g|=  3.82292D-03
+At iterate    4    f= -1.28510D+02    |proj g|=  4.34679D-03
+At iterate    5    f= -1.28510D+02    |proj g|=  4.16511D-03
+At iterate    6    f= -1.28510D+02    |proj g|=  1.29234D-03
+At iterate    7    f= -1.28511D+02    |proj g|=  3.65338D-03
+At iterate    8    f= -1.28511D+02    |proj g|=  5.53374D-03
+At iterate    9    f= -1.28512D+02    |proj g|=  8.30752D-03
+At iterate   10    f= -1.28512D+02    |proj g|=  7.92100D-03
+At iterate   11    f= -1.28513D+02    |proj g|=  1.77345D-03
+At iterate   12    f= -1.28513D+02    |proj g|=  4.56115D-03
+At iterate   13    f= -1.28513D+02    |proj g|=  2.74075D-03
+At iterate   14    f= -1.28513D+02    |proj g|=  7.23164D-05
+At iterate   15    f= -1.28513D+02    |proj g|=  9.28412D-05
+           * * *
+Tit   = total number of iterations
+Tnf   = total number of function evaluations
+Tnint = total number of segments explored during Cauchy searches
+Skip  = number of BFGS updates skipped
+Nact  = number of active bounds at final generalized Cauchy point
+Projg = norm of the final projected gradient
+F     = final function value
+           * * *
+   N    Tit     Tnf  Tnint  Skip  Nact     Projg        F
+  290     15     18      1     0     0   9.284D-05  -1.285D+02
+  F =  -128.51258084091074     
+CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH             
+ Cauchy                time 0.000E+00 seconds.
+ Subspace minimization time 0.000E+00 seconds.
+ Line search           time 0.000E+00 seconds.
+ Total User time 0.000E+00 seconds.
+|jac| 0.00021813443177752263 |n| 0.004790598110510075 L after -128.51258084091074
+Ts 128.51352433711256
+dTs -0.0005897957008203364
+eigenA
+[-32.76418661  -1.91886214  -0.83239926  -0.83239926  -0.83239926]
+[-30.62444689  -1.61248758  -0.72605336  -0.72605336  -0.72605336]
+wfnDiff -0.2163760223416359
+Constant potential:  0
+ESP fitting starts. This might take a while.
+ESP fitting done
+n_CD = mol.to_grid(input_density_wfn.Db().np+input_density_wfn.Da().np)
+xyz_mol_CD = mol.Vpot.get_np_xyzw()[:-1]
+xyz_vxc_CD = vxc_basis.Vpot.get_np_xyzw()[:-1]
+vxc_CD = np.copy(inverser.vxc_a_grid)
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Ne_real.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+WuYangScipy_L-BFGS-B_FermiAmaldi_cc-pCVTZ_cc-pCV5Z_False_segment_cycle_cutoff
+Number of Basis:  43 145
+ESP fitting starts. This might take a while.
+ESP fitting done
+no xc
+Zero the old result for a new calculation..
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion L-BFGS-B<<<<<<<<<<<<<<<<<<<
+|n| before 0.9007774695546974
+RUNNING THE L-BFGS-B CODE
+           * * *
+Machine precision = 2.220D-16
+ N =          290     M =           10
+At X0         0 variables are exactly at the bounds
+ This problem is unconstrained.
+At iterate    0    f= -1.28424D+02    |proj g|=  2.64656D-01
+At iterate    1    f= -1.28511D+02    |proj g|=  4.57696D-02
+At iterate    2    f= -1.28514D+02    |proj g|=  3.61479D-02
+At iterate    3    f= -1.28519D+02    |proj g|=  1.35225D-02
+At iterate    4    f= -1.28522D+02    |proj g|=  2.07800D-02
+At iterate    5    f= -1.28529D+02    |proj g|=  2.91713D-02
+At iterate    6    f= -1.28536D+02    |proj g|=  2.18412D-02
+At iterate    7    f= -1.28543D+02    |proj g|=  8.33192D-03
+At iterate    8    f= -1.28543D+02    |proj g|=  8.72298D-04
+At iterate    9    f= -1.28543D+02    |proj g|=  7.85580D-04
+At iterate   10    f= -1.28543D+02    |proj g|=  4.35463D-04
+At iterate   11    f= -1.28543D+02    |proj g|=  7.08211D-04
+At iterate   12    f= -1.28543D+02    |proj g|=  1.87986D-03
+At iterate   13    f= -1.28543D+02    |proj g|=  2.52819D-03
+At iterate   14    f= -1.28543D+02    |proj g|=  2.19478D-03
+At iterate   15    f= -1.28543D+02    |proj g|=  2.57491D-03
+At iterate   16    f= -1.28543D+02    |proj g|=  9.15172D-04
+At iterate   17    f= -1.28543D+02    |proj g|=  1.70276D-04
+At iterate   18    f= -1.28543D+02    |proj g|=  8.39196D-05
+           * * *
+Tit   = total number of iterations
+Tnf   = total number of function evaluations
+Tnint = total number of segments explored during Cauchy searches
+Skip  = number of BFGS updates skipped
+Nact  = number of active bounds at final generalized Cauchy point
+Projg = norm of the final projected gradient
+F     = final function value
+           * * *
+   N    Tit     Tnf  Tnint  Skip  Nact     Projg        F
+  290     18     20      1     0     0   8.392D-05  -1.285D+02
+  F =  -128.54326762119780     
+CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH             
+ Cauchy                time 0.000E+00 seconds.
+ Subspace minimization time 0.000E+00 seconds.
+ Line search           time 0.000E+00 seconds.
+ Total User time 0.000E+00 seconds.
+|jac| 0.00020840177035669164 |n| 0.005740169903978971 L after -128.5432676211978
+Ts 128.54273764994113
+dTs 0.0017597929275843466
+eigenA
+[-32.76840821  -1.92701252  -0.84542928  -0.84542928  -0.84542928]
+[-30.7025562   -1.66448903  -0.79366409  -0.79366409  -0.79366409]
+wfnDiff 0.6830744561696291
+Constant potential:  0
+ESP fitting starts. This might take a while.
+ESP fitting done
+n_CT = mol.to_grid(input_density_wfn.Db().np+input_density_wfn.Da().np)
+xyz_mol_CT = mol.Vpot.get_np_xyzw()[:-1]
+xyz_vxc_CT = vxc_basis.Vpot.get_np_xyzw()[:-1]
+vxc_CT = np.copy(inverser.vxc_a_grid)
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Ne_real.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+WuYangScipy_L-BFGS-B_FermiAmaldi_cc-pCVQZ_cc-pCV5Z_False_segment_cycle_cutoff
+Number of Basis:  84 145
+ESP fitting starts. This might take a while.
+ESP fitting done
+no xc
+Zero the old result for a new calculation..
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion L-BFGS-B<<<<<<<<<<<<<<<<<<<
+|n| before 0.9849749706038131
+RUNNING THE L-BFGS-B CODE
+           * * *
+Machine precision = 2.220D-16
+ N =          290     M =           10
+At X0         0 variables are exactly at the bounds
+ This problem is unconstrained.
+At iterate    0    f= -1.28418D+02    |proj g|=  2.67280D-01
+At iterate    1    f= -1.28509D+02    |proj g|=  4.95312D-02
+At iterate    2    f= -1.28512D+02    |proj g|=  3.86823D-02
+At iterate    3    f= -1.28519D+02    |proj g|=  1.45532D-02
+At iterate    4    f= -1.28521D+02    |proj g|=  2.24513D-02
+At iterate    5    f= -1.28530D+02    |proj g|=  3.00549D-02
+At iterate    6    f= -1.28537D+02    |proj g|=  2.13131D-02
+At iterate    7    f= -1.28543D+02    |proj g|=  6.78499D-03
+At iterate    8    f= -1.28543D+02    |proj g|=  1.64019D-03
+At iterate    9    f= -1.28543D+02    |proj g|=  2.24300D-03
+At iterate   10    f= -1.28543D+02    |proj g|=  2.21125D-03
+At iterate   11    f= -1.28544D+02    |proj g|=  3.27829D-03
+At iterate   12    f= -1.28544D+02    |proj g|=  8.51636D-03
+At iterate   13    f= -1.28544D+02    |proj g|=  2.83089D-03
+At iterate   14    f= -1.28544D+02    |proj g|=  1.21486D-03
+At iterate   15    f= -1.28544D+02    |proj g|=  3.47517D-04
+At iterate   16    f= -1.28544D+02    |proj g|=  3.07367D-04
+At iterate   17    f= -1.28544D+02    |proj g|=  3.10321D-04
+At iterate   18    f= -1.28544D+02    |proj g|=  4.08202D-04
+At iterate   19    f= -1.28544D+02    |proj g|=  8.43146D-04
+At iterate   20    f= -1.28544D+02    |proj g|=  1.53535D-03
+At iterate   21    f= -1.28544D+02    |proj g|=  1.72220D-03
+At iterate   22    f= -1.28544D+02    |proj g|=  2.56559D-03
+At iterate   23    f= -1.28544D+02    |proj g|=  1.47953D-03
+At iterate   24    f= -1.28544D+02    |proj g|=  2.28704D-03
+At iterate   25    f= -1.28544D+02    |proj g|=  1.80699D-04
+At iterate   26    f= -1.28544D+02    |proj g|=  1.35586D-04
+At iterate   27    f= -1.28544D+02    |proj g|=  2.62963D-04
+At iterate   28    f= -1.28544D+02    |proj g|=  6.11319D-04
+At iterate   29    f= -1.28544D+02    |proj g|=  1.27893D-03
+At iterate   30    f= -1.28544D+02    |proj g|=  1.68339D-03
+At iterate   31    f= -1.28544D+02    |proj g|=  1.52377D-03
+At iterate   32    f= -1.28544D+02    |proj g|=  1.51273D-03
+At iterate   33    f= -1.28544D+02    |proj g|=  7.56224D-04
+At iterate   34    f= -1.28544D+02    |proj g|=  4.01526D-04
+At iterate   35    f= -1.28544D+02    |proj g|=  6.15537D-04
+At iterate   36    f= -1.28544D+02    |proj g|=  1.48182D-03
+At iterate   37    f= -1.28544D+02    |proj g|=  1.51934D-03
+At iterate   38    f= -1.28544D+02    |proj g|=  1.09041D-03
+At iterate   39    f= -1.28544D+02    |proj g|=  1.41817D-03
+At iterate   40    f= -1.28544D+02    |proj g|=  4.69535D-04
+At iterate   41    f= -1.28544D+02    |proj g|=  1.75769D-04
+At iterate   42    f= -1.28544D+02    |proj g|=  1.68132D-04
+At iterate   43    f= -1.28544D+02    |proj g|=  2.44748D-04
+At iterate   44    f= -1.28544D+02    |proj g|=  1.70267D-04
+At iterate   45    f= -1.28544D+02    |proj g|=  2.73749D-04
+           * * *
+Tit   = total number of iterations
+Tnf   = total number of function evaluations
+Tnint = total number of segments explored during Cauchy searches
+Skip  = number of BFGS updates skipped
+Nact  = number of active bounds at final generalized Cauchy point
+Projg = norm of the final projected gradient
+F     = final function value
+           * * *
+   N    Tit     Tnf  Tnint  Skip  Nact     Projg        F
+  290     45     52      1     0     0   2.737D-04  -1.285D+02
+  F =  -128.54438042516455     
+CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH             
+ Cauchy                time 0.000E+00 seconds.
+ Subspace minimization time 0.000E+00 seconds.
+ Line search           time 0.000E+00 seconds.
+ Total User time 0.000E+00 seconds.
+|jac| 0.0010082374009975938 |n| 0.004144173523260817 L after -128.54438042516455
+Ts 128.55878957139052
+dTs -0.012806745812663342
+eigenA
+[-32.77150214  -1.92933923  -0.84898351  -0.84898351  -0.84898351]
+[-30.79911526  -1.70481435  -0.83669591  -0.83669388  -0.83669087]
+wfnDiff 0.8632872979542298
+Constant potential:  0
+ESP fitting starts. This might take a while.
+ESP fitting done
+n_CQ = mol.to_grid(input_density_wfn.Db().np+input_density_wfn.Da().np)
+xyz_mol_CQ = mol.Vpot.get_np_xyzw()[:-1]
+xyz_vxc_CQ = vxc_basis.Vpot.get_np_xyzw()[:-1]
+vxc_CQ = np.copy(inverser.vxc_a_grid)
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Ne_real.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+WuYangScipy_L-BFGS-B_FermiAmaldi_cc-pCV5Z_cc-pCV5Z_False_segment_cycle_cutoff
+Number of Basis:  145 145
+ESP fitting starts. This might take a while.
+ESP fitting done
+no xc
+Zero the old result for a new calculation..
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion L-BFGS-B<<<<<<<<<<<<<<<<<<<
+|n| before 1.0492294518726135
+RUNNING THE L-BFGS-B CODE
+           * * *
+Machine precision = 2.220D-16
+ N =          290     M =           10
+At X0         0 variables are exactly at the bounds
+ This problem is unconstrained.
+At iterate    0    f= -1.28414D+02    |proj g|=  2.67857D-01
+At iterate    1    f= -1.28508D+02    |proj g|=  5.15625D-02
+At iterate    2    f= -1.28512D+02    |proj g|=  3.98202D-02
+At iterate    3    f= -1.28518D+02    |proj g|=  1.48525D-02
+At iterate    4    f= -1.28521D+02    |proj g|=  2.30787D-02
+At iterate    5    f= -1.28530D+02    |proj g|=  3.06734D-02
+At iterate    6    f= -1.28538D+02    |proj g|=  2.13071D-02
+At iterate    7    f= -1.28543D+02    |proj g|=  6.56012D-03
+At iterate    8    f= -1.28544D+02    |proj g|=  1.71057D-03
+At iterate    9    f= -1.28544D+02    |proj g|=  2.24261D-03
+At iterate   10    f= -1.28544D+02    |proj g|=  2.18392D-03
+At iterate   11    f= -1.28544D+02    |proj g|=  3.22064D-03
+At iterate   12    f= -1.28545D+02    |proj g|=  1.52568D-02
+At iterate   13    f= -1.28545D+02    |proj g|=  1.60368D-03
+At iterate   14    f= -1.28545D+02    |proj g|=  6.90641D-04
+At iterate   15    f= -1.28545D+02    |proj g|=  5.88456D-04
+At iterate   16    f= -1.28545D+02    |proj g|=  3.33743D-04
+At iterate   17    f= -1.28545D+02    |proj g|=  3.64081D-04
+At iterate   18    f= -1.28545D+02    |proj g|=  4.61049D-04
+At iterate   19    f= -1.28545D+02    |proj g|=  1.36551D-03
+At iterate   20    f= -1.28545D+02    |proj g|=  2.84545D-03
+At iterate   21    f= -1.28545D+02    |proj g|=  1.96713D-03
+At iterate   22    f= -1.28545D+02    |proj g|=  1.36081D-03
+At iterate   23    f= -1.28545D+02    |proj g|=  1.58589D-03
+At iterate   24    f= -1.28545D+02    |proj g|=  1.99834D-03
+At iterate   25    f= -1.28545D+02    |proj g|=  1.72973D-03
+At iterate   26    f= -1.28545D+02    |proj g|=  6.35754D-04
+At iterate   27    f= -1.28545D+02    |proj g|=  3.54322D-04
+At iterate   28    f= -1.28545D+02    |proj g|=  4.78584D-04
+           * * *
+Tit   = total number of iterations
+Tnf   = total number of function evaluations
+Tnint = total number of segments explored during Cauchy searches
+Skip  = number of BFGS updates skipped
+Nact  = number of active bounds at final generalized Cauchy point
+Projg = norm of the final projected gradient
+F     = final function value
+           * * *
+   N    Tit     Tnf  Tnint  Skip  Nact     Projg        F
+  290     28     31      1     0     0   4.786D-04  -1.285D+02
+  F =  -128.54508536580175     
+CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH             
+ Cauchy                time 0.000E+00 seconds.
+ Subspace minimization time 0.000E+00 seconds.
+ Line search           time 0.000E+00 seconds.
+ Total User time 0.000E+00 seconds.
+|jac| 0.0013639814353984224 |n| 0.015660283400092973 L after -128.54508536580175
+Ts 128.54434572042024
+dTs 0.0025375266248449935
+eigenA
+[-32.77231056  -1.93027437  -0.85026971  -0.85026971  -0.85026971]
+[-30.78243097  -1.67535241  -0.80829416  -0.80829403  -0.80829403]
+wfnDiff -0.824579505471999
+Constant potential:  0
+ESP fitting starts. This might take a while.
+ESP fitting done
+n_C5 = mol.to_grid(input_density_wfn.Db().np+input_density_wfn.Da().np)
+xyz_mol_C5 = mol.Vpot.get_np_xyzw()[:-1]
+xyz_vxc_C5 = vxc_basis.Vpot.get_np_xyzw()[:-1]
+vxc_C5 = np.copy(inverser.vxc_a_grid)
+Ne = np.genfromtxt('/home/yuming/PDFT/pdft/pdft/data/Atom0/ne.new8/Data')
+f,ax = plt.subplots(1,2,dpi=200)
+ax[0].plot(Ne[:, 1], Ne[:, 3], label="Exact")
+ax[0].set_title("Vxc")
+XC_Inversion.pdft.plot1d_x(vxc_CD, xyz=xyz_vxc_CD, ax=ax[0], label="CD/C5", ls='--')
+XC_Inversion.pdft.plot1d_x(vxc_CT, xyz=xyz_vxc_CT, ax=ax[0], label="CT/C5", ls='--')
+XC_Inversion.pdft.plot1d_x(vxc_CQ, xyz=xyz_vxc_CQ, ax=ax[0], label="CQ/C5", ls='--')
+XC_Inversion.pdft.plot1d_x(vxc_C5, xyz=xyz_vxc_C5, ax=ax[0], label="C5/C5", ls='--')
+ax[0].legend()
+ax[0].set_xlim(1e-3,7)
+ax[0].set_xscale("log")
+ax[1].plot(Ne[:, 1], Ne[:, 2], label="Exact")
+ax[1].set_title("n")
+XC_Inversion.pdft.plot1d_x(n_CD, xyz=xyz_mol_CD, ax=ax[1], label="CD/C5", ls='--')
+XC_Inversion.pdft.plot1d_x(n_CT, xyz=xyz_mol_CT, ax=ax[1], label="CT/C5", ls='--')
+XC_Inversion.pdft.plot1d_x(n_CQ, xyz=xyz_mol_CQ, ax=ax[1], label="CQ/C5", ls='--')
+XC_Inversion.pdft.plot1d_x(n_C5, xyz=xyz_mol_C5, ax=ax[1], label="C5/C5", ls='--')
+ax[1].legend()
+ax[1].set_xlim(1e-3,7)
+ax[1].set_xscale("log")
+f.show()
+f.savefig("Ne_nvxc_LBFGS")

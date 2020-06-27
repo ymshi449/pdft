@@ -81,8 +81,8 @@ mol = pdft.U_Molecule(Full_Molec, basis, functional)
 pdfter = pdft.U_Embedding([f1, f2], mol)
 
 # pdfter.find_vp_response(maxiter=25, beta=0.1, svd_rcond=1e-4)
-pdfter.find_vp_response_1basis(49, svd_rcond=10**svdc, regul_const=10**reguc, beta=0.1, a_rho_var=1e-7)
-# pdfter.find_vp_scipy_1basis(maxiter=42, regul_const=1e-4, opt_method="trust-ncg")
+pdfter.find_vp_response_1basis(49, svd_rcond=10**svdc, regularization_constant=10**reguc, beta=0.1, a_rho_var=1e-7)
+# pdfter.find_vp_scipy_1basis(maxiter=42, regularization_constant=1e-4, opt_method="trust-ncg")
 
 #%% 2 basis 2D plot
 # vp_psi4 = psi4.core.Matrix.from_array(pdfter.vp[0])

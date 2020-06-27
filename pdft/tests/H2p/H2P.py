@@ -55,10 +55,10 @@ f2  = pdft.U_Molecule(Monomer_1,  basis, functional, omega=0.5, jk=mol.jk)
 pdfter = pdft.U_Embedding([f1, f2], mol)
 
 
-# pdfter.find_vp_response(49, svd_rcond=10**svdc, regul_const=10**reguc, beta=0.1, a_rho_var=1e-7)
+# pdfter.find_vp_response(49, svd_rcond=10**svdc, regularization_constant=10**reguc, beta=0.1, a_rho_var=1e-7)
 
 pdfter.find_vp_densitydifference(77)
-# pdfter.find_vp_response(21, svd_rcond=10**svdc, regul_const=10**reguc, beta=0.1, a_rho_var=1e-7)
+# pdfter.find_vp_response(21, svd_rcond=10**svdc, regularization_constant=10**reguc, beta=0.1, a_rho_var=1e-7)
 # hess, jac = pdfter.find_vp_response_1basis(14, svd_rcond=10**svdc, a_rho_var=1e-7)
 # pdfter.find_vp_scipy_1basis(maxiter=24)
 # # pdfter.find_vp_densitydifference(42, 1)
@@ -124,7 +124,7 @@ plt.close(f)
 
 
 # for svd in np.linspace(1, 7, 20):
-#     pdfter.find_vp_response(163, svd_rcond=1e-4, regul_const=10**(-svd), beta=0.1)
+#     pdfter.find_vp_response(163, svd_rcond=1e-4, regularization_constant=10**(-svd), beta=0.1)
 #     vp_grid = mol.to_grid(pdfter.vp[0])
 #     f, ax = plt.subplots(1, 1,figsize=(16,12), dpi=160)
 #     pdft.plot1d_x(vp_grid, mol.Vpot, title="%.14f, Ep:% f, drho:% f" %(10**(-svd), pdfter.ep_conv[-1], pdfter.drho_conv[-1]), ax=ax)

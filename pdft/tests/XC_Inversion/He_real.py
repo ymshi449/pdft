@@ -5,25 +5,18 @@ import libcubeprop
 import numpy as np
 
 if __name__ == "__main__":
-    psi4.set_num_threads(2)
+    psi4.set_num_threads(3)
+    psi4.set_memory('4 GB')
 
 functional = 'svwn'
-basis = 'sto-3g'
-basis = 'aug-pcsseg-3'
-basis = 'cc-pvtz'
-basis = 'aug-cc-pvqz'
-basis = 'aug-cc-pvdz'
-basis = 'aug-cc-pvtz'
-basis = 'aug-cc-pvqz'
-basis = 'aug-cc-pv5z'
+basis = 'cc-pCVDZ'
 
-vxc_basis = None
+vxc_basis = 'cc-pCV5Z'
 
 ortho_basis = False
-svd = "segment_cycle_cutoff"
-opt_method="BFGS"
-method = "WuYangMN"
-v0 = "Hartree"
+svd = "input_once"
+opt_method="trust-krylov"
+method = "WuYangScipy"
 v0 = "FermiAmaldi"
 
 title = method +"_"+ opt_method +"_"+v0+ "_" + basis+"_"+ \
@@ -36,23 +29,29 @@ psi4.set_output_file("He.psi4")
 Full_Molec = psi4.geometry("""
 nocom
 noreorient
-Ar
+He
 units bohr
 symmetry c1
 """)
 
 Full_Molec.set_name("He")
 
+# Exact
+He = np.genfromtxt('/home/yuming/PDFT/pdft/pdft/data/dftqmc/runs/o.476/DataHe')
+
 #Psi4 Options:
 psi4.set_options({
     'DFT_SPHERICAL_POINTS': 302,
     'DFT_RADIAL_POINTS': 77,
-    'REFERENCE' : 'RHF'
+    'MAXITER': 1000,
+    'BASIS': basis,
+    'REFERENCE': 'RHF'
 })
 #  Get wfn for target density
 E_input, input_density_wfn = psi4.energy("CCSD"+"/"+basis, molecule=Full_Molec, return_wfn=True)
-#  Get wfn for v0 using HF
-# E_v0, v0_wfn = psi4.energy("scf"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+print("Target Density Calculation Finished.")
+
+
 #Psi4 Options:
 psi4.set_options({
     'REFERENCE' : 'UHF'
@@ -71,6 +70,7 @@ inverser = XC_Inversion.Inverser(mol, input_density_wfn,
                                  ortho_basis=ortho_basis,
                                  vxc_basis=vxc_basis,
                                  v0=v0,
+                                 # eHOMO=-0.5792,
                                  # v0_wfn=v0_wfn
                                  )
 
@@ -78,21 +78,16 @@ inverser = XC_Inversion.Inverser(mol, input_density_wfn,
 # hess, hess_app = inverser.check_hess_constrainedoptimization()
 
 if method == "WuYangScipy":
-    inverser.find_vxc_scipy_WuYang(opt_method=opt_method, find_vxc_grid=False)
+    inverser.find_vxc_scipy_WuYang(opt_method=opt_method)
 elif method == "WuYangMN":
-    # rcondlist, dnlist, Llist = inverser.find_vxc_manualHewton(svd_rcond=svd, line_search_method="LD")
-    inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="StrongWolfe", find_vxc_grid=False)
+    hess, jac = inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="StrongWolfe")
 elif method == "COScipy":
-    inverser.find_vxc_scipy_constrainedoptimization(opt_method=opt_method, find_vxc_grid=False)
-
-# dDa = input_density_wfn.Da().np - mol.Da.np
-# dDb = input_density_wfn.Db().np - mol.Db.np
-# dn = mol.to_grid(dDa + dDb)
-
+    inverser.find_vxc_scipy_constrainedoptimization(opt_method="L-BFGS-B")
+#
 # f,ax = plt.subplots(1,1,dpi=200)
-# XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vxc_basis.Vpot, ax=ax, label="WuYang_xc_a", ls='--')
-# # XC_Inversion.pdft.plot1d_x(np.log10(np.abs(dn)), mol.Vpot, ax=ax, label="logdn", ls='dotted')
+# ax.plot(He[:, 0], He[:, 4], label="Exact")
+# XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vxc_basis.Vpot, ax=ax, label="WuYang", ls='--')
 # ax.legend()
-# ax.set_xlim(0,14)
+# ax.set_xlim(1e-3, 14)
+# ax.set_xscale("log")
 # f.show()
-# plt.close(f)

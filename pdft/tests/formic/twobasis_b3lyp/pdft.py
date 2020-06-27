@@ -857,7 +857,7 @@ class U_Embedding:
         self.lagrange = []
 
         # Regularization Constant
-        self.regul_const = 0.0
+        self.regularization_constant = 0.0
 
     def get_density_sum(self):
         sum_a = self.fragments[0].Da.np.copy() * self.fragments[0].omega
@@ -1288,7 +1288,7 @@ class U_Embedding:
     #     # Regularization
     #     T = self.twogradtwo.reshape(self.molecule.nbf**2, self.molecule.nbf**2)
     #     T = 0.5 * (T + T.T)
-    #     hess -= 4*4*self.regul_const*T
+    #     hess -= 4*4*self.regularization_constant*T
     #
     #     # print("Response", np.linalg.norm(hess))
     #     # print(hess)
@@ -1324,7 +1324,7 @@ class U_Embedding:
     #     # Regularization
     #     T = self.twogradtwo.reshape(self.molecule.nbf**2, self.molecule.nbf**2)
     #     T = 0.5 * (T + T.T)
-    #     jac -= 4*4*self.regul_const*np.dot(T, vp_array)
+    #     jac -= 4*4*self.regularization_constant*np.dot(T, vp_array)
     #
     #     # print("Jac norm:", np.linalg.norm(jac))
     #     return -jac
@@ -1337,7 +1337,7 @@ class U_Embedding:
         if self.four_overlap is None:
             self.four_overlap = fouroverlap(self.molecule.wfn, self.molecule.geometry,
                                             self.molecule.basis, self.molecule.mints)[0]
-        if self.twogradtwo is None and self.regul_const is not None:
+        if self.twogradtwo is None and self.regularization_constant is not None:
             self.twogradtwo = self.molecule.two_gradtwo_grid()
 
         vp = vp_array.reshape(self.molecule.nbf, self.molecule.nbf)
@@ -1367,10 +1367,10 @@ class U_Embedding:
         hess = 0.5 * (hess + hess.T)
 
         # Regularization
-        if self.regul_const is not None:
+        if self.regularization_constant is not None:
             T = self.twogradtwo.reshape(self.molecule.nbf**2, self.molecule.nbf**2)
             T = 0.5 * (T + T.T)
-            hess -= 4*4*self.regul_const*T
+            hess -= 4*4*self.regularization_constant*T
 
         print("Response", np.linalg.norm(hess))
         # print(hess)
@@ -1404,11 +1404,11 @@ class U_Embedding:
                         self.four_overlap.reshape(self.molecule.nbf**2, self.molecule.nbf**2), optimize=True)
 
         # Regularization
-        if self.regul_const is not None:
+        if self.regularization_constant is not None:
             print("HERE")
             T = self.twogradtwo.reshape(self.molecule.nbf**2, self.molecule.nbf**2)
             T = 0.5 * (T + T.T)
-            jac -= 4*4*self.regul_const*np.dot(T, vp_array)
+            jac -= 4*4*self.regularization_constant*np.dot(T, vp_array)
 
         print("Jac norm:", np.linalg.norm(jac))
         return -jac
@@ -1441,7 +1441,7 @@ class U_Embedding:
         # Regularization
         T = self.twogradtwo.reshape(self.molecule.nbf**2, self.molecule.nbf**2)
         T = 0.5 * (T + T.T)
-        T -= 4*4*self.regul_const*np.dot(np.dot(vp_array, T), vp_array)
+        T -= 4*4*self.regularization_constant*np.dot(np.dot(vp_array, T), vp_array)
 
         _, _, _, w = self.molecule.Vpot.get_np_xyzw()
         rho_molecule = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
@@ -1541,7 +1541,7 @@ class U_Embedding:
                                       jac=self.jac, hess=self.hess, method=opt_method, options=opt)
         return vp_array
 
-    def find_vp_response2(self, maxiter=21, a_rho_var=1e-4, regul_const = None, beta=None, svd_rcond=None, vp_norm_conv=1e-6, printflag=True, guess=None):
+    def find_vp_response2(self, maxiter=21, a_rho_var=1e-4, regularization_constant = None, beta=None, svd_rcond=None, vp_norm_conv=1e-6, printflag=True, guess=None):
         """
         Using the inverse of static response function to update dvp from a dn.
         This version did inversion on xi_q =  psi_i*psi_j where psi is mo.
@@ -1622,7 +1622,7 @@ class U_Embedding:
         if beta is None:
             beta = 1.0
 
-        self.regul_const = regul_const
+        self.regularization_constant = regularization_constant
 
         # if svd_rcond is None:
         #     svd_rcond = 1e-3

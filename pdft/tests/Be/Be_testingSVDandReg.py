@@ -95,7 +95,7 @@ for svd in range(1,7):
                                                    ortho_basis=Orthogonal_basis,
                                                    beta_method="Lagrangian",
                                                    svd_rcond=svdc,
-                                                   regul_const=regulc,
+                                                   regularization_constant=regulc,
                                                    a_rho_var=1e-5, mu=1e-7,
                                                    )
 
