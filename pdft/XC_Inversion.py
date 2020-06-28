@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pdft
 import scipy.optimize as optimizer
+import scipy.stats as stats
 from lbfgs import fmin_lbfgs
 
 
@@ -671,7 +672,7 @@ class Inverser(pdft.U_Embedding):
 
         return hess
 
-    def L_curve_regularization(self, rgl_bs=np.e, rgl_epn=15, scipy_opt_method="trust-krylov", print_flag=False):
+    def yang_L_curve_regularization(self, rgl_bs=np.e, rgl_epn=15, scipy_opt_method="trust-krylov", print_flag=False):
         if self.three_overlap is None:
             self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
                                                                              self.molecule.wfn.basisset(),
@@ -748,6 +749,99 @@ class Inverser(pdft.U_Embedding):
             f.show()
         return rgl_list, L_list, norm_list, E_list
 
+    def my_L_curve_regularization(self, rgl_bs=np.e, rgl_epn=15,
+                                  scipy_opt_method="trust-krylov", print_flag=True):
+
+        v_zero_initial = np.zeros_like(self.v_output)
+
+        # Loop
+        L_list = []
+        dT_list = []
+        P_list = []
+        rgl_order = np.array(range(rgl_epn))
+        rgl_list = rgl_bs**-(rgl_order+2)
+        rgl_list = np.append(rgl_list, 0)
+        n_input = self.molecule.to_grid(self.input_density_wfn.Da().np + self.input_density_wfn.Db().np)
+
+        print("Start L-curve search for regularization constant lambda. This might take a while..")
+        for regularization_constant in rgl_list:
+            self.regularization_constant = regularization_constant
+            Vks_a = psi4.core.Matrix.from_array(self.v0_Fock)
+            Vks_b = psi4.core.Matrix.from_array(self.v0_Fock)
+            self.molecule.scf_inversion(100, [Vks_a, Vks_b])
+            self.update_vout_constant()
+
+            opt = {
+                "disp": False,
+                "maxiter": 10000,
+            }
+
+            v_result = optimizer.minimize(self.Lagrangian_WuYang, v_zero_initial,
+                                          jac=self.grad_WuYang,
+                                          hess=self.hess_WuYang,
+                                          method=scipy_opt_method,
+                                          options=opt)
+
+            v = v_result.x
+            nbf = int(v.shape[0]/2)
+            v_output_a = v[:nbf]
+            v_output_b = v[nbf:]
+            Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
+            Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
+            self.molecule.scf_inversion(1000, [Vks_a, Vks_b])
+            self.update_vout_constant()
+
+            n_result = self.molecule.to_grid(self.molecule.Da.np + self.molecule.Db.np)
+            P = np.linalg.norm(self.v_output_a) * (np.sum(np.abs(n_result - n_input) * self.molecule.w))
+            P_list.append(P)
+            L_list.append(v_result.fun)
+            dT_list.append(self.molecule.T.vector_dot(self.molecule.Da)
+                           + self.molecule.T.vector_dot(self.molecule.Db))
+            print(regularization_constant, "P", P, "T", dT_list[-1])
+
+        # L-curve
+        dT_list = np.array(dT_list)
+
+        f, ax = plt.subplots(1, 1, dpi=200)
+        ax.scatter(range(dT_list.shape[0]), dT_list)
+        f.show()
+
+        start_idx = int(input("Enter start index for the left line of L-curve: "))
+
+        r_list = []
+        std_list = []
+        for i in range(start_idx + 3, dT_list.shape[0] - 2):
+            left = dT_list[start_idx:i]
+            right = dT_list[i + 1:]
+            left_x = range(start_idx, i)
+            right_x = range(i + 1, dT_list.shape[0])
+            _, _, rl, _, stdl = stats.linregress(left_x, left)
+            slopr, _, rr, _, stdr = stats.linregress(right_x, right)
+            if print_flag:
+                print(i, slopr, rl + rr, stdl + stdr)
+            r_list.append(rl + rr)
+            std_list.append(stdl + stdr)
+
+        # The final index
+        i = np.argmin(std_list) + start_idx + 3
+        self.regularization_constant = rgl_list[i]
+        print("Regularization constant lambda from L-curve is ", self.regularization_constant)
+
+        if print_flag:
+            left = dT_list[start_idx:i]
+            right = dT_list[i + 1:]
+            left_x = range(start_idx, i)
+            right_x = range(i + 1, dT_list.shape[0])
+            slopl, intl, rl, _, stdl = stats.linregress(left_x, left)
+            slopr, intr, rr, _, stdr = stats.linregress(right_x, right)
+            x = np.array(ax.get_xlim())
+            yl = intl + slopl * x
+            yr = intr + slopr * x
+            ax.plot(x, yl, '--')
+            ax.plot(x, yr, '--')
+            ax.set_ylim(np.min(dT_list)*0.99, np.max(dT_list)*1.01)
+            f.show()
+        return rgl_list, L_list, dT_list, P_list
 
     def check_gradient_WuYang(self, dv=None):
         if self.three_overlap is None:
@@ -1685,8 +1779,6 @@ class Inverser(pdft.U_Embedding):
                                                                           optimize=True)
         return hess
 
-
-
     def CO_weighted_cost(self):
         """
         To get the function g_uv = \int w*(n-n_in)*phi_u*phi_v.
@@ -1952,7 +2044,7 @@ class Inverser(pdft.U_Embedding):
             self.get_vxc()
         return vp_array
 
-# %% Get vxc on the grid.
+# %% Get vxc on the grid. DOES NOT WORK NOW.
     def Lagrangian_WuYang_grid(self, v=None):
         """
         L = - <T> - \int (vks_a*(n_a-n_a_input)+vks_b*(n_b-n_b_input))
@@ -2165,7 +2257,7 @@ class Inverser(pdft.U_Embedding):
         if find_vxc_grid:
             self.get_vxc_grid()
         return
-#%% Get vxc on the density basis set.
+#%% Get vxc on the density basis set. DOES NOT WORK NOW.
     def Lagrangian_WuYang_grid1(self, v=None):
         """
 
@@ -2284,7 +2376,7 @@ class Inverser(pdft.U_Embedding):
         print(np.linalg.norm(grad_app-grad))
         return grad, grad_app
 
-#%% Section for finding vext_approximate on grid in order to avoid the singularity in real vext.
+#%% Section for finding vext_approximate on grid in order to avoid the singularity in real vext. DOES NOT WORK NOW.
     def find_vext_scipy_WuYang_grid(self, maxiter=14000, opt_method="L-BFGS-B", opt=None,
                               countinue_opt=False, find_vxc_grid=True):
 
@@ -2461,7 +2553,7 @@ class Inverser(pdft.U_Embedding):
         print(np.linalg.norm(grad_app-grad))
         return grad, grad_app
 
-#%% Section for finding vext_approximate on basis in order to avoid the singularity in real vext.
+#%% Section for finding vext_approximate on basis in order to avoid the singularity in real vext. DOES NOT WORK NOW.
     def find_vext_scipy_WuYang(self, maxiter=14000, opt_method="trust-krylov", opt=None,
                               countinue_opt=False, find_vxc_grid=True):
 

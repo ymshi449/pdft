@@ -16,7 +16,7 @@ vxc_basis = 'cc-pCV5Z'
 ortho_basis = False
 svd = "input_once"
 opt_method="trust-krylov"
-method = "WuYangMN"
+method = "WuYangScipy"
 v0 = "FermiAmaldi"
 
 title = method +"_"+ opt_method +"_"+v0+ "_" + basis+"_"+ \
