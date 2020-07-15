@@ -16,8 +16,8 @@ if __name__ == "__main__":
 
 
 class Molecule(pdft.U_Molecule):
-    def __init__(self, geometry, basis, method):
-        super().__init__(geometry, basis, method)
+    def __init__(self, geometry, basis, method, omega=1, mints=None, jk=None):
+        super().__init__(geometry, basis, method, omega=omega, mints=mints, jk=jk)
 
     def scf_inversion(self, maxiter, V=None, print_energies=False, vp_matrix=None, add_vext=True):
         """
@@ -749,17 +749,25 @@ class Inverser(pdft.U_Embedding):
             f.show()
         return rgl_list, L_list, norm_list, E_list
 
-    def my_L_curve_regularization(self, rgl_bs=np.e, rgl_epn=15,
+    def my_L_curve_regularization(self, rgl_bs=np.e, rgl_epn=15, starting_epn=1,
+                                  searching_method="close_to_platform",
+                                  close_to_platform_rtol=0.001,
                                   scipy_opt_method="trust-krylov", print_flag=True):
 
+        if self.three_overlap is None:
+            self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
+                                                                             self.molecule.wfn.basisset(),
+                                                                             self.vp_basis.wfn.basisset()))
+            if self.ortho_basis:
+                self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.vp_basis.A.np)
         v_zero_initial = np.zeros_like(self.v_output)
 
         # Loop
         L_list = []
         dT_list = []
         P_list = []
-        rgl_order = np.array(range(rgl_epn))
-        rgl_list = rgl_bs**-(rgl_order+2)
+        rgl_order = starting_epn + np.array(range(rgl_epn))
+        rgl_list =  rgl_bs**-(rgl_order+2)
         rgl_list = np.append(rgl_list, 0)
         n_input = self.molecule.to_grid(self.input_density_wfn.Da().np + self.input_density_wfn.Db().np)
 
@@ -792,7 +800,7 @@ class Inverser(pdft.U_Embedding):
             self.update_vout_constant()
 
             n_result = self.molecule.to_grid(self.molecule.Da.np + self.molecule.Db.np)
-            P = np.linalg.norm(self.v_output_a) * (np.sum(np.abs(n_result - n_input) * self.molecule.w))
+            P = np.linalg.norm(v_output_a) * np.sum(np.abs(n_result - n_input) * self.molecule.w)
             P_list.append(P)
             L_list.append(v_result.fun)
             dT_list.append(self.molecule.T.vector_dot(self.molecule.Da)
@@ -805,42 +813,53 @@ class Inverser(pdft.U_Embedding):
         f, ax = plt.subplots(1, 1, dpi=200)
         ax.scatter(range(dT_list.shape[0]), dT_list)
         f.show()
+        if searching_method == "std_error_min":
+            start_idx = int(input("Enter start index for the left line of L-curve: "))
 
-        start_idx = int(input("Enter start index for the left line of L-curve: "))
+            r_list = []
+            std_list = []
+            for i in range(start_idx + 3, dT_list.shape[0] - 2):
+                left = dT_list[start_idx:i]
+                right = dT_list[i + 1:]
+                left_x = range(start_idx, i)
+                right_x = range(i + 1, dT_list.shape[0])
+                slopl, intl, rl, _, stdl = stats.linregress(left_x, left)
+                slopr, intr, rr, _, stdr = stats.linregress(right_x, right)
+                if print_flag:
+                    print(i, stdl + stdr, rl + rr, "Right:", slopr, intr, "Left:", slopl, intl)
+                r_list.append(rl + rr)
+                std_list.append(stdl + stdr)
 
-        r_list = []
-        std_list = []
-        for i in range(start_idx + 3, dT_list.shape[0] - 2):
-            left = dT_list[start_idx:i]
-            right = dT_list[i + 1:]
-            left_x = range(start_idx, i)
-            right_x = range(i + 1, dT_list.shape[0])
-            _, _, rl, _, stdl = stats.linregress(left_x, left)
-            slopr, _, rr, _, stdr = stats.linregress(right_x, right)
+            # The final index
+            i = np.argmin(std_list) + start_idx + 3
+            self.regularization_constant = rgl_list[i]
+            print("Regularization constant lambda from L-curve is ", self.regularization_constant)
+
             if print_flag:
-                print(i, slopr, rl + rr, stdl + stdr)
-            r_list.append(rl + rr)
-            std_list.append(stdl + stdr)
+                left = dT_list[start_idx:i]
+                right = dT_list[i + 1:]
+                left_x = range(start_idx, i)
+                right_x = range(i + 1, dT_list.shape[0])
+                slopl, intl, rl, _, stdl = stats.linregress(left_x, left)
+                slopr, intr, rr, _, stdr = stats.linregress(right_x, right)
+                x = np.array(ax.get_xlim())
+                yl = intl + slopl * x
+                yr = intr + slopr * x
+                ax.plot(x, yl, '--')
+                ax.plot(x, yr, '--')
+                ax.set_ylim(np.min(dT_list)*0.99, np.max(dT_list)*1.01)
+                f.show()
 
-        # The final index
-        i = np.argmin(std_list) + start_idx + 3
-        self.regularization_constant = rgl_list[i]
-        print("Regularization constant lambda from L-curve is ", self.regularization_constant)
-
-        if print_flag:
-            left = dT_list[start_idx:i]
-            right = dT_list[i + 1:]
-            left_x = range(start_idx, i)
-            right_x = range(i + 1, dT_list.shape[0])
-            slopl, intl, rl, _, stdl = stats.linregress(left_x, left)
-            slopr, intr, rr, _, stdr = stats.linregress(right_x, right)
-            x = np.array(ax.get_xlim())
-            yl = intl + slopl * x
-            yr = intr + slopr * x
-            ax.plot(x, yl, '--')
-            ax.plot(x, yr, '--')
-            ax.set_ylim(np.min(dT_list)*0.99, np.max(dT_list)*1.01)
-            f.show()
+        elif searching_method == "close_to_platform":
+            for i in range(len(dT_list)):
+                if np.abs(dT_list[i] - dT_list[-1])/dT_list[-1] <= close_to_platform_rtol:
+                    self.regularization_constant = rgl_list[i]
+                    print("Regularization constant lambda from L-curve is ", self.regularization_constant)
+                    break
+            if print_flag:
+                ax.axhline(y=dT_list[-1], ls="--", lw=0.7, color='r')
+                ax.scatter(i, dT_list[i], marker="+")
+                f.show()
         return rgl_list, L_list, dT_list, P_list
 
     def check_gradient_WuYang(self, dv=None):
@@ -855,8 +874,10 @@ class Inverser(pdft.U_Embedding):
         v_output_a = self.v_output[:nbf]
         v_output_b = self.v_output[nbf:]
 
-        Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
-        Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
+        Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a)
+                                            + self.vout_constant * self.molecule.S.np + self.v0_Fock)
+        Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b)
+                                            + self.vout_constant * self.molecule.S.np + self.v0_Fock)
 
         self.molecule.scf_inversion(100, [Vks_a, Vks_b])
         self.update_vout_constant()
@@ -877,10 +898,8 @@ class Inverser(pdft.U_Embedding):
 
             grad_app[i] = (L_new-L) / dvi[i]
 
-            # print(L_new, L, i + 1, "out of ", dv.shape[0])
-
         print(np.sum(grad*grad_app)/np.linalg.norm(grad)/np.linalg.norm(grad_app))
-        print(np.linalg.norm(grad_app-grad))
+        print(np.linalg.norm(grad_app-grad)/np.linalg.norm(grad))
 
         return grad, grad_app
 
@@ -920,11 +939,11 @@ class Inverser(pdft.U_Embedding):
 
         hess_app = 0.5 * (hess_app + hess_app.T)
         print(np.trace(hess_app.dot(hess.T))/np.linalg.norm(hess_app)/np.linalg.norm(hess))
-        print(np.linalg.norm(hess - hess_app))
+        print(np.linalg.norm(hess - hess_app)/np.linalg.norm(hess))
 
         return hess, hess_app
 
-    def find_vxc_scipy_WuYang(self, maxiter=14000, opt_method="BFGS", opt=None,
+    def find_vxc_scipy_WuYang(self, maxiter=14000, opt_method="BFGS", opt=None, tol=None,
                               countinue_opt=False, find_vxc_grid=True):
 
         if self.three_overlap is None:
@@ -962,7 +981,8 @@ class Inverser(pdft.U_Embedding):
                                       jac=self.grad_WuYang,
                                       hess=self.hess_WuYang,
                                       method=opt_method,
-                                      options=opt)
+                                      options=opt,
+                                      tol=tol)
         nbf = int(vp_array.x.shape[0] / 2)
         v_output_a = vp_array.x[:nbf]
         v_output_b = vp_array.x[nbf:]
@@ -977,6 +997,7 @@ class Inverser(pdft.U_Embedding):
         dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
         dDb = self.input_density_wfn.Db().np - self.molecule.Db.np
         dn = self.molecule.to_grid(dDa+dDb)
+        print("Evaluation: ", vp_array.nfev)
         print("|jac|", np.linalg.norm(vp_array.jac), "|n|", np.sum(np.abs(dn)*self.molecule.w), "L after", vp_array.fun)
         print("Ts", self.molecule.Da.vector_dot(self.molecule.T)+self.molecule.Db.vector_dot(self.molecule.T))
         print("dTs", np.trace(np.dot(self.input_density_wfn.Da().np+self.input_density_wfn.Db().np-
@@ -1689,6 +1710,7 @@ class Inverser(pdft.U_Embedding):
         return np.concatenate((jac_up, jac_down))
 
     def hess_constrainedoptimization(self, v=None):
+        # DOES NOT WORK NOW!
         self.hess_counter += 1
 
         if v is not None:
@@ -1910,7 +1932,7 @@ class Inverser(pdft.U_Embedding):
         self.update_vout_constant()
 
         L = self.Lagrangian_constrainedoptimization()
-        grad = self.grad_constrainedoptimization()[0]
+        grad = self.grad_constrainedoptimization()
 
         if dv is None:
             dv = 1e-7*np.ones_like(self.v_output)
@@ -1928,7 +1950,7 @@ class Inverser(pdft.U_Embedding):
             # print(L_new, L, i + 1, "out of ", dv.shape[0])
 
         print(np.sum(grad*grad_app)/np.linalg.norm(grad)/np.linalg.norm(grad_app))
-        print(np.linalg.norm(grad_app-grad))
+        print(np.linalg.norm(grad_app-grad)/np.linalg.norm(grad))
 
         return grad, grad_app
 
@@ -1951,7 +1973,7 @@ class Inverser(pdft.U_Embedding):
         self.update_vout_constant()
 
         hess = self.hess_constrainedoptimization()
-        grad = self.grad_constrainedoptimization()[0]
+        grad = self.grad_constrainedoptimization()
 
         if dv is None:
             dv = 1e-7*np.ones_like(self.v_output)
@@ -1999,7 +2021,7 @@ class Inverser(pdft.U_Embedding):
         dn = self.molecule.to_grid(dDa+dDb)
         print("|n| before", np.sum(np.abs(dn)*self.molecule.w))
         opt = {
-            "disp": True,
+            "disp": False,
             "maxiter": maxiter,
             # "eps": 1e-7
             # "norm": 2,
@@ -2027,6 +2049,7 @@ class Inverser(pdft.U_Embedding):
         dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
         dDb = self.input_density_wfn.Db().np - self.molecule.Db.np
         dn = self.molecule.to_grid(dDa+dDb)
+        print("Evaluation", vp_array.nfev)
         print("|jac|", np.linalg.norm(vp_array.jac), "|n|", np.sum(np.abs(dn)*self.molecule.w), "L after", vp_array.fun)
         print("Ts", self.molecule.Da.vector_dot(self.molecule.T)+self.molecule.Db.vector_dot(self.molecule.T))
         print("dTs", np.trace(np.dot(self.input_density_wfn.Da().np+self.input_density_wfn.Db().np-
@@ -2125,7 +2148,7 @@ class Inverser(pdft.U_Embedding):
 
             grad_app[i] = (L_new-L) / dvi[i]
         print(np.sum(grad*grad_app)/np.linalg.norm(grad)/np.linalg.norm(grad_app))
-        print(np.linalg.norm(grad_app-grad))
+        print(np.linalg.norm(grad_app-grad)/np.linalg.norm(grad))
 
         return grad, grad_app
 
@@ -2373,7 +2396,7 @@ class Inverser(pdft.U_Embedding):
             # print(L_new-L)
             grad_app[i] = (L_new-L) / dvi[i]
         print(np.sum(grad*grad_app)/np.linalg.norm(grad)/np.linalg.norm(grad_app))
-        print(np.linalg.norm(grad_app-grad))
+        print(np.linalg.norm(grad_app-grad)/np.linalg.norm(grad))
         return grad, grad_app
 
 #%% Section for finding vext_approximate on grid in order to avoid the singularity in real vext. DOES NOT WORK NOW.
@@ -2550,7 +2573,7 @@ class Inverser(pdft.U_Embedding):
 
             grad_app[i] = (L_new-L) / dvi[i]
         print(np.sum(grad*grad_app)/np.linalg.norm(grad)/np.linalg.norm(grad_app))
-        print(np.linalg.norm(grad_app-grad))
+        print(np.linalg.norm(grad_app-grad)/np.linalg.norm(grad))
         return grad, grad_app
 
 #%% Section for finding vext_approximate on basis in order to avoid the singularity in real vext. DOES NOT WORK NOW.
@@ -2700,5 +2723,5 @@ class Inverser(pdft.U_Embedding):
             # print(L_new, L, i + 1, "out of ", dv.shape[0])
 
         print(np.sum(grad*grad_app)/np.linalg.norm(grad)/np.linalg.norm(grad_app))
-        print(np.linalg.norm(grad_app-grad))
+        print(np.linalg.norm(grad_app-grad)/np.linalg.norm(grad))
         return grad, grad_app

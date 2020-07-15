@@ -8,14 +8,14 @@ if __name__ == "__main__":
     psi4.set_num_threads(2)
 
 functional = 'svwn'
-basis = 'cc-pCVQZ'
+basis = 'cc-pCVDZ'
 
-vp_basis = None
+vp_basis = 'cc-pCV5Z'
 
 ortho_basis = False
 svd = "segment_cycle_cutoff"
 opt_method="trust-krylov"
-method = "WuYangScipy"
+method = "WuYangMN"
 v0 = "FermiAmaldi"
 
 title = method +"_"+ opt_method +"_"+v0+ "_" + basis+"_"+ \
@@ -23,17 +23,20 @@ title = method +"_"+ opt_method +"_"+v0+ "_" + basis+"_"+ \
         + str(ortho_basis) + "_" + str(svd)
 print(title)
 
-psi4.set_output_file("Ne.psi4")
+psi4.set_output_file("FC2Cl.psi4")
 
 Full_Molec = psi4.geometry("""
 nocom
 noreorient
-Ne
+F -4.622780328 0 0
+C -2.225662738 0 0
+C 0        0 0
+Cl 3.130803758 0 0
 units bohr
 symmetry c1
 """)
 
-Full_Molec.set_name("Ne")
+Full_Molec.set_name("FC2Cl")
 
 #Psi4 Options:
 psi4.set_options({
@@ -49,12 +52,13 @@ psi4.set_options({
 mol = XC_Inversion.Molecule(Full_Molec, basis, functional)
 mol.scf_inversion(100)
 if vp_basis is not None:
-    vp_basis = XC_Inversion.Molecule(Full_Molec, vp_basis, functional, jk="No jk needed")
-    vp_basis.scf_inversion(1)
+    vp_basis = XC_Inversion.Molecule(Full_Molec, vp_basis, functional, jk="No Need for JK")
+    print("Number of Basis: ", mol.nbf, vp_basis.nbf)
+    # assert vp_basis.nbf < 230
+    vp_basis.scf_inversion(10)
 else:
     vp_basis = mol
-
-print("Number of Basis: ", mol.nbf, vp_basis.nbf)
+    print("Number of Basis: ", mol.nbf, vp_basis.nbf)
 
 inverser = XC_Inversion.Inverser(mol, input_density_wfn,
                                  ortho_basis=ortho_basis,
@@ -76,11 +80,10 @@ elif method == "COScipy":
 # # dDa = input_density_wfn.Da().np - mol.Da.np
 # # dDb = input_density_wfn.Db().np - mol.Db.np
 # # dn = mol.to_grid(dDa + dDb)
-#
+
 # f,ax = plt.subplots(1,1,dpi=200)
 # XC_Inversion.pdft.plot1d_x(inverser.input_vxc_a, input_density_wfn.V_potential(), ax=ax, label="LDA")
 # XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vp_basis.Vpot, ax=ax, label="WuYang", ls='--')
 # ax.legend()
-# ax.set_xlim(1e-3, 10)
-# ax.set_xscale("log")
+# ax.set_xlim(-7.5,5.5)
 # f.show()

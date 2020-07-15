@@ -1,21 +1,21 @@
 
 *** tstart() called on PartitionStation
-*** at Mon Jun 15 11:54:01 2020
+*** at Sun Jul  5 20:02:41 2020
 
    => Loading Basis Set <=
 
-    Name: CC-PVDZ
+    Name: CC-PCVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1 entry AR         line   718 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
+    atoms 1 entry AR         line   812 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pcvdz.gbs 
 
 
          ---------------------------------------------------------
                                    SCF
                by Justin Turney, Rob Parrish, Andy Simmonett
                           and Daniel G. A. Smith
-                              UKS Reference
-                        2 Threads,    500 MiB Core
+                              RHF Reference
+                        3 Threads,   3814 MiB Core
          ---------------------------------------------------------
 
   ==> Geometry <==
@@ -52,81 +52,42 @@
 
   ==> Primary Basis <==
 
-  Basis Set: CC-PVDZ
-    Blend: CC-PVDZ
-    Number of shells: 8
-    Number of basis function: 18
-    Number of Cartesian functions: 19
+  Basis Set: CC-PCVDZ
+    Blend: CC-PCVDZ
+    Number of shells: 11
+    Number of basis function: 27
+    Number of Cartesian functions: 29
     Spherical Harmonics?: true
     Max angular momentum: 2
 
-  ==> DFT Potential <==
-
-   => Composite Functional: SVWN <= 
-
-    SVWN3 (RPA) LSDA Functional
-
-    Adamson et. al., J. Comput. Chem., 20(9), 921-927, 1999
-
-
-    Deriv               =              1
-    GGA                 =          FALSE
-    Meta                =          FALSE
-
-    Exchange Hybrid     =          FALSE
-    MP2 Hybrid          =          FALSE
-
-   => Exchange Functionals <=
-
-    1.0000         XC_LDA_X
-
-   => Correlation Functionals <=
-
-    1.0000   XC_LDA_C_VWN_RPA
-
-   => Molecular Quadrature <=
-
-    Radial Scheme          =       TREUTLER
-    Pruning Scheme         =           FLAT
-    Nuclear Scheme         =       TREUTLER
-
-    BS radius alpha        =              1
-    Pruning alpha          =              1
-    Radial Points          =             77
-    Spherical Points       =            302
-    Total Points           =          20838
-    Total Blocks           =            214
-    Max Points             =            253
-    Max Functions          =             18
-
    => Loading Basis Set <=
 
-    Name: (CC-PVDZ AUX)
+    Name: (CC-PCVDZ AUX)
     Role: JKFIT
     Keyword: DF_BASIS_SCF
-    atoms 1 entry AR         line   741 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz-jkfit.gbs 
+    atoms 1 entry AR         line  1074 file /home/yuming/anaconda3/envs/work/share/psi4/basis/def2-qzvpp-jkfit.gbs 
 
   ==> Pre-Iterations <==
 
    -------------------------------------------------------
     Irrep   Nso     Nmo     Nalpha   Nbeta   Ndocc  Nsocc
    -------------------------------------------------------
-     A         18      18       0       0       0       0
+     A         27      27       0       0       0       0
    -------------------------------------------------------
-    Total      18      18       9       9       9       0
+    Total      27      27       9       9       9       0
    -------------------------------------------------------
 
   ==> Integral Setup <==
 
-  DFHelper Memory: AOs need 0.000 GiB; user supplied 0.363 GiB. Using in-core AOs.
+  DFHelper Memory: AOs need 0.001 GiB; user supplied 2.794 GiB. Using in-core AOs.
 
   ==> MemDFJK: Density-Fitted J/K Matrices <==
 
     J tasked:                   Yes
-    K tasked:                    No
+    K tasked:                   Yes
     wK tasked:                   No
-    OpenMP threads:               2
-    Memory [MiB]:               372
+    OpenMP threads:               3
+    Memory [MiB]:              2861
     Algorithm:                 Core
     Schwarz Cutoff:           1E-12
     Mask sparsity (%):       0.0000
@@ -134,17 +95,15 @@
 
    => Auxiliary Basis Set <=
 
-  Basis Set: (CC-PVDZ AUX)
-    Blend: CC-PVDZ-JKFIT
-    Number of shells: 36
-    Number of basis function: 112
-    Number of Cartesian functions: 130
+  Basis Set: (CC-PCVDZ AUX)
+    Blend: DEF2-QZVPP-JKFIT
+    Number of shells: 38
+    Number of basis function: 128
+    Number of Cartesian functions: 155
     Spherical Harmonics?: true
-    Max angular momentum: 3
+    Max angular momentum: 4
 
-  Cached 100.0% of DFT collocation blocks in 0.003 [GiB].
-
-  Minimum eigenvalue in the overlap matrix is 1.1016109502E-01.
+  Minimum eigenvalue in the overlap matrix is 5.5257989390E-02.
   Using Symmetric Orthogonalization.
 
   SCF Guess: Core (One-Electron) Hamiltonian.
@@ -153,77 +112,49 @@
 
                            Total Energy        Delta E     RMS |[F,P]|
 
-   @DF-UKS iter   1:  -522.92077726625405   -5.22921e+02   9.05794e-02 DIIS
-   @DF-UKS iter   2:  -524.73360283238208   -1.81283e+00   1.03869e-01 DIIS
-   @DF-UKS iter   3:  -526.26720886643284   -1.53361e+00   9.35105e-03 DIIS
-   @DF-UKS iter   4:  -526.27840223465500   -1.11934e-02   1.02842e-03 DIIS
-   @DF-UKS iter   5:  -526.27857076813359   -1.68533e-04   1.07281e-04 DIIS
-   @DF-UKS iter   6:  -526.27857244230108   -1.67417e-06   5.28305e-06 DIIS
-   @DF-UKS iter   7:  -526.27857244652284   -4.22176e-09   1.25872e-08 DIIS
+   @DF-RHF iter   1:  -459.90066264996761   -4.59901e+02   1.03596e+00 DIIS
+   @DF-RHF iter   2:  -511.87937348233856   -5.19787e+01   4.75076e-01 DIIS
+   @DF-RHF iter   3:  -526.31539334379011   -1.44360e+01   7.60526e-02 DIIS
+   @DF-RHF iter   4:  -526.79721393053421   -4.81821e-01   7.67765e-03 DIIS
+   @DF-RHF iter   5:  -526.79983476875611   -2.62084e-03   3.17490e-04 DIIS
+   @DF-RHF iter   6:  -526.79986073965858   -2.59709e-05   6.01838e-05 DIIS
+   @DF-RHF iter   7:  -526.79986119453781   -4.54879e-07   2.95943e-06 DIIS
+   @DF-RHF iter   8:  -526.79986119746536   -2.92755e-09   2.01293e-07 DIIS
   Energy and wave function converged.
 
 
   ==> Post-Iterations <==
 
-   @Spin Contamination Metric:   1.065814104E-14
-   @S^2 Expected:                0.000000000E+00
-   @S^2 Observed:                1.065814104E-14
-   @S   Expected:                0.000000000E+00
-   @S   Observed:                0.000000000E+00
-
     Orbital Energies [Eh]
     ---------------------
 
-    Alpha Occupied:                                                       
+    Doubly Occupied:                                                      
 
-       1A   -113.803338     2A    -10.804553     3A     -8.455088  
-       4A     -8.455088     5A     -8.455088     6A     -0.892428  
-       7A     -0.390472     8A     -0.390472     9A     -0.390472  
+       1A   -118.606538     2A    -12.317923     3A     -9.566444  
+       4A     -9.566444     5A     -9.566444     6A     -1.274404  
+       7A     -0.588033     8A     -0.588033     9A     -0.588033  
 
-    Alpha Virtual:                                                        
+    Virtual:                                                              
 
-      10A      0.518524    11A      0.518524    12A      0.518524  
-      13A      0.656885    14A      0.758212    15A      0.758212  
-      16A      0.758212    17A      0.758212    18A      0.758212  
-
-    Beta Occupied:                                                        
-
-       1A   -113.803338     2A    -10.804553     3A     -8.455088  
-       4A     -8.455088     5A     -8.455088     6A     -0.892428  
-       7A     -0.390472     8A     -0.390472     9A     -0.390472  
-
-    Beta Virtual:                                                         
-
-      10A      0.518524    11A      0.518524    12A      0.518524  
-      13A      0.656885    14A      0.758212    15A      0.758212  
-      16A      0.758212    17A      0.758212    18A      0.758212  
+      10A      0.794461    11A      0.794461    12A      0.794461  
+      13A      0.954863    14A      1.077486    15A      1.077486  
+      16A      1.077486    17A      1.077486    18A      1.077486  
+      19A     14.338641    20A     14.338641    21A     14.338641  
+      22A     18.217875    23A     18.217875    24A     18.217875  
+      25A     18.217875    26A     18.217875    27A     23.040566  
 
     Final Occupation by Irrep:
               A 
     DOCC [     9 ]
-    SOCC [     0 ]
 
-  @DF-UKS Final Energy:  -526.27857244652284
+  @DF-RHF Final Energy:  -526.79986119746536
 
    => Energetics <=
 
     Nuclear Repulsion Energy =              0.0000000000000000
-    One-Electron Energy =                -728.2793514266437569
-    Two-Electron Energy =                 231.6497095185235366
-    DFT Exchange-Correlation Energy =     -29.6489305384025776
-    Empirical Dispersion Energy =           0.0000000000000000
-    VV10 Nonlocal Energy =                  0.0000000000000000
-    Total Energy =                       -526.2785724465228441
-
-  UHF NO Occupations:
-  HONO-2 :    7  A 2.0000000
-  HONO-1 :    8  A 2.0000000
-  HONO-0 :    9  A 2.0000000
-  LUNO+0 :   10  A 0.0000000
-  LUNO+1 :   11  A 0.0000000
-  LUNO+2 :   12  A 0.0000000
-  LUNO+3 :   13  A 0.0000000
-
+    One-Electron Energy =                -728.2751329150116817
+    Two-Electron Energy =                 201.4752717175463204
+    Total Energy =                       -526.7998611974653613
 
 Computation Completed
 
@@ -245,21 +176,21 @@ Properties computed using the SCF density matrix
      X:     0.0000      Y:    -0.0000      Z:     0.0000     Total:     0.0000
 
 
-*** tstop() called on PartitionStation at Mon Jun 15 11:54:02 2020
+*** tstop() called on PartitionStation at Sun Jul  5 20:02:41 2020
 Module time:
-	user time   =       0.73 seconds =       0.01 minutes
-	system time =       0.01 seconds =       0.00 minutes
-	total time  =          1 seconds =       0.02 minutes
+	user time   =       0.52 seconds =       0.01 minutes
+	system time =       0.03 seconds =       0.00 minutes
+	total time  =          0 seconds =       0.00 minutes
 Total time:
-	user time   =       0.73 seconds =       0.01 minutes
-	system time =       0.01 seconds =       0.00 minutes
-	total time  =          1 seconds =       0.02 minutes
+	user time   =      85.40 seconds =       1.42 minutes
+	system time =       2.79 seconds =       0.05 minutes
+	total time  =       6661 seconds =     111.02 minutes
    => Loading Basis Set <=
 
-    Name: CC-PVDZ
+    Name: CC-PCVDZ
     Role: ORBITAL
     Keyword: BASIS
-    atoms 1 entry AR         line   718 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
+    atoms 1 entry AR         line   812 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pcvdz.gbs 
 
 
          ---------------------------------------------------------
@@ -267,7 +198,7 @@ Total time:
                by Justin Turney, Rob Parrish, Andy Simmonett
                           and Daniel G. A. Smith
                               UHF Reference
-                        2 Threads,    500 MiB Core
+                        3 Threads,   3814 MiB Core
          ---------------------------------------------------------
 
   ==> Geometry <==
@@ -304,11 +235,11 @@ Total time:
 
   ==> Primary Basis <==
 
-  Basis Set: CC-PVDZ
-    Blend: CC-PVDZ
-    Number of shells: 8
-    Number of basis function: 18
-    Number of Cartesian functions: 19
+  Basis Set: CC-PCVDZ
+    Blend: CC-PCVDZ
+    Number of shells: 11
+    Number of basis function: 27
+    Number of Cartesian functions: 29
     Spherical Harmonics?: true
     Max angular momentum: 2
 
@@ -349,24 +280,24 @@ Total time:
     Total Points           =          20838
     Total Blocks           =            214
     Max Points             =            253
-    Max Functions          =             18
+    Max Functions          =             27
 
   Using in-core PK algorithm.
    Calculation information:
       Number of atoms:                   1
-      Number of AO shells:               8
-      Number of primitives:             50
-      Number of atomic orbitals:        19
-      Number of basis functions:        18
+      Number of AO shells:              11
+      Number of primitives:             53
+      Number of atomic orbitals:        29
+      Number of basis functions:        27
 
       Integral cutoff                 1.00e-12
-      Number of threads:                 2
+      Number of threads:                 3
 
   Performing in-core PK
-  Using 29412 doubles for integral storage.
-  We computed 926 shell quartets total.
-  Whereas there are 666 unique shell quartets.
-    39.04 percent of shell quartets recomputed by reordering.
+  Using 143262 doubles for integral storage.
+  We computed 3387 shell quartets total.
+  Whereas there are 2211 unique shell quartets.
+    53.19 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -376,7 +307,7 @@ Total time:
     Memory [MiB]:             3814
     Schwarz Cutoff:          1E-12
 
-    OpenMP threads:              2
+    OpenMP threads:              3
 
    => Loading Basis Set <=
 
@@ -391,7 +322,7 @@ Total time:
                by Justin Turney, Rob Parrish, Andy Simmonett
                           and Daniel G. A. Smith
                               UHF Reference
-                        2 Threads,    500 MiB Core
+                        3 Threads,   3814 MiB Core
          ---------------------------------------------------------
 
   ==> Geometry <==
@@ -484,13 +415,13 @@ Total time:
       Number of basis functions:       109
 
       Integral cutoff                 1.00e-12
-      Number of threads:                 2
+      Number of threads:                 3
 
   Performing in-core PK
   Using 35946020 doubles for integral storage.
-  We computed 104685 shell quartets total.
+  We computed 114621 shell quartets total.
   Whereas there are 94830 unique shell quartets.
-    10.39 percent of shell quartets recomputed by reordering.
+    20.87 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
@@ -500,25 +431,9 @@ Total time:
     Memory [MiB]:             3814
     Schwarz Cutoff:          1E-12
 
-    OpenMP threads:              2
+    OpenMP threads:              3
 
   Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
+  Threads set to 3 by Python driver.
   Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
-  Threads set to 1 by Python driver.
-  Threads set to 2 by Python driver.
+  Threads set to 3 by Python driver.

@@ -1,0 +1,827 @@
+/home/yuming/anaconda3/envs/work/bin/python /home/yuming/pycharm-2019.1.2/helpers/pydev/pydevconsole.py --mode=client --port=43867
+import sys; print('Python %s on %s' % (sys.version, sys.platform))
+sys.path.extend(['/home/yuming/PDFT/pdft/pdft'])
+Python 3.7.5 (default, Oct 25 2019, 15:51:11) 
+Type 'copyright', 'credits' or 'license' for more information
+IPython 7.9.0 -- An enhanced Interactive Python. Type '?' for help.
+PyDev console: using IPython 7.9.0
+Python 3.7.5 (default, Oct 25 2019, 15:51:11) 
+[GCC 7.3.0] on linux
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Ne_real.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+  Threads set to 3 by Python driver.
+  Memory set to   3.725 GiB by Python driver.
+WuYangScipy_trust-krylov_FermiAmaldi_cc-pcvdz_None_False_input_once
+Target Density Calculation Finished.
+Number of Basis:  18 18
+ESP fitting starts. This might take a while.
+ESP fitting done
+no xc
+Zero the old result for a new calculation..
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion trust-krylov<<<<<<<<<<<<<<<<<<<
+|n| before 0.6765881868756254
+Evaluation:  5
+|jac| 1.220141574216203e-05 |n| 0.007828388486902451 L after -128.5115563283042
+Ts 128.54444288405233
+dTs -0.03150834264060237
+eigenA
+[-32.76418661  -1.91886214  -0.83239926  -0.83239926  -0.83239926]
+[-30.46333654  -1.65610249  -0.79167432  -0.79167403  -0.79167394]
+wfnDiff -0.4210047913727992
+Constant potential:  0
+ESP fitting starts. This might take a while.
+ESP fitting done
+f,ax = plt.subplots(2,2,dpi=200, sharex='col', sharey='row',
+                        gridspec_kw={'hspace': 0, 'wspace': 0})
+ax[0,0].plot(Ne_xyz, Ne_vxc, label="Exact")
+XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vxc_basis.Vpot, ax=ax[0,0], label="WuYang", ls='--')
+ax[0,0].set_xlim(-0.2, 2.7)
+ax[0,0].legend()
+f.show()
+inverser.find_vxc_scipy_constrainedoptimization(opt_method="L-BFGS-B");
+Zero the old result for a new calculation..
+<<<<<<<<<<<<<<<<<<<<<<Constrained Optimization vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 0.6765881868756254
+RUNNING THE L-BFGS-B CODE
+           * * *
+Machine precision = 2.220D-16
+ N =           36     M =           10
+At X0         0 variables are exactly at the bounds
+ This problem is unconstrained.
+At iterate    0    f=  3.35526D-01    |proj g|=  7.43128D-01
+At iterate    1    f=  2.21658D-01    |proj g|=  5.96415D-01
+At iterate    2    f=  1.58281D-03    |proj g|=  7.40407D-03
+At iterate    3    f=  1.51221D-03    |proj g|=  4.12108D-03
+At iterate    4    f=  1.46724D-03    |proj g|=  3.25659D-03
+At iterate    5    f=  1.41225D-03    |proj g|=  3.33799D-03
+At iterate    6    f=  1.34430D-03    |proj g|=  3.00446D-03
+At iterate    7    f=  1.17093D-03    |proj g|=  3.91881D-03
+At iterate    8    f=  1.06056D-03    |proj g|=  1.55103D-03
+At iterate    9    f=  1.01448D-03    |proj g|=  1.26064D-03
+At iterate   10    f=  9.82438D-04    |proj g|=  2.86355D-03
+At iterate   11    f=  9.02404D-04    |proj g|=  5.39191D-03
+At iterate   12    f=  7.38931D-04    |proj g|=  8.12427D-03
+At iterate   13    f=  4.44072D-04    |proj g|=  9.49192D-03
+At iterate   14    f=  1.65222D-04    |proj g|=  5.36853D-03
+At iterate   15    f=  1.02012D-04    |proj g|=  5.69451D-03
+At iterate   16    f=  4.01402D-05    |proj g|=  1.80994D-03
+At iterate   17    f=  2.87322D-05    |proj g|=  1.50565D-04
+At iterate   18    f=  2.85567D-05    |proj g|=  2.46764D-05
+At iterate   19    f=  2.85552D-05    |proj g|=  2.08529D-06
+           * * *
+Tit   = total number of iterations
+Tnf   = total number of function evaluations
+Tnint = total number of segments explored during Cauchy searches
+Skip  = number of BFGS updates skipped
+Nact  = number of active bounds at final generalized Cauchy point
+Projg = norm of the final projected gradient
+F     = final function value
+           * * *
+   N    Tit     Tnf  Tnint  Skip  Nact     Projg        F
+   36     19     21      1     0     0   2.085D-06   2.856D-05
+  F =   2.8555202078098301E-005
+CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH             
+ Cauchy                time 0.000E+00 seconds.
+ Subspace minimization time 0.000E+00 seconds.
+ Line search           time 0.000E+00 seconds.
+ Total User time 0.000E+00 seconds.
+Evaluation 21
+|jac| 5.004285502266374e-06 |n| 0.009607591317325992 L after 2.85552020780983e-05
+Ts 128.51930368273858
+dTs -0.006369141326865018
+eigenA
+[-32.76418661  -1.91886214  -0.83239926  -0.83239926  -0.83239926]
+[-30.43009956  -1.52308081  -0.67146102  -0.67145228  -0.67142572]
+wfnDiff 0.24045029281640498
+Constant potential:  0
+ESP fitting starts. This might take a while.
+ESP fitting done
+XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vxc_basis.Vpot, ax=ax[0,0], label="CO", ls='-.')
+ax[0,0].legend()
+f.show()
+ax[0,0].text(-0.2, 0, "CD/CD")
+Out[7]: Text(-0.2, 0, 'CD/CD')
+f.show()
+ax[0,0].texts.clear()
+ax[0,0].text(-0.2, -0.2, "CD/CD")
+Out[10]: Text(-0.2, -0.2, 'CD/CD')
+f.show()
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Ne_real.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+WuYangScipy_trust-krylov_FermiAmaldi_cc-pcvdz_cc-pcvtz_False_input_once
+Target Density Calculation Finished.
+Number of Basis:  18 43
+ESP fitting starts. This might take a while.
+ESP fitting done
+no xc
+Zero the old result for a new calculation..
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion trust-krylov<<<<<<<<<<<<<<<<<<<
+|n| before 0.6765881868754944
+Evaluation:  5
+|jac| 5.720856351892471e-06 |n| 0.0007600528192453595 L after -128.51252934676552
+Ts 128.51566775538282
+dTs -0.002733213971522842
+eigenA
+[-32.76418661  -1.91886214  -0.83239926  -0.83239926  -0.83239926]
+[-30.80099584  -1.90760674  -1.00449991  -1.00449063  -1.00448997]
+wfnDiff 0.29444151129379076
+Constant potential:  0
+ESP fitting starts. This might take a while.
+ESP fitting done
+XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vxc_basis.Vpot, ax=ax[0,1], label="WuYang", ls='--')
+inverser.find_vxc_scipy_constrainedoptimization(opt_method="L-BFGS-B");
+Zero the old result for a new calculation..
+<<<<<<<<<<<<<<<<<<<<<<Constrained Optimization vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 0.6765881868754944
+ This problem is unconstrained.
+RUNNING THE L-BFGS-B CODE
+           * * *
+Machine precision = 2.220D-16
+ N =           86     M =           10
+At X0         0 variables are exactly at the bounds
+At iterate    0    f=  3.35526D-01    |proj g|=  7.69775D-01
+At iterate    1    f=  1.10408D-01    |proj g|=  3.40803D-01
+At iterate    2    f=  3.48224D-02    |proj g|=  3.64543D-02
+At iterate    3    f=  2.22611D-02    |proj g|=  4.55196D-02
+At iterate    4    f=  3.43798D-03    |proj g|=  5.00132D-02
+At iterate    5    f=  1.81033D-03    |proj g|=  1.45324D-02
+At iterate    6    f=  1.26367D-03    |proj g|=  8.81807D-03
+At iterate    7    f=  1.15727D-03    |proj g|=  1.21805D-03
+At iterate    8    f=  1.15369D-03    |proj g|=  1.05474D-03
+At iterate    9    f=  1.14544D-03    |proj g|=  1.95877D-03
+At iterate   10    f=  1.13307D-03    |proj g|=  3.17407D-03
+At iterate   11    f=  1.10995D-03    |proj g|=  3.78604D-03
+At iterate   12    f=  1.06605D-03    |proj g|=  3.69872D-03
+At iterate   13    f=  8.84868D-04    |proj g|=  5.02765D-03
+At iterate   14    f=  5.80487D-04    |proj g|=  4.02700D-03
+At iterate   15    f=  4.60093D-04    |proj g|=  6.19125D-03
+At iterate   16    f=  2.19681D-04    |proj g|=  2.68296D-03
+At iterate   17    f=  1.04060D-04    |proj g|=  1.31632D-03
+At iterate   18    f=  7.66331D-05    |proj g|=  4.43139D-04
+At iterate   19    f=  7.51749D-05    |proj g|=  1.14652D-03
+At iterate   20    f=  7.42657D-05    |proj g|=  3.01929D-04
+At iterate   21    f=  7.37392D-05    |proj g|=  1.95392D-04
+At iterate   22    f=  7.25837D-05    |proj g|=  7.27200D-04
+At iterate   23    f=  7.00293D-05    |proj g|=  1.48119D-03
+At iterate   24    f=  6.40083D-05    |proj g|=  2.48095D-03
+At iterate   25    f=  5.22425D-05    |proj g|=  3.40603D-03
+At iterate   26    f=  3.59370D-05    |proj g|=  3.56550D-03
+At iterate   27    f=  3.52540D-05    |proj g|=  3.14863D-03
+At iterate   28    f=  2.40108D-05    |proj g|=  1.70005D-03
+At iterate   29    f=  2.11127D-05    |proj g|=  4.11012D-04
+At iterate   30    f=  2.08806D-05    |proj g|=  3.64446D-05
+At iterate   31    f=  2.08732D-05    |proj g|=  1.16404D-05
+At iterate   32    f=  2.08671D-05    |proj g|=  2.38468D-05
+At iterate   33    f=  2.08485D-05    |proj g|=  4.15003D-05
+At iterate   34    f=  2.08244D-05    |proj g|=  7.67911D-05
+At iterate   35    f=  2.07891D-05    |proj g|=  7.69210D-05
+At iterate   36    f=  2.07649D-05    |proj g|=  5.92548D-05
+At iterate   37    f=  2.07284D-05    |proj g|=  5.39299D-05
+At iterate   38    f=  2.06545D-05    |proj g|=  1.21824D-04
+At iterate   39    f=  2.05343D-05    |proj g|=  1.88088D-04
+At iterate   40    f=  2.02041D-05    |proj g|=  2.59937D-04
+At iterate   41    f=  1.95416D-05    |proj g|=  4.18164D-04
+At iterate   42    f=  1.87551D-05    |proj g|=  2.55385D-04
+At iterate   43    f=  1.77498D-05    |proj g|=  4.51188D-04
+At iterate   44    f=  1.71772D-05    |proj g|=  2.86713D-04
+At iterate   45    f=  1.69022D-05    |proj g|=  6.20207D-05
+At iterate   46    f=  1.68717D-05    |proj g|=  6.67186D-05
+At iterate   47    f=  1.67902D-05    |proj g|=  1.09661D-04
+At iterate   48    f=  1.66538D-05    |proj g|=  1.78234D-04
+At iterate   49    f=  1.62064D-05    |proj g|=  2.80646D-04
+At iterate   50    f=  1.55712D-05    |proj g|=  2.61939D-04
+At iterate   51    f=  1.48782D-05    |proj g|=  2.27913D-04
+At iterate   52    f=  1.40944D-05    |proj g|=  1.55069D-04
+At iterate   53    f=  1.33728D-05    |proj g|=  3.68926D-04
+At iterate   54    f=  1.30984D-05    |proj g|=  6.39234D-04
+At iterate   55    f=  1.25422D-05    |proj g|=  6.06199D-04
+At iterate   56    f=  1.01309D-05    |proj g|=  3.29082D-04
+At iterate   57    f=  8.30378D-06    |proj g|=  5.79190D-04
+At iterate   58    f=  5.23914D-06    |proj g|=  7.22981D-04
+At iterate   59    f=  2.08325D-06    |proj g|=  6.03680D-04
+At iterate   60    f=  1.28464D-06    |proj g|=  3.63131D-04
+At iterate   61    f=  5.70092D-07    |proj g|=  1.64256D-04
+At iterate   62    f=  4.26945D-07    |proj g|=  7.01426D-05
+At iterate   63    f=  3.80114D-07    |proj g|=  3.15147D-05
+At iterate   64    f=  3.52063D-07    |proj g|=  4.42717D-05
+At iterate   65    f=  3.44996D-07    |proj g|=  3.74665D-05
+At iterate   66    f=  3.41143D-07    |proj g|=  3.17524D-05
+At iterate   67    f=  3.39957D-07    |proj g|=  1.28744D-05
+           * * *
+Tit   = total number of iterations
+Tnf   = total number of function evaluations
+Tnint = total number of segments explored during Cauchy searches
+Skip  = number of BFGS updates skipped
+Nact  = number of active bounds at final generalized Cauchy point
+Projg = norm of the final projected gradient
+F     = final function value
+           * * *
+   N    Tit     Tnf  Tnint  Skip  Nact     Projg        F
+   86     67     71      1     0     0   1.287D-05   3.400D-07
+  F =   3.3995680794864031E-007
+CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH             
+ Cauchy                time 0.000E+00 seconds.
+ Subspace minimization time 0.000E+00 seconds.
+ Line search           time 0.000E+00 seconds.
+ Total User time 0.000E+00 seconds.
+Evaluation 71
+|jac| 3.510634456144175e-05 |n| 0.003588356244620577 L after 3.399568079486403e-07
+Ts 128.5127447995465
+dTs 0.00018974186478277338
+eigenA
+[-32.76418661  -1.91886214  -0.83239926  -0.83239926  -0.83239926]
+[-30.51078972  -1.59205937  -0.71103313  -0.70811293  -0.70435083]
+wfnDiff -0.3093124219731065
+Constant potential:  0
+ESP fitting starts. This might take a while.
+ESP fitting done
+ax[0,1].text(-0.2, -0.2, "CD/CT")
+Out[15]: Text(-0.2, -0.2, 'CD/CT')
+XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vxc_basis.Vpot, ax=ax[0,1], label="CO", ls='-.')
+ax[0,1].set_xlim(-0.2, 2.7)
+ax[0,1].legend()
+f.show()
+ax[0,1].lines[-1].remove()
+ax[0,1].lines[-1].remove()
+ax[0,1].plot(Ne_xyz, Ne_vxc, label="Exact")
+Out[20]: [<matplotlib.lines.Line2D at 0x7fbae4092910>]
+inverser.find_vxc_scipy_WuYang(opt_method=opt_method);
+Zero the old result for a new calculation..
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion trust-krylov<<<<<<<<<<<<<<<<<<<
+|n| before 0.6765881868754944
+Evaluation:  5
+|jac| 5.720856351892471e-06 |n| 0.0007600528192453595 L after -128.51252934676552
+Ts 128.51566775538282
+dTs -0.002733213971522842
+eigenA
+[-32.76418661  -1.91886214  -0.83239926  -0.83239926  -0.83239926]
+[-30.80099584  -1.90760674  -1.00449991  -1.00449063  -1.00448997]
+wfnDiff 0.29444151129379076
+Constant potential:  0
+ESP fitting starts. This might take a while.
+ESP fitting done
+XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vxc_basis.Vpot, ax=ax[0,1], label="WuYang", ls='--')
+inverser.find_vxc_scipy_constrainedoptimization(opt_method="L-BFGS-B");
+Zero the old result for a new calculation..
+<<<<<<<<<<<<<<<<<<<<<<Constrained Optimization vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 0.6765881868754944
+RUNNING THE L-BFGS-B CODE
+           * * *
+Machine precision = 2.220D-16
+ N =           86     M =           10
+At X0         0 variables are exactly at the bounds
+ This problem is unconstrained.
+At iterate    0    f=  3.35526D-01    |proj g|=  7.69775D-01
+At iterate    1    f=  1.10408D-01    |proj g|=  3.40803D-01
+At iterate    2    f=  3.48224D-02    |proj g|=  3.64543D-02
+At iterate    3    f=  2.22611D-02    |proj g|=  4.55196D-02
+At iterate    4    f=  3.43798D-03    |proj g|=  5.00132D-02
+At iterate    5    f=  1.81033D-03    |proj g|=  1.45324D-02
+At iterate    6    f=  1.26367D-03    |proj g|=  8.81807D-03
+At iterate    7    f=  1.15727D-03    |proj g|=  1.21805D-03
+At iterate    8    f=  1.15369D-03    |proj g|=  1.05474D-03
+At iterate    9    f=  1.14544D-03    |proj g|=  1.95877D-03
+At iterate   10    f=  1.13307D-03    |proj g|=  3.17407D-03
+At iterate   11    f=  1.10995D-03    |proj g|=  3.78604D-03
+At iterate   12    f=  1.06605D-03    |proj g|=  3.69872D-03
+At iterate   13    f=  8.84868D-04    |proj g|=  5.02765D-03
+At iterate   14    f=  5.80487D-04    |proj g|=  4.02700D-03
+At iterate   15    f=  4.60093D-04    |proj g|=  6.19125D-03
+At iterate   16    f=  2.19681D-04    |proj g|=  2.68296D-03
+At iterate   17    f=  1.04060D-04    |proj g|=  1.31632D-03
+At iterate   18    f=  7.66331D-05    |proj g|=  4.43139D-04
+At iterate   19    f=  7.51749D-05    |proj g|=  1.14652D-03
+At iterate   20    f=  7.42657D-05    |proj g|=  3.01929D-04
+At iterate   21    f=  7.37392D-05    |proj g|=  1.95392D-04
+At iterate   22    f=  7.25837D-05    |proj g|=  7.27200D-04
+At iterate   23    f=  7.00293D-05    |proj g|=  1.48119D-03
+At iterate   24    f=  6.40083D-05    |proj g|=  2.48095D-03
+At iterate   25    f=  5.22425D-05    |proj g|=  3.40603D-03
+At iterate   26    f=  3.59370D-05    |proj g|=  3.56550D-03
+At iterate   27    f=  3.52540D-05    |proj g|=  3.14863D-03
+At iterate   28    f=  2.40108D-05    |proj g|=  1.70005D-03
+At iterate   29    f=  2.11127D-05    |proj g|=  4.11012D-04
+At iterate   30    f=  2.08806D-05    |proj g|=  3.64446D-05
+At iterate   31    f=  2.08732D-05    |proj g|=  1.16404D-05
+At iterate   32    f=  2.08671D-05    |proj g|=  2.38468D-05
+At iterate   33    f=  2.08485D-05    |proj g|=  4.15003D-05
+At iterate   34    f=  2.08244D-05    |proj g|=  7.67911D-05
+At iterate   35    f=  2.07891D-05    |proj g|=  7.69210D-05
+At iterate   36    f=  2.07649D-05    |proj g|=  5.92548D-05
+At iterate   37    f=  2.07284D-05    |proj g|=  5.39299D-05
+At iterate   38    f=  2.06545D-05    |proj g|=  1.21824D-04
+At iterate   39    f=  2.05343D-05    |proj g|=  1.88088D-04
+At iterate   40    f=  2.02041D-05    |proj g|=  2.59937D-04
+At iterate   41    f=  1.95416D-05    |proj g|=  4.18164D-04
+At iterate   42    f=  1.87551D-05    |proj g|=  2.55385D-04
+At iterate   43    f=  1.77498D-05    |proj g|=  4.51188D-04
+At iterate   44    f=  1.71772D-05    |proj g|=  2.86713D-04
+At iterate   45    f=  1.69022D-05    |proj g|=  6.20207D-05
+At iterate   46    f=  1.68717D-05    |proj g|=  6.67186D-05
+At iterate   47    f=  1.67902D-05    |proj g|=  1.09661D-04
+At iterate   48    f=  1.66538D-05    |proj g|=  1.78234D-04
+At iterate   49    f=  1.62064D-05    |proj g|=  2.80646D-04
+At iterate   50    f=  1.55712D-05    |proj g|=  2.61939D-04
+At iterate   51    f=  1.48782D-05    |proj g|=  2.27913D-04
+At iterate   52    f=  1.40944D-05    |proj g|=  1.55069D-04
+At iterate   53    f=  1.33728D-05    |proj g|=  3.68926D-04
+At iterate   54    f=  1.30984D-05    |proj g|=  6.39234D-04
+At iterate   55    f=  1.25422D-05    |proj g|=  6.06199D-04
+At iterate   56    f=  1.01309D-05    |proj g|=  3.29082D-04
+At iterate   57    f=  8.30378D-06    |proj g|=  5.79190D-04
+At iterate   58    f=  5.23914D-06    |proj g|=  7.22981D-04
+At iterate   59    f=  2.08325D-06    |proj g|=  6.03680D-04
+At iterate   60    f=  1.28464D-06    |proj g|=  3.63131D-04
+At iterate   61    f=  5.70092D-07    |proj g|=  1.64256D-04
+At iterate   62    f=  4.26945D-07    |proj g|=  7.01426D-05
+At iterate   63    f=  3.80114D-07    |proj g|=  3.15147D-05
+At iterate   64    f=  3.52063D-07    |proj g|=  4.42717D-05
+At iterate   65    f=  3.44996D-07    |proj g|=  3.74665D-05
+At iterate   66    f=  3.41143D-07    |proj g|=  3.17524D-05
+At iterate   67    f=  3.39957D-07    |proj g|=  1.28744D-05
+           * * *
+Tit   = total number of iterations
+Tnf   = total number of function evaluations
+Tnint = total number of segments explored during Cauchy searches
+Skip  = number of BFGS updates skipped
+Nact  = number of active bounds at final generalized Cauchy point
+Projg = norm of the final projected gradient
+F     = final function value
+           * * *
+   N    Tit     Tnf  Tnint  Skip  Nact     Projg        F
+   86     67     71      1     0     0   1.287D-05   3.400D-07
+  F =   3.3995680794864031E-007
+CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH             
+ Cauchy                time 0.000E+00 seconds.
+ Subspace minimization time 0.000E+00 seconds.
+ Line search           time 0.000E+00 seconds.
+ Total User time 0.000E+00 seconds.
+Evaluation 71
+|jac| 3.510634456144175e-05 |n| 0.003588356244620577 L after 3.399568079486403e-07
+Ts 128.5127447995465
+dTs 0.00018974186478277338
+eigenA
+[-32.76418661  -1.91886214  -0.83239926  -0.83239926  -0.83239926]
+[-30.51078972  -1.59205937  -0.71103313  -0.70811293  -0.70435083]
+wfnDiff -0.3093124219731065
+Constant potential:  0
+ESP fitting starts. This might take a while.
+ESP fitting done
+XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vxc_basis.Vpot, ax=ax[0,1], label="CO", ls='-.')
+f.show()
+ax[0,1].clear()
+f.show()
+ax[0,1].text(-0.2, -0.2, "CD/CT")
+ax[0,1].set_xlim(-0.2, 2.7)
+ax[0,1].plot(Ne_xyz, Ne_vxc, label="Exact")
+Out[28]: [<matplotlib.lines.Line2D at 0x7fbae405f150>]
+inverser.find_vxc_scipy_WuYang(opt_method=opt_method);
+Zero the old result for a new calculation..
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion trust-krylov<<<<<<<<<<<<<<<<<<<
+|n| before 0.6765881868754944
+Evaluation:  5
+|jac| 5.720856351892471e-06 |n| 0.0007600528192453595 L after -128.51252934676552
+Ts 128.51566775538282
+dTs -0.002733213971522842
+eigenA
+[-32.76418661  -1.91886214  -0.83239926  -0.83239926  -0.83239926]
+[-30.80099584  -1.90760674  -1.00449991  -1.00449063  -1.00448997]
+wfnDiff 0.29444151129379076
+Constant potential:  0
+ESP fitting starts. This might take a while.
+ESP fitting done
+XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vxc_basis.Vpot, ax=ax[0,1], label="WuYang", ls='--')
+inverser.find_vxc_scipy_constrainedoptimization(opt_method="L-BFGS-B");
+Zero the old result for a new calculation..
+<<<<<<<<<<<<<<<<<<<<<<Constrained Optimization vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 0.6765881868754944
+RUNNING THE L-BFGS-B CODE
+           * * *
+Machine precision = 2.220D-16
+ N =           86     M =           10
+At X0         0 variables are exactly at the bounds
+ This problem is unconstrained.
+At iterate    0    f=  3.35526D-01    |proj g|=  7.69775D-01
+At iterate    1    f=  1.10408D-01    |proj g|=  3.40803D-01
+At iterate    2    f=  3.48224D-02    |proj g|=  3.64543D-02
+At iterate    3    f=  2.22611D-02    |proj g|=  4.55196D-02
+At iterate    4    f=  3.43798D-03    |proj g|=  5.00132D-02
+At iterate    5    f=  1.81033D-03    |proj g|=  1.45324D-02
+At iterate    6    f=  1.26367D-03    |proj g|=  8.81807D-03
+At iterate    7    f=  1.15727D-03    |proj g|=  1.21805D-03
+At iterate    8    f=  1.15369D-03    |proj g|=  1.05474D-03
+At iterate    9    f=  1.14544D-03    |proj g|=  1.95877D-03
+At iterate   10    f=  1.13307D-03    |proj g|=  3.17407D-03
+At iterate   11    f=  1.10995D-03    |proj g|=  3.78604D-03
+At iterate   12    f=  1.06605D-03    |proj g|=  3.69872D-03
+At iterate   13    f=  8.84868D-04    |proj g|=  5.02765D-03
+At iterate   14    f=  5.80487D-04    |proj g|=  4.02700D-03
+At iterate   15    f=  4.60093D-04    |proj g|=  6.19125D-03
+At iterate   16    f=  2.19681D-04    |proj g|=  2.68296D-03
+At iterate   17    f=  1.04060D-04    |proj g|=  1.31632D-03
+At iterate   18    f=  7.66331D-05    |proj g|=  4.43139D-04
+At iterate   19    f=  7.51749D-05    |proj g|=  1.14652D-03
+At iterate   20    f=  7.42657D-05    |proj g|=  3.01929D-04
+At iterate   21    f=  7.37392D-05    |proj g|=  1.95392D-04
+At iterate   22    f=  7.25837D-05    |proj g|=  7.27200D-04
+At iterate   23    f=  7.00293D-05    |proj g|=  1.48119D-03
+At iterate   24    f=  6.40083D-05    |proj g|=  2.48095D-03
+At iterate   25    f=  5.22425D-05    |proj g|=  3.40603D-03
+At iterate   26    f=  3.59370D-05    |proj g|=  3.56550D-03
+At iterate   27    f=  3.52540D-05    |proj g|=  3.14863D-03
+At iterate   28    f=  2.40108D-05    |proj g|=  1.70005D-03
+At iterate   29    f=  2.11127D-05    |proj g|=  4.11012D-04
+At iterate   30    f=  2.08806D-05    |proj g|=  3.64446D-05
+At iterate   31    f=  2.08732D-05    |proj g|=  1.16404D-05
+At iterate   32    f=  2.08671D-05    |proj g|=  2.38468D-05
+At iterate   33    f=  2.08485D-05    |proj g|=  4.15003D-05
+At iterate   34    f=  2.08244D-05    |proj g|=  7.67911D-05
+At iterate   35    f=  2.07891D-05    |proj g|=  7.69210D-05
+At iterate   36    f=  2.07649D-05    |proj g|=  5.92548D-05
+At iterate   37    f=  2.07284D-05    |proj g|=  5.39299D-05
+At iterate   38    f=  2.06545D-05    |proj g|=  1.21824D-04
+At iterate   39    f=  2.05343D-05    |proj g|=  1.88088D-04
+At iterate   40    f=  2.02041D-05    |proj g|=  2.59937D-04
+At iterate   41    f=  1.95416D-05    |proj g|=  4.18164D-04
+At iterate   42    f=  1.87551D-05    |proj g|=  2.55385D-04
+At iterate   43    f=  1.77498D-05    |proj g|=  4.51188D-04
+At iterate   44    f=  1.71772D-05    |proj g|=  2.86713D-04
+At iterate   45    f=  1.69022D-05    |proj g|=  6.20207D-05
+At iterate   46    f=  1.68717D-05    |proj g|=  6.67186D-05
+At iterate   47    f=  1.67902D-05    |proj g|=  1.09661D-04
+At iterate   48    f=  1.66538D-05    |proj g|=  1.78234D-04
+At iterate   49    f=  1.62064D-05    |proj g|=  2.80646D-04
+At iterate   50    f=  1.55712D-05    |proj g|=  2.61939D-04
+At iterate   51    f=  1.48782D-05    |proj g|=  2.27913D-04
+At iterate   52    f=  1.40944D-05    |proj g|=  1.55069D-04
+At iterate   53    f=  1.33728D-05    |proj g|=  3.68926D-04
+At iterate   54    f=  1.30984D-05    |proj g|=  6.39234D-04
+At iterate   55    f=  1.25422D-05    |proj g|=  6.06199D-04
+At iterate   56    f=  1.01309D-05    |proj g|=  3.29082D-04
+At iterate   57    f=  8.30378D-06    |proj g|=  5.79190D-04
+At iterate   58    f=  5.23914D-06    |proj g|=  7.22981D-04
+At iterate   59    f=  2.08325D-06    |proj g|=  6.03680D-04
+At iterate   60    f=  1.28464D-06    |proj g|=  3.63131D-04
+At iterate   61    f=  5.70092D-07    |proj g|=  1.64256D-04
+At iterate   62    f=  4.26945D-07    |proj g|=  7.01426D-05
+At iterate   63    f=  3.80114D-07    |proj g|=  3.15147D-05
+At iterate   64    f=  3.52063D-07    |proj g|=  4.42717D-05
+At iterate   65    f=  3.44996D-07    |proj g|=  3.74665D-05
+At iterate   66    f=  3.41143D-07    |proj g|=  3.17524D-05
+At iterate   67    f=  3.39957D-07    |proj g|=  1.28744D-05
+           * * *
+Tit   = total number of iterations
+Tnf   = total number of function evaluations
+Tnint = total number of segments explored during Cauchy searches
+Skip  = number of BFGS updates skipped
+Nact  = number of active bounds at final generalized Cauchy point
+Projg = norm of the final projected gradient
+F     = final function value
+           * * *
+   N    Tit     Tnf  Tnint  Skip  Nact     Projg        F
+   86     67     71      1     0     0   1.287D-05   3.400D-07
+  F =   3.3995680794864031E-007
+CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH             
+ Cauchy                time 0.000E+00 seconds.
+ Subspace minimization time 0.000E+00 seconds.
+ Line search           time 0.000E+00 seconds.
+ Total User time 0.000E+00 seconds.
+Evaluation 71
+|jac| 3.510634456144175e-05 |n| 0.003588356244620577 L after 3.399568079486403e-07
+Ts 128.5127447995465
+dTs 0.00018974186478277338
+eigenA
+[-32.76418661  -1.91886214  -0.83239926  -0.83239926  -0.83239926]
+[-30.51078972  -1.59205937  -0.71103313  -0.70811293  -0.70435083]
+wfnDiff -0.3093124219731065
+Constant potential:  0
+ESP fitting starts. This might take a while.
+ESP fitting done
+XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vxc_basis.Vpot, ax=ax[0,1], label="CO", ls='-.')
+ax[0,1].legend()
+Out[33]: <matplotlib.legend.Legend at 0x7fbadfb2ea90>
+f.show()
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Ne_real.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+WuYangScipy_trust-krylov_FermiAmaldi_cc-pcvdz_cc-pcvqz_False_input_once
+Target Density Calculation Finished.
+Number of Basis:  18 84
+ESP fitting starts. This might take a while.
+ESP fitting done
+no xc
+Zero the old result for a new calculation..
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion trust-krylov<<<<<<<<<<<<<<<<<<<
+|n| before 0.6765881868756303
+Evaluation:  5
+|jac| 5.9007888958941404e-05 |n| 0.0014630745252321392 L after -128.51262663524557
+Ts 128.5158092295788
+dTs -0.0028746881670531597
+eigenA
+[-32.76418661  -1.91886214  -0.83239926  -0.83239926  -0.83239926]
+[-30.70629336  -1.77013652  -0.87114613  -0.87114575  -0.87114536]
+wfnDiff 0.5760319436481024
+Constant potential:  0
+ESP fitting starts. This might take a while.
+ESP fitting done
+ax[1, 0].plot(Ne_xyz, Ne_vxc, label="Exact")
+Out[36]: [<matplotlib.lines.Line2D at 0x7fbadfa65490>]
+ax[1,0].text(-0.2, -0.2, "CD/CQ")
+ax[1,0].set_xlim(-0.2, 2.7)
+Out[37]: (-0.2, 2.7)
+XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vxc_basis.Vpot, ax=ax[1,0], label="WuYang", ls='--')
+f.show()
+inverser.find_vxc_scipy_constrainedoptimization(opt_method="L-BFGS-B");
+Zero the old result for a new calculation..
+<<<<<<<<<<<<<<<<<<<<<<Constrained Optimization vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 0.6765881868756303
+RUNNING THE L-BFGS-B CODE
+           * * *
+Machine precision = 2.220D-16
+ N =          168     M =           10
+At X0         0 variables are exactly at the bounds
+ This problem is unconstrained.
+At iterate    0    f=  3.35526D-01    |proj g|=  3.11080D+00
+At iterate    1    f=  1.49718D-01    |proj g|=  6.08239D-01
+At iterate    2    f=  8.14251D-02    |proj g|=  8.08143D-02
+At iterate    3    f=  7.50217D-02    |proj g|=  7.66424D-02
+At iterate    4    f=  6.27001D-02    |proj g|=  1.15572D-01
+At iterate    5    f=  4.48299D-02    |proj g|=  1.66610D-01
+At iterate    6    f=  2.96473D-02    |proj g|=  1.12907D-01
+At iterate    7    f=  1.31781D-02    |proj g|=  6.72667D-02
+At iterate    8    f=  1.65427D-03    |proj g|=  2.50633D-02
+At iterate    9    f=  5.85495D-04    |proj g|=  6.86258D-03
+At iterate   10    f=  4.81951D-04    |proj g|=  3.06416D-03
+At iterate   11    f=  4.74241D-04    |proj g|=  6.60677D-04
+At iterate   12    f=  4.63426D-04    |proj g|=  3.81418D-03
+At iterate   13    f=  4.53636D-04    |proj g|=  5.68821D-03
+At iterate   14    f=  4.31595D-04    |proj g|=  6.00935D-03
+At iterate   15    f=  3.85479D-04    |proj g|=  4.35778D-03
+At iterate   16    f=  2.88683D-04    |proj g|=  1.27115D-02
+At iterate   17    f=  1.56502D-04    |proj g|=  7.22827D-03
+At iterate   18    f=  5.87881D-05    |proj g|=  4.10796D-04
+At iterate   19    f=  5.56318D-05    |proj g|=  1.82219D-04
+At iterate   20    f=  5.53492D-05    |proj g|=  1.37186D-04
+At iterate   21    f=  5.52145D-05    |proj g|=  1.53594D-04
+At iterate   22    f=  5.50037D-05    |proj g|=  6.97623D-04
+At iterate   23    f=  5.45949D-05    |proj g|=  5.75652D-04
+At iterate   24    f=  5.27134D-05    |proj g|=  1.39391D-03
+At iterate   25    f=  5.17706D-05    |proj g|=  2.01455D-04
+At iterate   26    f=  5.13874D-05    |proj g|=  6.17010D-05
+At iterate   27    f=  5.13211D-05    |proj g|=  6.44804D-05
+At iterate   28    f=  5.13163D-05    |proj g|=  3.39269D-05
+At iterate   29    f=  5.13129D-05    |proj g|=  2.58090D-05
+At iterate   30    f=  5.12973D-05    |proj g|=  2.98828D-05
+At iterate   31    f=  5.12347D-05    |proj g|=  6.43182D-05
+At iterate   32    f=  5.11057D-05    |proj g|=  9.69492D-05
+At iterate   33    f=  5.09196D-05    |proj g|=  7.38693D-04
+At iterate   34    f=  5.03995D-05    |proj g|=  4.65327D-04
+At iterate   35    f=  4.85013D-05    |proj g|=  1.71842D-04
+At iterate   36    f=  4.43400D-05    |proj g|=  8.13388D-04
+At iterate   37    f=  3.63185D-05    |proj g|=  1.76650D-03
+At iterate   38    f=  2.55685D-05    |proj g|=  1.70189D-03
+At iterate   39    f=  2.41090D-05    |proj g|=  3.14973D-03
+At iterate   40    f=  1.74315D-05    |proj g|=  1.53194D-03
+At iterate   41    f=  1.40346D-05    |proj g|=  6.02803D-04
+At iterate   42    f=  1.31387D-05    |proj g|=  2.10090D-04
+At iterate   43    f=  1.24712D-05    |proj g|=  2.70980D-04
+At iterate   44    f=  1.20906D-05    |proj g|=  4.39067D-04
+At iterate   45    f=  1.18572D-05    |proj g|=  1.83639D-04
+At iterate   46    f=  1.17136D-05    |proj g|=  1.38162D-04
+At iterate   47    f=  1.14442D-05    |proj g|=  2.74149D-04
+At iterate   48    f=  1.12436D-05    |proj g|=  2.90613D-04
+At iterate   49    f=  1.06497D-05    |proj g|=  2.49075D-04
+At iterate   50    f=  9.45836D-06    |proj g|=  1.24363D-03
+At iterate   51    f=  7.59573D-06    |proj g|=  2.77539D-04
+At iterate   52    f=  6.02764D-06    |proj g|=  3.31467D-04
+At iterate   53    f=  4.07584D-06    |proj g|=  3.98845D-04
+At iterate   54    f=  3.33347D-06    |proj g|=  2.05532D-04
+At iterate   55    f=  2.56512D-06    |proj g|=  2.15038D-04
+At iterate   56    f=  1.89298D-06    |proj g|=  7.07419D-04
+At iterate   57    f=  7.95667D-07    |proj g|=  2.07614D-04
+At iterate   58    f=  5.78896D-07    |proj g|=  5.85637D-05
+At iterate   59    f=  5.02766D-07    |proj g|=  8.63502D-05
+At iterate   60    f=  4.78964D-07    |proj g|=  4.79691D-05
+At iterate   61    f=  4.69623D-07    |proj g|=  5.77511D-05
+At iterate   62    f=  4.66653D-07    |proj g|=  1.74688D-05
+At iterate   63    f=  4.66321D-07    |proj g|=  2.43186D-06
+           * * *
+Tit   = total number of iterations
+Tnf   = total number of function evaluations
+Tnint = total number of segments explored during Cauchy searches
+Skip  = number of BFGS updates skipped
+Nact  = number of active bounds at final generalized Cauchy point
+Projg = norm of the final projected gradient
+F     = final function value
+           * * *
+   N    Tit     Tnf  Tnint  Skip  Nact     Projg        F
+  168     63     70      1     0     0   2.432D-06   4.663D-07
+  F =   4.6632060470523956E-007
+CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH             
+ Cauchy                time 0.000E+00 seconds.
+ Subspace minimization time 0.000E+00 seconds.
+ Line search           time 0.000E+00 seconds.
+ Total User time 0.000E+00 seconds.
+Evaluation 70
+|jac| 5.367552482108604e-06 |n| 0.004105719106248988 L after 4.6632060470523956e-07
+Ts 128.51220774131843
+dTs 0.0007268000933049815
+eigenA
+[-32.76418661  -1.91886214  -0.83239926  -0.83239926  -0.83239926]
+[-30.53286445  -1.5599148   -0.6850589   -0.68268425  -0.67972449]
+wfnDiff -0.4909839760578058
+Constant potential:  0
+ESP fitting starts. This might take a while.
+ESP fitting done
+XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vxc_basis.Vpot, ax=ax[1,0], label="CO", ls='-.')
+ax[1,0].legend()
+Out[42]: <matplotlib.legend.Legend at 0x7fbadfa6ea90>
+f.show()
+runfile('/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion/Ne_real.py', wdir='/home/yuming/PDFT/pdft/pdft/tests/XC_Inversion')
+WuYangScipy_trust-krylov_FermiAmaldi_cc-pcvdz_cc-pcv5z_False_input_once
+Target Density Calculation Finished.
+Number of Basis:  18 145
+ESP fitting starts. This might take a while.
+ESP fitting done
+no xc
+Zero the old result for a new calculation..
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion trust-krylov<<<<<<<<<<<<<<<<<<<
+|n| before 0.6765881868756274
+Evaluation:  5
+|jac| 8.639031509255217e-05 |n| 0.001949870862201253 L after -128.5127785250007
+Ts 128.5134803106907
+dTs -0.0005457692789778788
+eigenA
+[-32.76418661  -1.91886214  -0.83239926  -0.83239926  -0.83239926]
+[-30.78033651  -1.76089387  -0.86491611  -0.86491611  -0.86491609]
+wfnDiff 0.3229958848735422
+Constant potential:  0
+ESP fitting starts. This might take a while.
+ESP fitting done
+ax[1, 1].plot(Ne_xyz, Ne_vxc, label="Exact")
+Out[45]: [<matplotlib.lines.Line2D at 0x7fbae4092310>]
+ax[1,1].text(-0.2, -0.2, "CD/C5")
+ax[1,1].set_xlim(-0.2, 2.7)
+Out[46]: (-0.2, 2.7)
+XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vxc_basis.Vpot, ax=ax[1,1], label="WuYang", ls='--')
+inverser.find_vxc_scipy_WuYang(opt_method=opt_method);
+Zero the old result for a new calculation..
+<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion trust-krylov<<<<<<<<<<<<<<<<<<<
+|n| before 0.6765881868756274
+Evaluation:  5
+|jac| 8.639031509255217e-05 |n| 0.001949870862201253 L after -128.5127785250007
+Ts 128.5134803106907
+dTs -0.0005457692789778788
+eigenA
+[-32.76418661  -1.91886214  -0.83239926  -0.83239926  -0.83239926]
+[-30.78033651  -1.76089387  -0.86491611  -0.86491611  -0.86491609]
+wfnDiff 0.3229958848735422
+Constant potential:  0
+ESP fitting starts. This might take a while.
+ESP fitting done
+inverser.find_vxc_scipy_constrainedoptimization(opt_method="L-BFGS-B");
+Zero the old result for a new calculation..
+<<<<<<<<<<<<<<<<<<<<<<Constrained Optimization vxc Inversion<<<<<<<<<<<<<<<<<<<
+|n| before 0.6765881868756274
+RUNNING THE L-BFGS-B CODE
+           * * *
+Machine precision = 2.220D-16
+ N =          290     M =           10
+At X0         0 variables are exactly at the bounds
+ This problem is unconstrained.
+At iterate    0    f=  3.35526D-01    |proj g|=  1.24953D+00
+At iterate    1    f=  1.95123D-02    |proj g|=  1.05571D-01
+At iterate    2    f=  1.55891D-02    |proj g|=  9.12686D-02
+At iterate    3    f=  6.16196D-03    |proj g|=  5.89486D-02
+At iterate    4    f=  1.34916D-03    |proj g|=  3.83896D-02
+At iterate    5    f=  7.64880D-04    |proj g|=  3.80451D-03
+At iterate    6    f=  7.35801D-04    |proj g|=  4.31834D-03
+At iterate    7    f=  6.15127D-04    |proj g|=  1.22557D-02
+At iterate    8    f=  4.67538D-04    |proj g|=  1.53400D-02
+At iterate    9    f=  3.28926D-04    |proj g|=  8.89038D-03
+At iterate   10    f=  3.01329D-04    |proj g|=  1.67073D-03
+At iterate   11    f=  2.99074D-04    |proj g|=  1.02108D-03
+At iterate   12    f=  2.98527D-04    |proj g|=  1.47604D-03
+At iterate   13    f=  2.96703D-04    |proj g|=  2.19867D-03
+At iterate   14    f=  2.91394D-04    |proj g|=  3.52496D-03
+At iterate   15    f=  2.78224D-04    |proj g|=  5.31172D-03
+At iterate   16    f=  2.47994D-04    |proj g|=  7.40678D-03
+At iterate   17    f=  1.90563D-04    |proj g|=  8.84663D-03
+At iterate   18    f=  1.19482D-04    |proj g|=  7.70022D-03
+At iterate   19    f=  1.16764D-04    |proj g|=  8.35651D-03
+At iterate   20    f=  7.81850D-05    |proj g|=  3.04601D-03
+At iterate   21    f=  7.02458D-05    |proj g|=  3.42606D-04
+At iterate   22    f=  6.96759D-05    |proj g|=  9.12529D-05
+At iterate   23    f=  6.96514D-05    |proj g|=  3.00193D-04
+At iterate   24    f=  6.96189D-05    |proj g|=  2.04578D-04
+At iterate   25    f=  6.95390D-05    |proj g|=  5.85876D-05
+At iterate   26    f=  6.94509D-05    |proj g|=  8.41437D-05
+At iterate   27    f=  6.94132D-05    |proj g|=  5.10551D-05
+At iterate   28    f=  6.93439D-05    |proj g|=  8.09321D-05
+At iterate   29    f=  6.90990D-05    |proj g|=  8.16750D-05
+At iterate   30    f=  6.85844D-05    |proj g|=  1.57075D-04
+At iterate   31    f=  6.76828D-05    |proj g|=  2.62106D-04
+At iterate   32    f=  6.73519D-05    |proj g|=  2.45601D-04
+At iterate   33    f=  6.67499D-05    |proj g|=  2.38152D-04
+At iterate   34    f=  6.66963D-05    |proj g|=  3.46406D-04
+At iterate   35    f=  6.65259D-05    |proj g|=  1.32659D-04
+At iterate   36    f=  6.64847D-05    |proj g|=  1.74720D-04
+At iterate   37    f=  6.64637D-05    |proj g|=  5.32468D-05
+At iterate   38    f=  6.64555D-05    |proj g|=  4.32995D-05
+At iterate   39    f=  6.64328D-05    |proj g|=  1.38789D-04
+At iterate   40    f=  6.63976D-05    |proj g|=  2.14892D-04
+At iterate   41    f=  6.62807D-05    |proj g|=  3.66067D-04
+At iterate   42    f=  6.59927D-05    |proj g|=  5.69015D-04
+At iterate   43    f=  6.52805D-05    |proj g|=  8.18767D-04
+At iterate   44    f=  6.35190D-05    |proj g|=  1.14749D-03
+At iterate   45    f=  6.12961D-05    |proj g|=  8.01224D-04
+At iterate   46    f=  5.59434D-05    |proj g|=  1.32078D-03
+At iterate   47    f=  4.89779D-05    |proj g|=  8.06916D-04
+At iterate   48    f=  4.57488D-05    |proj g|=  6.28440D-03
+At iterate   49    f=  2.86158D-05    |proj g|=  2.32500D-03
+At iterate   50    f=  2.66955D-05    |proj g|=  9.83053D-04
+At iterate   51    f=  2.49582D-05    |proj g|=  4.56732D-04
+At iterate   52    f=  1.96350D-05    |proj g|=  8.27522D-04
+At iterate   53    f=  1.43360D-05    |proj g|=  1.11761D-03
+At iterate   54    f=  7.16958D-06    |proj g|=  7.65356D-04
+At iterate   55    f=  3.88035D-06    |proj g|=  9.32726D-04
+At iterate   56    f=  3.17565D-06    |proj g|=  1.38798D-03
+At iterate   57    f=  1.75950D-06    |proj g|=  6.15478D-04
+At iterate   58    f=  1.14792D-06    |proj g|=  3.05925D-04
+At iterate   59    f=  4.42027D-07    |proj g|=  1.85272D-05
+At iterate   60    f=  4.35503D-07    |proj g|=  6.45521D-05
+At iterate   61    f=  4.30346D-07    |proj g|=  6.25405D-06
+At iterate   62    f=  4.29951D-07    |proj g|=  2.11474D-06
+           * * *
+Tit   = total number of iterations
+Tnf   = total number of function evaluations
+Tnint = total number of segments explored during Cauchy searches
+Skip  = number of BFGS updates skipped
+Nact  = number of active bounds at final generalized Cauchy point
+Projg = norm of the final projected gradient
+F     = final function value
+           * * *
+   N    Tit     Tnf  Tnint  Skip  Nact     Projg        F
+  290     62     71      1     0     0   2.115D-06   4.300D-07
+  F =   4.2995053679595214E-007
+CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH             
+ Cauchy                time 0.000E+00 seconds.
+ Subspace minimization time 0.000E+00 seconds.
+ Line search           time 0.000E+00 seconds.
+ Total User time 0.000E+00 seconds.
+Evaluation 71
+|jac| 7.447641790552466e-06 |n| 0.003905487308882003 L after 4.2995053679595214e-07
+Ts 128.5118886824547
+dTs 0.0010458589570367018
+eigenA
+[-32.76418661  -1.91886214  -0.83239926  -0.83239926  -0.83239926]
+[-30.57959317  -1.56972819  -0.69190506  -0.69157438  -0.69136885]
+wfnDiff 0.2535181740920381
+Constant potential:  0
+ESP fitting starts. This might take a while.
+ESP fitting done
+ax[1,1].legend()
+Out[50]: <matplotlib.legend.Legend at 0x7fbadfa593d0>
+f.show()
+ax[1,1].set_ylim(-9, 1)
+Out[52]: (-9, 1)
+ax[1,0].set_ylim(-9, 1)
+Out[53]: (-9, 1)
+f.show()
+ax[1,1].set_ylim(-9, 0.5)
+ax[1,0].set_ylim(-9, 0.5)
+Out[55]: (-9, 0.5)
+f.show()
+ax[0,1].set_ylim(-9, 0.5)
+ax[0,0].set_ylim(-9, 0.5)
+Out[57]: (-9, 0.5)
+f.show()
+XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vxc_basis.Vpot, ax=ax[1,0], label="CO", ls='-.')
+f.show()
+ax[1,0].lines[-1].remove()
+XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vxc_basis.Vpot, ax=ax[1,1], label="CO", ls='-.')
+ax[1,1].legend()
+Out[63]: <matplotlib.legend.Legend at 0x7fbb40331050>
+f.show()
+fig.text(0.5, 0.04, 'x (a.u.)', ha='center')
+fig.text(0.04, 0.5, 'XC potentials', va='center', rotation='vertical')
+Traceback (most recent call last):
+  File "/home/yuming/anaconda3/envs/work/lib/python3.7/site-packages/IPython/core/interactiveshell.py", line 3326, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+  File "<ipython-input-65-6ca95e79cd3a>", line 1, in <module>
+    fig.text(0.5, 0.04, 'x (a.u.)', ha='center')
+NameError: name 'fig' is not defined
+f.text(0.5, 0.04, 'x (a.u.)', ha='center')
+f.text(0.04, 0.5, 'XC potentials', va='center', rotation='vertical')
+Out[66]: Text(0.04, 0.5, 'XC potentials')
+f.show()
+f.texts.clear()
+f.show()
+f.text(0.5, 0.01, 'x (a.u.)', ha='center')
+f.text(0.01, 0.5, 'XC potentials', va='center', rotation='vertical')
+Out[70]: Text(0.01, 0.5, 'XC potentials')
+f.show()
+f.texts.clear()
+f.text(0.5, 0.01, 'x (a.u.)', ha='center')
+f.text(0.01, 0.5, 'XC potentials (a.u.)', va='center', rotation='vertical')
+Out[73]: Text(0.01, 0.5, 'XC potentials (a.u.)')
+f.show()
+f.savefig("Ne_WYvxCO")
+Process finished with exit code 0
+

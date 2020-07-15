@@ -9,9 +9,9 @@ if __name__ == "__main__":
     psi4.set_memory('4 GB')
 
 functional = 'svwn'
-basis = 'cc-pCVDZ'
+basis = 'cc-pCV5Z'
 
-vxc_basis = 'cc-pCV5Z'
+vxc_basis = None
 
 ortho_basis = False
 svd = "input_once"

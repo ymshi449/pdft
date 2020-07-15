@@ -1,0 +1,555 @@
+
+*** tstart() called on PartitionStation
+*** at Fri Jul 10 16:28:33 2020
+
+   => Loading Basis Set <=
+
+    Name: CC-PCVDZ
+    Role: ORBITAL
+    Keyword: BASIS
+    atoms 1   entry F          line   272 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pcvdz.gbs 
+    atoms 2-3 entry C          line   170 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pcvdz.gbs 
+    atoms 4   entry CL         line   746 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pcvdz.gbs 
+
+
+         ---------------------------------------------------------
+                                   SCF
+               by Justin Turney, Rob Parrish, Andy Simmonett
+                          and Daniel G. A. Smith
+                              UKS Reference
+                        2 Threads,    500 MiB Core
+         ---------------------------------------------------------
+
+  ==> Geometry <==
+
+    Molecular point group: c1
+    Full point group: C_inf_v
+
+    Geometry (in Bohr), charge = 0, multiplicity = 1:
+
+       Center              X                  Y                   Z               Mass       
+    ------------   -----------------  -----------------  -----------------  -----------------
+         F           -4.622780328000     0.000000000000     0.000000000000    18.998403162730
+         C           -2.225662738000     0.000000000000     0.000000000000    12.000000000000
+         C            0.000000000000     0.000000000000     0.000000000000    12.000000000000
+         CL           3.130803758000     0.000000000000     0.000000000000    34.968852682000
+
+  Running in c1 symmetry.
+
+  Rotational constants: A = ************  B =      0.07449  C =      0.07449 [cm^-1]
+  Rotational constants: A = ************  B =   2233.02970  C =   2233.02970 [MHz]
+  Nuclear repulsion =  121.738001619365306
+
+  Charge       = 0
+  Multiplicity = 1
+  Electrons    = 38
+  Nalpha       = 19
+  Nbeta        = 19
+
+  ==> Algorithm <==
+
+  SCF Algorithm Type is DF.
+  DIIS enabled.
+  MOM disabled.
+  Fractional occupation disabled.
+  Guess Type is SAD.
+  Energy threshold   = 1.00e-06
+  Density threshold  = 1.00e-06
+  Integral threshold = 0.00e+00
+
+  ==> Primary Basis <==
+
+  Basis Set: CC-PCVDZ
+    Blend: CC-PCVDZ
+    Number of shells: 35
+    Number of basis function: 81
+    Number of Cartesian functions: 86
+    Spherical Harmonics?: true
+    Max angular momentum: 2
+
+  ==> DFT Potential <==
+
+   => Composite Functional: SVWN <= 
+
+    SVWN3 (RPA) LSDA Functional
+
+    Adamson et. al., J. Comput. Chem., 20(9), 921-927, 1999
+
+
+    Deriv               =              1
+    GGA                 =          FALSE
+    Meta                =          FALSE
+
+    Exchange Hybrid     =          FALSE
+    MP2 Hybrid          =          FALSE
+
+   => Exchange Functionals <=
+
+    1.0000         XC_LDA_X
+
+   => Correlation Functionals <=
+
+    1.0000   XC_LDA_C_VWN_RPA
+
+   => Molecular Quadrature <=
+
+    Radial Scheme          =       TREUTLER
+    Pruning Scheme         =           FLAT
+    Nuclear Scheme         =       TREUTLER
+
+    BS radius alpha        =              1
+    Pruning alpha          =              1
+    Radial Points          =             77
+    Spherical Points       =            302
+    Total Points           =          87796
+    Total Blocks           =            744
+    Max Points             =            256
+    Max Functions          =             71
+
+   => Loading Basis Set <=
+
+    Name: (CC-PCVDZ AUX)
+    Role: JKFIT
+    Keyword: DF_BASIS_SCF
+    atoms 1   entry F          line   383 file /home/yuming/anaconda3/envs/work/share/psi4/basis/def2-qzvpp-jkfit.gbs 
+    atoms 2-3 entry C          line   203 file /home/yuming/anaconda3/envs/work/share/psi4/basis/def2-qzvpp-jkfit.gbs 
+    atoms 4   entry CL         line   991 file /home/yuming/anaconda3/envs/work/share/psi4/basis/def2-qzvpp-jkfit.gbs 
+
+  ==> Pre-Iterations <==
+
+   -------------------------------------------------------
+    Irrep   Nso     Nmo     Nalpha   Nbeta   Ndocc  Nsocc
+   -------------------------------------------------------
+     A         81      81       0       0       0       0
+   -------------------------------------------------------
+    Total      81      81      19      19      19       0
+   -------------------------------------------------------
+
+  ==> Integral Setup <==
+
+  DFHelper Memory: AOs need 0.018 GiB; user supplied 0.330 GiB. Using in-core AOs.
+
+  ==> MemDFJK: Density-Fitted J/K Matrices <==
+
+    J tasked:                   Yes
+    K tasked:                    No
+    wK tasked:                   No
+    OpenMP threads:               2
+    Memory [MiB]:               338
+    Algorithm:                 Core
+    Schwarz Cutoff:           1E-12
+    Mask sparsity (%):       9.9985
+    Fitting Condition:        1E-10
+
+   => Auxiliary Basis Set <=
+
+  Basis Set: (CC-PCVDZ AUX)
+    Blend: DEF2-QZVPP-JKFIT
+    Number of shells: 113
+    Number of basis function: 355
+    Number of Cartesian functions: 426
+    Spherical Harmonics?: true
+    Max angular momentum: 4
+
+  Cached 100.0% of DFT collocation blocks in 0.036 [GiB].
+
+  Minimum eigenvalue in the overlap matrix is 7.8652742834E-04.
+  Using Symmetric Orthogonalization.
+
+  SCF Guess: Superposition of Atomic Densities via on-the-fly atomic UHF.
+
+  ==> Iterations <==
+
+                           Total Energy        Delta E     RMS |[F,P]|
+
+   @DF-UKS iter SAD:  -634.07049271296330   -6.34070e+02   0.00000e+00 
+   @DF-UKS iter   1:  -633.85558626081388    2.14906e-01   8.73478e-03 DIIS
+   @DF-UKS iter   2:  -633.50168193942682    3.53904e-01   1.31946e-02 DIIS
+   @DF-UKS iter   3:  -634.06082846265349   -5.59147e-01   4.24911e-03 DIIS
+   @DF-UKS iter   4:  -634.09471922878868   -3.38908e-02   2.14558e-03 DIIS
+   @DF-UKS iter   5:  -634.10876431973043   -1.40451e-02   6.87960e-04 DIIS
+   @DF-UKS iter   6:  -634.11010793917171   -1.34362e-03   2.34411e-04 DIIS
+   @DF-UKS iter   7:  -634.11022600177148   -1.18063e-04   2.51109e-05 DIIS
+   @DF-UKS iter   8:  -634.11022847451727   -2.47275e-06   5.71709e-06 DIIS
+   @DF-UKS iter   9:  -634.11022855112390   -7.66066e-08   1.20184e-06 DIIS
+   @DF-UKS iter  10:  -634.11022855604176   -4.91787e-09   1.01039e-07 DIIS
+  Energy and wave function converged.
+
+
+  ==> Post-Iterations <==
+
+   @Spin Contamination Metric:   0.000000000E+00
+   @S^2 Expected:                0.000000000E+00
+   @S^2 Observed:                0.000000000E+00
+   @S   Expected:                0.000000000E+00
+   @S   Observed:                0.000000000E+00
+
+    Orbital Energies [Eh]
+    ---------------------
+
+    Alpha Occupied:                                                       
+
+       1A   -100.373258     2A    -24.214508     3A     -9.907876  
+       4A     -9.870737     5A     -9.195520     6A     -7.055061  
+       7A     -7.041500     8A     -7.041500     9A     -1.220964  
+      10A     -0.848828    11A     -0.715540    12A     -0.600887  
+      13A     -0.496605    14A     -0.487056    15A     -0.487056  
+      16A     -0.371975    17A     -0.371975    18A     -0.261441  
+      19A     -0.261441  
+
+    Alpha Virtual:                                                        
+
+      20A     -0.042224    21A      0.005770    22A      0.005770  
+      23A      0.040353    24A      0.267679    25A      0.318134  
+      26A      0.372342    27A      0.373237    28A      0.373237  
+      29A      0.461647    30A      0.461647    31A      0.497498  
+      32A      0.497498    33A      0.572999    34A      0.591652  
+      35A      0.591652    36A      0.679348    37A      0.679348  
+      38A      0.776775    39A      0.821221    40A      0.908455  
+      41A      0.908455    42A      1.055875    43A      1.137057  
+      44A      1.137057    45A      1.143998    46A      1.222608  
+      47A      1.222608    48A      1.295051    49A      1.295051  
+      50A      1.347671    51A      1.818716    52A      1.818716  
+      53A      1.962206    54A      2.169628    55A      2.689570  
+      56A      3.384607    57A      3.384610    58A      3.773196  
+      59A      3.773196    60A      4.125229    61A     11.186688  
+      62A     11.186688    63A     11.407759    64A     14.839126  
+      65A     14.839157    66A     14.852467    67A     14.852467  
+      68A     14.897873    69A     18.176518    70A     18.807097  
+      71A     19.067824    72A     21.211651    73A     21.211651  
+      74A     21.604164    75A     21.659238    76A     21.659238  
+      77A     23.843190    78A     41.540294    79A     46.931727  
+      80A     46.931727    81A     47.233978  
+
+    Beta Occupied:                                                        
+
+       1A   -100.373258     2A    -24.214508     3A     -9.907876  
+       4A     -9.870737     5A     -9.195520     6A     -7.055061  
+       7A     -7.041500     8A     -7.041500     9A     -1.220964  
+      10A     -0.848828    11A     -0.715540    12A     -0.600887  
+      13A     -0.496605    14A     -0.487056    15A     -0.487056  
+      16A     -0.371975    17A     -0.371975    18A     -0.261441  
+      19A     -0.261441  
+
+    Beta Virtual:                                                         
+
+      20A     -0.042224    21A      0.005770    22A      0.005770  
+      23A      0.040353    24A      0.267679    25A      0.318134  
+      26A      0.372342    27A      0.373237    28A      0.373237  
+      29A      0.461647    30A      0.461647    31A      0.497498  
+      32A      0.497498    33A      0.572999    34A      0.591652  
+      35A      0.591652    36A      0.679348    37A      0.679348  
+      38A      0.776775    39A      0.821221    40A      0.908455  
+      41A      0.908455    42A      1.055875    43A      1.137057  
+      44A      1.137057    45A      1.143998    46A      1.222608  
+      47A      1.222608    48A      1.295051    49A      1.295051  
+      50A      1.347671    51A      1.818716    52A      1.818716  
+      53A      1.962206    54A      2.169628    55A      2.689570  
+      56A      3.384607    57A      3.384610    58A      3.773196  
+      59A      3.773196    60A      4.125229    61A     11.186688  
+      62A     11.186688    63A     11.407759    64A     14.839126  
+      65A     14.839157    66A     14.852467    67A     14.852467  
+      68A     14.897873    69A     18.176518    70A     18.807097  
+      71A     19.067824    72A     21.211651    73A     21.211651  
+      74A     21.604164    75A     21.659238    76A     21.659238  
+      77A     23.843190    78A     41.540294    79A     46.931727  
+      80A     46.931727    81A     47.233978  
+
+    Final Occupation by Irrep:
+              A 
+    DOCC [    19 ]
+    SOCC [     0 ]
+
+  @DF-UKS Final Energy:  -634.11022855604176
+
+   => Energetics <=
+
+    Nuclear Repulsion Energy =            121.7380016193653063
+    One-Electron Energy =               -1117.6037593896908220
+    Two-Electron Energy =                 409.1534279138635952
+    DFT Exchange-Correlation Energy =     -47.3978986995799048
+    Empirical Dispersion Energy =           0.0000000000000000
+    VV10 Nonlocal Energy =                  0.0000000000000000
+    Total Energy =                       -634.1102285560418750
+
+  UHF NO Occupations:
+  HONO-2 :   17  A 2.0000000
+  HONO-1 :   18  A 2.0000000
+  HONO-0 :   19  A 2.0000000
+  LUNO+0 :   20  A 0.0000000
+  LUNO+1 :   21  A 0.0000000
+  LUNO+2 :   22  A 0.0000000
+  LUNO+3 :   23  A 0.0000000
+
+
+Computation Completed
+
+
+Properties will be evaluated at   0.000000,   0.000000,   0.000000 [a0]
+
+Properties computed using the SCF density matrix
+
+  Nuclear Dipole Moment: [e a0]
+     X:    -1.7353      Y:     0.0000      Z:     0.0000
+
+  Electronic Dipole Moment: [e a0]
+     X:     1.6826      Y:    -0.0000      Z:    -0.0000
+
+  Dipole Moment: [e a0]
+     X:    -0.0527      Y:    -0.0000      Z:    -0.0000     Total:     0.0527
+
+  Dipole Moment: [D]
+     X:    -0.1339      Y:    -0.0000      Z:    -0.0000     Total:     0.1339
+
+
+*** tstop() called on PartitionStation at Fri Jul 10 16:28:37 2020
+Module time:
+	user time   =       5.34 seconds =       0.09 minutes
+	system time =       0.22 seconds =       0.00 minutes
+	total time  =          4 seconds =       0.07 minutes
+Total time:
+	user time   =       5.34 seconds =       0.09 minutes
+	system time =       0.22 seconds =       0.00 minutes
+	total time  =          4 seconds =       0.07 minutes
+   => Loading Basis Set <=
+
+    Name: CC-PCVDZ
+    Role: ORBITAL
+    Keyword: BASIS
+    atoms 1   entry F          line   272 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pcvdz.gbs 
+    atoms 2-3 entry C          line   170 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pcvdz.gbs 
+    atoms 4   entry CL         line   746 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pcvdz.gbs 
+
+
+         ---------------------------------------------------------
+                                   SCF
+               by Justin Turney, Rob Parrish, Andy Simmonett
+                          and Daniel G. A. Smith
+                              UHF Reference
+                        2 Threads,    500 MiB Core
+         ---------------------------------------------------------
+
+  ==> Geometry <==
+
+    Molecular point group: c1
+    Full point group: C_inf_v
+
+    Geometry (in Bohr), charge = 0, multiplicity = 1:
+
+       Center              X                  Y                   Z               Mass       
+    ------------   -----------------  -----------------  -----------------  -----------------
+         F           -4.622780328000     0.000000000000     0.000000000000    18.998403162730
+         C           -2.225662738000     0.000000000000     0.000000000000    12.000000000000
+         C            0.000000000000     0.000000000000     0.000000000000    12.000000000000
+         CL           3.130803758000     0.000000000000     0.000000000000    34.968852682000
+
+  Running in c1 symmetry.
+
+  Rotational constants: A = ************  B =      0.07449  C =      0.07449 [cm^-1]
+  Rotational constants: A = ************  B =   2233.02970  C =   2233.02970 [MHz]
+  Nuclear repulsion =  121.738001619365306
+
+  Charge       = 0
+  Multiplicity = 1
+  Electrons    = 38
+  Nalpha       = 19
+  Nbeta        = 19
+
+  ==> Algorithm <==
+
+  SCF Algorithm Type is PK.
+  DIIS enabled.
+  MOM disabled.
+  Fractional occupation disabled.
+  Guess Type is AUTO.
+  Energy threshold   = 1.00e-06
+  Density threshold  = 1.00e-06
+  Integral threshold = 0.00e+00
+
+  ==> Primary Basis <==
+
+  Basis Set: CC-PCVDZ
+    Blend: CC-PCVDZ
+    Number of shells: 35
+    Number of basis function: 81
+    Number of Cartesian functions: 86
+    Spherical Harmonics?: true
+    Max angular momentum: 2
+
+  ==> DFT Potential <==
+
+   => Composite Functional: SVWN <= 
+
+    SVWN3 (RPA) LSDA Functional
+
+    Adamson et. al., J. Comput. Chem., 20(9), 921-927, 1999
+
+
+    Deriv               =              1
+    GGA                 =          FALSE
+    Meta                =          FALSE
+
+    Exchange Hybrid     =          FALSE
+    MP2 Hybrid          =          FALSE
+
+   => Exchange Functionals <=
+
+    1.0000         XC_LDA_X
+
+   => Correlation Functionals <=
+
+    1.0000   XC_LDA_C_VWN_RPA
+
+   => Molecular Quadrature <=
+
+    Radial Scheme          =       TREUTLER
+    Pruning Scheme         =           FLAT
+    Nuclear Scheme         =       TREUTLER
+
+    BS radius alpha        =              1
+    Pruning alpha          =              1
+    Radial Points          =             77
+    Spherical Points       =            302
+    Total Points           =          87796
+    Total Blocks           =            744
+    Max Points             =            256
+    Max Functions          =             71
+
+  Using in-core PK algorithm.
+   Calculation information:
+      Number of atoms:                   4
+      Number of AO shells:              35
+      Number of primitives:            125
+      Number of atomic orbitals:        86
+      Number of basis functions:        81
+
+      Integral cutoff                 1.00e-12
+      Number of threads:                 2
+
+  Performing in-core PK
+  Using 11032362 doubles for integral storage.
+  We computed 170797 shell quartets total.
+  Whereas there are 198765 unique shell quartets.
+
+  ==> DiskJK: Disk-Based J/K Matrices <==
+
+    J tasked:                  Yes
+    K tasked:                   No
+    wK tasked:                  No
+    Memory [MiB]:             3814
+    Schwarz Cutoff:          1E-12
+
+    OpenMP threads:              2
+
+   => Loading Basis Set <=
+
+    Name: CC-PCV5Z
+    Role: ORBITAL
+    Keyword: BASIS
+    atoms 1   entry F          line   492 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pcv5z.gbs 
+    atoms 2-3 entry C          line   213 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pcv5z.gbs 
+    atoms 4   entry CL         line  1519 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pcv5z.gbs 
+
+
+         ---------------------------------------------------------
+                                   SCF
+               by Justin Turney, Rob Parrish, Andy Simmonett
+                          and Daniel G. A. Smith
+                              UHF Reference
+                        2 Threads,    500 MiB Core
+         ---------------------------------------------------------
+
+  ==> Geometry <==
+
+    Molecular point group: c1
+    Full point group: C_inf_v
+
+    Geometry (in Bohr), charge = 0, multiplicity = 1:
+
+       Center              X                  Y                   Z               Mass       
+    ------------   -----------------  -----------------  -----------------  -----------------
+         F           -4.622780328000     0.000000000000     0.000000000000    18.998403162730
+         C           -2.225662738000     0.000000000000     0.000000000000    12.000000000000
+         C            0.000000000000     0.000000000000     0.000000000000    12.000000000000
+         CL           3.130803758000     0.000000000000     0.000000000000    34.968852682000
+
+  Running in c1 symmetry.
+
+  Rotational constants: A = ************  B =      0.07449  C =      0.07449 [cm^-1]
+  Rotational constants: A = ************  B =   2233.02970  C =   2233.02970 [MHz]
+  Nuclear repulsion =  121.738001619365306
+
+  Charge       = 0
+  Multiplicity = 1
+  Electrons    = 38
+  Nalpha       = 19
+  Nbeta        = 19
+
+  ==> Algorithm <==
+
+  SCF Algorithm Type is PK.
+  DIIS enabled.
+  MOM disabled.
+  Fractional occupation disabled.
+  Guess Type is AUTO.
+  Energy threshold   = 1.00e-06
+  Density threshold  = 1.00e-06
+  Integral threshold = 0.00e+00
+
+  ==> Primary Basis <==
+
+  Basis Set: CC-PCV5Z
+    Blend: CC-PCV5Z
+    Number of shells: 138
+    Number of basis function: 600
+    Number of Cartesian functions: 820
+    Spherical Harmonics?: true
+    Max angular momentum: 5
+
+  ==> DFT Potential <==
+
+   => Composite Functional: SVWN <= 
+
+    SVWN3 (RPA) LSDA Functional
+
+    Adamson et. al., J. Comput. Chem., 20(9), 921-927, 1999
+
+
+    Deriv               =              1
+    GGA                 =          FALSE
+    Meta                =          FALSE
+
+    Exchange Hybrid     =          FALSE
+    MP2 Hybrid          =          FALSE
+
+   => Exchange Functionals <=
+
+    1.0000         XC_LDA_X
+
+   => Correlation Functionals <=
+
+    1.0000   XC_LDA_C_VWN_RPA
+
+   => Molecular Quadrature <=
+
+    Radial Scheme          =       TREUTLER
+    Pruning Scheme         =           FLAT
+    Nuclear Scheme         =       TREUTLER
+
+    BS radius alpha        =              1
+    Pruning alpha          =              1
+    Radial Points          =             77
+    Spherical Points       =            302
+    Total Points           =          91143
+    Total Blocks           =            770
+    Max Points             =            256
+    Max Functions          =            433
+
+  Threads set to 1 by Python driver.
+  Threads set to 2 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 2 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 2 by Python driver.
+  Threads set to 1 by Python driver.
+  Threads set to 2 by Python driver.

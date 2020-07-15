@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
 functional = 'svwn'
 basis = "cc-pcvdz"
-vxc_basis = "cc-pcv5z"
+vxc_basis = "cc-pcvqz"
 
 ortho_basis = False
 svd = "input_once"
@@ -23,22 +23,17 @@ title = method +"_"+ opt_method +"_"+v0+ "_" + basis+"_"+ \
         + str(ortho_basis) + "_" + str(svd)
 print(title)
 
-psi4.set_output_file("Ne.psi4")
+psi4.set_output_file("Ar.psi4")
 
 Full_Molec = psi4.geometry("""
 nocom
 noreorient
-Ne
+Ar
 units bohr
 symmetry c1
 """)
 
-Full_Molec.set_name("Ne")
-
-# Exact
-Ne = np.genfromtxt('/home/yuming/PDFT/pdft/pdft/data/Atom0/ne.new8/Data')
-Ne_xyz = np.concatenate((-np.flip(Ne[:, 1]), Ne[:, 1]))
-Ne_vxc = np.concatenate((np.flip(Ne[:, 3]), Ne[:, 3]))
+Full_Molec.set_name("Ar")
 
 #Psi4 Options:
 psi4.set_options({
@@ -49,8 +44,9 @@ psi4.set_options({
     'REFERENCE': 'RHF'
 })
 #  Get wfn for target density
-E_input, input_density_wfn = psi4.energy("CCSD"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+E_input, input_density_wfn = psi4.energy("scf"+"/"+basis, molecule=Full_Molec, return_wfn=True)
 print("Target Density Calculation Finished.")
+
 
 #Psi4 Options:
 psi4.set_options({
@@ -73,27 +69,17 @@ inverser = XC_Inversion.Inverser(mol, input_density_wfn,
                                  # eHOMO=-0.5792,
                                  # v0_wfn=v0_wfn
                                  )
-
 # grad, grad_app = inverser.check_gradient_WuYang()
 # hess, hess_app = inverser.check_hess_WuYang()
-
-rgl_list, L_list, dT_list, P_list = inverser.my_L_curve_regularization();
 
 if method == "WuYangScipy":
     inverser.find_vxc_scipy_WuYang(opt_method=opt_method)
 elif method == "WuYangMN":
     hess, jac = inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="StrongWolfe")
 elif method == "COScipy":
-    inverser.find_vxc_scipy_constrainedoptimization(opt_method="L-BFGS-B");
+    inverser.find_vxc_scipy_constrainedoptimization(opt_method="L-BFGS-B")
 
-# for i in range(1, 10):
-#     print("\n")
-#     dv = 10**-i*np.ones_like(inverser.v_output)
-#     grad, grad_app = inverser.check_gradient_WuYang(dv)
-#     hess, hess_app = inverser.check_hess_WuYang(dv)
-
-# f,ax = plt.subplots(1,1,dpi=200)
-# ax.plot(Ne_xyz, Ne_vxc, label="Exact")
+# f, ax = plt.subplots(1,1,dpi=200)
 # XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vxc_basis.Vpot, ax=ax, label="WuYang", ls='--')
 # ax.legend()
 # ax.set_xlim(1e-3, 14)
