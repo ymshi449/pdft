@@ -1791,6 +1791,7 @@ class U_Embedding:
                         mixing_paramter * self.fragments[1].Coccb.np + (1 - mixing_paramter) * Coccb2)
         else:
             assert False
+
         self.sym_Lowdin_ortho_4_MO()
         self.get_density_sum()
         return
@@ -1803,6 +1804,7 @@ class U_Embedding:
         :return:
         """
         S = self.molecule.S.np
+
         # Alpha
         nalpha1 = self.fragments[0].nalpha
         nalpha2 = self.fragments[1].nalpha
@@ -1823,14 +1825,16 @@ class U_Embedding:
             orth_MOa = np.dot(MOa, Aa)
             assert np.allclose(orth_MOa.T.dot(S.dot(orth_MOa)), np.eye(nmo_a))
             # Reassign Cocc and D as well
-            print("BeforeSYM", np.max(np.abs(np.dot(self.fragments[0].Cocca.np[:].T, np.dot(S, self.fragments[1].Cocca.np[:])))))
+            print("BeforeSYM", np.max(np.abs(np.dot(self.fragments[0].Cocca.np[:].T,
+                                                    np.dot(S, self.fragments[1].Cocca.np[:])))))
             Cocca1 = np.copy(self.fragments[0].Cocca.np[:])
             self.fragments[0].Cocca.np[:] = orth_MOa[:, :nalpha1]
             self.fragments[1].Cocca.np[:] = orth_MOa[:, nalpha1:]
             self.fragments[0].Da.np[:] = orth_MOa[:, :nalpha1].dot(orth_MOa[:, :nalpha1].T)
             self.fragments[1].Da.np[:] = orth_MOa[:, nalpha1:].dot(orth_MOa[:, nalpha1:].T)
-            print("AfterSYM", np.max(np.abs(np.dot(self.fragments[0].Cocca.np[:].T, np.dot(S, self.fragments[1].Cocca.np[:])))),
-                  np.linalg.norm(self.fragments[0].Cocca.np-Cocca1))
+            print("AfterSYM", np.max(np.abs(np.dot(self.fragments[0].Cocca.np[:].T,
+                                                   np.dot(S, self.fragments[1].Cocca.np[:])))),
+                  "Rotation", np.arccos(np.sum(self.fragments[0].Cocca.np * Cocca1) / np.linalg.norm(self.fragments[0].Cocca.np) / np.linalg.norm(Cocca1)))
         
         # beta
         nbeta1 = self.fragments[0].nbeta
@@ -1855,8 +1859,46 @@ class U_Embedding:
             self.fragments[0].Db.np[:] = orth_MOb[:, :nbeta1].dot(orth_MOb[:, :nbeta1].T)
             self.fragments[1].Db.np[:] = orth_MOb[:, nbeta1:].dot(orth_MOb[:, nbeta1:].T)
 
+    def update_vp_fock_matrices(self, mix_type="Local_Q"):
+        if mix_type == "Local_Q":
+            self.get_vp_Hext_nad()
+            self.get_vp_xc_nad()
+            if self.vp_fock is not None:
+                vp_fock = psi4.core.Matrix.from_array(0.5*self.molecule.grid_to_fock(self.vp_Hext_nad + self.vp_xc_nad) + 0.5*self.vp_fock[0].np)
+            else:
+                vp_fock = psi4.core.Matrix.from_array(self.molecule.grid_to_fock((self.vp_Hext_nad + self.vp_xc_nad)))
+            self.vp_fock = [vp_fock, vp_fock]
 
-    def find_vp_projection(self, maxiter, mu=1e7, projection_method="Projection", mixing=1, rho_std=1e-5, printflag=False):
+        elif mix_type == "Electron_Number":
+            _, Vxc_a, Vxc_b, _ = U_xc(self.molecule.Da, self.molecule.Db, self.molecule.Vpot)
+            self.molecule.jk.C_left_add(self.molecule.Cocca)
+            self.molecule.jk.C_left_add(self.molecule.Coccb)
+            self.molecule.jk.compute()
+            self.molecule.jk.C_clear()
+            v_a = self.molecule.jk.J()[0].np + self.molecule.jk.J()[1].np + self.molecule.V.np + Vxc_a
+            v_b = self.molecule.jk.J()[0].np + self.molecule.jk.J()[1].np + self.molecule.V.np + Vxc_b
+            for frag in self.fragments:
+                frag.jk.C_left_add(frag.Cocca)
+                frag.jk.C_left_add(frag.Coccb)
+                frag.jk.compute()
+                frag.jk.C_clear()
+                _, Vxc_a, Vxc_b, _ = U_xc(frag.Da, frag.Db, self.molecule.Vpot)
+                v_f_a = frag.jk.J()[0].np + frag.jk.J()[1].np + frag.V.np + Vxc_a
+                v_f_b = frag.jk.J()[0].np + frag.jk.J()[1].np + frag.V.np + Vxc_b
+                v_a -= v_f_a * frag.ndocc / self.molecule.ndocc
+                v_b -= v_f_b * frag.ndocc / self.molecule.ndocc
+            if self.vp_fock is not None:
+                v_a = 0.5*v_a + 0.5*self.vp_fock[0].np
+                v_b = 0.5*v_b + 0.5*self.vp_fock[1].np
+            vp_fock_a = psi4.core.Matrix.from_array(v_a)
+            vp_fock_b = psi4.core.Matrix.from_array(v_b)
+            self.vp_fock = [vp_fock_a, vp_fock_b]
+        else:
+            assert False
+
+    def find_vp_projection(self, maxiter, mu=1e7, projection_method="Projection",
+                           vp_max_method="Local_Q",
+                           mixing=1, rho_std=1e-5, printflag=False):
         """
         This is not an inverse method. The main idea is to use projection to eliminate the NAKP.
         And to use local-Q for the rest.
@@ -1884,9 +1926,6 @@ class U_Embedding:
         self.fragments[0].scf(maxiter=1000, print_energies=printflag)
         self.fragments[1].scf(maxiter=1000, print_energies=printflag)
         self.get_density_sum()
-        n10 = self.fragments[0].omega*self.molecule.to_grid(self.fragments[0].Da.np+self.fragments[0].Db.np)
-        n20 = self.fragments[1].omega*self.molecule.to_grid(self.fragments[1].Da.np+self.fragments[1].Db.np)
-
 
         ## Tracking rho and changing beta
         rho_convergence = []
@@ -1897,9 +1936,10 @@ class U_Embedding:
         print("Initial dn:", old_rho_conv)
         self.drho_conv.append(old_rho_conv)
 
-        self.orthogonal_scf(21, mu=mu, projection_method=projection_method, mixing_paramter=mixing, printflag=printflag)
-        n11 = self.fragments[0].omega*self.molecule.to_grid(self.fragments[0].Da.np+self.fragments[0].Db.np)
-        n21 = self.fragments[1].omega*self.molecule.to_grid(self.fragments[1].Da.np+self.fragments[1].Db.np)
+        # self.orthogonal_scf(21, mu=mu, projection_method=projection_method, mixing_paramter=mixing, printflag=printflag)
+        self.sym_Lowdin_ortho_4_MO()
+        self.get_density_sum()
+
         assert np.isclose(np.sum(rho_fragment * w), self.molecule.ndocc), np.sum(rho_fragment * w)
         Ef = 0.0
         for i in self.fragments:
@@ -1919,15 +1959,11 @@ class U_Embedding:
                 assert np.allclose(frag.Cocca.np.dot(frag.Cocca.np.T), frag.Da.np)
                 assert np.allclose(frag.Coccb.np.dot(frag.Coccb.np.T), frag.Db.np)
 
-            self.get_vp_Hext_nad()
-            self.get_vp_xc_nad()
-            # vp_fock = psi4.core.Matrix.from_array(self.molecule.grid_to_fock((self.vp_Hext_nad)))
-            vp_fock = psi4.core.Matrix.from_array(self.molecule.grid_to_fock((self.vp_Hext_nad+self.vp_xc_nad)))
-            self.vp_fock = [vp_fock, vp_fock]
-
-            self.orthogonal_scf(21, mu=mu, projection_method=projection_method, mixing_paramter=mixing, printflag=printflag, vp_matrix=self.vp_fock)
-            n1 = self.fragments[0].omega * self.molecule.to_grid(self.fragments[0].Da.np + self.fragments[0].Db.np)
-            n2 = self.fragments[1].omega * self.molecule.to_grid(self.fragments[1].Da.np + self.fragments[1].Db.np)
+            self.update_vp_fock_matrices(vp_max_method)
+            self.orthogonal_scf(21, mu=mu, projection_method=projection_method, mixing_paramter=mixing,
+                                printflag=printflag, vp_matrix=self.vp_fock)
+            # n1 = self.fragments[0].omega * self.molecule.to_grid(self.fragments[0].Da.np + self.fragments[0].Db.np)
+            # n2 = self.fragments[1].omega * self.molecule.to_grid(self.fragments[1].Da.np + self.fragments[1].Db.np)
             Ef = 0.0
             for i in self.fragments:
                 Ef += i.frag_energy * i.omega
@@ -1938,27 +1974,27 @@ class U_Embedding:
             self.drho_conv.append(dn)
             ortho = [np.dot(self.fragments[0].Cocca.np.T, S.dot(self.fragments[1].Cocca.np)),
                      np.dot(self.fragments[0].Coccb.np.T, S.dot(self.fragments[1].Coccb.np))]
-            ortho_max = (np.max(np.abs(ortho[0])), np.max(np.abs(ortho[1])))
+            ortho_max = (np.max(np.abs(ortho[0])))
 
             Tsnad = (np.trace((self.molecule.Da.np - self.fragments_Da).dot(self.molecule.T.np)),
                      np.trace((self.molecule.Db.np - self.fragments_Db).dot(self.molecule.T.np)))
 
-            f,ax = plt.subplots(1,1, dpi=210)
-            ax.set_ylim(-1, 0.5)
-            plot1d_x(self.vp_Hext_nad + self.vp_xc_nad, self.molecule.Vpot, dimmer_length=2,
-                     ax=ax, label="vp", color="black", title="H2+"+str(scf_step))
-            plot1d_x(rho_fragment, self.molecule.Vpot, ax=ax, label="nf")
-            plot1d_x(n1, self.molecule.Vpot, ax=ax, label="n1", ls="--")
-            plot1d_x(n2, self.molecule.Vpot, ax=ax, label="n2", ls="--")
-            plot1d_x(rho_molecule, self.molecule.Vpot, ax=ax, label="nmol")
-            plot1d_x(self.vp_Hext_nad, self.molecule.Vpot,
-                     ax=ax, label="vpHext", ls='-.')
-            plot1d_x(self.vp_xc_nad, self.molecule.Vpot,
-                     ax=ax, label="vpxc", ls='-.')
-            ax.legend()
-            # f.show()
-            f.savefig(self.molecule.wfn.molecule().name() + projection_method +str(scf_step))
-            plt.close(f)
+            # f,ax = plt.subplots(1,1, dpi=210)
+            # ax.set_ylim(-1, 0.5)
+            # plot1d_x(self.vp_Hext_nad + self.vp_xc_nad, self.molecule.Vpot, dimmer_length=2,
+            #          ax=ax, label="vp", color="black", title="H2+"+str(scf_step))
+            # plot1d_x(rho_fragment, self.molecule.Vpot, ax=ax, label="nf")
+            # plot1d_x(n1, self.molecule.Vpot, ax=ax, label="n1", ls="--")
+            # plot1d_x(n2, self.molecule.Vpot, ax=ax, label="n2", ls="--")
+            # plot1d_x(rho_molecule, self.molecule.Vpot, ax=ax, label="nmol")
+            # plot1d_x(self.vp_Hext_nad, self.molecule.Vpot,
+            #          ax=ax, label="vpHext", ls='-.')
+            # plot1d_x(self.vp_xc_nad, self.molecule.Vpot,
+            #          ax=ax, label="vpxc", ls='-.')
+            # ax.legend()
+            # # f.show()
+            # f.savefig(self.molecule.wfn.molecule().name() + projection_method +str(scf_step))
+            # plt.close(f)
 
             print(F'Iter: {scf_step} mu: %e d_rho: {self.drho_conv[-1]} Ef: {Ef} ortho: {ortho_max} Tsnad: {Tsnad}' %mu)
             if len(rho_convergence) >= 5:
@@ -2622,7 +2658,9 @@ class U_Embedding:
         if not np.linalg.norm(vp - self.vp[0]) < 1e-7:
             # update vp and vp fock
             self.vp = [vp, vp]
-            self.fragments_scf_1basis(1000, vp=True)
+            vp_fock = psi4.core.Matrix.from_array(np.zeros_like(np.einsum('ijm,m->ij', self.three_overlap, vp)))
+            self.vp_fock = [vp_fock, vp_fock]
+            self.orthogonal_scf(100, projection_method="Huzinaga", vp_matrix=self.vp_fock)
 
         hess = np.zeros((self.molecule.nbf, self.molecule.nbf))
         for i in self.fragments:
@@ -2665,7 +2703,9 @@ class U_Embedding:
         if not np.linalg.norm(vp - self.vp[0]) < 1e-7:
             # update vp and vp fock
             self.vp = [vp, vp]
-            self.fragments_scf_1basis(1000, vp=True)
+            vp_fock = psi4.core.Matrix.from_array(np.zeros_like(np.einsum('ijm,m->ij', self.three_overlap, vp)))
+            self.vp_fock = [vp_fock, vp_fock]
+            self.orthogonal_scf(100, projection_method="Huzinaga", vp_matrix=self.vp_fock)
 
         if self.three_overlap is None:
             self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap())
@@ -2693,6 +2733,13 @@ class U_Embedding:
         if self.three_overlap is None:
             self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap())
 
+        if not np.linalg.norm(vp - self.vp[0]) < 1e-7:
+            # update vp and vp fock
+            self.vp = [vp, vp]
+            vp_fock = psi4.core.Matrix.from_array(np.zeros_like(np.einsum('ijm,m->ij', self.three_overlap, vp)))
+            self.vp_fock = [vp_fock, vp_fock]
+            self.orthogonal_scf(100, projection_method="Huzinaga", vp_matrix=self.vp_fock)
+
         if vp_fock is None:
             vp_fock = self.vp_fock[0].np
 
@@ -2719,12 +2766,11 @@ class U_Embedding:
         rho_conv = np.sum(np.abs(rho_fragment - rho_molecule) * w)
 
         self.drho_conv.append(rho_conv)
-        # self.ep_conv.append(Ep)
         self.lagrange.append(-L)
         print("L:", L, "Int_vp_drho:", L-Ef, "Ef:", Ef, "Ep: ", Ep, "drho:", rho_conv)
         return L
 
-    def find_vp_scipy_1basis(self, maxiter=21, guess=None, regul_const=None, opt_method="Newton-CG", printflag=False):
+    def find_vp_scipy_1basis(self, maxiter=21, guess=None, regul_const=None, opt_method="BFGS", printflag=False):
         """
         Scipy Newton-CG
         :param maxiter:
@@ -2744,7 +2790,8 @@ class U_Embedding:
 
             vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))
             self.vp_fock = [vp_totalfock, vp_totalfock]
-            self.fragments_scf_1basis(100, vp_fock=True)
+            self.fragments_scf_1basis(100)
+            self.orthogonal_scf(100, projection_method="Huzinaga")
         elif guess is True:
 
             vp_total = self.vp[0]
@@ -2773,7 +2820,6 @@ class U_Embedding:
 
         print("<<<<<<<<<<<<<<<<<<<<<<WuYang 1 basis Scipy<<<<<<<<<<<<<<<<<<<")
         opt = {
-            "disp": True,
             "maxiter": maxiter,
             "eps": 1e-7
         }

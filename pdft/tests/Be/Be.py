@@ -6,7 +6,7 @@ import numpy as np
 
 separation = 4.522
 functional = 'svwn'
-basis = 'cc-pvqz'
+basis = 'cc-pvdz'
 svdc = -2
 reguc = -7
 # title = "Be WuYang1b Yan Q[nf] v[nf] svdc%i reguc%i " %(svdc, reguc) + basis + functional
@@ -52,35 +52,47 @@ psi4.set_options({
 })
 
 #Make fragment calculations:
-f1  = pdft.U_Molecule(Monomer_2,  basis, functional)
-f2  = pdft.U_Molecule(Monomer_1,  basis, functional)
 mol = pdft.U_Molecule(Full_Molec, basis, functional)
+f1  = pdft.U_Molecule(Monomer_2,  basis, functional, jk=mol.jk)
+f2  = pdft.U_Molecule(Monomer_1,  basis, functional, jk=mol.jk)
 
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
-pdfter.find_vp_densitydifference(210)
+pdfter.find_vp_densitydifference(44)
 # pdfter.find_vp_response(21, guess=True, svd_rcond=10**svdc, beta=0.1, a_rho_var=1e-7)
 # pdfter.find_vp_response_1basis(42, a_rho_var=1e-5, mu=1e-5)
 # pdfter.find_vp_scipy_1basis(maxiter=7)
-# pdfter.find_vp_projection(56, projection_method="Huzinaga")
+# vp_array = pdfter.find_vp_scipy_1basis(100, guess=True)
+
+pdfter.find_vp_projection(21, projection_method="Huzinaga",
+                          vp_max_method="Electron_Number"
+                          )
 
 n1 = pdfter.molecule.to_grid(f1.Da.np + f1.Db.np)
 n2 = pdfter.molecule.to_grid(f2.Da.np + f2.Db.np)
 nf = n1 + n2
 n_mol = mol.to_grid(mol.Da.np+mol.Db.np)
-f,ax = plt.subplots(1,1, dpi=210)
-ax.set_ylim(-1.5, 0.5)
-pdft.plot1d_x(pdfter.vp_grid, mol.Vpot, dimmer_length=separation,
-         ax=ax, label="vp", color="black")
-# pdft.plot1d_x(nf, mol.Vpot, ax=ax, label="nf", ls="--")
-# pdft.plot1d_x(n_mol, mol.Vpot, ax=ax, label="nmol")
-pdft.plot1d_x(pdfter.vp_kin_nad, pdfter.molecule.Vpot,
-         ax=ax, label="vpHext", ls='--')
+f,ax = plt.subplots(1,2, dpi=210)
+ax[0].set_ylim(-0.5, 0.1)
+pdft.plot1d_x(pdfter.vp_Hext_nad + pdfter.vp_xc_nad, mol.Vpot, dimmer_length=separation,
+         ax=ax[0], label="vp", color="black")
 pdft.plot1d_x(pdfter.vp_Hext_nad, pdfter.molecule.Vpot,
-         ax=ax, label="vpHext", ls='--')
+         ax=ax[0], label="vpHext", ls='--')
 pdft.plot1d_x(pdfter.vp_xc_nad, pdfter.molecule.Vpot,
-         ax=ax, label="vpxc", ls='--')
-ax.legend()
+         ax=ax[0], label="vpxc", ls='--')
+ax[0].legend()
+pdft.plot1d_x(n_mol, mol.Vpot, dimmer_length=separation,
+         ax=ax[1], label="n_mol", color="black")
+pdft.plot1d_x(nf, pdfter.molecule.Vpot,
+         ax=ax[1], label="nf", ls='--')
+pdft.plot1d_x(n1, pdfter.molecule.Vpot,
+         ax=ax[1], label="n1", ls=':')
+pdft.plot1d_x(n2, pdfter.molecule.Vpot,
+         ax=ax[1], label="n2", ls=':')
+pdft.plot1d_x(np.log10(np.abs(n_mol - nf)), pdfter.molecule.Vpot,
+         ax=ax[1], label="dn", ls=':')
+ax[1].set_xlim(-5,5)
+ax[1].legend()
 f.show()
 plt.close(f)
 # f,ax = plt.subplots(1,1, dpi=210)

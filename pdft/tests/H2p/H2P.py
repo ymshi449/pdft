@@ -115,37 +115,37 @@ plt.close(f)
 # f.show()
 # f.savefig("dn" + title)
 
-# #%% 1 basis 2D plot
-L = [4.0, 4.0, 2.0]
-D = [0.1, 0.1, 0.1]
-# Plot file
-O, N = libcubeprop.build_grid(mol.wfn, L, D)
-block, points, nxyz, npoints = libcubeprop.populate_grid(mol.wfn, O, N, D)
-D_mol = psi4.core.Matrix.from_array(mol.Da.np+mol.Db.np)
-D_f = psi4.core.Matrix.from_array(pdfter.fragments_Da+pdfter.fragments_Db)
-n_mol_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, D_mol)
-n_f_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, D_f)
-
-f, ax = plt.subplots(1, 1, dpi=160)
-p = ax.imshow(n_mol_cube[:, :, 20], interpolation="bicubic", cmap="Spectral")
-atoms = libcubeprop.get_atoms(mol.wfn, D, O)
-ax.scatter(atoms[:,2], atoms[:,1])
-ax.set_title("nmol" + title)
-f.colorbar(p, ax=ax)
-f.show()
-
-f, ax = plt.subplots(1, 1, dpi=160)
-p = ax.imshow(n_f_cube[:, :, 20], interpolation="bicubic", cmap="Spectral")
-atoms = libcubeprop.get_atoms(mol.wfn, D, O)
-ax.scatter(atoms[:,2], atoms[:,1])
-ax.set_title("nf" + title)
-f.colorbar(p, ax=ax)
-f.show()
-
-f, ax = plt.subplots(1, 1, dpi=160)
-p = ax.imshow((n_mol_cube-n_f_cube)[:, :, 20], interpolation="bicubic", cmap="Spectral")
-atoms = libcubeprop.get_atoms(mol.wfn, D, O)
-ax.scatter(atoms[:,2], atoms[:,1])
-ax.set_title("dn" + title)
-f.colorbar(p, ax=ax)
-f.show()
+# # #%% 1 basis 2D plot
+# L = [4.0, 4.0, 2.0]
+# D = [0.1, 0.1, 0.1]
+# # Plot file
+# O, N = libcubeprop.build_grid(mol.wfn, L, D)
+# block, points, nxyz, npoints = libcubeprop.populate_grid(mol.wfn, O, N, D)
+# D_mol = psi4.core.Matrix.from_array(mol.Da.np+mol.Db.np)
+# D_f = psi4.core.Matrix.from_array(pdfter.fragments_Da+pdfter.fragments_Db)
+# n_mol_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, D_mol)
+# n_f_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, D_f)
+#
+# f, ax = plt.subplots(1, 1, dpi=160)
+# p = ax.imshow(n_mol_cube[:, :, 20], interpolation="bicubic", cmap="Spectral")
+# atoms = libcubeprop.get_atoms(mol.wfn, D, O)
+# ax.scatter(atoms[:,2], atoms[:,1])
+# ax.set_title("nmol" + title)
+# f.colorbar(p, ax=ax)
+# f.show()
+#
+# f, ax = plt.subplots(1, 1, dpi=160)
+# p = ax.imshow(n_f_cube[:, :, 20], interpolation="bicubic", cmap="Spectral")
+# atoms = libcubeprop.get_atoms(mol.wfn, D, O)
+# ax.scatter(atoms[:,2], atoms[:,1])
+# ax.set_title("nf" + title)
+# f.colorbar(p, ax=ax)
+# f.show()
+#
+# f, ax = plt.subplots(1, 1, dpi=160)
+# p = ax.imshow((n_mol_cube-n_f_cube)[:, :, 20], interpolation="bicubic", cmap="Spectral")
+# atoms = libcubeprop.get_atoms(mol.wfn, D, O)
+# ax.scatter(atoms[:,2], atoms[:,1])
+# ax.set_title("dn" + title)
+# f.colorbar(p, ax=ax)
+# f.show()

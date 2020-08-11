@@ -2,108 +2,375 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e8929c5c-1299-4f35-a2eb-9c0ff1560292" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/tests/PBmethod.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Be2.psi4" beforeDir="false" afterPath="$PROJECT_DIR$/Be2.psi4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/XC_Inversion.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/pdft.py" beforeDir="false" afterPath="$PROJECT_DIR$/pdft.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/Be/Be.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Be/Be.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/Be/Be2.psi4" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Be/Be2.psi4" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/H2.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/H2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/Be_CO.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/Be_testingSVDandReg.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu12.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu13.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu14.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu15.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu16.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu17.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu22.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu23.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu24.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu25.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu26.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu33.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu34.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu35.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu36.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu37.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu42.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu43.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu44.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu45.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu46.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu47.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu52.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu53.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu54.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu55.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu56.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu57.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu62.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu63.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu64.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu65.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu66.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/augccpvtzSVDREGtests/augccpvtz-TestSVDandRegu67.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu12.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu13.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu14.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu15.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu16.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu17.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu22.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu23.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu24.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu25.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu26.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu33.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu34.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu35.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu36.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu37.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu42.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu43.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu44.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu45.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu46.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu47.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu52.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu53.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu54.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu55.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu56.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu57.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu62.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu63.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu64.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu65.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu66.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/cc-pvdzorgSVDREGtests/cc-pvdzTrueTestSVDandRegu67.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu12.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu13.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu14.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu15.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu16.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu17.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu22.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu23.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu24.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu25.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu26.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu33.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu34.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu35.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu36.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu37.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu42.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu43.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu44.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu45.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu46.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu47.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu52.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu53.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu54.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu55.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu56.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu57.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu62.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu63.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu64.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu65.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu66.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdtzSVDREGtests/TestSVDandRegu67.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu11.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu12.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu13.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu14.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu15.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu16.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu21.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu22.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu23.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu24.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu25.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu26.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu31.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu33.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu34.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu35.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu36.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu41.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu42.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu43.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu44.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu45.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu46.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu51.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu52.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu53.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu54.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu55.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu56.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu61.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu62.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu63.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu64.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu65.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu66.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu6reg1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu6reg2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu6reg3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu6reg4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu6reg5.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpdvzSVDREGtests/TestSVDandRegu6reg6.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalse2D-TestSVDandRegu12.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalse2D-TestSVDandRegu13.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalse2D-TestSVDandRegu14.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalse2D-TestSVDandRegu15.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalse2D-TestSVDandRegu16.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalse2D-TestSVDandRegu17.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalse2D-TestSVDandRegu22.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalse2D-TestSVDandRegu23.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalse2D-TestSVDandRegu24.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalse2D-TestSVDandRegu25.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalse2D-TestSVDandRegu26.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalse2D-TestSVDandRegu27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalse2D-TestSVDandRegu32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalse2D-TestSVDandRegu33.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalse2D-TestSVDandRegu34.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalse2D-TestSVDandRegu35.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalse2D-TestSVDandRegu36.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalse2D-TestSVDandRegu37.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalseTestSVDandRegu12.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalseTestSVDandRegu13.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalseTestSVDandRegu14.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalseTestSVDandRegu15.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalseTestSVDandRegu16.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalseTestSVDandRegu17.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalseTestSVDandRegu22.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalseTestSVDandRegu23.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalseTestSVDandRegu24.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalseTestSVDandRegu25.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalseTestSVDandRegu26.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalseTestSVDandRegu27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalseTestSVDandRegu32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalseTestSVDandRegu33.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalseTestSVDandRegu34.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalseTestSVDandRegu35.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalseTestSVDandRegu36.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/cc-pvdzFalseTestSVDandRegu37.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvdz-ccpvqz/data.dat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu12.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu13.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu14.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu15.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu16.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu17.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu22.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu23.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu24.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu25.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu26.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu33.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu34.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu35.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu36.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu37.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu42.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu43.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu44.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu45.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu46.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu47.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu52.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu53.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu54.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu55.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu56.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu57.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu62.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu63.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu64.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu65.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu66.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalse2D-TestSVDandRegu67.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu12.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu13.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu14.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu15.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu16.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu17.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu22.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu23.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu24.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu25.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu26.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu33.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu34.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu35.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu36.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu37.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu42.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu43.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu44.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu45.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu46.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu47.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu52.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu53.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu54.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu55.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu56.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu57.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu62.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu63.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu64.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu65.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu66.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqz-ccpvdz/cc-pvqzFalseTestSVDandRegu67.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu12.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu13.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu14.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu15.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu16.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu17.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu22.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu23.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu24.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu25.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu26.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu33.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu34.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu35.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu36.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu37.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu42.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu43.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu44.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu45.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu46.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu47.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu52.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu53.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu54.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu55.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu56.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu57.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu62.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu63.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu64.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu65.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu66.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/ccpvqzSVDREGTESTS/cc-pvqzTestSVDandRegu67.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/vpdoglegcc-pvdz.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Be/vpdoglegcc-pvqz.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/H2" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/H2P" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/H2p/H2P.psi4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/H2p/H2P.psi4" beforeDir="false" afterPath="$PROJECT_DIR$/tests/H2p/H2P.psi4" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/H2p/H2P.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/H2p/H2P.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/H2p/grid_esp.dat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/H2p/psi.5447.clean" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/.ipynb_checkpoints/Exact_He2_Energy_Ogilvie_Wang_1992-checkpoint.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/Exact_He2_Energy_Ogilvie_Wang_1992.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/H2" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/He2/He2" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/He2/He2.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/He2/He2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/He2/He2Curve.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/.ipynb_checkpoints/Fitting-checkpoint.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/C6 fitting.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/Energy.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/Fitting.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1000-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1033-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1066-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1100-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1133-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1166-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1200-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1233-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1266-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1300-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1333-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1366-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1400-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1433-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1466-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1500-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1533-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1566-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1600-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1633-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1666-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1700-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1733-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1766-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1800-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1833-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1866-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1900-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1933-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 1966-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 2000-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 400-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 400-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 433-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 433-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 466-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 466-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 500-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 500-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 533-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 533-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 566-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 566-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 600-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 600-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 633-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 666-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 700-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 733-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 766-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 800-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 833-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 866-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 900-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 933-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn sp2 966-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn1400-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn1400-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn1456-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn1456-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn1513-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn1513-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn1569-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn1569-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn1626-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn1626-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn1682-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn1682-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn1739-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn1739-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn400-1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2 svwn400-2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/He2Curve.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/HeALL96" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/densitydifference.qbs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/error.dat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/jobfile.sl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/libcubeprop.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/log" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/output.dat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/pdft.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/save.p" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_lda+all96_sp2/timer.dat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/C6 fitting300.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/C6 fitting344.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/C6 fitting388.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/C6 fitting433.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/C6 fitting477.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/C6 fitting522.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/C6 fitting566.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/C6 fitting611.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/C6 fitting655.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/C6 fitting700.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/Energy300.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/Energy344.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/Energy388.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/Energy433.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/Energy477.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/Energy522.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/Energy566.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/Energy611.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/Energy655.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/Energy700.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/He2 svwn sp2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/He2Curve.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/HeALL96" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/error.dat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/jobfile.sl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/libcubeprop.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/output.dat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/pdft.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/save3.0.p" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/save3.4444444444444446.p" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/save3.888888888888889.p" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/save4.333333333333333.p" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/save4.777777777777778.p" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/save5.222222222222222.p" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/save5.666666666666666.p" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/save6.111111111111111.p" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/save6.555555555555555.p" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/save7.0.p" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/He2Curve_sptest_lda+all96/timer.dat" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/He2/HeALL96" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/He2/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/output.dat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/He2/timer.dat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Projection_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Projection_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/XC_Inversion/Be.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/XC_Inversion/Li2.psi4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/XC_Inversion/Li2.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/XC_Inversion/N2.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/XC_Inversion/WYBFGS_a3_f.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/XC_Inversion/WYBFGS_a3_t.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/XC_Inversion/WYBFGS_aq_f.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/XC_Inversion/WYBFGS_aq_t.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/formic.psi4" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -113,14 +380,14 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.49252936">
+    <splitter split-orientation="horizontal" split-proportion="0.62646747">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/pdft.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="570">
-                  <caret line="2129" column="97" lean-forward="true" selection-start-line="2129" selection-start-column="97" selection-end-line="2129" selection-end-column="97" />
+                <state relative-caret-position="290">
+                  <caret line="1898" column="8" selection-start-line="1898" selection-start-column="8" selection-end-line="1898" selection-end-column="8" />
                 </state>
               </provider>
             </entry>
@@ -132,8 +399,8 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/tests/H2p/H2P.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="3020">
-                  <caret line="151" selection-start-line="151" selection-end-line="151" />
+                <state relative-caret-position="980">
+                  <caret line="53" column="28" selection-start-line="53" selection-start-column="28" selection-end-line="53" selection-end-column="28" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
                   </folding>
@@ -144,8 +411,8 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/tests/He2/He2.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1480">
-                  <caret line="74" selection-start-line="126" selection-start-column="20" selection-end-line="126" selection-end-column="21" />
+                <state relative-caret-position="1300">
+                  <caret line="65" selection-start-line="65" selection-end-line="65" />
                 </state>
               </provider>
             </entry>
@@ -153,7 +420,7 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/tests/formic/formic.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="2500">
+                <state relative-caret-position="2420">
                   <caret line="125" column="23" selection-start-line="125" selection-start-column="23" selection-end-line="125" selection-end-column="23" />
                   <folding>
                     <element signature="e#0#18#0" expanded="true" />
@@ -165,8 +432,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/tests/Be/Be.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="500">
-                  <caret line="67" column="35" selection-start-line="67" selection-start-column="35" selection-end-line="67" selection-end-column="35" />
+                <state relative-caret-position="520">
+                  <caret line="60" column="35" selection-start-line="60" selection-start-column="35" selection-end-line="60" selection-end-column="35" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
                   </folding>
@@ -177,11 +444,8 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/tests/Projection_test.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1800">
-                  <caret line="90" selection-start-line="90" selection-end-line="90" />
-                  <folding>
-                    <element signature="e#0#11#0" expanded="true" />
-                  </folding>
+                <state relative-caret-position="3420">
+                  <caret line="175" selection-start-line="175" selection-end-line="175" />
                 </state>
               </provider>
             </entry>
@@ -199,12 +463,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>SCF</find>
-      <find>Ca.np[:,0:self.fragments[1].nalpha]</find>
-      <find>Cocca</find>
-      <find>Coccb</find>
-      <find>Ca</find>
-      <find>Cb</find>
       <find>projection</find>
       <find>def ortho</find>
       <find>Huzinaga_staggered</find>
@@ -223,12 +481,18 @@
       <find>def scf</find>
       <find>sym_Lo</find>
       <find>0.5</find>
-      <find>ortho</find>
       <find>Be</find>
-      <find>orthogonal_scf</find>
       <find>self.orthogonal_scf</find>
       <find>update_o</find>
       <find>ortho =</find>
+      <find>ortho</find>
+      <find>find_vp_pro</find>
+      <find>orthogonal_scf</find>
+      <find>scf</find>
+      <find>afterSYM</find>
+      <find>d_rho</find>
+      <find>scipy</find>
+      <find>three_o</find>
     </findStrings>
     <replaceStrings>
       <replace>rho_molecule - rho_fragment</replace>
@@ -255,6 +519,7 @@
       <replace>Db</replace>
       <replace>Ab</replace>
       <replace>H</replace>
+      <replace>update_vp_fock_matrices</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -286,25 +551,7 @@
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
-    <panes>
-      <pane id="Scope" />
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="pdft" type="b2602c69:ProjectViewProjectNode" />
-              <item name="pdft" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="pdft" type="b2602c69:ProjectViewProjectNode" />
-              <item name="pdft" type="462c0819:PsiDirectoryNode" />
-              <item name="tests" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-    </panes>
+    <panes />
   </component>
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
@@ -526,15 +773,19 @@
       <workItem from="1588471234726" duration="2163000" />
       <workItem from="1588510358260" duration="17297000" />
       <workItem from="1588791435173" duration="247000" />
+      <workItem from="1594832368650" duration="3575000" />
+      <workItem from="1594904079475" duration="2696000" />
+      <workItem from="1595536748257" duration="2708000" />
+      <workItem from="1595615670827" duration="10566000" />
+      <workItem from="1596552079853" duration="3471000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="318814000" />
+    <option name="totallyTimeSpent" value="341830000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1920" y="-2" width="1920" height="1082" extended-state="6" />
-    <editor active="true" />
+    <frame x="1920" y="-2" width="1920" height="1082" extended-state="7" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.2497332" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -551,11 +802,11 @@
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Terminal" order="11" />
-      <window_info anchor="bottom" x="0" y="403" width="1920" height="1025" id="Python Console" maximized="true" order="12" type="WINDOWED" weight="0.1648707" />
+      <window_info active="true" anchor="bottom" x="0" y="403" width="1920" height="1025" id="Python Console" maximized="true" order="12" type="WINDOWED" visible="true" weight="0.1648707" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" x="1920" y="30" width="1920" height="1050" id="SciView" order="3" type="WINDOWED" weight="0.32977587" />
+      <window_info anchor="right" x="0" y="403" width="1920" height="1025" id="SciView" order="3" type="WINDOWED" weight="0.32977587" />
       <window_info anchor="right" x="0" y="0" width="430" height="882" id="Documentation" order="4" side_tool="true" weight="0.23319103" />
       <window_info anchor="right" id="Database" order="5" />
     </layout>
@@ -661,8 +912,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/H2p/H2P.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3020">
-          <caret line="151" selection-start-line="151" selection-end-line="151" />
+        <state relative-caret-position="980">
+          <caret line="53" column="28" selection-start-line="53" selection-start-column="28" selection-end-line="53" selection-end-column="28" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
@@ -671,14 +922,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/He2/He2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1480">
-          <caret line="74" selection-start-line="126" selection-start-column="20" selection-end-line="126" selection-end-column="21" />
+        <state relative-caret-position="1300">
+          <caret line="65" selection-start-line="65" selection-end-line="65" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/formic/formic.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2500">
+        <state relative-caret-position="2420">
           <caret line="125" column="23" selection-start-line="125" selection-start-column="23" selection-end-line="125" selection-end-column="23" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
@@ -688,28 +939,25 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/Projection_test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1800">
-          <caret line="90" selection-start-line="90" selection-end-line="90" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/Be/Be.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="500">
-          <caret line="67" column="35" selection-start-line="67" selection-start-column="35" selection-end-line="67" selection-end-column="35" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="3420">
+          <caret line="175" selection-start-line="175" selection-end-line="175" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pdft.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="570">
-          <caret line="2129" column="97" lean-forward="true" selection-start-line="2129" selection-start-column="97" selection-end-line="2129" selection-end-column="97" />
+        <state relative-caret-position="290">
+          <caret line="1898" column="8" selection-start-line="1898" selection-start-column="8" selection-end-line="1898" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/Be/Be.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="520">
+          <caret line="60" column="35" selection-start-line="60" selection-start-column="35" selection-end-line="60" selection-end-column="35" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
