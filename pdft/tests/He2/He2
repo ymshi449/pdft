@@ -11,7 +11,7 @@
                by Justin Turney, Rob Parrish, Andy Simmonett
                           and Daniel G. A. Smith
                               UKS Reference
-                        2 Threads,    500 MiB Core
+                        1 Threads,    500 MiB Core
          ---------------------------------------------------------
 
   ==> Geometry <==
@@ -107,23 +107,22 @@
       Number of basis functions:         4
 
       Integral cutoff                 1.00e-12
-      Number of threads:                 2
+      Number of threads:                 1
 
   Performing in-core PK
   Using 110 doubles for integral storage.
-  We computed 60 shell quartets total.
+  We computed 51 shell quartets total.
   Whereas there are 55 unique shell quartets.
-     9.09 percent of shell quartets recomputed by reordering.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
 
     J tasked:                  Yes
     K tasked:                   No
     wK tasked:                  No
-    Memory [MiB]:              953
+    Memory [MiB]:             3814
     Schwarz Cutoff:          1E-12
 
-    OpenMP threads:              2
+    OpenMP threads:              1
 
    => Loading Basis Set <=
 
@@ -138,7 +137,7 @@
                by Justin Turney, Rob Parrish, Andy Simmonett
                           and Daniel G. A. Smith
                               UKS Reference
-                        2 Threads,    500 MiB Core
+                        1 Threads,    500 MiB Core
          ---------------------------------------------------------
 
   ==> Geometry <==
@@ -238,7 +237,7 @@
                by Justin Turney, Rob Parrish, Andy Simmonett
                           and Daniel G. A. Smith
                               UKS Reference
-                        2 Threads,    500 MiB Core
+                        1 Threads,    500 MiB Core
          ---------------------------------------------------------
 
   ==> Geometry <==

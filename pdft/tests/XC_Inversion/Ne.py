@@ -8,9 +8,9 @@ if __name__ == "__main__":
     psi4.set_num_threads(2)
 
 functional = 'svwn'
-basis = 'cc-pCVQZ'
+basis = 'cc-pCVdZ'
 
-vp_basis = None
+vp_basis = 'cc-pCVqZ'
 
 ortho_basis = False
 svd = "segment_cycle_cutoff"

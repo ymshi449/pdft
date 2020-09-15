@@ -9,6 +9,7 @@ import pdft
 import scipy.optimize as optimizer
 import scipy.stats as stats
 from lbfgs import fmin_lbfgs
+from scipy.linalg import eig as scipy_eig
 
 
 if __name__ == "__main__":
@@ -181,14 +182,14 @@ class Inverser(pdft.U_Embedding):
 
         # v_esp4v0 = - esp of input
         self.esp4v0 = None
-        self.get_esp4v0()
+        # self.get_esp4v0()
 
         # v_ext
         self.vext = None
         self.approximate_vext_cutoff = None  # Used as initial guess for vext calculation to cut the singularity.
         self.vH4v0 = None
         self.v0_Fock = None
-        self.get_vH_vext()
+        # self.get_vH_vext()
         self.vext_app = None  # vext calculated from WuYang'e method to replace the real vext to avoid singularities.
 
         # v0
@@ -207,7 +208,7 @@ class Inverser(pdft.U_Embedding):
         try:
             self.get_input_vxc()
         except:
-            print("no xc")
+            print("no input xc")
             # self.get_HartreeLDA_v0()
 
         # vH_mol
@@ -224,24 +225,35 @@ class Inverser(pdft.U_Embedding):
         self.grad_counter = 0
         self.hess_counter = 0
 
+        # Fouroverlap of two different basis set (phi_i, phi_j, xi_u, xi_v)
+        self.four_overlap_two_basis = None
+
     def get_input_vxc(self):
+
         self.input_vxc_a, self.input_vxc_b = pdft.U_xc(self.input_density_wfn.Da().np, self.input_density_wfn.Db().np,
                                                        # self.molecule.Vpot)[-1]
                                                        self.input_density_wfn.V_potential())[-1]
 
-    def get_esp4v0(self):
-        # assert self.esp4v0 is None
+    def get_esp4v0(self, grid=None, Vpot=None):
+        if grid is None:
+            if Vpot is None:
+                grid = np.array(self.vp_basis.wfn.V_potential().get_np_xyzw()[:-1]).T
+                grid = psi4.core.Matrix.from_array(grid)
+                assert grid.shape[1] == 3
+            else:
+                grid = np.array(Vpot.get_np_xyzw()[:-1]).T
+                grid = psi4.core.Matrix.from_array(grid)
+                assert grid.shape[1] == 3
 
         nthreads = psi4.get_num_threads()
         psi4.set_num_threads(1)
         print("ESP fitting starts. This might take a while.")
-        x, y, z, _ = self.vp_basis.wfn.V_potential().get_np_xyzw()
-        grid = np.array([x, y, z])
-        grid = psi4.core.Matrix.from_array(grid.T)
         assert grid.shape[1] == 3, "Grid should be N*3 np.array"
 
         esp_calculator = psi4.core.ESPPropCalc(self.v0_wfn)
-        self.esp4v0 = - esp_calculator.compute_esp_over_grid_in_memory(grid).np
+
+        psi4_grid = psi4.core.Matrix.from_array(grid)
+        self.esp4v0 = - esp_calculator.compute_esp_over_grid_in_memory(psi4_grid).np
         print("ESP fitting done")
         psi4.set_num_threads(nthreads)
         return
@@ -672,7 +684,7 @@ class Inverser(pdft.U_Embedding):
 
         return hess
 
-    def yang_L_curve_regularization(self, rgl_bs=np.e, rgl_epn=15, scipy_opt_method="trust-krylov", print_flag=False):
+    def yang_L_curve_regularization4WuYang(self, rgl_bs=np.e, rgl_epn=15, scipy_opt_method="trust-krylov", print_flag=False):
         if self.three_overlap is None:
             self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
                                                                              self.molecule.wfn.basisset(),
@@ -688,6 +700,8 @@ class Inverser(pdft.U_Embedding):
         rgl_list = np.append(rgl_list, 0)
         norm_list = []
         E_list = []
+        T = self.vp_basis.T.np
+
         print("Start L-curve search for regularization constant lambda. This might take a while..")
         for regularization_constant in rgl_list:
             print(regularization_constant)
@@ -721,8 +735,12 @@ class Inverser(pdft.U_Embedding):
             self.update_vout_constant()
 
             E_list.append(self.molecule.energy)
-            L_list.append(v_result.fun)
-            norm_list.append(self.regul_norm)
+
+
+            norm = 2 * np.dot(np.dot(v_output_a, T), v_output_a) + \
+                   2 * np.dot(np.dot(v_output_b, T), v_output_b)
+            L_list.append(v_result.fun - norm * self.regularization_constant)
+            norm_list.append(norm)
             if print_flag:
                 print("=============L-curve, lambda: %e, W %f, reg %f==============="
                       %(self.regularization_constant, L_list[-1], norm_list[-1]))
@@ -749,7 +767,7 @@ class Inverser(pdft.U_Embedding):
             f.show()
         return rgl_list, L_list, norm_list, E_list
 
-    def my_L_curve_regularization(self, rgl_bs=np.e, rgl_epn=15, starting_epn=1,
+    def my_L_curve_regularization4WuYang(self, rgl_bs=np.e, rgl_epn=15, starting_epn=1,
                                   searching_method="close_to_platform",
                                   close_to_platform_rtol=0.001,
                                   scipy_opt_method="trust-krylov", print_flag=True):
@@ -802,7 +820,7 @@ class Inverser(pdft.U_Embedding):
             n_result = self.molecule.to_grid(self.molecule.Da.np + self.molecule.Db.np)
             P = np.linalg.norm(v_output_a) * np.sum(np.abs(n_result - n_input) * self.molecule.w)
             P_list.append(P)
-            L_list.append(v_result.fun)
+            L_list.append(v_result.fun - self.regul_norm * self.regularization_constant)
             dT_list.append(self.molecule.T.vector_dot(self.molecule.Da)
                            + self.molecule.T.vector_dot(self.molecule.Db))
             print(regularization_constant, "P", P, "T", dT_list[-1])
@@ -1012,9 +1030,137 @@ class Inverser(pdft.U_Embedding):
         # Update info
         self.v_output = vp_array.x
 
-        if find_vxc_grid:
-            self.get_vxc()
+        # if find_vxc_grid:
+        #     self.get_vxc()
         return
+
+    def get_dvp_GL12(self, grad, hess, rcond=1e-6):
+        """
+        To get v0 and v_bar from Gidopoulos, Lathiotakis, 2012 PRA 85, 052508.
+        :param grad:
+        :param hess:
+        :param rcond:
+        :return:
+        """
+        nbf = int(grad.shape[0]/2)
+        grad_up = grad[:nbf]
+        grad_dn = grad[nbf:]
+        hess_up = hess[:nbf,:nbf]
+        hess_dn = hess[nbf:,nbf:]
+
+        g_up, C_up = scipy_eig(hess_up, self.vp_basis.S.np)
+        g_dn, C_dn = scipy_eig(hess_dn, self.vp_basis.S.np)
+
+        g_up = np.real(g_up)
+        C_up = np.real(C_up)
+        g_dn = np.real(g_dn)
+        C_dn = np.real(C_dn)
+
+        G_up = 1/g_up
+        G_dn = 1/g_dn
+
+        filter_up = g_up >= np.max(g_up)*rcond
+        filter_dn = g_dn >= np.max(g_dn)*rcond
+
+        G_up[np.bitwise_not(filter_up)] = 0
+        G_dn[np.bitwise_not(filter_dn)] = 0
+
+        print(G_up, G_dn)
+
+        G_up = np.diag(G_up)
+        G_dn = np.diag(G_dn)
+
+        v0 = np.zeros(2*nbf)
+
+        v0[:nbf] = np.dot(C_up, np.dot(G_up, np.dot(C_up.T, grad_up)))
+        v0[nbf:] = np.dot(C_dn, np.dot(G_dn, np.dot(C_dn.T, grad_dn)))
+
+        # Start calculating v_bar
+        if np.sum(np.bitwise_not(filter_up)) == 0 or np.sum(np.bitwise_not(filter_dn)) == 0:
+            print("up null space", np.sum(np.bitwise_not(filter_up)),
+                  "or down null space", np.sum(np.bitwise_not(filter_dn)), "is null.")
+            return v0, None
+
+        if self.four_overlap_two_basis is None:
+            self.four_overlap_two_basis = pdft.fouroverlap([self.molecule.wfn, self.vp_basis.wfn],
+                                                 self.molecule.geometry, self.molecule.basis, self.molecule.mints)[0]
+            # self.four_overlap_two_basis = 0.5 * (self.four_overlap_two_basis + np.transpose(self.four_overlap_two_basis, (1,0,3,2)))
+
+        A_full_up = np.einsum("ijuv,im,jn->uv", self.four_overlap_two_basis,
+                              self.molecule.Cocca.np, self.molecule.Cocca.np, optimize=True)
+        A_full_dn = np.einsum("ijuv,im,jn->uv", self.four_overlap_two_basis,
+                              self.molecule.Coccb.np, self.molecule.Coccb.np, optimize=True)
+
+        A_tilde_up = A_full_up - np.einsum('ai,bj,ci,dj,abm,cdn -> mn',
+                                          self.molecule.Ca.np[:, :self.molecule.nalpha],
+                                          self.molecule.Ca.np[:, :self.molecule.nalpha],
+                                          self.molecule.Ca.np[:, :self.molecule.nalpha],
+                                          self.molecule.Ca.np[:, :self.molecule.nalpha],
+                                          self.three_overlap,
+                                          self.three_overlap, optimize=True)
+        A_tilde_dn = A_full_dn - np.einsum('ai,bj,ci,dj,abm,cdn -> mn',
+                                          self.molecule.Cb.np[:, :self.molecule.nbeta],
+                                          self.molecule.Cb.np[:, :self.molecule.nbeta],
+                                          self.molecule.Cb.np[:, :self.molecule.nbeta],
+                                          self.molecule.Cb.np[:, :self.molecule.nbeta],
+                                          self.three_overlap,
+                                          self.three_overlap, optimize=True)
+
+        # Why this is no such a term.
+        # A_left_up = np.einsum("abc,def,ai,bj,di,ej->cf", self.three_overlap, self.three_overlap,
+        #                       self.molecule.Cocca.np, self.molecule.Cocca.np,
+        #                       self.molecule.Cocca.np, self.molecule.Cocca.np, optimize=True)
+        # A_left_dn = np.einsum("abc,def,ai,bj,di,ej->cf", self.three_overlap, self.three_overlap,
+        #                       self.molecule.Coccb.np, self.molecule.Coccb.np,
+        #                       self.molecule.Coccb.np, self.molecule.Coccb.np, optimize=True)
+        # A_tilde_up -= A_left_up
+        # A_tilde_dn -= A_left_dn
+
+        # A_tilde_up -= A_full_up
+        # A_tilde_dn -= A_full_dn
+
+        A_tilde_up = 0.5 * (A_tilde_up + A_tilde_up.T)
+        A_tilde_dn = 0.5 * (A_tilde_dn + A_tilde_dn.T)
+
+        # C_occ_up = C_up[:, filter_up]
+        # C_occ_dn = C_dn[:, filter_dn]
+        C_null_up = C_up[:, np.bitwise_not(filter_up)]
+        C_null_dn = C_dn[:, np.bitwise_not(filter_dn)]
+        chi_tilde_up = np.dot(C_null_up.T, np.dot(A_tilde_up, C_null_up))
+        chi_tilde_dn = np.dot(C_null_dn.T, np.dot(A_tilde_dn, C_null_dn))
+
+        chi_tilde_up = 0.5 * (chi_tilde_up + chi_tilde_up.T)
+        chi_tilde_dn = 0.5 * (chi_tilde_dn + chi_tilde_dn.T)
+
+        # (50)
+        v_bar_up = np.copy(v0[:nbf])
+        v_bar_dn = np.copy(v0[nbf:])
+
+        # v_bar_up = np.dot(A_tilde_up, v_bar_up)
+        # v_bar_dn = np.dot(A_tilde_dn, v_bar_dn)
+
+        v_bar_up = np.dot(C_null_up.T, np.dot(A_tilde_up, v_bar_up))
+        v_bar_dn = np.dot(C_null_dn.T, np.dot(A_tilde_dn, v_bar_dn))
+
+        if chi_tilde_up.shape[0] > 1:
+            v_bar_up = np.linalg.solve(chi_tilde_up, v_bar_up)
+            v_bar_up = np.dot(C_null_up, v_bar_up)
+        elif chi_tilde_up.shape[0] == 1:
+            v_bar_up = v_bar_up/chi_tilde_up
+            v_bar_up = C_null_up * v_bar_up
+
+        if chi_tilde_dn.shape[0] > 1:
+            v_bar_dn = np.linalg.solve(chi_tilde_dn, v_bar_dn)
+            v_bar_dn = np.dot(C_null_dn, v_bar_dn)
+        elif chi_tilde_dn.shape[0] == 1:
+            v_bar_dn = v_bar_dn/chi_tilde_dn
+            v_bar_dn = C_null_dn * v_bar_dn
+
+
+        v_bar = np.empty_like(v0)
+        v_bar[:nbf] = -np.squeeze(v_bar_up)
+        v_bar[nbf:] = -np.squeeze(v_bar_dn)
+        return v0, v_bar, (A_tilde_up, A_tilde_dn)
 
     def find_vxc_manualNewton(self, maxiter=49, svd_rcond=None, c1=1e-4, c2=0.99, c3=1e-2,
                               svd_parameter=None, line_search_method="StrongWolfe",
@@ -1084,6 +1230,9 @@ class Inverser(pdft.U_Embedding):
                 svd = svd * 1.0001 / s[0]
                 hess_inv = np.linalg.pinv(hess, rcond=svd)
                 dv = -np.dot(hess_inv, jac)
+            elif svd_rcond == "GL":
+                v0, v_bar = self.get_dvp_GL12(jac, hess, rcond=1e-5)
+                dv = - (v0 + v_bar)
             elif svd_rcond == "input_once":
                 s = np.linalg.svd(hess)[1]
 
@@ -1593,10 +1742,11 @@ class Inverser(pdft.U_Embedding):
             self.get_vxc()
 
         return hess, jac
+
 # %% PDE constrained optimization on basis sets.
     def Lagrangian_constrainedoptimization(self, v=None):
         """
-        Return Lagrange Multipliers from Nafziger and Jensen's constrained optimization.
+        Return Lagrangian for Nafziger and Jensen's constrained optimization.
         :return: L
         """
         self.L_counter += 1
@@ -1627,6 +1777,17 @@ class Inverser(pdft.U_Embedding):
 
         L = np.sum(dD * g_uv)
 
+        # Regularization
+        if self.regularization_constant is not None:
+            T = self.vp_basis.T.np
+            if v is not None:
+                norm = 2 * np.dot(np.dot(v_output_a, T), v_output_a) + 2 * np.dot(np.dot(v_output_b, T), v_output_b)
+            else:
+                nbf = int(self.v_output.shape[0] / 2)
+                norm = 2 * np.dot(np.dot(self.v_output[:nbf], T), self.v_output[:nbf]) + \
+                       2 * np.dot(np.dot(self.v_output[nbf:], T), self.v_output[nbf:])
+            L += norm * self.regularization_constant
+            self.regul_norm = norm
         return L
 
     def grad_constrainedoptimization(self, v=None):
@@ -1707,6 +1868,16 @@ class Inverser(pdft.U_Embedding):
         jac_up = np.einsum("uv,uvw->w", jac_real_up, self.three_overlap)
         jac_down = np.einsum("uv,uvw->w", jac_real_down, self.three_overlap)
 
+        # Regularization
+        if self.regularization_constant is not None:
+            T = self.vp_basis.T.np
+            if v is not None:
+                jac_up += 4*self.regularization_constant*np.dot(T, v_output_a)
+                jac_down += 4*self.regularization_constant*np.dot(T, v_output_b)
+            else:
+                nbf = int(self.v_output.shape[0] / 2)
+                jac_up += 4*self.regularization_constant*np.dot(T, self.v_output[:nbf])
+                jac_down += 4*self.regularization_constant*np.dot(T, self.v_output[nbf:])
         return np.concatenate((jac_up, jac_down))
 
     def hess_constrainedoptimization(self, v=None):
@@ -1823,6 +1994,8 @@ class Inverser(pdft.U_Embedding):
         if self.CO_weight_exponent is None:
             return np.einsum("mn,mnuv->uv", dD, self.four_overlap, optimize=True)
         else:
+            print("WEIGHT NOT BE 1 IS HIGHLY UNRECOMMENDED SINCE THE ASYMPTOTIC BEHAVIOR "
+                  "IS ALREADY FIXED BY THE BASIS SET AND GUIDE POTENTIAL!")
             vpot = self.molecule.Vpot
             points_func = vpot.properties()[0]
             f_grid = np.array([])
@@ -2066,6 +2239,117 @@ class Inverser(pdft.U_Embedding):
         if find_vxc_grid:
             self.get_vxc()
         return vp_array
+
+    def my_L_curve_regularization4CO(self, rgl_bs=np.e, rgl_epn=15, starting_epn=1,
+                                  searching_method="close_to_platform",
+                                  close_to_platform_rtol=0.001,
+                                  scipy_opt_method="L-BFGS-B", print_flag=True):
+
+        if self.three_overlap is None:
+            self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
+                                                                             self.molecule.wfn.basisset(),
+                                                                             self.vp_basis.wfn.basisset()))
+            if self.ortho_basis:
+                self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.vp_basis.A.np)
+        v_zero_initial = np.zeros_like(self.v_output)
+
+        # Loop
+        L_list = []
+        error_list = []
+        P_list = []
+        rgl_order = starting_epn + np.array(range(rgl_epn))
+        rgl_list =  rgl_bs**-(rgl_order+2)
+        rgl_list = np.append(rgl_list, 0)
+        n_input = self.molecule.to_grid(self.input_density_wfn.Da().np + self.input_density_wfn.Db().np)
+
+        print("Start L-curve search for regularization constant lambda. This might take a while..")
+        for regularization_constant in rgl_list:
+            self.regularization_constant = regularization_constant
+            Vks_a = psi4.core.Matrix.from_array(self.v0_Fock)
+            Vks_b = psi4.core.Matrix.from_array(self.v0_Fock)
+            self.molecule.scf_inversion(100, [Vks_a, Vks_b])
+            self.update_vout_constant()
+
+            opt = {
+                "disp": False,
+                "maxiter": 10000,
+            }
+
+            v_result = optimizer.minimize(self.Lagrangian_constrainedoptimization, v_zero_initial,
+                                          jac=self.grad_constrainedoptimization,
+                                          method=scipy_opt_method,
+                                          options=opt)
+
+            v = v_result.x
+            nbf = int(v.shape[0]/2)
+            v_output_a = v[:nbf]
+            v_output_b = v[nbf:]
+            Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
+            Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
+            self.molecule.scf_inversion(1000, [Vks_a, Vks_b])
+            self.update_vout_constant()
+
+            n_result = self.molecule.to_grid(self.molecule.Da.np + self.molecule.Db.np)
+            P = np.linalg.norm(v_output_a) * np.sum(np.abs(n_result - n_input) * self.molecule.w)
+            P_list.append(P)
+            L_list.append(v_result.fun)
+            error_list.append(np.sum(self.molecule.w*(n_result - n_input)**2))
+            print(regularization_constant, "P", P, "T", error_list[-1])
+
+        # L-curve
+        error_list = np.array(error_list)
+
+        f, ax = plt.subplots(1, 1, dpi=200)
+        ax.scatter(range(error_list.shape[0]), error_list)
+        f.show()
+        if searching_method == "std_error_min":
+            start_idx = int(input("Enter start index for the left line of L-curve: "))
+
+            r_list = []
+            std_list = []
+            for i in range(start_idx + 3, error_list.shape[0] - 2):
+                left = error_list[start_idx:i]
+                right = error_list[i + 1:]
+                left_x = range(start_idx, i)
+                right_x = range(i + 1, error_list.shape[0])
+                slopl, intl, rl, _, stdl = stats.linregress(left_x, left)
+                slopr, intr, rr, _, stdr = stats.linregress(right_x, right)
+                if print_flag:
+                    print(i, stdl + stdr, rl + rr, "Right:", slopr, intr, "Left:", slopl, intl)
+                r_list.append(rl + rr)
+                std_list.append(stdl + stdr)
+
+            # The final index
+            i = np.argmin(std_list) + start_idx + 3
+            self.regularization_constant = rgl_list[i]
+            print("Regularization constant lambda from L-curve is ", self.regularization_constant)
+
+            if print_flag:
+                left = error_list[start_idx:i]
+                right = error_list[i + 1:]
+                left_x = range(start_idx, i)
+                right_x = range(i + 1, error_list.shape[0])
+                slopl, intl, rl, _, stdl = stats.linregress(left_x, left)
+                slopr, intr, rr, _, stdr = stats.linregress(right_x, right)
+                x = np.array(ax.get_xlim())
+                yl = intl + slopl * x
+                yr = intr + slopr * x
+                ax.plot(x, yl, '--')
+                ax.plot(x, yr, '--')
+                ax.set_ylim(np.min(error_list)*0.99, np.max(error_list)*1.01)
+                f.show()
+
+        elif searching_method == "close_to_platform":
+            for i in range(len(error_list)):
+                if np.abs(np.log(error_list[i]) - np.log(error_list[-1])/np.log(error_list[-1])) <= close_to_platform_rtol:
+                    self.regularization_constant = rgl_list[i]
+                    print("Regularization constant lambda from L-curve is ", self.regularization_constant)
+                    break
+            if print_flag:
+                ax.axhline(y=error_list[-1], ls="--", lw=0.7, color='r')
+                ax.scatter(i, error_list[i], marker="+")
+                f.show()
+        return rgl_list, L_list, error_list, P_list
 
 # %% Get vxc on the grid. DOES NOT WORK NOW.
     def Lagrangian_WuYang_grid(self, v=None):

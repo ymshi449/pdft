@@ -9,13 +9,13 @@ if __name__ == "__main__":
     psi4.set_memory('4 GB')
 
 functional = 'svwn'
-basis = 'cc-pcvdz'
-vxc_basis = 'cc-pcvqz'
+basis = "cc-pcvdz"
+vxc_basis = "cc-pcvqz"
 
 ortho_basis = False
-svd = "input_once"
+svd = 1e-5
 opt_method="trust-krylov"
-method = "WuYangScipy"
+method = "WuYangMN"
 v0 = "FermiAmaldi"
 
 title = method +"_"+ opt_method +"_"+v0+ "_" + basis+"_"+ \
@@ -74,10 +74,6 @@ inverser = XC_Inversion.Inverser(mol, input_density_wfn,
                                  # eHOMO=-0.5792,
                                  # v0_wfn=v0_wfn
                                  )
-# rgl_list, L_list, dT_list, P_list = inverser.my_L_curve_regularization();
-
-# grad, grad_app = inverser.check_gradient_WuYang()
-# hess, hess_app = inverser.check_hess_WuYang()
 
 if method == "WuYangScipy":
     inverser.find_vxc_scipy_WuYang(opt_method=opt_method, find_vxc_grid=False)
@@ -86,11 +82,10 @@ elif method == "WuYangMN":
 elif method == "COScipy":
     inverser.find_vxc_scipy_constrainedoptimization(opt_method="L-BFGS-B")
 
-# #
-# f,ax = plt.subplots(1,1,dpi=200)
-# ax.plot(Be_xyz, Be_vxc, label="Exact")
-# XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vxc_basis.Vpot, ax=ax, label="WuYang", ls='--')
-# ax.legend()
-# ax.set_xlim(1e-3, 14)
-# ax.set_xscale("log")
-# f.show()
+f,ax = plt.subplots(1,1,dpi=200)
+ax.plot(Be_xyz, Be_vxc, label="Exact")
+XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vxc_basis.Vpot, ax=ax, label="WuYang", ls='--')
+ax.legend()
+ax.set_xlim(1e-3, 14)
+ax.set_xscale("log")
+f.show()

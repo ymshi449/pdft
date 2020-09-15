@@ -69,7 +69,7 @@ def fouroverlap(wfn,geometry,basis, mints):
 
         Parameters
         ----------
-        wfn: psi4.core.Wavefunction
+        wfn: psi4.core.Wavefunction or list
             Wavefunction object of molecule
 
         geometry: psi4.core.Molecule
@@ -83,15 +83,35 @@ def fouroverlap(wfn,geometry,basis, mints):
         S_densityfitting: numpy array
             Four overlap tensor
         """
+        if type(wfn) is list:
+            assert len(wfn) == 2
+            diff_basis_flag = True
+            wfn1 = wfn[0]
+            wfn = wfn[1]
+        else:
+            diff_basis_flag = False
         aux_basis = psi4.core.BasisSet.build(geometry, "DF_BASIS_SCF", "",
-                                             "JKFIT", basis)
+                                             "JKFIT", wfn.basisset().name())
         S_Pmn = np.squeeze(mints.ao_3coverlap(aux_basis, wfn.basisset(),
                                               wfn.basisset()))
-        S_PQ = np.array(mints.ao_overlap(aux_basis, aux_basis))
-        S_PQinv = np.linalg.pinv(S_PQ, rcond=1e-12)
-        d_mnQ = np.einsum('Pmn,PQ->mnQ',S_Pmn,S_PQinv)
-        S_densityfitting = np.einsum('Pmn,PQ,Qrs->mnrs', S_Pmn, S_PQinv, S_Pmn, optimize=True)
-        return S_densityfitting, d_mnQ, S_Pmn, S_PQ
+
+        if diff_basis_flag:
+            aux_basis1 = psi4.core.BasisSet.build(geometry, "DF_BASIS_SCF", "",
+                                                 "JKFIT", wfn1.basisset().name())
+            S_Pmn1 = np.squeeze(mints.ao_3coverlap(aux_basis1, wfn1.basisset(),
+                                                  wfn1.basisset()))
+        else:
+            S_Pmn1 = S_Pmn
+
+        if diff_basis_flag:
+            S_PQ = np.array(mints.ao_overlap(aux_basis, aux_basis1))
+        else:
+            S_PQ = np.array(mints.ao_overlap(aux_basis, aux_basis))
+
+        S_PQinv = np.linalg.pinv(S_PQ, rcond=1e-9)
+        # d_mnQ = np.einsum('Pmn,PQ->mnQ',S_Pmn,S_PQinv)
+        S_densityfitting = np.einsum('Pmn,PQ,Qrs->mnrs', S_Pmn1, S_PQinv, S_Pmn, optimize=True)
+        return S_densityfitting, None, S_Pmn, S_PQ
 
 
 def xc(D, Vpot, functional='lda'):
@@ -861,7 +881,6 @@ class U_Molecule():
         Eold = 0.0
         E = 0.0
         E_conv = psi4.core.get_option("SCF", "E_CONVERGENCE")
-        E_conv = 1e-9
         D_conv = psi4.core.get_option("SCF", "D_CONVERGENCE")
 
         for SCF_ITER in range(maxiter+1):
@@ -933,7 +952,7 @@ class U_Molecule():
             #       % (SCF_ITER, SCF_E, ks_e, (SCF_E - Eold), dRMS))
 
             dRMS = 0.5 * (np.mean(diisa_e.np**2)**0.5 + np.mean(diisb_e.np**2)**0.5)
-
+            print(F'SCF Convergence: NUM_ITER = {SCF_ITER} E = {SCF_E} dE = {abs(SCF_E - Eold)} dDIIS = {dRMS}')
             if (abs(SCF_E - Eold) < E_conv) and (dRMS < D_conv):
                 if print_energies is True:
                     print(F'SCF Convergence: NUM_ITER = {SCF_ITER} dE = {abs(SCF_E - Eold)} dDIIS = {dRMS}')
@@ -1092,7 +1111,7 @@ class U_Embedding:
     def fragments_scf(self, max_iter, vp=None, vp_fock=None, printflag=False):
         # Run the whole molecule SCF calculation if not calculated before.
         if self.molecule.Da is None:
-            self.molecule.scf(print_energies=printflag)
+            self.molecule.scf(max_iter, print_energies=printflag)
 
         if vp is None and vp_fock is None:
             # No vp is given.
@@ -1436,7 +1455,7 @@ class U_Embedding:
             self.four_overlap, _, _, _ = fouroverlap(self.molecule.wfn, self.molecule.geometry,
                                                      self.molecule.basis, self.molecule.mints)
         if guess is None:
-            vp_total = np.zeros((self.vp_basis.nbf(), self.vp_basis.nbf()))
+            vp_total = np.zeros((self.vp_basis.nbf, self.vp_basis.nbf))
             self.vp = [vp_total, vp_total]
 
             vp_totalfock = psi4.core.Matrix.from_array(np.zeros_like(self.molecule.H.np))

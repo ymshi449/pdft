@@ -73,7 +73,7 @@ else:
     vp_tester = mol
 
 # Start a pdft systemm, and perform calculation to find vp
-pdfter = pdft.U_Embedding([f1, f2], mol, vp_basis=vp_basis)
+pdfter = pdft.U_Embedding([f1, f2], mol, vp_basis=vp_tester)
 pdfter.Lagrange_mul = lag_tap
 pdfter.find_vp_densitydifference(140)
 # pdfter.find_vp_response(21, guess=True, svd_rcond=10**svdc, beta=0.1, a_rho_var=1e-7)

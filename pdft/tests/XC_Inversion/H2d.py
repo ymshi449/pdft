@@ -8,9 +8,9 @@ if __name__ == "__main__":
     psi4.set_num_threads(3)
 
 functional = 'svwn'
-basis = 'aug-cc-pvtz'
+basis = 'cc-pcvdz'
 
-vp_basis = 'cc-pvqz'
+vp_basis = 'cc-pcvQz'
 
 ortho_basis = False
 svd = "segment_cycle_cutoff"
@@ -19,28 +19,18 @@ method = "WuYangScipy"
 v0 = "FermiAmaldi"
 
 
-psi4.set_output_file("He.psi4")
-
-# Full_Molec = psi4.geometry("""
-# nocom
-# noreorient
-# N 1.03 0 0
-# N -1.03 0 0
-# units bohr
-# symmetry c1
-# """)
+psi4.set_output_file("H2d.psi4")
 
 Full_Molec = psi4.geometry("""
 nocom
 noreorient
-O 0.         0.         0.
-H -0.4607    1.8327     0.
-H 1.8897     0.         0.
+H -3.7795 0.0 0.0
+H  3.7795 0.0 0.0
 units bohr
 symmetry c1
 """)
 
-Full_Molec.set_name("H2O")
+Full_Molec.set_name("He")
 
 #Psi4 Options:
 psi4.set_options({
@@ -48,7 +38,6 @@ psi4.set_options({
     'DFT_RADIAL_POINTS': 44,
     'REFERENCE' : 'UHF'
 })
-# E, input_density_wfn = psi4.energy("SCF"+"/"+basis, molecule=Full_Molec, return_wfn=True)
 E, input_density_wfn = psi4.energy("CCSD(T)"+"/"+basis, molecule=Full_Molec, return_wfn=True)
 # E, input_density_wfn = psi4.energy(functional+"/"+basis, molecule=Full_Molec, return_wfn=True)
 #Psi4 Options:
@@ -84,18 +73,18 @@ elif method == "COScipy":
     inverser.find_vxc_scipy_constrainedoptimization(opt_method=opt_method)
 
 
-
+npt = 300
 L = [3, 0, 0]
 D = [0.1, 0.5, 0.2]
-O = [-4.1, 0, 0]
-N = [100, 1, 1]
+O = [-15, 0, 0]
+N = [npt, 1, 1]
 inverser.v_output_a = inverser.v_output[:vp_basis.nbf]
 vout_cube_a, xyzw = libcubeprop.basis_to_cubic_grid(inverser.v_output_a, inverser.vp_basis.wfn, L, D, O, N)
-vout_cube_a.shape = 100
-xyzw[0].shape = 100
-xyzw[1].shape = 100
-xyzw[2].shape = 100
-xyzw[3].shape = 100
+vout_cube_a.shape = npt
+xyzw[0].shape = npt
+xyzw[1].shape = npt
+xyzw[2].shape = npt
+xyzw[3].shape = npt
 mark_y = np.isclose(xyzw[1], 0)
 mark_z = np.isclose(xyzw[2], 0)
 grid = np.array([xyzw[0][mark_y&mark_z], xyzw[1][mark_y&mark_z], xyzw[2][mark_y&mark_z]])
@@ -141,7 +130,7 @@ inverser.find_vxc_scipy_WuYang(opt_method=opt_method)
 
 inverser.v_output_a = inverser.v_output[:vp_basis.nbf]
 vout_cube_a, _ = libcubeprop.basis_to_cubic_grid(inverser.v_output_a, inverser.vp_basis.wfn, L, D, O, N)
-vout_cube_a.shape = 100
+vout_cube_a.shape = npt
 nocc = mol.ndocc
 if v0 == "FermiAmaldi":
     inverser.vxc_a_grid = vout_cube_a[mark_z&mark_y] -1 / nocc * inverser.vH4v0

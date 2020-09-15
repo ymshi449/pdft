@@ -15,7 +15,7 @@ vp_basis = 'cc-pCV5Z'
 ortho_basis = False
 svd = "segment_cycle_cutoff"
 opt_method="trust-krylov"
-method = "WuYangMN"
+method = "WuYangScipy"
 v0 = "FermiAmaldi"
 
 title = method +"_"+ opt_method +"_"+v0+ "_" + basis+"_"+ \
@@ -40,8 +40,8 @@ Full_Molec.set_name("FC2Cl")
 
 #Psi4 Options:
 psi4.set_options({
-    'DFT_SPHERICAL_POINTS': 302,
-    'DFT_RADIAL_POINTS': 77,
+    'DFT_SPHERICAL_POINTS': 434,
+    'DFT_RADIAL_POINTS': 21,
     'REFERENCE' : 'UHF'
 })
 E, input_density_wfn = psi4.energy(functional+"/"+basis, molecule=Full_Molec, return_wfn=True)

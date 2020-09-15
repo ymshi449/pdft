@@ -30,6 +30,10 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+"""
+TO BE FINISHED: ARBITRARY GIVEN GRID.
+
+"""
 
 import numpy as np
 import psi4
@@ -70,8 +74,8 @@ def build_grid(wfn, L, D):
     N = np.zeros(3)
     O = np.zeros(3)
 
-    for k in [0,1,2]:
-        Xmin[k] = Xmax[k] = geometry[0,k]
+    for k in [0, 1, 2]:
+        Xmin[k] = Xmax[k] = geometry[0, k]
 
         for atom in range(len(geometry)):
             Xmin[k] = geometry[atom, k] if Xmin[k] > geometry[atom, k] else Xmin[k]
@@ -119,7 +123,7 @@ def populate_grid(wfn, O, N, D):
     """
 
     epsilon = psi4.core.get_global_option("CUBIC_BASIS_TOLERANCE")
-    basis  = psi4.core.BasisSet.build(wfn.molecule(), 'ORBITAL', wfn.basisset().name())
+    basis = psi4.core.BasisSet.build(wfn.molecule(), 'ORBITAL', wfn.basisset().name())
     extens = psi4.core.BasisExtents(basis, epsilon)
 
     npoints = (N[0]) * (N[1]) * (N[2])
@@ -129,15 +133,16 @@ def populate_grid(wfn, O, N, D):
     z = np.zeros(int(npoints))
     w = np.zeros(int(npoints))
 
-
     max_points = psi4.core.get_global_option("CUBIC_BlOCK_MAX_POINTS")
-    nxyz = int(np.round(max_points**(1/3)))
+    nxyz = int(np.round(max_points ** (1 / 3)))
 
     block = []
     offset = 0
     i_start = 0
     j_start = 0
     k_start = 0
+
+    x_plot, y_plot, z_plot = [], [], []
 
     for i in range(i_start, int(N[0] + 1), nxyz):
         ni = int(N[0]) - i if i + nxyz > N[0] else nxyz
@@ -147,22 +152,26 @@ def populate_grid(wfn, O, N, D):
                 nk = int(N[2]) - k if k + nxyz > N[2] else nxyz
 
                 x_in, y_in, z_in, w_in = [], [], [], []
+
                 block_size = 0
-                for ii in range(i , i + ni):
+                for ii in range(i, i + ni):
                     for jj in range(j, j + nj):
                         for kk in range(k, k + nk):
-
                             x[offset] = O[0] + ii * D[0]
                             y[offset] = O[1] + jj * D[1]
                             z[offset] = O[2] + kk * D[2]
                             w[offset] = D[0] * D[1] * D[2]
+
+                            x_plot.append(x[offset])
+                            y_plot.append(y[offset])
+                            z_plot.append(z[offset])
 
                             x_in.append(x[offset])
                             y_in.append(y[offset])
                             z_in.append(z[offset])
                             w_in.append(w[offset])
 
-                            offset     += 1
+                            offset += 1
                             block_size += 1
 
                 x_out = psi4.core.Vector.from_array(np.array(x_in))
@@ -174,51 +183,17 @@ def populate_grid(wfn, O, N, D):
 
     max_functions = 0
     for i in range(max_functions, len(block)):
-        max_functions = max_functions if max_functions > len(block[i].functions_local_to_global()) else len(block[i].functions_local_to_global())
+        max_functions = max_functions if max_functions > len(block[i].functions_local_to_global()) else len(
+            block[i].functions_local_to_global())
 
     points = psi4.core.RKSFunctions(basis, int(npoints), max_functions)
     points.set_ansatz(0)
+
+    #    return block, points, nxyz, npoints, [x_plot, y_plot, z_plot]
     return block, points, nxyz, npoints
 
 
-def add_density(npoints, points, block, matrix):
-    """
-    Computes density in new grid
-
-
-    Parameters
-    ----------
-
-    npoints: int
-        total number of points
-    points : psi4.core.RKSFunctions
-    block : list
-        Set of psi4.core.BlockOPoints for cube grid
-    matrix : psi4.core.Matrix
-        One-particle density matrix
-
-
-    Returns
-    -------
-
-    v : numpy array
-        Array with density values on the grid
-    """
-
-    v = np.zeros(int(npoints))
-
-    points.set_pointers(matrix)
-    rho = points.point_values()["RHO_A"]
-
-    offset = 0
-    for i in range(len(block)):
-        points.compute_points(block[i])
-        n_points = block[i].npoints()
-        offset += n_points
-        v[offset-n_points:offset] = 0.5 * rho.np[:n_points]
-    return v
-
-def add_density_1basis(npoints, points, block, array):
+def add_density_vector_basis(npoints, points, block, array):
     """
     Computes density in new grid from a array.
 
@@ -242,6 +217,11 @@ def add_density_1basis(npoints, points, block, array):
     """
 
     v = np.zeros(int(npoints))
+    x = np.zeros(int(npoints))
+    y = np.zeros(int(npoints))
+    z = np.zeros(int(npoints))
+    w = np.zeros(int(npoints))
+
     matrix = psi4.core.Matrix.from_array(np.zeros((array.shape[0], array.shape[0])))
     points.set_pointers(matrix)
     # points_func = vpot.properties()[0]
@@ -263,8 +243,60 @@ def add_density_1basis(npoints, points, block, array):
         lD = array[lpos]
 
         # Copmute rho
-        v[offset-n_points:offset] = np.einsum('pm,m->p', phi, lD)
-    return v
+        v[offset - n_points:offset] = np.einsum('pm,m->p', phi, lD)
+        x[offset - n_points:offset] = this_block.x().np
+        y[offset - n_points:offset] = this_block.y().np
+        z[offset - n_points:offset] = this_block.z().np
+        w[offset - n_points:offset] = this_block.w().np
+    return v, [x, y, z, w]
+
+
+def add_density_matrix_basis(npoints, points, block, matrix):
+    """
+    Computes density in new grid
+
+
+    Parameters
+    ----------
+
+    npoints: int
+        total number of points
+    points : psi4.core.RKSFunctions
+    block : list
+        Set of psi4.core.BlockOPoints for cube grid
+    matrix : Numpy array
+        One-particle density matrix
+
+
+    Returns
+    -------
+
+    v : numpy array
+        Array with density values on the grid
+    """
+
+    v = np.zeros(int(npoints))
+    x = np.zeros(int(npoints))
+    y = np.zeros(int(npoints))
+    z = np.zeros(int(npoints))
+    w = np.zeros(int(npoints))
+
+    psi_matrix = psi4.core.Matrix.from_array(matrix)
+
+    points.set_pointers(psi_matrix)
+    rho = points.point_values()["RHO_A"]
+
+    offset = 0
+    for i in range(len(block)):
+        points.compute_points(block[i])
+        n_points = block[i].npoints()
+        offset += n_points
+        v[offset - n_points:offset] = 0.5 * rho.np[:n_points]
+        x[offset - n_points:offset] = block[i].x().np
+        y[offset - n_points:offset] = block[i].y().np
+        z[offset - n_points:offset] = block[i].z().np
+        w[offset - n_points:offset] = block[i].w().np
+    return v, [x, y, z, w]
 
 
 def compute_isocontour_range(v, npoints):
@@ -294,18 +326,18 @@ def compute_isocontour_range(v, npoints):
 
     sum_weight = 0
 
-    #Store the points with their weights and compute the sum of weights
-    sorted_points = np.zeros((int(npoints),2))
+    # Store the points with their weights and compute the sum of weights
+    sorted_points = np.zeros((int(npoints), 2))
     for i in range(0, int(npoints)):
         value = v[i]
         weight = np.power(np.abs(value), 1.0)
         sum_weight += weight
         sorted_points[i] = [weight, value]
 
-    #Sort the points
-    sorted_points = sorted_points[np.argsort(sorted_points[:,1])][::-1]
+    # Sort the points
+    sorted_points = sorted_points[np.argsort(sorted_points[:, 1])][::-1]
 
-    #Determine the positve and negative bounds
+    # Determine the positve and negative bounds
 
     sum = 0
 
@@ -314,13 +346,13 @@ def compute_isocontour_range(v, npoints):
 
     for i in range(len(sorted_points)):
 
-        if sorted_points[i,1] >=  0:
-            positive_isocontour = sorted_points[i,1]
+        if sorted_points[i, 1] >= 0:
+            positive_isocontour = sorted_points[i, 1]
 
-        if sorted_points[i,1] <  0:
-            negative_isocontour = sorted_points[i,1]
+        if sorted_points[i, 1] < 0:
+            negative_isocontour = sorted_points[i, 1]
 
-        sum += sorted_points[i,0] / sum_weight
+        sum += sorted_points[i, 0] / sum_weight
 
         if sum > cumulative_threshold:
             break
@@ -330,13 +362,12 @@ def compute_isocontour_range(v, npoints):
 
 
 def write_cube_file(wfn, O, N, D, nxyz, npoints, v, name, header):
-
-    #Reorder the grid
+    # Reorder the grid
 
     v2 = np.zeros_like(v)
 
     offset = 0
-    for istart in range(0, int(N[0]+1), nxyz):
+    for istart in range(0, int(N[0] + 1), nxyz):
         ni = int(N[0]) - istart if istart + nxyz > N[0] else nxyz
         for jstart in range(0, int(N[1] + 1), nxyz):
             nj = int(N[1]) - jstart if jstart + nxyz > N[1] else nxyz
@@ -346,15 +377,12 @@ def write_cube_file(wfn, O, N, D, nxyz, npoints, v, name, header):
                 for i in range(istart, istart + ni):
                     for j in range(jstart, jstart + nj):
                         for k in range(kstart, kstart + nk):
-
-
                             index = i * (N[1]) * (N[2]) + j * (N[2]) + k
                             v2[int(index)] = v[offset]
 
                             offset += 1
 
-
-    f = open(F"./{name}.cube","w+")
+    f = open(F"./{name}.cube", "w+")
     f.write("Psi4Numpy Gaussian Cube File. \n")
     f.write(F"Property: {name}")
     f.write(header)
@@ -366,27 +394,39 @@ def write_cube_file(wfn, O, N, D, nxyz, npoints, v, name, header):
     f.write(F" {int(N[2])}  0.0  0.0  {D[2]} \n")
 
     for atom in range(wfn.molecule().natom()):
-        f.write(F"{wfn.molecule().true_atomic_number(atom)}  0.0  {format(wfn.molecule().x(atom), '8.5f')}  {format(wfn.molecule().y(atom), '8.5f')}  {format(wfn.molecule().z(atom), '8.5f')} \n")
+        f.write(
+            F"{wfn.molecule().true_atomic_number(atom)}  0.0  {format(wfn.molecule().x(atom), '8.5f')}  {format(wfn.molecule().y(atom), '8.5f')}  {format(wfn.molecule().z(atom), '8.5f')} \n")
 
     for i in range(int(npoints)):
         f.write(format(v2[i], '1.5e'))
         f.write("  ")
-        if i%6 == 5:
+        if i % 6 == 5:
             f.write("\n")
+
     f.close()
 
 
-def compute_density(wfn, O, N, D, npoints, points, nxyz, block, matrix, name=None, write_file=False):
+def compute_density_matrix_basis(wfn, O, N, D, npoints, points, nxyz, block, matrix, name=None, xyzw=True,
+                                 write_file=False):
+    if xyzw:
+        v, [x, y, z, w] = add_density_matrix_basis(npoints, points, block, matrix)
+    else:
+        v, _ = add_density_matrix_basis(npoints, points, block, matrix)
 
-    v = add_density(npoints, points, block, matrix)
     isocontour_range, threshold = compute_isocontour_range(v, npoints)
 
     density_percent = 100.0 * threshold
 
-    header = F"""[e/a0^3]. Isocontour range for {density_percent} of the density ({format(isocontour_range[0], '1.5f')},{format(isocontour_range[1],'1.5f')}) \n"""
+    header = F"""[e/a0^3]. Isocontour range for {density_percent} of the density ({format(isocontour_range[0], '1.5f')},{format(isocontour_range[1], '1.5f')}) \n"""
 
-    if write_file is False:
-        v2 = np.zeros_like(v)
+    if not write_file:
+        v2 = [0.] * int(npoints)
+        if xyzw:
+            x2 = [0.] * int(npoints)
+            y2 = [0.] * int(npoints)
+            z2 = [0.] * int(npoints)
+            w2 = [0.] * int(npoints)
+
         offset = 0
         for istart in range(0, int(N[0] + 1), nxyz):
             ni = int(N[0]) - istart if istart + nxyz > N[0] else nxyz
@@ -400,25 +440,48 @@ def compute_density(wfn, O, N, D, npoints, points, nxyz, block, matrix, name=Non
                             for k in range(kstart, kstart + nk):
                                 index = i * (N[1]) * (N[2]) + j * (N[2]) + k
                                 v2[int(index)] = v[offset]
+                                if xyzw:
+                                    x2[int(index)] = x[offset]
+                                    y2[int(index)] = y[offset]
+                                    z2[int(index)] = z[offset]
+                                    w2[int(index)] = w[offset]
+
                                 offset += 1
-        return np.reshape(v2, (int(N[0]), int(N[1]), int(N[2])))
+        if xyzw:
+            return np.reshape(v2, (int(N[0]), int(N[1]), int(N[2]))), \
+                   [np.reshape(x2, (int(N[0]), int(N[1]), int(N[2]))),
+                    np.reshape(y2, (int(N[0]), int(N[1]), int(N[2]))),
+                    np.reshape(z2, (int(N[0]), int(N[1]), int(N[2]))),
+                    np.reshape(w2, (int(N[0]), int(N[1]), int(N[2])))]
+        else:
+            return np.reshape(v2, (int(N[0]), int(N[1]), int(N[2])))
     else:
         if name is None:
             write_cube_file(wfn, O, N, D, nxyz, npoints, v, "cube_file", header)
         else:
             write_cube_file(wfn, O, N, D, nxyz, npoints, v, name, header)
 
-def compute_density_1basis(wfn, O, N, D, npoints, points, nxyz, block, matrix, name=None, write_file=False):
 
-    v = add_density_1basis(npoints, points, block, matrix)
+def compute_density_vector_basis(wfn, O, N, D, npoints, points, nxyz, block, matrix, xyzw=True, name=None,
+                                 write_file=False):
+    if xyzw:
+        v, [x, y, z, w] = add_density_vector_basis(npoints, points, block, matrix)
+    else:
+        v, _ = add_density_vector_basis(npoints, points, block, matrix)
+
     isocontour_range, threshold = compute_isocontour_range(v, npoints)
 
     density_percent = 100.0 * threshold
 
-    header = F"""[e/a0^3]. Isocontour range for {density_percent} of the density ({format(isocontour_range[0], '1.5f')},{format(isocontour_range[1],'1.5f')}) \n"""
+    header = F"""[e/a0^3]. Isocontour range for {density_percent} of the density ({format(isocontour_range[0], '1.5f')},{format(isocontour_range[1], '1.5f')}) \n"""
 
-    if write_file is False:
-        v2 = np.zeros_like(v)
+    if not write_file:
+        v2 = [0.] * int(npoints)
+        if xyzw:
+            x2 = [0.] * int(npoints)
+            y2 = [0.] * int(npoints)
+            z2 = [0.] * int(npoints)
+            w2 = [0.] * int(npoints)
         offset = 0
         for istart in range(0, int(N[0] + 1), nxyz):
             ni = int(N[0]) - istart if istart + nxyz > N[0] else nxyz
@@ -432,14 +495,26 @@ def compute_density_1basis(wfn, O, N, D, npoints, points, nxyz, block, matrix, n
                             for k in range(kstart, kstart + nk):
                                 index = i * (N[1]) * (N[2]) + j * (N[2]) + k
                                 v2[int(index)] = v[offset]
+                                if xyzw:
+                                    x2[int(index)] = x[offset]
+                                    y2[int(index)] = y[offset]
+                                    z2[int(index)] = z[offset]
+                                    w2[int(index)] = w[offset]
                                 offset += 1
-        return np.reshape(v2, (int(N[0]), int(N[1]), int(N[2])))
+        if xyzw:
+            return np.reshape(v2, (int(N[0]), int(N[1]), int(N[2]))), \
+                   [np.reshape(x2, (int(N[0]), int(N[1]), int(N[2]))),
+                    np.reshape(y2, (int(N[0]), int(N[1]), int(N[2]))),
+                    np.reshape(z2, (int(N[0]), int(N[1]), int(N[2]))),
+                    np.reshape(w2, (int(N[0]), int(N[1]), int(N[2])))]
+        else:
+            return np.reshape(v2, (int(N[0]), int(N[1]), int(N[2])))
+
     else:
         if name is None:
             write_cube_file(wfn, O, N, D, nxyz, npoints, v, "cube_file", header)
         else:
             write_cube_file(wfn, O, N, D, nxyz, npoints, v, name, header)
-
 
 
 def _getline(cube):
@@ -459,7 +534,8 @@ def _getline(cube):
 
     """
     l = cube.readline().strip().split()
-    return int(l[0]), np.array(list(map(float, l[1:])))
+    return int(l[0]), map(float, l[1:])
+
 
 def cube_to_array(fname):
     """
@@ -476,13 +552,14 @@ def cube_to_array(fname):
     """
     meta = {}
     with open(fname, 'r') as cube:
-        cube.readline(); cube.readline()  # ignore comments
+        cube.readline();
+        cube.readline()  # ignore comments
         natm, meta['org'] = _getline(cube)
         nx, meta['xvec'] = _getline(cube)
         ny, meta['yvec'] = _getline(cube)
         nz, meta['zvec'] = _getline(cube)
         meta['atoms'] = [_getline(cube) for i in range(natm)]
-        data = np.zeros((nx*ny*nz))
+        data = np.zeros((nx * ny * nz))
         idx = 0
         for line in cube:
             for val in line.strip().split():
@@ -492,22 +569,57 @@ def cube_to_array(fname):
     cube.close()
     return data, meta
 
-def get_atoms(wfn, D, O):
+def basis_to_cubic_grid(coeff, wfn, L, D, O=None, N=None, write_file=False, title=None):
     """
-    To get the position of atoms on the grid.
-    :return: atoms, array atomic# * (x,y,z)
+    Turns a basis represented function to its representation on a cubic grid.
+
+    Parameters
+    ----------
+    coeff: Numpy array
+        basis representation of the function. Can be 1D or 2D.
+
+    wfn: psi4.core.UHF
+        psi4 wavefunction, contains the information of the grid.
+
+    L: list of 3 numbers
+        Length extended to all 6 direction of the given geometry.
+
+    D: list of 3 numbers
+        Separation of the points in 3 directions.
+
+    E.g. for H2 separated by 1 bohr on x axis.
+    L = [1.0, 1.0, 1.0]
+    D = [0.1, 0.1, 0.1]
+    will give a 3*2*2 cubic with [30,20,20] points in each direction.
+
+    write_file: Bool, True
+        If False, will compute the value in memory.
+        If True, will return a cubic file.
+        The cubic file can be read by:
+        value, cube_info = libpdft.cubeprop.cube_to_array("Water_Density.cube")
+
+    title: String, None
+        The title of the cubic file.
+
+    Returns
+    -------
+    value = Numpy array
+        Values on the grid.
+
+    xyzw = List
+        Positions and integral weights of the grid points.
+
     """
-    natom = wfn.molecule().natom()
-    geometry = wfn.molecule().full_geometry().np
+    # O is the very corner. N is the number of points.
+    if O is None and N is None:
+        O, N = build_grid(wfn, L, D)
+    block, points, nxyz, npoints = populate_grid(wfn, O, N, D)
+    if coeff.ndim == 1:
+        value, xyzw = compute_density_vector_basis(wfn, O, N, D, npoints, points, nxyz, block, coeff,
+                                                                 xyzw=True, write_file=write_file, name=title)
+    elif coeff.ndim == 2:
+        value, xyzw = compute_density_matrix_basis(wfn, O, N, D, npoints, points, nxyz, block, coeff,
+                                                                 xyzw=True, write_file=write_file, name=title)
 
-    atoms = np.zeros((natom, 4))
-
-    for k in range(3):
-        for i in range(natom):
-            atoms[i,0] = wfn.molecule().true_atomic_number(i)
-            atoms[i, 1:] = (geometry[i] - O)/D
-    return atoms
-
-
-# def get_density(wfn, Matrix, L, D, name=None, cube_file=False):
-#     vp_cube = libcubeprop.compute_density(mol.wfn, O, N, D, npoints, points, nxyz, block, vp, "Large_vp")
+    if not write_file:
+        return value, xyzw
