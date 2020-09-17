@@ -657,6 +657,7 @@ class Inverser(pdft.U_Embedding):
         epsilon_b = epsilon_occ_b - epsilon_unocc_b
 
         hess = np.zeros((self.vp_basis.nbf*2, self.vp_basis.nbf*2))
+
         # Alpha electrons
         hess[0:self.vp_basis.nbf, 0:self.vp_basis.nbf] = - self.molecule.omega * np.einsum('ai,bj,ci,dj,ij,abm,cdn -> mn',
                                                                                              self.molecule.Ca.np[:, :self.molecule.nalpha],
@@ -675,6 +676,10 @@ class Inverser(pdft.U_Embedding):
                                                                                            self.three_overlap, optimize=True)
         hess = (hess + hess.T)
 
+        # _,_,(Aup, Adn) = self.get_dvp_GL12(self.grad_WuYang(v), hess)
+        #
+        # hess[0:self.vp_basis.nbf, 0:self.vp_basis.nbf] += Aup
+        # hess[self.vp_basis.nbf:, self.vp_basis.nbf:]
         # Regularization
         if self.regularization_constant is not None:
             T = self.vp_basis.T.np
@@ -1034,6 +1039,88 @@ class Inverser(pdft.U_Embedding):
         #     self.get_vxc()
         return
 
+    def get_dvp_GL12modified(self, grad, hess, rcond=1e-6):
+        """
+        To get v0 and v_bar based on logic from Gidopoulos, Lathiotakis, 2012 PRA 85, 052508.
+        BUT MODIFIED)
+        :param grad:
+        :param hess:
+        :param rcond:
+        :return:
+        """
+        nbf = int(grad.shape[0]/2)
+        grad_up = grad[:nbf]
+        grad_dn = grad[nbf:]
+        hess_up = hess[:nbf,:nbf]
+        hess_dn = hess[nbf:,nbf:]
+
+        Uup, sup, VTup = np.linalg.svd(hess_up)
+        Udn, sdn, VTdn = np.linalg.svd(hess_dn)
+
+        filterup = sup < np.max(sup) * rcond
+        filterdn = sdn < np.max(sdn) * rcond
+
+        b0up = Uup[:, np.bitwise_not(filterup)] @ VTup[np.bitwise_not(filterup), :] @ grad_up
+        b0dn = Udn[:, np.bitwise_not(filterdn)] @ VTdn[np.bitwise_not(filterdn), :] @ grad_dn
+        btdup = grad_up - b0up
+        btddn = grad_dn - b0dn
+
+        sinv0up = 1/sup
+        sinv0dn = 1/sdn
+        sinv0up[filterup] = 0.0
+        sinv0dn[filterdn] = 0.0
+
+        v0up = VTup.T @ np.diag(sinv0up) @ Uup.T @ b0up
+        v0dn = VTdn.T @ np.diag(sinv0dn) @ Udn.T @ b0dn
+
+        v0 = np.concatenate((v0up, v0dn))
+
+        if self.four_overlap_two_basis is None:
+            self.four_overlap_two_basis = pdft.fouroverlap([self.molecule.wfn, self.vp_basis.wfn],
+                                                 self.molecule.geometry, None, self.molecule.mints)[0]
+
+        A_full_up = np.einsum("ijuv,im,jm->uv", self.four_overlap_two_basis,
+                              self.molecule.Cocca.np, self.molecule.Cocca.np, optimize=True)
+        A_full_dn = np.einsum("ijuv,im,jm->uv", self.four_overlap_two_basis,
+                              self.molecule.Coccb.np, self.molecule.Coccb.np, optimize=True)
+
+        Atdup = A_full_up - np.einsum('ai,bj,ci,dj,abm,cdn -> mn',
+                                     self.molecule.Ca.np[:, :self.molecule.nalpha],
+                                     self.molecule.Ca.np,
+                                     self.molecule.Ca.np[:, :self.molecule.nalpha],
+                                     self.molecule.Ca.np,
+                                     self.three_overlap,
+                                     self.three_overlap, optimize=True)
+
+        Atddn = A_full_dn - np.einsum('ai,bj,ci,dj,abm,cdn -> mn',
+                                     self.molecule.Cb.np[:, :self.molecule.nbeta],
+                                     self.molecule.Cb.np,
+                                     self.molecule.Cb.np[:, :self.molecule.nbeta],
+                                     self.molecule.Cb.np,
+                                     self.three_overlap,
+                                     self.three_overlap, optimize=True)
+
+        vbarup = (Uup[:, filterup].T @ np.linalg.solve(Atdup, btdup)) @ Uup[:, filterup].T
+        vbardn = (Udn[:, filterdn].T @ np.linalg.solve(Atddn, btddn)) @ Udn[:, filterdn].T
+
+        # vbar
+        Utdup, stdup, VTtdup = np.linalg.svd(Atdup)
+        Utddn, stddn, VTtddn = np.linalg.svd(Atddn)
+
+        # Rescale it
+        vbarup *= stdup[0] / sup[0]
+        vbardn *= stddn[0] / sdn[0]
+
+        # vbarup -= Utdup @ VTtdup @ v0up
+        # vbardn -= Utddn @ VTtddn @ v0dn
+
+        # vbarrup = Utdup @ VTtdup @ v0up
+        # vbarrdn = Utddn @ VTtddn @ v0dn
+
+        v_bar = np.concatenate((vbarup, vbardn))
+        return v0, v_bar, (Atdup, Atddn)
+        # return v0, v_bar, (vbarrup, vbarrdn), (Atdup, Atddn)
+
     def get_dvp_GL12(self, grad, hess, rcond=1e-6):
         """
         To get v0 and v_bar from Gidopoulos, Lathiotakis, 2012 PRA 85, 052508.
@@ -1065,8 +1152,6 @@ class Inverser(pdft.U_Embedding):
         G_up[np.bitwise_not(filter_up)] = 0
         G_dn[np.bitwise_not(filter_dn)] = 0
 
-        print(G_up, G_dn)
-
         G_up = np.diag(G_up)
         G_dn = np.diag(G_dn)
 
@@ -1086,38 +1171,25 @@ class Inverser(pdft.U_Embedding):
                                                  self.molecule.geometry, self.molecule.basis, self.molecule.mints)[0]
             # self.four_overlap_two_basis = 0.5 * (self.four_overlap_two_basis + np.transpose(self.four_overlap_two_basis, (1,0,3,2)))
 
-        A_full_up = np.einsum("ijuv,im,jn->uv", self.four_overlap_two_basis,
+        A_full_up = np.einsum("ijuv,im,jm->uv", self.four_overlap_two_basis,
                               self.molecule.Cocca.np, self.molecule.Cocca.np, optimize=True)
-        A_full_dn = np.einsum("ijuv,im,jn->uv", self.four_overlap_two_basis,
+        A_full_dn = np.einsum("ijuv,im,jm->uv", self.four_overlap_two_basis,
                               self.molecule.Coccb.np, self.molecule.Coccb.np, optimize=True)
 
         A_tilde_up = A_full_up - np.einsum('ai,bj,ci,dj,abm,cdn -> mn',
                                           self.molecule.Ca.np[:, :self.molecule.nalpha],
+                                          self.molecule.Ca.np[:, self.molecule.nalpha:],
                                           self.molecule.Ca.np[:, :self.molecule.nalpha],
-                                          self.molecule.Ca.np[:, :self.molecule.nalpha],
-                                          self.molecule.Ca.np[:, :self.molecule.nalpha],
+                                          self.molecule.Ca.np[:, self.molecule.nalpha:],
                                           self.three_overlap,
                                           self.three_overlap, optimize=True)
         A_tilde_dn = A_full_dn - np.einsum('ai,bj,ci,dj,abm,cdn -> mn',
                                           self.molecule.Cb.np[:, :self.molecule.nbeta],
+                                          self.molecule.Cb.np[:, self.molecule.nbeta:],
                                           self.molecule.Cb.np[:, :self.molecule.nbeta],
-                                          self.molecule.Cb.np[:, :self.molecule.nbeta],
-                                          self.molecule.Cb.np[:, :self.molecule.nbeta],
+                                          self.molecule.Cb.np[:, self.molecule.nbeta:],
                                           self.three_overlap,
                                           self.three_overlap, optimize=True)
-
-        # Why this is no such a term.
-        # A_left_up = np.einsum("abc,def,ai,bj,di,ej->cf", self.three_overlap, self.three_overlap,
-        #                       self.molecule.Cocca.np, self.molecule.Cocca.np,
-        #                       self.molecule.Cocca.np, self.molecule.Cocca.np, optimize=True)
-        # A_left_dn = np.einsum("abc,def,ai,bj,di,ej->cf", self.three_overlap, self.three_overlap,
-        #                       self.molecule.Coccb.np, self.molecule.Coccb.np,
-        #                       self.molecule.Coccb.np, self.molecule.Coccb.np, optimize=True)
-        # A_tilde_up -= A_left_up
-        # A_tilde_dn -= A_left_dn
-
-        # A_tilde_up -= A_full_up
-        # A_tilde_dn -= A_full_dn
 
         A_tilde_up = 0.5 * (A_tilde_up + A_tilde_up.T)
         A_tilde_dn = 0.5 * (A_tilde_dn + A_tilde_dn.T)
@@ -1231,7 +1303,7 @@ class Inverser(pdft.U_Embedding):
                 hess_inv = np.linalg.pinv(hess, rcond=svd)
                 dv = -np.dot(hess_inv, jac)
             elif svd_rcond == "GL":
-                v0, v_bar = self.get_dvp_GL12(jac, hess, rcond=1e-5)
+                v0, v_bar,_ = self.get_dvp_GL12modified(jac, hess, rcond=1e-6)
                 dv = - (v0 + v_bar)
             elif svd_rcond == "input_once":
                 s = np.linalg.svd(hess)[1]
@@ -1738,8 +1810,8 @@ class Inverser(pdft.U_Embedding):
         self.grad_counter = 0
         self.hess_counter = 0
 
-        if find_vxc_grid:
-            self.get_vxc()
+        # if find_vxc_grid:
+        #     self.get_vxc()
 
         return hess, jac
 
