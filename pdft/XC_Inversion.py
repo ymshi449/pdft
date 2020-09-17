@@ -552,7 +552,7 @@ class Inverser(pdft.U_Embedding):
         self.vxc_b_grid += self.vout_constant
         return
 
-    def Lagrangian_WuYang(self, v=None, fit4vxc=True):
+    def Lagrangian_WuYang(self, v=None, no_tuple_return=True, fit4vxc=True):
         """
         L = - <T> - \int (vks_a*(n_a-n_a_input)+vks_b*(n_b-n_b_input))
         :return: L
@@ -593,7 +593,7 @@ class Inverser(pdft.U_Embedding):
             self.regul_norm = norm
         return L
 
-    def grad_WuYang(self, v=None, fit4vxc=True):
+    def grad_WuYang(self, v=None, no_tuple_return=True, fit4vxc=True):
         """
         grad_a = dL/dvxc_a = - (n_a-n_a_input)
         grad_b = dL/dvxc_b = - (n_b-n_b_input)
@@ -631,6 +631,7 @@ class Inverser(pdft.U_Embedding):
                 nbf = int(self.v_output.shape[0] / 2)
                 grad[:nbf] += 4*self.regularization_constant*np.dot(T, self.v_output[:nbf])
                 grad[nbf:] += 4*self.regularization_constant*np.dot(T, self.v_output[nbf:])
+
         return grad
 
     def hess_WuYang(self, v=None, fit4vxc=True):
@@ -1129,110 +1130,85 @@ class Inverser(pdft.U_Embedding):
         :param rcond:
         :return:
         """
+
         nbf = int(grad.shape[0]/2)
         grad_up = grad[:nbf]
         grad_dn = grad[nbf:]
         hess_up = hess[:nbf,:nbf]
         hess_dn = hess[nbf:,nbf:]
 
-        g_up, C_up = scipy_eig(hess_up, self.vp_basis.S.np)
-        g_dn, C_dn = scipy_eig(hess_dn, self.vp_basis.S.np)
+        Uup, sup, VTup = np.linalg.svd(hess_up)
+        Udn, sdn, VTdn = np.linalg.svd(hess_dn)
 
-        g_up = np.real(g_up)
-        C_up = np.real(C_up)
-        g_dn = np.real(g_dn)
-        C_dn = np.real(C_dn)
+        filterup = sup < np.max(sup) * rcond
+        filterdn = sdn < np.max(sdn) * rcond
 
-        G_up = 1/g_up
-        G_dn = 1/g_dn
+        b0up = Uup[:, np.bitwise_not(filterup)] @ VTup[np.bitwise_not(filterup), :] @ grad_up
+        b0dn = Udn[:, np.bitwise_not(filterdn)] @ VTdn[np.bitwise_not(filterdn), :] @ grad_dn
+        btdup = grad_up - b0up
+        btddn = grad_dn - b0dn
 
-        filter_up = g_up >= np.max(g_up)*rcond
-        filter_dn = g_dn >= np.max(g_dn)*rcond
+        sinv0up = 1/sup
+        sinv0dn = 1/sdn
+        sinv0up[filterup] = 0.0
+        sinv0dn[filterdn] = 0.0
 
-        G_up[np.bitwise_not(filter_up)] = 0
-        G_dn[np.bitwise_not(filter_dn)] = 0
+        v0up = VTup.T @ np.diag(sinv0up) @ Uup.T @ b0up
+        v0dn = VTdn.T @ np.diag(sinv0dn) @ Udn.T @ b0dn
 
-        G_up = np.diag(G_up)
-        G_dn = np.diag(G_dn)
-
-        v0 = np.zeros(2*nbf)
-
-        v0[:nbf] = np.dot(C_up, np.dot(G_up, np.dot(C_up.T, grad_up)))
-        v0[nbf:] = np.dot(C_dn, np.dot(G_dn, np.dot(C_dn.T, grad_dn)))
-
-        # Start calculating v_bar
-        if np.sum(np.bitwise_not(filter_up)) == 0 or np.sum(np.bitwise_not(filter_dn)) == 0:
-            print("up null space", np.sum(np.bitwise_not(filter_up)),
-                  "or down null space", np.sum(np.bitwise_not(filter_dn)), "is null.")
-            return v0, None
+        v0 = np.concatenate((v0up, v0dn))
 
         if self.four_overlap_two_basis is None:
             self.four_overlap_two_basis = pdft.fouroverlap([self.molecule.wfn, self.vp_basis.wfn],
-                                                 self.molecule.geometry, self.molecule.basis, self.molecule.mints)[0]
-            # self.four_overlap_two_basis = 0.5 * (self.four_overlap_two_basis + np.transpose(self.four_overlap_two_basis, (1,0,3,2)))
+                                                 self.molecule.geometry, None, self.molecule.mints)[0]
 
         A_full_up = np.einsum("ijuv,im,jm->uv", self.four_overlap_two_basis,
                               self.molecule.Cocca.np, self.molecule.Cocca.np, optimize=True)
         A_full_dn = np.einsum("ijuv,im,jm->uv", self.four_overlap_two_basis,
                               self.molecule.Coccb.np, self.molecule.Coccb.np, optimize=True)
 
-        A_tilde_up = A_full_up - np.einsum('ai,bj,ci,dj,abm,cdn -> mn',
-                                          self.molecule.Ca.np[:, :self.molecule.nalpha],
-                                          self.molecule.Ca.np[:, self.molecule.nalpha:],
-                                          self.molecule.Ca.np[:, :self.molecule.nalpha],
-                                          self.molecule.Ca.np[:, self.molecule.nalpha:],
-                                          self.three_overlap,
-                                          self.three_overlap, optimize=True)
-        A_tilde_dn = A_full_dn - np.einsum('ai,bj,ci,dj,abm,cdn -> mn',
-                                          self.molecule.Cb.np[:, :self.molecule.nbeta],
-                                          self.molecule.Cb.np[:, self.molecule.nbeta:],
-                                          self.molecule.Cb.np[:, :self.molecule.nbeta],
-                                          self.molecule.Cb.np[:, self.molecule.nbeta:],
-                                          self.three_overlap,
-                                          self.three_overlap, optimize=True)
+        Atdup = A_full_up - np.einsum('ai,bj,ci,dj,abm,cdn -> mn',
+                                     self.molecule.Ca.np[:, :self.molecule.nalpha],
+                                     self.molecule.Ca.np,
+                                     self.molecule.Ca.np[:, :self.molecule.nalpha],
+                                     self.molecule.Ca.np,
+                                     self.three_overlap,
+                                     self.three_overlap, optimize=True)
 
-        A_tilde_up = 0.5 * (A_tilde_up + A_tilde_up.T)
-        A_tilde_dn = 0.5 * (A_tilde_dn + A_tilde_dn.T)
+        Atddn = A_full_dn - np.einsum('ai,bj,ci,dj,abm,cdn -> mn',
+                                     self.molecule.Cb.np[:, :self.molecule.nbeta],
+                                     self.molecule.Cb.np,
+                                     self.molecule.Cb.np[:, :self.molecule.nbeta],
+                                     self.molecule.Cb.np,
+                                     self.three_overlap,
+                                     self.three_overlap, optimize=True)
 
-        # C_occ_up = C_up[:, filter_up]
-        # C_occ_dn = C_dn[:, filter_dn]
-        C_null_up = C_up[:, np.bitwise_not(filter_up)]
-        C_null_dn = C_dn[:, np.bitwise_not(filter_dn)]
-        chi_tilde_up = np.dot(C_null_up.T, np.dot(A_tilde_up, C_null_up))
-        chi_tilde_dn = np.dot(C_null_dn.T, np.dot(A_tilde_dn, C_null_dn))
+        Unullup = Uup[:, filterup]
+        Unulldn = Udn[:, filterdn]
+        Xuvup = Unullup.T @ Atdup @ Unullup
+        Xuvdn = Unulldn.T @ Atddn @ Unulldn
 
-        chi_tilde_up = 0.5 * (chi_tilde_up + chi_tilde_up.T)
-        chi_tilde_dn = 0.5 * (chi_tilde_dn + chi_tilde_dn.T)
+        Utdup, stdup, VTtdup = np.linalg.svd(Atdup)
+        Utddn, stddn, VTtddn = np.linalg.svd(Atddn)
 
-        # (50)
-        v_bar_up = np.copy(v0[:nbf])
-        v_bar_dn = np.copy(v0[nbf:])
+        vbarup_a = Unullup @ np.linalg.solve(Xuvup, Unullup.T @ btdup) * stdup[0] / sup[0]
+        vbarup_b = - Unullup @ np.linalg.solve(Xuvup, Unullup.T @ Atdup @ v0up)
 
-        # v_bar_up = np.dot(A_tilde_up, v_bar_up)
-        # v_bar_dn = np.dot(A_tilde_dn, v_bar_dn)
+        vbardn_a = Unulldn @ np.linalg.solve(Xuvdn, Unulldn.T @ btddn) * stddn[0] / sdn[0]
+        vbardn_b = - Unulldn @ np.linalg.solve(Xuvdn, Unulldn.T @ Atddn @ v0dn)
 
-        v_bar_up = np.dot(C_null_up.T, np.dot(A_tilde_up, v_bar_up))
-        v_bar_dn = np.dot(C_null_dn.T, np.dot(A_tilde_dn, v_bar_dn))
+        # Xuvup_inv = np.linalg.pinv(Xuvup, rcond=1e-2)
+        # Xuvdn_inv = np.linalg.pinv(Xuvdn, rcond=1e-2)
+        # vbarup_a = Unullup @ (Xuvup_inv @ Unullup.T @ btdup) * stdup[0] / sup[0]
+        # vbarup_b = - Unullup @ (Xuvup_inv @ Unullup.T @ Atdup @ v0up)
+        # vbardn_a = Unulldn @ (Xuvdn_inv @ Unulldn.T @ btddn) * stddn[0] / sdn[0]
+        # vbardn_b = - Unulldn @ (Xuvdn_inv @ Unulldn.T @ Atddn @ v0dn)
 
-        if chi_tilde_up.shape[0] > 1:
-            v_bar_up = np.linalg.solve(chi_tilde_up, v_bar_up)
-            v_bar_up = np.dot(C_null_up, v_bar_up)
-        elif chi_tilde_up.shape[0] == 1:
-            v_bar_up = v_bar_up/chi_tilde_up
-            v_bar_up = C_null_up * v_bar_up
+        vbarup = vbarup_a + vbarup_b
+        vbardn = vbardn_a + vbardn_b
 
-        if chi_tilde_dn.shape[0] > 1:
-            v_bar_dn = np.linalg.solve(chi_tilde_dn, v_bar_dn)
-            v_bar_dn = np.dot(C_null_dn, v_bar_dn)
-        elif chi_tilde_dn.shape[0] == 1:
-            v_bar_dn = v_bar_dn/chi_tilde_dn
-            v_bar_dn = C_null_dn * v_bar_dn
-
-
-        v_bar = np.empty_like(v0)
-        v_bar[:nbf] = -np.squeeze(v_bar_up)
-        v_bar[nbf:] = -np.squeeze(v_bar_dn)
-        return v0, v_bar, (A_tilde_up, A_tilde_dn)
+        v_bar = np.concatenate((vbarup, vbardn))
+        return v0, v_bar, (Atdup, Atddn)
 
     def find_vxc_manualNewton(self, maxiter=49, svd_rcond=None, c1=1e-4, c2=0.99, c3=1e-2,
                               svd_parameter=None, line_search_method="StrongWolfe",
@@ -1303,7 +1279,7 @@ class Inverser(pdft.U_Embedding):
                 hess_inv = np.linalg.pinv(hess, rcond=svd)
                 dv = -np.dot(hess_inv, jac)
             elif svd_rcond == "GL":
-                v0, v_bar,_ = self.get_dvp_GL12modified(jac, hess, rcond=1e-6)
+                v0, v_bar,_ = self.get_dvp_GL12(jac, hess, rcond=1.08019605e-03/1.73477631e-01*0.99)
                 dv = - (v0 + v_bar)
             elif svd_rcond == "input_once":
                 s = np.linalg.svd(hess)[1]
