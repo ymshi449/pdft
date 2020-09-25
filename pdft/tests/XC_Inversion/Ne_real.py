@@ -28,7 +28,7 @@ psi4.set_output_file("Ne.psi4")
 Full_Molec = psi4.geometry("""
 nocom
 noreorient
-Ne
+Ne 0 0 0
 units bohr
 symmetry c1
 """)
@@ -49,7 +49,7 @@ psi4.set_options({
     'REFERENCE': 'RHF'
 })
 #  Get wfn for target density
-E_input, input_density_wfn = psi4.energy("CCSD"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+E_input, input_density_wfn = psi4.energy("CCSD(T)"+"/"+basis, molecule=Full_Molec, return_wfn=True)
 print("Target Density Calculation Finished.")
 
 #Psi4 Options:
@@ -129,5 +129,75 @@ inverser = XC_Inversion.Inverser(mol, input_density_wfn,
 # XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, xyz=grid, ax=ax, label="$\lambda=%.2e$"%inverser.regularization_constant, ls="--")
 #
 # ax.set_xlim(-2.1, 8.1)
+# ax.legend()
+# f.show()
+
+#%%
+# rcond = -1
+# GL_rcond = [rcond, -1, -1]
+# inverser.find_vxc_manualNewton(svd_rcond=rcond, line_search_method="StrongWolfe", find_vxc_grid=False)
+# L = [3, 0, 0]
+# D = [0.1, 0.5, 0.2]
+# O = [-2.1, 0, 0]
+# N = [100, 1, 1]
+# inverser.v_output_a = inverser.v_output[:vxc_basis.nbf]
+# vout_cube_a, xyzw = libcubeprop.basis_to_cubic_grid(inverser.v_output_a, inverser.vp_basis.wfn, L, D, O, N)
+# vout_cube_a.shape = 100
+# xyzw[0].shape = 100
+# xyzw[1].shape = 100
+# xyzw[2].shape = 100
+# xyzw[3].shape = 100
+# mark_y = np.isclose(xyzw[1], 0)
+# mark_z = np.isclose(xyzw[2], 0)
+# grid = np.array([xyzw[0][mark_y&mark_z], xyzw[1][mark_y&mark_z], xyzw[2][mark_y&mark_z]])
+# grid = grid.T
+# inverser.get_esp4v0(grid=grid)
+# inverser.get_vH_vext(grid)
+# nocc = mol.ndocc
+# if v0 == "FermiAmaldi":
+#     inverser.vxc_a_grid = vout_cube_a[mark_z&mark_y] -1 / nocc * inverser.vH4v0
+# elif v0 == "Hartree":
+#     inverser.vxc_a_grid = vout_cube_a[mark_z&mark_y]
+# grid = grid.T
+#
+# f,ax = plt.subplots(1,1,dpi=200)
+# ax.plot(Ne_xyz, Ne_vxc, label="Exact")
+# XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, xyz=grid, ax=ax, label="TSVD", ls="--")
+# ax.set_xlim(-2.1, 8.1)
+#
+# vxc_TSVD = np.copy(inverser.vxc_a_grid)
+#
+# inverser.find_vxc_manualNewton(svd_rcond="GL", line_search_method="StrongWolfe", find_vxc_grid=False, svd_parameter=GL_rcond)
+#
+# inverser.v_output_a = inverser.v_output[:vxc_basis.nbf]
+# v0_a = inverser.v0_output[:vxc_basis.nbf]
+# vbar_a = inverser.vbara_output[:vxc_basis.nbf]
+# vbar_b = inverser.vbarb_output[:vxc_basis.nbf]
+#
+# vout_cube_a, _ = libcubeprop.basis_to_cubic_grid(inverser.v_output_a, inverser.vp_basis.wfn, L, D, O, N)
+# v0_cube_a, _ = libcubeprop.basis_to_cubic_grid(v0_a, inverser.vp_basis.wfn, L, D, O, N)
+# vbar_cube_a, _ = libcubeprop.basis_to_cubic_grid(vbar_a, inverser.vp_basis.wfn, L, D, O, N)
+# vbar_cube_b, _ = libcubeprop.basis_to_cubic_grid(vbar_b, inverser.vp_basis.wfn, L, D, O, N)
+# vout_cube_a.shape = 100
+# v0_cube_a.shape = 100
+# vbar_cube_a.shape = 100
+# vbar_cube_b.shape = 100
+#
+# nocc = mol.ndocc
+# if v0 == "FermiAmaldi":
+#     inverser.vxc_a_grid = vout_cube_a[mark_z&mark_y] -1 / nocc * inverser.vH4v0
+#     v0_a_grid = v0_cube_a[mark_z&mark_y] -1 / nocc * inverser.vH4v0
+#     vbar_a_grid = vbar_cube_a[mark_z&mark_y]
+#     vbar_b_grid = vbar_cube_b[mark_z&mark_y]
+# elif v0 == "Hartree":
+#     inverser.vxc_a_grid = vout_cube_a[mark_z&mark_y]
+#     v0_a_grid = v0_cube_a[mark_z&mark_y]
+#     vbar_a_grid = vbar_cube_a[mark_z&mark_y]
+#     vbar_b_grid = vbar_cube_b[mark_z & mark_y]
+# XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, xyz=grid, ax=ax, label="TSVD+GL", ls="--")
+# XC_Inversion.pdft.plot1d_x(v0_a_grid, xyz=grid, ax=ax, label="v0", ls=":")
+# XC_Inversion.pdft.plot1d_x(vbar_a_grid, xyz=grid, ax=ax, label="vbara", ls=":")
+# XC_Inversion.pdft.plot1d_x(vbar_b_grid, xyz=grid, ax=ax, label="vbarb", ls=":")
+# ax.set_xlim(-2.1, 6)
 # ax.legend()
 # f.show()
