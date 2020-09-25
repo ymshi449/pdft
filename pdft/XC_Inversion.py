@@ -1269,6 +1269,9 @@ class Inverser(pdft.U_Embedding):
             rcond_bar_a = -1
             rcond_bar_b = -1
 
+        # f.show()
+        # rcond_bar_a = int(input("Enter svd cut index: "))
+        # rcond_bar_b = int(input("Enter svd cut index: "))
         ax.axvline(x=stemp.shape[0] + rcond_bar_a, ls=":", lw=0.7, color='b')
         ax.axvline(x=stemp.shape[0] + rcond_bar_b, ls="-.", lw=0.7, color='b')
         # f.show()
@@ -1339,6 +1342,223 @@ class Inverser(pdft.U_Embedding):
 
         v_bar = np.concatenate((vbarup, vbardn))
         return v0, v_bar, np.concatenate((vbarup_b, vbardn_b))
+
+    def get_dvp_GL12_eig_expended(self, grad, hess, rcond=None, rcond_bar_a=None, rcond_bar_b=None):
+        """
+        To get v0 and v_bar from Gidopoulos, Lathiotakis, 2012 PRA 85, 052508.
+        :param grad:
+        :param hess:
+        :param rcond:
+        :return:
+        """
+
+        nbf = int(grad.shape[0]/2)
+        grad_up = grad[:nbf]
+        grad_dn = grad[nbf:]
+        hess_up = hess[:nbf, :nbf]
+        hess_dn = hess[nbf:, nbf:]
+
+        # Not sure why but scipy.linalg.eig does not seem to work for this.
+        A = self.vp_basis.A.np
+        S = self.vp_basis.S.np
+
+        hess_up_psi4 = psi4.core.Matrix.from_array(A @ hess_up @ A)
+        Cup_CE = psi4.core.Matrix(nbf, nbf)
+        sup = psi4.core.Vector(nbf)
+        hess_up_psi4.diagonalize(Cup_CE, sup, psi4.core.DiagonalizeOrder.Descending)
+        Cup_CE = A @ Cup_CE.np
+        sup = sup.np
+
+        assert np.allclose(Cup_CE.T @ S @ Cup_CE, np.eye(nbf))
+
+        hess_dn_psi4 = psi4.core.Matrix.from_array(A @ hess_dn @ A)
+        Cdn_CE = psi4.core.Matrix(nbf, nbf)
+        sdn = psi4.core.Vector(nbf)
+        hess_dn_psi4.diagonalize(Cdn_CE, sdn, psi4.core.DiagonalizeOrder.Descending)
+        Cdn_CE = A @ Cdn_CE.np
+        sdn = sdn.np
+
+        f,ax = plt.subplots(1,1,dpi=200)
+        ax.axvline(x=20, ls="--", lw=0.7, color='r')
+        ax.axvline(x=30, ls="--", lw=0.7, color='r')
+        ax.axvline(x=40, ls="--", lw=0.7, color='r')
+        ax.axvline(x=50, ls="--", lw=0.7, color='r')
+        ax.scatter(range(nbf), np.log10(np.abs(sup)), s=1)
+
+
+        if rcond is None:
+            rcond = -1
+        rcond = sup[rcond] / sup[0] * 0.999
+
+        # f.show()
+        # rcond = int(input("Enter svd cut index: "))
+
+        filterup = np.abs(sup) < np.max(np.abs(sup)) * rcond
+        filterdn = np.abs(sdn) < np.max(np.abs(sdn)) * rcond
+
+        b0up_CE = Cup_CE[:,np.bitwise_not(filterup)] @ Cup_CE[:,np.bitwise_not(filterup)].T @ grad_up
+        b0dn_CE = Cdn_CE[:,np.bitwise_not(filterdn)] @ Cdn_CE[:,np.bitwise_not(filterdn)].T @ grad_dn
+        b0up = S @ b0up_CE
+        b0dn = S @ b0dn_CE
+        btdup = grad_up - b0up
+        btddn = grad_dn - b0up
+
+        sinv0up = 1/sup
+        sinv0dn = 1/sdn
+        sinv0up[filterup] = 0.0
+        sinv0dn[filterdn] = 0.0
+
+        v0up_CE = Cup_CE @ np.diag(sinv0up) @ Cup_CE.T @ b0up
+        v0dn_CE = Cdn_CE @ np.diag(sinv0dn) @ Cdn_CE.T @ b0dn
+
+        v0_CE = np.concatenate((v0up_CE, v0dn_CE))
+
+        if self.four_overlap_two_basis is None:
+            self.four_overlap_two_basis = pdft.fouroverlap([self.molecule.wfn, self.vp_basis.wfn],
+                                                 self.molecule.geometry, None, self.molecule.mints)[0]
+
+        A_full_up = np.einsum("ijuv,im,jm->uv", self.four_overlap_two_basis,
+                              self.molecule.Cocca.np, self.molecule.Cocca.np, optimize=True)
+        A_full_dn = np.einsum("ijuv,im,jm->uv", self.four_overlap_two_basis,
+                              self.molecule.Coccb.np, self.molecule.Coccb.np, optimize=True)
+
+        Atdup = A_full_up - np.einsum('ai,bj,ci,dj,abm,cdn -> mn',
+                                     self.molecule.Ca.np[:, :self.molecule.nalpha],
+                                     self.molecule.Ca.np,
+                                     self.molecule.Ca.np[:, :self.molecule.nalpha],
+                                     self.molecule.Ca.np,
+                                     self.three_overlap,
+                                     self.three_overlap, optimize=True)
+
+        Atddn = A_full_dn - np.einsum('ai,bj,ci,dj,abm,cdn -> mn',
+                                     self.molecule.Cb.np[:, :self.molecule.nbeta],
+                                     self.molecule.Cb.np,
+                                     self.molecule.Cb.np[:, :self.molecule.nbeta],
+                                     self.molecule.Cb.np,
+                                     self.three_overlap,
+                                     self.three_overlap, optimize=True)
+
+        # A0tempup = np.einsum('ai,bj,ci,dj,abm,cdn -> mn',
+        #                       self.molecule.Ca.np[:, :self.molecule.nalpha],
+        #                       self.molecule.Ca.np[:, self.molecule.nalpha:],
+        #                       self.molecule.Ca.np[:, :self.molecule.nalpha],
+        #                       self.molecule.Ca.np[:, self.molecule.nalpha:],
+        #                       self.three_overlap,
+        #                       self.three_overlap, optimize=True)
+        # A0tempdn = np.einsum('ai,bj,ci,dj,abm,cdn -> mn',
+        #                      self.molecule.Cb.np[:, :self.molecule.nbeta],
+        #                      self.molecule.Cb.np[:, self.molecule.nbeta:],
+        #                      self.molecule.Cb.np[:, :self.molecule.nbeta],
+        #                      self.molecule.Cb.np[:, self.molecule.nbeta:],
+        #                      self.three_overlap,
+        #                      self.three_overlap, optimize=True)
+
+        # Rescaling
+        sfullup = np.linalg.svd(A_full_up)[1]
+        sfulldn = np.linalg.svd(A_full_dn)[1]
+
+        # print(repr(sup), "\n", repr(sfullup))
+        Atdup *= sup[0] / sfullup[0] / 2
+        Atddn *= sdn[0] / sfulldn[0] / 2
+
+        #
+        Cnullup = Cup_CE[:, filterup]
+        Cnulldn = Cdn_CE[:, filterdn]
+
+        Xuvup = Cnullup.T @ Atdup @ Cnullup
+        Xuvdn = Cnulldn.T @ Atddn @ Cnulldn
+
+        stemp = np.linalg.svd(Xuvup)[1]
+        ax.scatter(range(stemp.shape[0]), np.log10(np.abs(stemp)), s=1)
+
+        Utdup, stdup, VTtdup = np.linalg.svd(Atdup)
+        Utddn, stddn, VTtddn = np.linalg.svd(Atddn)
+        stdup_temp = np.copy(stdup)
+        stddn_temp = np.copy(stddn)
+
+        if rcond_bar_b is None and rcond_bar_a is not None:
+            rcond_bar_b = rcond_bar_a
+        elif rcond_bar_a is None and rcond_bar_b is not None:
+            rcond_bar_a = rcond_bar_b
+        elif rcond_bar_a is None and rcond_bar_b is None:
+            rcond_bar_a = -1
+            rcond_bar_b = -1
+
+        # f.show()
+        # rcond_bar_a = int(input("Enter svd cut index: "))
+        # rcond_bar_b = int(input("Enter svd cut index: "))
+        ax.axvline(x=stemp.shape[0] + rcond_bar_a, ls=":", lw=0.7, color='b')
+        ax.axvline(x=stemp.shape[0] + rcond_bar_b, ls="-.", lw=0.7, color='b')
+        # f.show( )
+        plt.close(f)
+        print(repr(stemp))
+
+        stdup_temp[stdup<stdup[rcond_bar_b]] = 0
+        stddn_temp[stddn<stddn[rcond_bar_b]] = 0
+        rcond_bar_b = stemp[rcond_bar_b] / stemp[0] * 0.999
+
+        rcond_bar_a = stemp[rcond_bar_a] / stemp[0] * 0.999
+
+
+        # # vbar
+        # 2
+        vbarup_a_CE = Cnullup @ (np.linalg.pinv(Xuvup, rcond=rcond_bar_a) @ Cnullup.T @ btdup)
+        vbarup_b_CE = - Cnullup @ (np.linalg.pinv(Xuvup, rcond=rcond_bar_b) @ Cnullup.T @ (Utdup @ np.diag(stdup_temp) @ VTtdup) @ v0up_CE)
+        vbardn_a_CE = Cnulldn @ (np.linalg.pinv(Xuvdn, rcond=rcond_bar_a) @ Cnulldn.T @ btddn)
+        vbardn_b_CE = - Cnulldn @ (np.linalg.pinv(Xuvdn, rcond=rcond_bar_b) @ Cnulldn.T @ (Utddn @ np.diag(stddn_temp) @ VTtddn) @ v0dn_CE)
+
+        # 4
+        # vbarup_a_CE = Vnullup @ np.linalg.pinv(Xuvup, rcond=rcond_bar) @ Vnullup.T @ btdup
+        # vbarup_b_CE = - Vnullup @ np.linalg.pinv(Xuvup, rcond=rcond_bar) @ Vnullup.T @ Atdup @ v0up_CE
+        # vbardn_a_CE = Vnulldn @ np.linalg.pinv(Xuvdn, rcond=rcond_bar) @ Vnulldn.T @ btddn
+        # vbardn_b_CE = - Vnulldn @ np.linalg.pinv(Xuvdn, rcond=rcond_bar) @ Vnulldn.T @ Atddn @ v0dn_CE
+
+        # vbarup_a_CE += Vnullup @ pdft.inv_pinv(Xuvup, 21, 30) @ Vnullup.T @ btdup
+        # vbarup_b_CE += - Vnullup @ pdft.inv_pinv(Xuvup, 21, 30) @ Vnullup.T @ Atdup @ v0up_CE
+        # vbardn_a_CE += Vnulldn @ pdft.inv_pinv(Xuvdn, 21, 30) @ Vnulldn.T @ btddn
+        # vbardn_b_CE += - Vnulldn @ pdft.inv_pinv(Xuvdn, 21, 30) @ Vnulldn.T @ Atddn @ v0dn_CE
+
+        # 1
+        # vbarup_a_CE = Vnullup @ np.linalg.solve(Xuvup, Vnullup.T @ btdup)
+        # vbarup_b_CE = - Vnullup @ np.linalg.solve(Xuvup, Vnullup.T @ Atdup @ v0up_CE)
+        # vbardn_a_CE = Vnulldn @ np.linalg.solve(Xuvdn, Vnulldn.T @ btddn)
+        # vbardn_b_CE = - Vnulldn @ np.linalg.solve(Xuvdn, Vnulldn.T @ Atddn @ v0dn_CE)
+
+        # 3
+        # vbarup_a_CE = Unullup @ np.linalg.solve(Xuvup, Unullup.T @ btdup)
+        # vbarup_b_CE = - Unullup @ Unullup.T @ v0up_CE
+        # vbardn_a_CE = Unulldn @ np.linalg.solve(Xuvdn, Unulldn.T @ btddn)
+        # vbardn_b_CE = - Unulldn @ Unullup.T @ v0dn_CE
+
+        # Monitor Session
+        print("|v0|:", np.sum(np.abs(self.vp_basis.to_grid(v0up_CE))*self.vp_basis.w), np.linalg.norm(v0up_CE),
+              "|vbara|:", np.sum(np.abs(self.vp_basis.to_grid(vbarup_a_CE))*self.vp_basis.w), np.linalg.norm(vbarup_a_CE),
+              "|vbarb|:", np.sum(np.abs(self.vp_basis.to_grid(vbarup_b_CE))*self.vp_basis.w), np.linalg.norm(vbarup_b_CE))
+
+        # Rescaling again
+        # vbarup_a_CE *= np.sum(np.abs(self.vp_basis.to_grid(v0up_CE))*self.vp_basis.w) / np.sum(np.abs(self.vp_basis.to_grid(vbarup_a_CE))*self.vp_basis.w)
+        # vbardn_a_CE *= np.sum(np.abs(self.vp_basis.to_grid(v0up_CE))*self.vp_basis.w) / np.sum(np.abs(self.vp_basis.to_grid(vbarup_a_CE))*self.vp_basis.w)
+        # vbarup_a_CE *= np.linalg.norm(v0up_CE) / np.linalg.norm(vbarup_a_CE)
+        # vbardn_a_CE *= np.linalg.norm(v0dn_CE) / np.linalg.norm(vbardn_a_CE)
+        # vbarup_b_CE *= np.linalg.norm(v0up_CE) / np.linalg.norm(vbarup_b_CE)
+        # vbardn_b_CE *= np.linalg.norm(v0dn_CE) / np.linalg.norm(vbardn_b_CE)
+
+        stemp = np.copy(sup)
+        stemp[filterup] = 0.0
+        print(np.linalg.norm(Cup_CE @ np.diag(sup) @ Cup_CE.T @ btdup),
+              np.linalg.norm(Cup_CE @ np.diag(sup) @ Cup_CE.T @ S @ v0up_CE - b0up_CE),
+              np.linalg.norm(Cup_CE @ np.diag(sup) @ Cup_CE.T @ S @ vbarup_a_CE),
+              np.linalg.norm(Cup_CE @ np.diag(sup) @ Cup_CE.T @ S @ vbarup_b_CE))
+        stemp = np.linalg.svd(Xuvup)[1]
+        print(stemp[0]/stemp[-1])
+
+        # vbarup = vbarup_a_CE + vbarup_b_CE
+        # vbardn = vbardn_a_CE + vbardn_b_CE
+        vbarup_CE = vbarup_a_CE
+        vbardn_CE = vbardn_a_CE
+
+        v_bar_CE = np.concatenate((vbarup_CE, vbardn_CE))
+        return v0_CE, v_bar_CE, np.concatenate((vbarup_b_CE, vbardn_b_CE))
 
     def find_vxc_manualNewton(self, maxiter=49, svd_rcond=None, c1=1e-4, c2=0.99, c3=1e-2,
                               svd_parameter=None, line_search_method="StrongWolfe",
@@ -1875,9 +2095,6 @@ class Inverser(pdft.U_Embedding):
                         #     self.vbara_output += beta * dv
                         # else:
                         #     self.vbara_output += beta * dv
-
-                        print("\nNORMS",np.linalg.norm(self.v_output),np.linalg.norm(self.v0_output),
-                              np.linalg.norm(self.vbara_output),np.linalg.norm(self.vbarb_output))
                     n = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
                     dn = np.sum(np.abs(n - n_input) * self.molecule.w)
                     print(beta, L - L_old, dn - dn_before)
@@ -1898,6 +2115,10 @@ class Inverser(pdft.U_Embedding):
                     LineSearch_converge_flag = True
                 else:
                     self.v_output += beta * dv
+                    if svd_rcond == "GL":
+                        self.v0_output -= beta * v0
+                        self.vbara_output -= beta * v_bara
+                        self.vbarb_output -= beta * v_barb
                     n = self.molecule.to_grid(self.molecule.Da.np, Duv_b=self.molecule.Db.np)
                     dn = np.sum(np.abs(n - n_input) * self.molecule.w)
                     print(beta, L - L_old, dn - dn_before)
