@@ -1,7 +1,3 @@
-
-*** tstart() called on PartitionStation
-*** at Thu Aug 27 08:40:30 2020
-
    => Loading Basis Set <=
 
     Name: CC-PVDZ
@@ -27,262 +23,14 @@
 
        Center              X                  Y                   Z               Mass       
     ------------   -----------------  -----------------  -----------------  -----------------
-         HE           3.000000000000     0.000000000000     0.000000000000     4.002603254130
-         HE          -3.000000000000     0.000000000000     0.000000000000     4.002603254130
+         HE          17.500000000000     0.000000000000     0.000000000000     4.002603254130
+         HE         -17.500000000000     0.000000000000     0.000000000000     4.002603254130
 
   Running in c1 symmetry.
 
-  Rotational constants: A = ************  B =      0.83556  C =      0.83556 [cm^-1]
-  Rotational constants: A = ************  B =  25049.54747  C =  25049.54747 [MHz]
-  Nuclear repulsion =    0.666666666666667
-
-  Charge       = 0
-  Multiplicity = 1
-  Electrons    = 4
-  Nalpha       = 2
-  Nbeta        = 2
-
-  ==> Algorithm <==
-
-  SCF Algorithm Type is DF.
-  DIIS enabled.
-  MOM disabled.
-  Fractional occupation disabled.
-  Guess Type is SAD.
-  Energy threshold   = 1.00e-06
-  Density threshold  = 1.00e-06
-  Integral threshold = 0.00e+00
-
-  ==> Primary Basis <==
-
-  Basis Set: CC-PVDZ
-    Blend: CC-PVDZ
-    Number of shells: 6
-    Number of basis function: 10
-    Number of Cartesian functions: 10
-    Spherical Harmonics?: true
-    Max angular momentum: 1
-
-  ==> DFT Potential <==
-
-   => Composite Functional: SVWN <= 
-
-    SVWN3 (RPA) LSDA Functional
-
-    Adamson et. al., J. Comput. Chem., 20(9), 921-927, 1999
-
-
-    Deriv               =              1
-    GGA                 =          FALSE
-    Meta                =          FALSE
-
-    Exchange Hybrid     =          FALSE
-    MP2 Hybrid          =          FALSE
-
-   => Exchange Functionals <=
-
-    1.0000         XC_LDA_X
-
-   => Correlation Functionals <=
-
-    1.0000   XC_LDA_C_VWN_RPA
-
-   => Molecular Quadrature <=
-
-    Radial Scheme          =       TREUTLER
-    Pruning Scheme         =           FLAT
-    Nuclear Scheme         =       TREUTLER
-
-    BS radius alpha        =              1
-    Pruning alpha          =              1
-    Radial Points          =             75
-    Spherical Points       =            302
-    Total Points           =          42752
-    Total Blocks           =            400
-    Max Points             =            254
-    Max Functions          =             10
-
-   => Loading Basis Set <=
-
-    Name: (CC-PVDZ AUX)
-    Role: JKFIT
-    Keyword: DF_BASIS_SCF
-    atoms 1-2 entry HE         line    39 file /home/yuming/anaconda3/envs/work/share/psi4/basis/def2-qzvpp-jkfit.gbs 
-
-  ==> Pre-Iterations <==
-
-   -------------------------------------------------------
-    Irrep   Nso     Nmo     Nalpha   Nbeta   Ndocc  Nsocc
-   -------------------------------------------------------
-     A         10      10       0       0       0       0
-   -------------------------------------------------------
-    Total      10      10       2       2       2       0
-   -------------------------------------------------------
-
-  ==> Integral Setup <==
-
-  DFHelper Memory: AOs need 0.000 GiB; user supplied 0.364 GiB. Using in-core AOs.
-
-  ==> MemDFJK: Density-Fitted J/K Matrices <==
-
-    J tasked:                   Yes
-    K tasked:                    No
-    wK tasked:                   No
-    OpenMP threads:               1
-    Memory [MiB]:               372
-    Algorithm:                 Core
-    Schwarz Cutoff:           1E-12
-    Mask sparsity (%):       0.0000
-    Fitting Condition:        1E-10
-
-   => Auxiliary Basis Set <=
-
-  Basis Set: (CC-PVDZ AUX)
-    Blend: DEF2-QZVPP-JKFIT
-    Number of shells: 18
-    Number of basis function: 46
-    Number of Cartesian functions: 50
-    Spherical Harmonics?: true
-    Max angular momentum: 2
-
-  Cached 100.0% of DFT collocation blocks in 0.002 [GiB].
-
-  Minimum eigenvalue in the overlap matrix is 3.6357122018E-01.
-  Using Symmetric Orthogonalization.
-
-  SCF Guess: Superposition of Atomic Densities via on-the-fly atomic UHF.
-
-  ==> Iterations <==
-
-                           Total Energy        Delta E     RMS |[F,P]|
-
-   @DF-UKS iter SAD:    -5.72684817652709   -5.72685e+00   0.00000e+00 
-   @DF-UKS iter   1:    -5.72825409250880   -1.40592e-03   2.09938e-03 DIIS
-   @DF-UKS iter   2:    -5.72842787848203   -1.73786e-04   7.37388e-04 DIIS
-   @DF-UKS iter   3:    -5.72845234700997   -2.44685e-05   9.73562e-08 DIIS
-   @DF-UKS iter   4:    -5.72845234701040   -4.25437e-13   7.62066e-12 DIIS
-  Energy and wave function converged.
-
-
-  ==> Post-Iterations <==
-
-   @Spin Contamination Metric:  -4.440892099E-15
-   @S^2 Expected:                0.000000000E+00
-   @S^2 Observed:               -4.440892099E-15
-   @S   Expected:                0.000000000E+00
-   @S   Observed:                0.000000000E+00
-
-    Orbital Energies [Eh]
-    ---------------------
-
-    Alpha Occupied:                                                       
-
-       1A     -0.576562     2A     -0.574177  
-
-    Alpha Virtual:                                                        
-
-       3A      1.054962     4A      1.083340     5A      2.096317  
-       6A      2.096317     7A      2.096317     8A      2.096317  
-       9A      2.096328    10A      2.096329  
-
-    Beta Occupied:                                                        
-
-       1A     -0.576562     2A     -0.574177  
-
-    Beta Virtual:                                                         
-
-       3A      1.054962     4A      1.083340     5A      2.096317  
-       6A      2.096317     7A      2.096317     8A      2.096317  
-       9A      2.096328    10A      2.096329  
-
-    Final Occupation by Irrep:
-              A 
-    DOCC [     2 ]
-    SOCC [     0 ]
-
-  @DF-UKS Final Energy:    -5.72845234701040
-
-   => Energetics <=
-
-    Nuclear Repulsion Energy =              0.6666666666666666
-    One-Electron Energy =                  -9.0620960613833308
-    Two-Electron Energy =                   4.7065102430234127
-    DFT Exchange-Correlation Energy =      -2.0395331953171443
-    Empirical Dispersion Energy =           0.0000000000000000
-    VV10 Nonlocal Energy =                  0.0000000000000000
-    Total Energy =                         -5.7284523470103963
-
-  UHF NO Occupations:
-  HONO-1 :    1  A 2.0000000
-  HONO-0 :    2  A 2.0000000
-  LUNO+0 :    3  A 0.0000000
-  LUNO+1 :    4  A 0.0000000
-  LUNO+2 :    5  A 0.0000000
-  LUNO+3 :    6  A 0.0000000
-
-
-Computation Completed
-
-
-Properties will be evaluated at   0.000000,   0.000000,   0.000000 [a0]
-
-Properties computed using the SCF density matrix
-
-  Nuclear Dipole Moment: [e a0]
-     X:     0.0000      Y:     0.0000      Z:     0.0000
-
-  Electronic Dipole Moment: [e a0]
-     X:    -0.0000      Y:     0.0000      Z:     0.0000
-
-  Dipole Moment: [e a0]
-     X:    -0.0000      Y:     0.0000      Z:     0.0000     Total:     0.0000
-
-  Dipole Moment: [D]
-     X:    -0.0000      Y:     0.0000      Z:     0.0000     Total:     0.0000
-
-
-*** tstop() called on PartitionStation at Thu Aug 27 08:40:31 2020
-Module time:
-	user time   =       0.59 seconds =       0.01 minutes
-	system time =       0.01 seconds =       0.00 minutes
-	total time  =          1 seconds =       0.02 minutes
-Total time:
-	user time   =       0.59 seconds =       0.01 minutes
-	system time =       0.01 seconds =       0.00 minutes
-	total time  =          1 seconds =       0.02 minutes
-   => Loading Basis Set <=
-
-    Name: CC-PVDZ
-    Role: ORBITAL
-    Keyword: BASIS
-    atoms 1-2 entry HE         line    32 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
-
-
-         ---------------------------------------------------------
-                                   SCF
-               by Justin Turney, Rob Parrish, Andy Simmonett
-                          and Daniel G. A. Smith
-                              UKS Reference
-                        1 Threads,    500 MiB Core
-         ---------------------------------------------------------
-
-  ==> Geometry <==
-
-    Molecular point group: c1
-    Full point group: D_inf_h
-
-    Geometry (in Bohr), charge = 0, multiplicity = 1:
-
-       Center              X                  Y                   Z               Mass       
-    ------------   -----------------  -----------------  -----------------  -----------------
-         HE           3.000000000000     0.000000000000     0.000000000000     4.002603254130
-         HE          -3.000000000000     0.000000000000     0.000000000000     4.002603254130
-
-  Running in c1 symmetry.
-
-  Rotational constants: A = ************  B =      0.83556  C =      0.83556 [cm^-1]
-  Rotational constants: A = ************  B =  25049.54747  C =  25049.54747 [MHz]
-  Nuclear repulsion =    0.666666666666667
+  Rotational constants: A = ************  B =      0.02456  C =      0.02456 [cm^-1]
+  Rotational constants: A = ************  B =    736.14997  C =    736.14997 [MHz]
+  Nuclear repulsion =    0.114285714285714
 
   Charge       = 0
   Multiplicity = 1
@@ -345,10 +93,10 @@ Total time:
     Pruning alpha          =              1
     Radial Points          =             75
     Spherical Points       =            302
-    Total Points           =          42752
-    Total Blocks           =            400
-    Max Points             =            254
-    Max Functions          =             10
+    Total Points           =          42280
+    Total Blocks           =            424
+    Max Points             =            256
+    Max Functions          =              5
 
   Using in-core PK algorithm.
    Calculation information:
@@ -363,7 +111,7 @@ Total time:
 
   Performing in-core PK
   Using 3080 doubles for integral storage.
-  We computed 206 shell quartets total.
+  We computed 78 shell quartets total.
   Whereas there are 231 unique shell quartets.
 
   ==> DiskJK: Disk-Based J/K Matrices <==
@@ -375,4 +123,2225 @@ Total time:
     Schwarz Cutoff:          1E-12
 
     OpenMP threads:              1
+
+   => Loading Basis Set <=
+
+    Name: CC-PVDZ
+    Role: ORBITAL
+    Keyword: BASIS
+    atoms 1-2 entry HE         line    32 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
+
+
+         ---------------------------------------------------------
+                                   SCF
+               by Justin Turney, Rob Parrish, Andy Simmonett
+                          and Daniel G. A. Smith
+                              UKS Reference
+                        1 Threads,    500 MiB Core
+         ---------------------------------------------------------
+
+  ==> Geometry <==
+
+    Molecular point group: c1
+    Full point group: C_inf_v
+
+    Geometry (in Bohr), charge = 0, multiplicity = 1:
+
+       Center              X                  Y                   Z               Mass       
+    ------------   -----------------  -----------------  -----------------  -----------------
+      Gh(HE)         17.500000000000     0.000000000000     0.000000000000     4.002603254130
+         HE         -17.500000000000     0.000000000000     0.000000000000     4.002603254130
+
+  Running in c1 symmetry.
+
+  Rotational constants: A = ************  B =      0.02456  C =      0.02456 [cm^-1]
+  Rotational constants: A = ************  B =    736.14997  C =    736.14997 [MHz]
+  Nuclear repulsion =    0.000000000000000
+
+  Charge       = 0
+  Multiplicity = 1
+  Electrons    = 2
+  Nalpha       = 1
+  Nbeta        = 1
+
+  ==> Algorithm <==
+
+  SCF Algorithm Type is PK.
+  DIIS enabled.
+  MOM disabled.
+  Fractional occupation disabled.
+  Guess Type is AUTO.
+  Energy threshold   = 1.00e-06
+  Density threshold  = 1.00e-06
+  Integral threshold = 0.00e+00
+
+  ==> Primary Basis <==
+
+  Basis Set: CC-PVDZ
+    Blend: CC-PVDZ
+    Number of shells: 6
+    Number of basis function: 10
+    Number of Cartesian functions: 10
+    Spherical Harmonics?: true
+    Max angular momentum: 1
+
+  ==> DFT Potential <==
+
+   => Composite Functional: SVWN <= 
+
+    SVWN3 (RPA) LSDA Functional
+
+    Adamson et. al., J. Comput. Chem., 20(9), 921-927, 1999
+
+
+    Deriv               =              1
+    GGA                 =          FALSE
+    Meta                =          FALSE
+
+    Exchange Hybrid     =          FALSE
+    MP2 Hybrid          =          FALSE
+
+   => Exchange Functionals <=
+
+    1.0000         XC_LDA_X
+
+   => Correlation Functionals <=
+
+    1.0000   XC_LDA_C_VWN_RPA
+
+   => Molecular Quadrature <=
+
+    Radial Scheme          =       TREUTLER
+    Pruning Scheme         =           FLAT
+    Nuclear Scheme         =       TREUTLER
+
+    BS radius alpha        =              1
+    Pruning alpha          =              1
+    Radial Points          =             75
+    Spherical Points       =            302
+    Total Points           =          42280
+    Total Blocks           =            424
+    Max Points             =            256
+    Max Functions          =              5
+
+   => Loading Basis Set <=
+
+    Name: CC-PVDZ
+    Role: ORBITAL
+    Keyword: BASIS
+    atoms 1-2 entry HE         line    32 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
+
+
+         ---------------------------------------------------------
+                                   SCF
+               by Justin Turney, Rob Parrish, Andy Simmonett
+                          and Daniel G. A. Smith
+                              UKS Reference
+                        1 Threads,    500 MiB Core
+         ---------------------------------------------------------
+
+  ==> Geometry <==
+
+    Molecular point group: c1
+    Full point group: C_inf_v
+
+    Geometry (in Bohr), charge = 0, multiplicity = 1:
+
+       Center              X                  Y                   Z               Mass       
+    ------------   -----------------  -----------------  -----------------  -----------------
+         HE          17.500000000000     0.000000000000     0.000000000000     4.002603254130
+      Gh(HE)        -17.500000000000     0.000000000000     0.000000000000     4.002603254130
+
+  Running in c1 symmetry.
+
+  Rotational constants: A = ************  B =      0.02456  C =      0.02456 [cm^-1]
+  Rotational constants: A = ************  B =    736.14997  C =    736.14997 [MHz]
+  Nuclear repulsion =    0.000000000000000
+
+  Charge       = 0
+  Multiplicity = 1
+  Electrons    = 2
+  Nalpha       = 1
+  Nbeta        = 1
+
+  ==> Algorithm <==
+
+  SCF Algorithm Type is PK.
+  DIIS enabled.
+  MOM disabled.
+  Fractional occupation disabled.
+  Guess Type is AUTO.
+  Energy threshold   = 1.00e-06
+  Density threshold  = 1.00e-06
+  Integral threshold = 0.00e+00
+
+  ==> Primary Basis <==
+
+  Basis Set: CC-PVDZ
+    Blend: CC-PVDZ
+    Number of shells: 6
+    Number of basis function: 10
+    Number of Cartesian functions: 10
+    Spherical Harmonics?: true
+    Max angular momentum: 1
+
+  ==> DFT Potential <==
+
+   => Composite Functional: SVWN <= 
+
+    SVWN3 (RPA) LSDA Functional
+
+    Adamson et. al., J. Comput. Chem., 20(9), 921-927, 1999
+
+
+    Deriv               =              1
+    GGA                 =          FALSE
+    Meta                =          FALSE
+
+    Exchange Hybrid     =          FALSE
+    MP2 Hybrid          =          FALSE
+
+   => Exchange Functionals <=
+
+    1.0000         XC_LDA_X
+
+   => Correlation Functionals <=
+
+    1.0000   XC_LDA_C_VWN_RPA
+
+   => Molecular Quadrature <=
+
+    Radial Scheme          =       TREUTLER
+    Pruning Scheme         =           FLAT
+    Nuclear Scheme         =       TREUTLER
+
+    BS radius alpha        =              1
+    Pruning alpha          =              1
+    Radial Points          =             75
+    Spherical Points       =            302
+    Total Points           =          42280
+    Total Blocks           =            424
+    Max Points             =            256
+    Max Functions          =              5
+
+
+*** tstart() called on PartitionStation
+*** at Tue Oct 13 18:08:13 2020
+
+   => Loading Basis Set <=
+
+    Name: CC-PVDZ
+    Role: ORBITAL
+    Keyword: BASIS
+    atoms 1-2 entry HE         line    32 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
+
+
+         ---------------------------------------------------------
+                                   SCF
+               by Justin Turney, Rob Parrish, Andy Simmonett
+                          and Daniel G. A. Smith
+                              UKS Reference
+                        1 Threads,    500 MiB Core
+         ---------------------------------------------------------
+
+  ==> Geometry <==
+
+    Molecular point group: c1
+    Full point group: C_inf_v
+
+    Geometry (in Bohr), charge = 0, multiplicity = 1:
+
+       Center              X                  Y                   Z               Mass       
+    ------------   -----------------  -----------------  -----------------  -----------------
+      Gh(HE)         17.500000000000     0.000000000000     0.000000000000     4.002603254130
+         HE         -17.500000000000     0.000000000000     0.000000000000     4.002603254130
+
+  Running in c1 symmetry.
+
+  Rotational constants: A = ************  B =      0.02456  C =      0.02456 [cm^-1]
+  Rotational constants: A = ************  B =    736.14997  C =    736.14997 [MHz]
+  Nuclear repulsion =    0.000000000000000
+
+  Charge       = 0
+  Multiplicity = 1
+  Electrons    = 2
+  Nalpha       = 1
+  Nbeta        = 1
+
+  ==> Algorithm <==
+
+  SCF Algorithm Type is DF.
+  DIIS enabled.
+  MOM disabled.
+  Fractional occupation disabled.
+  Guess Type is SAD.
+  Energy threshold   = 1.00e-06
+  Density threshold  = 1.00e-06
+  Integral threshold = 0.00e+00
+
+  ==> Primary Basis <==
+
+  Basis Set: CC-PVDZ
+    Blend: CC-PVDZ
+    Number of shells: 6
+    Number of basis function: 10
+    Number of Cartesian functions: 10
+    Spherical Harmonics?: true
+    Max angular momentum: 1
+
+  ==> DFT Potential <==
+
+   => Composite Functional: SVWN <= 
+
+    SVWN3 (RPA) LSDA Functional
+
+    Adamson et. al., J. Comput. Chem., 20(9), 921-927, 1999
+
+
+    Deriv               =              1
+    GGA                 =          FALSE
+    Meta                =          FALSE
+
+    Exchange Hybrid     =          FALSE
+    MP2 Hybrid          =          FALSE
+
+   => Exchange Functionals <=
+
+    1.0000         XC_LDA_X
+
+   => Correlation Functionals <=
+
+    1.0000   XC_LDA_C_VWN_RPA
+
+   => Molecular Quadrature <=
+
+    Radial Scheme          =       TREUTLER
+    Pruning Scheme         =           FLAT
+    Nuclear Scheme         =       TREUTLER
+
+    BS radius alpha        =              1
+    Pruning alpha          =              1
+    Radial Points          =             75
+    Spherical Points       =            302
+    Total Points           =          42280
+    Total Blocks           =            424
+    Max Points             =            256
+    Max Functions          =              5
+
+   => Loading Basis Set <=
+
+    Name: (CC-PVDZ AUX)
+    Role: JKFIT
+    Keyword: DF_BASIS_SCF
+    atoms 1-2 entry HE         line    39 file /home/yuming/anaconda3/envs/work/share/psi4/basis/def2-qzvpp-jkfit.gbs 
+
+  ==> Pre-Iterations <==
+
+   -------------------------------------------------------
+    Irrep   Nso     Nmo     Nalpha   Nbeta   Ndocc  Nsocc
+   -------------------------------------------------------
+     A         10      10       0       0       0       0
+   -------------------------------------------------------
+    Total      10      10       1       1       1       0
+   -------------------------------------------------------
+
+  ==> Integral Setup <==
+
+  DFHelper Memory: AOs need 0.000 GiB; user supplied 0.365 GiB. Using in-core AOs.
+
+  ==> MemDFJK: Density-Fitted J/K Matrices <==
+
+    J tasked:                   Yes
+    K tasked:                    No
+    wK tasked:                   No
+    OpenMP threads:               1
+    Memory [MiB]:               373
+    Algorithm:                 Core
+    Schwarz Cutoff:           1E-12
+    Mask sparsity (%):      50.0000
+    Fitting Condition:        1E-10
+
+   => Auxiliary Basis Set <=
+
+  Basis Set: (CC-PVDZ AUX)
+    Blend: DEF2-QZVPP-JKFIT
+    Number of shells: 18
+    Number of basis function: 46
+    Number of Cartesian functions: 50
+    Spherical Harmonics?: true
+    Max angular momentum: 2
+
+  Cached 100.0% of DFT collocation blocks in 0.002 [GiB].
+
+  Minimum eigenvalue in the overlap matrix is 3.6583226831E-01.
+  Using Symmetric Orthogonalization.
+
+  SCF Guess: Superposition of Atomic Densities via on-the-fly atomic UHF.
+
+  ==> Iterations <==
+
+                           Total Energy        Delta E     RMS |[F,P]|
+
+   @DF-UKS iter SAD:    -2.86340957273692   -2.86341e+00   0.00000e+00 
+   @DF-UKS iter   1:    -2.86410824460219   -6.98672e-04   1.48365e-03 DIIS
+   @DF-UKS iter   2:    -2.86419500803281   -8.67634e-05   5.21413e-04 DIIS
+   @DF-UKS iter   3:    -2.86420723993290   -1.22319e-05   6.85837e-08 DIIS
+   @DF-UKS iter   4:    -2.86420723993311   -2.10498e-13   2.99326e-12 DIIS
+  Energy and wave function converged.
+
+
+  ==> Post-Iterations <==
+
+   @Spin Contamination Metric:   1.332267630E-15
+   @S^2 Expected:                0.000000000E+00
+   @S^2 Observed:                1.332267630E-15
+   @S   Expected:                0.000000000E+00
+   @S   Observed:                0.000000000E+00
+
+    Orbital Energies [Eh]
+    ---------------------
+
+    Alpha Occupied:                                                       
+
+       1A     -0.575338  
+
+    Alpha Virtual:                                                        
+
+       2A      0.431432     3A      1.069147     4A      2.096314  
+       5A      2.096314     6A      2.096314     7A      3.187505  
+       8A      3.187505     9A      3.187505    10A      4.213602  
+
+    Beta Occupied:                                                        
+
+       1A     -0.575338  
+
+    Beta Virtual:                                                         
+
+       2A      0.431432     3A      1.069147     4A      2.096314  
+       5A      2.096314     6A      2.096314     7A      3.187505  
+       8A      3.187505     9A      3.187505    10A      4.213602  
+
+    Final Occupation by Irrep:
+              A 
+    DOCC [     1 ]
+    SOCC [     0 ]
+
+  @DF-UKS Final Energy:    -2.86420723993311
+
+   => Energetics <=
+
+    Nuclear Repulsion Energy =              0.0000000000000000
+    One-Electron Energy =                  -3.8644038151162734
+    Two-Electron Energy =                   2.0199697065197748
+    DFT Exchange-Correlation Energy =      -1.0197731313366163
+    Empirical Dispersion Energy =           0.0000000000000000
+    VV10 Nonlocal Energy =                  0.0000000000000000
+    Total Energy =                         -2.8642072399331147
+
+  UHF NO Occupations:
+  HONO-0 :    1  A 2.0000000
+  LUNO+0 :    2  A 0.0000000
+  LUNO+1 :    3  A 0.0000000
+  LUNO+2 :    4  A 0.0000000
+  LUNO+3 :    5  A -0.0000000
+
+
+Computation Completed
+
+
+Properties will be evaluated at   0.000000,   0.000000,   0.000000 [a0]
+
+Properties computed using the SCF density matrix
+
+  Nuclear Dipole Moment: [e a0]
+     X:   -35.0000      Y:     0.0000      Z:     0.0000
+
+  Electronic Dipole Moment: [e a0]
+     X:    35.0000      Y:     0.0000      Z:     0.0000
+
+  Dipole Moment: [e a0]
+     X:    -0.0000      Y:     0.0000      Z:     0.0000     Total:     0.0000
+
+  Dipole Moment: [D]
+     X:    -0.0000      Y:     0.0000      Z:     0.0000     Total:     0.0000
+
+
+*** tstop() called on PartitionStation at Tue Oct 13 18:08:14 2020
+Module time:
+	user time   =       0.52 seconds =       0.01 minutes
+	system time =       0.01 seconds =       0.00 minutes
+	total time  =          1 seconds =       0.02 minutes
+Total time:
+	user time   =       0.52 seconds =       0.01 minutes
+	system time =       0.01 seconds =       0.00 minutes
+	total time  =          1 seconds =       0.02 minutes
+
+*** tstart() called on PartitionStation
+*** at Tue Oct 13 18:08:35 2020
+
+   => Loading Basis Set <=
+
+    Name: CC-PVDZ
+    Role: ORBITAL
+    Keyword: BASIS
+    atoms 1-2 entry HE         line    32 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
+
+
+         ---------------------------------------------------------
+                                   SCF
+               by Justin Turney, Rob Parrish, Andy Simmonett
+                          and Daniel G. A. Smith
+                              UKS Reference
+                        1 Threads,    500 MiB Core
+         ---------------------------------------------------------
+
+  ==> Geometry <==
+
+    Molecular point group: c1
+    Full point group: C_inf_v
+
+    Geometry (in Bohr), charge = 0, multiplicity = 1:
+
+       Center              X                  Y                   Z               Mass       
+    ------------   -----------------  -----------------  -----------------  -----------------
+      Gh(HE)         17.500000000000     0.000000000000     0.000000000000     4.002603254130
+         HE         -17.500000000000     0.000000000000     0.000000000000     4.002603254130
+
+  Running in c1 symmetry.
+
+  Rotational constants: A = ************  B =      0.02456  C =      0.02456 [cm^-1]
+  Rotational constants: A = ************  B =    736.14997  C =    736.14997 [MHz]
+  Nuclear repulsion =    0.000000000000000
+
+  Charge       = 0
+  Multiplicity = 1
+  Electrons    = 2
+  Nalpha       = 1
+  Nbeta        = 1
+
+  ==> Algorithm <==
+
+  SCF Algorithm Type is DF.
+  DIIS enabled.
+  MOM disabled.
+  Fractional occupation disabled.
+  Guess Type is SAD.
+  Energy threshold   = 1.00e-06
+  Density threshold  = 1.00e-06
+  Integral threshold = 0.00e+00
+
+  ==> Primary Basis <==
+
+  Basis Set: CC-PVDZ
+    Blend: CC-PVDZ
+    Number of shells: 6
+    Number of basis function: 10
+    Number of Cartesian functions: 10
+    Spherical Harmonics?: true
+    Max angular momentum: 1
+
+  ==> DFT Potential <==
+
+   => Composite Functional: SVWN <= 
+
+    SVWN3 (RPA) LSDA Functional
+
+    Adamson et. al., J. Comput. Chem., 20(9), 921-927, 1999
+
+
+    Deriv               =              1
+    GGA                 =          FALSE
+    Meta                =          FALSE
+
+    Exchange Hybrid     =          FALSE
+    MP2 Hybrid          =          FALSE
+
+   => Exchange Functionals <=
+
+    1.0000         XC_LDA_X
+
+   => Correlation Functionals <=
+
+    1.0000   XC_LDA_C_VWN_RPA
+
+   => Molecular Quadrature <=
+
+    Radial Scheme          =       TREUTLER
+    Pruning Scheme         =           FLAT
+    Nuclear Scheme         =       TREUTLER
+
+    BS radius alpha        =              1
+    Pruning alpha          =              1
+    Radial Points          =             75
+    Spherical Points       =            302
+    Total Points           =          42280
+    Total Blocks           =            424
+    Max Points             =            256
+    Max Functions          =              5
+
+   => Loading Basis Set <=
+
+    Name: (CC-PVDZ AUX)
+    Role: JKFIT
+    Keyword: DF_BASIS_SCF
+    atoms 1-2 entry HE         line    39 file /home/yuming/anaconda3/envs/work/share/psi4/basis/def2-qzvpp-jkfit.gbs 
+
+  ==> Pre-Iterations <==
+
+   -------------------------------------------------------
+    Irrep   Nso     Nmo     Nalpha   Nbeta   Ndocc  Nsocc
+   -------------------------------------------------------
+     A         10      10       0       0       0       0
+   -------------------------------------------------------
+    Total      10      10       1       1       1       0
+   -------------------------------------------------------
+
+  ==> Integral Setup <==
+
+  DFHelper Memory: AOs need 0.000 GiB; user supplied 0.365 GiB. Using in-core AOs.
+
+  ==> MemDFJK: Density-Fitted J/K Matrices <==
+
+    J tasked:                   Yes
+    K tasked:                    No
+    wK tasked:                   No
+    OpenMP threads:               1
+    Memory [MiB]:               373
+    Algorithm:                 Core
+    Schwarz Cutoff:           1E-12
+    Mask sparsity (%):      50.0000
+    Fitting Condition:        1E-10
+
+   => Auxiliary Basis Set <=
+
+  Basis Set: (CC-PVDZ AUX)
+    Blend: DEF2-QZVPP-JKFIT
+    Number of shells: 18
+    Number of basis function: 46
+    Number of Cartesian functions: 50
+    Spherical Harmonics?: true
+    Max angular momentum: 2
+
+  Cached 100.0% of DFT collocation blocks in 0.002 [GiB].
+
+  Minimum eigenvalue in the overlap matrix is 3.6583226831E-01.
+  Using Symmetric Orthogonalization.
+
+  SCF Guess: Superposition of Atomic Densities via on-the-fly atomic UHF.
+
+  ==> Iterations <==
+
+                           Total Energy        Delta E     RMS |[F,P]|
+
+   @DF-UKS iter SAD:    -2.86340957273692   -2.86341e+00   0.00000e+00 
+   @DF-UKS iter   1:    -2.86410824460219   -6.98672e-04   1.48365e-03 DIIS
+   @DF-UKS iter   2:    -2.86419500803281   -8.67634e-05   5.21413e-04 DIIS
+   @DF-UKS iter   3:    -2.86420723993290   -1.22319e-05   6.85837e-08 DIIS
+   @DF-UKS iter   4:    -2.86420723993311   -2.10498e-13   2.99326e-12 DIIS
+  Energy and wave function converged.
+
+
+  ==> Post-Iterations <==
+
+   @Spin Contamination Metric:   1.332267630E-15
+   @S^2 Expected:                0.000000000E+00
+   @S^2 Observed:                1.332267630E-15
+   @S   Expected:                0.000000000E+00
+   @S   Observed:                0.000000000E+00
+
+    Orbital Energies [Eh]
+    ---------------------
+
+    Alpha Occupied:                                                       
+
+       1A     -0.575338  
+
+    Alpha Virtual:                                                        
+
+       2A      0.431432     3A      1.069147     4A      2.096314  
+       5A      2.096314     6A      2.096314     7A      3.187505  
+       8A      3.187505     9A      3.187505    10A      4.213602  
+
+    Beta Occupied:                                                        
+
+       1A     -0.575338  
+
+    Beta Virtual:                                                         
+
+       2A      0.431432     3A      1.069147     4A      2.096314  
+       5A      2.096314     6A      2.096314     7A      3.187505  
+       8A      3.187505     9A      3.187505    10A      4.213602  
+
+    Final Occupation by Irrep:
+              A 
+    DOCC [     1 ]
+    SOCC [     0 ]
+
+  @DF-UKS Final Energy:    -2.86420723993311
+
+   => Energetics <=
+
+    Nuclear Repulsion Energy =              0.0000000000000000
+    One-Electron Energy =                  -3.8644038151162734
+    Two-Electron Energy =                   2.0199697065197748
+    DFT Exchange-Correlation Energy =      -1.0197731313366163
+    Empirical Dispersion Energy =           0.0000000000000000
+    VV10 Nonlocal Energy =                  0.0000000000000000
+    Total Energy =                         -2.8642072399331147
+
+  UHF NO Occupations:
+  HONO-0 :    1  A 2.0000000
+  LUNO+0 :    2  A 0.0000000
+  LUNO+1 :    3  A 0.0000000
+  LUNO+2 :    4  A 0.0000000
+  LUNO+3 :    5  A -0.0000000
+
+
+Computation Completed
+
+
+Properties will be evaluated at   0.000000,   0.000000,   0.000000 [a0]
+
+Properties computed using the SCF density matrix
+
+  Nuclear Dipole Moment: [e a0]
+     X:   -35.0000      Y:     0.0000      Z:     0.0000
+
+  Electronic Dipole Moment: [e a0]
+     X:    35.0000      Y:     0.0000      Z:     0.0000
+
+  Dipole Moment: [e a0]
+     X:    -0.0000      Y:     0.0000      Z:     0.0000     Total:     0.0000
+
+  Dipole Moment: [D]
+     X:    -0.0000      Y:     0.0000      Z:     0.0000     Total:     0.0000
+
+
+*** tstop() called on PartitionStation at Tue Oct 13 18:08:36 2020
+Module time:
+	user time   =       0.53 seconds =       0.01 minutes
+	system time =       0.02 seconds =       0.00 minutes
+	total time  =          1 seconds =       0.02 minutes
+Total time:
+	user time   =       1.11 seconds =       0.02 minutes
+	system time =       0.04 seconds =       0.00 minutes
+	total time  =         23 seconds =       0.38 minutes
+
+*** tstart() called on PartitionStation
+*** at Tue Oct 13 18:08:36 2020
+
+   => Loading Basis Set <=
+
+    Name: CC-PVDZ
+    Role: ORBITAL
+    Keyword: BASIS
+    atoms 1-2 entry HE         line    32 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
+
+
+         ---------------------------------------------------------
+                                   SCF
+               by Justin Turney, Rob Parrish, Andy Simmonett
+                          and Daniel G. A. Smith
+                              UKS Reference
+                        1 Threads,    500 MiB Core
+         ---------------------------------------------------------
+
+  ==> Geometry <==
+
+    Molecular point group: c1
+    Full point group: C_inf_v
+
+    Geometry (in Bohr), charge = 0, multiplicity = 1:
+
+       Center              X                  Y                   Z               Mass       
+    ------------   -----------------  -----------------  -----------------  -----------------
+         HE          17.500000000000     0.000000000000     0.000000000000     4.002603254130
+      Gh(HE)        -17.500000000000     0.000000000000     0.000000000000     4.002603254130
+
+  Running in c1 symmetry.
+
+  Rotational constants: A = ************  B =      0.02456  C =      0.02456 [cm^-1]
+  Rotational constants: A = ************  B =    736.14997  C =    736.14997 [MHz]
+  Nuclear repulsion =    0.000000000000000
+
+  Charge       = 0
+  Multiplicity = 1
+  Electrons    = 2
+  Nalpha       = 1
+  Nbeta        = 1
+
+  ==> Algorithm <==
+
+  SCF Algorithm Type is DF.
+  DIIS enabled.
+  MOM disabled.
+  Fractional occupation disabled.
+  Guess Type is SAD.
+  Energy threshold   = 1.00e-06
+  Density threshold  = 1.00e-06
+  Integral threshold = 0.00e+00
+
+  ==> Primary Basis <==
+
+  Basis Set: CC-PVDZ
+    Blend: CC-PVDZ
+    Number of shells: 6
+    Number of basis function: 10
+    Number of Cartesian functions: 10
+    Spherical Harmonics?: true
+    Max angular momentum: 1
+
+  ==> DFT Potential <==
+
+   => Composite Functional: SVWN <= 
+
+    SVWN3 (RPA) LSDA Functional
+
+    Adamson et. al., J. Comput. Chem., 20(9), 921-927, 1999
+
+
+    Deriv               =              1
+    GGA                 =          FALSE
+    Meta                =          FALSE
+
+    Exchange Hybrid     =          FALSE
+    MP2 Hybrid          =          FALSE
+
+   => Exchange Functionals <=
+
+    1.0000         XC_LDA_X
+
+   => Correlation Functionals <=
+
+    1.0000   XC_LDA_C_VWN_RPA
+
+   => Molecular Quadrature <=
+
+    Radial Scheme          =       TREUTLER
+    Pruning Scheme         =           FLAT
+    Nuclear Scheme         =       TREUTLER
+
+    BS radius alpha        =              1
+    Pruning alpha          =              1
+    Radial Points          =             75
+    Spherical Points       =            302
+    Total Points           =          42280
+    Total Blocks           =            424
+    Max Points             =            256
+    Max Functions          =              5
+
+   => Loading Basis Set <=
+
+    Name: (CC-PVDZ AUX)
+    Role: JKFIT
+    Keyword: DF_BASIS_SCF
+    atoms 1-2 entry HE         line    39 file /home/yuming/anaconda3/envs/work/share/psi4/basis/def2-qzvpp-jkfit.gbs 
+
+  ==> Pre-Iterations <==
+
+   -------------------------------------------------------
+    Irrep   Nso     Nmo     Nalpha   Nbeta   Ndocc  Nsocc
+   -------------------------------------------------------
+     A         10      10       0       0       0       0
+   -------------------------------------------------------
+    Total      10      10       1       1       1       0
+   -------------------------------------------------------
+
+  ==> Integral Setup <==
+
+  DFHelper Memory: AOs need 0.000 GiB; user supplied 0.365 GiB. Using in-core AOs.
+
+  ==> MemDFJK: Density-Fitted J/K Matrices <==
+
+    J tasked:                   Yes
+    K tasked:                    No
+    wK tasked:                   No
+    OpenMP threads:               1
+    Memory [MiB]:               373
+    Algorithm:                 Core
+    Schwarz Cutoff:           1E-12
+    Mask sparsity (%):      50.0000
+    Fitting Condition:        1E-10
+
+   => Auxiliary Basis Set <=
+
+  Basis Set: (CC-PVDZ AUX)
+    Blend: DEF2-QZVPP-JKFIT
+    Number of shells: 18
+    Number of basis function: 46
+    Number of Cartesian functions: 50
+    Spherical Harmonics?: true
+    Max angular momentum: 2
+
+  Cached 100.0% of DFT collocation blocks in 0.002 [GiB].
+
+  Minimum eigenvalue in the overlap matrix is 3.6583226831E-01.
+  Using Symmetric Orthogonalization.
+
+  SCF Guess: Superposition of Atomic Densities via on-the-fly atomic UHF.
+
+  ==> Iterations <==
+
+                           Total Energy        Delta E     RMS |[F,P]|
+
+   @DF-UKS iter SAD:    -2.86340957273691   -2.86341e+00   0.00000e+00 
+   @DF-UKS iter   1:    -2.86410824460219   -6.98672e-04   1.48365e-03 DIIS
+   @DF-UKS iter   2:    -2.86419500803281   -8.67634e-05   5.21413e-04 DIIS
+   @DF-UKS iter   3:    -2.86420723993290   -1.22319e-05   6.85837e-08 DIIS
+   @DF-UKS iter   4:    -2.86420723993311   -2.12275e-13   2.99318e-12 DIIS
+  Energy and wave function converged.
+
+
+  ==> Post-Iterations <==
+
+   @Spin Contamination Metric:   4.440892099E-16
+   @S^2 Expected:                0.000000000E+00
+   @S^2 Observed:                4.440892099E-16
+   @S   Expected:                0.000000000E+00
+   @S   Observed:                0.000000000E+00
+
+    Orbital Energies [Eh]
+    ---------------------
+
+    Alpha Occupied:                                                       
+
+       1A     -0.575338  
+
+    Alpha Virtual:                                                        
+
+       2A      0.431432     3A      1.069147     4A      2.096314  
+       5A      2.096314     6A      2.096314     7A      3.187505  
+       8A      3.187505     9A      3.187505    10A      4.213602  
+
+    Beta Occupied:                                                        
+
+       1A     -0.575338  
+
+    Beta Virtual:                                                         
+
+       2A      0.431432     3A      1.069147     4A      2.096314  
+       5A      2.096314     6A      2.096314     7A      3.187505  
+       8A      3.187505     9A      3.187505    10A      4.213602  
+
+    Final Occupation by Irrep:
+              A 
+    DOCC [     1 ]
+    SOCC [     0 ]
+
+  @DF-UKS Final Energy:    -2.86420723993311
+
+   => Energetics <=
+
+    Nuclear Repulsion Energy =              0.0000000000000000
+    One-Electron Energy =                  -3.8644038151162698
+    Two-Electron Energy =                   2.0199697065197753
+    DFT Exchange-Correlation Energy =      -1.0197731313366150
+    Empirical Dispersion Energy =           0.0000000000000000
+    VV10 Nonlocal Energy =                  0.0000000000000000
+    Total Energy =                         -2.8642072399331093
+
+  UHF NO Occupations:
+  HONO-0 :    1  A 2.0000000
+  LUNO+0 :    2  A 0.0000000
+  LUNO+1 :    3  A 0.0000000
+  LUNO+2 :    4  A 0.0000000
+  LUNO+3 :    5  A 0.0000000
+
+
+Computation Completed
+
+
+Properties will be evaluated at   0.000000,   0.000000,   0.000000 [a0]
+
+Properties computed using the SCF density matrix
+
+  Nuclear Dipole Moment: [e a0]
+     X:    35.0000      Y:     0.0000      Z:     0.0000
+
+  Electronic Dipole Moment: [e a0]
+     X:   -35.0000      Y:    -0.0000      Z:    -0.0000
+
+  Dipole Moment: [e a0]
+     X:     0.0000      Y:    -0.0000      Z:    -0.0000     Total:     0.0000
+
+  Dipole Moment: [D]
+     X:     0.0000      Y:    -0.0000      Z:    -0.0000     Total:     0.0000
+
+
+*** tstop() called on PartitionStation at Tue Oct 13 18:08:36 2020
+Module time:
+	user time   =       0.49 seconds =       0.01 minutes
+	system time =       0.01 seconds =       0.00 minutes
+	total time  =          0 seconds =       0.00 minutes
+Total time:
+	user time   =       1.61 seconds =       0.03 minutes
+	system time =       0.05 seconds =       0.00 minutes
+	total time  =         23 seconds =       0.38 minutes
+
+*** tstart() called on PartitionStation
+*** at Tue Oct 13 18:13:30 2020
+
+   => Loading Basis Set <=
+
+    Name: CC-PVDZ
+    Role: ORBITAL
+    Keyword: BASIS
+    atoms 1-2 entry HE         line    32 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
+
+
+         ---------------------------------------------------------
+                                   SCF
+               by Justin Turney, Rob Parrish, Andy Simmonett
+                          and Daniel G. A. Smith
+                              UKS Reference
+                        1 Threads,    500 MiB Core
+         ---------------------------------------------------------
+
+  ==> Geometry <==
+
+    Molecular point group: c1
+    Full point group: C_inf_v
+
+    Geometry (in Bohr), charge = 0, multiplicity = 1:
+
+       Center              X                  Y                   Z               Mass       
+    ------------   -----------------  -----------------  -----------------  -----------------
+      Gh(HE)         17.500000000000     0.000000000000     0.000000000000     4.002603254130
+         HE         -17.500000000000     0.000000000000     0.000000000000     4.002603254130
+
+  Running in c1 symmetry.
+
+  Rotational constants: A = ************  B =      0.02456  C =      0.02456 [cm^-1]
+  Rotational constants: A = ************  B =    736.14997  C =    736.14997 [MHz]
+  Nuclear repulsion =    0.000000000000000
+
+  Charge       = 0
+  Multiplicity = 1
+  Electrons    = 2
+  Nalpha       = 1
+  Nbeta        = 1
+
+  ==> Algorithm <==
+
+  SCF Algorithm Type is DF.
+  DIIS enabled.
+  MOM disabled.
+  Fractional occupation disabled.
+  Guess Type is SAD.
+  Energy threshold   = 1.00e-06
+  Density threshold  = 1.00e-06
+  Integral threshold = 0.00e+00
+
+  ==> Primary Basis <==
+
+  Basis Set: CC-PVDZ
+    Blend: CC-PVDZ
+    Number of shells: 6
+    Number of basis function: 10
+    Number of Cartesian functions: 10
+    Spherical Harmonics?: true
+    Max angular momentum: 1
+
+  ==> DFT Potential <==
+
+   => Composite Functional: PBE <= 
+
+    PBE GGA Exchange-Correlation Functional
+
+    J.P. Perdew et. al., Phys. Rev. Lett., 77(18), 3865-3868, 1996
+
+
+    Deriv               =              1
+    GGA                 =           TRUE
+    Meta                =          FALSE
+
+    Exchange Hybrid     =          FALSE
+    MP2 Hybrid          =          FALSE
+
+   => Exchange Functionals <=
+
+    1.0000     XC_GGA_X_PBE
+
+   => Correlation Functionals <=
+
+    1.0000     XC_GGA_C_PBE
+
+   => Molecular Quadrature <=
+
+    Radial Scheme          =       TREUTLER
+    Pruning Scheme         =           FLAT
+    Nuclear Scheme         =       TREUTLER
+
+    BS radius alpha        =              1
+    Pruning alpha          =              1
+    Radial Points          =             75
+    Spherical Points       =            302
+    Total Points           =          42280
+    Total Blocks           =            424
+    Max Points             =            256
+    Max Functions          =              5
+
+   => Loading Basis Set <=
+
+    Name: (CC-PVDZ AUX)
+    Role: JKFIT
+    Keyword: DF_BASIS_SCF
+    atoms 1-2 entry HE         line    39 file /home/yuming/anaconda3/envs/work/share/psi4/basis/def2-qzvpp-jkfit.gbs 
+
+  ==> Pre-Iterations <==
+
+   -------------------------------------------------------
+    Irrep   Nso     Nmo     Nalpha   Nbeta   Ndocc  Nsocc
+   -------------------------------------------------------
+     A         10      10       0       0       0       0
+   -------------------------------------------------------
+    Total      10      10       1       1       1       0
+   -------------------------------------------------------
+
+  ==> Integral Setup <==
+
+  DFHelper Memory: AOs need 0.000 GiB; user supplied 0.360 GiB. Using in-core AOs.
+
+  ==> MemDFJK: Density-Fitted J/K Matrices <==
+
+    J tasked:                   Yes
+    K tasked:                    No
+    wK tasked:                   No
+    OpenMP threads:               1
+    Memory [MiB]:               368
+    Algorithm:                 Core
+    Schwarz Cutoff:           1E-12
+    Mask sparsity (%):      50.0000
+    Fitting Condition:        1E-10
+
+   => Auxiliary Basis Set <=
+
+  Basis Set: (CC-PVDZ AUX)
+    Blend: DEF2-QZVPP-JKFIT
+    Number of shells: 18
+    Number of basis function: 46
+    Number of Cartesian functions: 50
+    Spherical Harmonics?: true
+    Max angular momentum: 2
+
+  Cached 100.0% of DFT collocation blocks in 0.006 [GiB].
+
+  Minimum eigenvalue in the overlap matrix is 3.6583226831E-01.
+  Using Symmetric Orthogonalization.
+
+  SCF Guess: Superposition of Atomic Densities via on-the-fly atomic UHF.
+
+  ==> Iterations <==
+
+                           Total Energy        Delta E     RMS |[F,P]|
+
+   @DF-UKS iter SAD:    -2.88450598441533   -2.88451e+00   0.00000e+00 
+   @DF-UKS iter   1:    -2.88451663508787   -1.06507e-05   1.86814e-04 DIIS
+   @DF-UKS iter   2:    -2.88451800244148   -1.36735e-06   6.68748e-05 DIIS
+   @DF-UKS iter   3:    -2.88451820342610   -2.00985e-07   3.46954e-09 DIIS
+  Energy and wave function converged.
+
+
+  ==> Post-Iterations <==
+
+   @Spin Contamination Metric:   6.661338148E-16
+   @S^2 Expected:                0.000000000E+00
+   @S^2 Observed:                6.661338148E-16
+   @S   Expected:                0.000000000E+00
+   @S   Observed:                0.000000000E+00
+
+    Orbital Energies [Eh]
+    ---------------------
+
+    Alpha Occupied:                                                       
+
+       1A     -0.565169  
+
+    Alpha Virtual:                                                        
+
+       2A      0.431434     3A      1.073343     4A      2.118740  
+       5A      2.118740     6A      2.118740     7A      3.187503  
+       8A      3.187503     9A      3.187504    10A      4.213604  
+
+    Beta Occupied:                                                        
+
+       1A     -0.565169  
+
+    Beta Virtual:                                                         
+
+       2A      0.431434     3A      1.073343     4A      2.118740  
+       5A      2.118740     6A      2.118740     7A      3.187503  
+       8A      3.187503     9A      3.187504    10A      4.213604  
+
+    Final Occupation by Irrep:
+              A 
+    DOCC [     1 ]
+    SOCC [     0 ]
+
+  @DF-UKS Final Energy:    -2.88451820342610
+
+   => Energetics <=
+
+    Nuclear Repulsion Energy =              0.0000000000000000
+    One-Electron Energy =                  -3.8799184084452558
+    Two-Electron Energy =                   2.0494840469860041
+    DFT Exchange-Correlation Energy =      -1.0540838419668479
+    Empirical Dispersion Energy =           0.0000000000000000
+    VV10 Nonlocal Energy =                  0.0000000000000000
+    Total Energy =                         -2.8845182034260999
+
+  UHF NO Occupations:
+  HONO-0 :    1  A 2.0000000
+  LUNO+0 :    2  A 0.0000000
+  LUNO+1 :    3  A 0.0000000
+  LUNO+2 :    4  A 0.0000000
+  LUNO+3 :    5  A 0.0000000
+
+
+Computation Completed
+
+
+Properties will be evaluated at   0.000000,   0.000000,   0.000000 [a0]
+
+Properties computed using the SCF density matrix
+
+  Nuclear Dipole Moment: [e a0]
+     X:   -35.0000      Y:     0.0000      Z:     0.0000
+
+  Electronic Dipole Moment: [e a0]
+     X:    35.0000      Y:     0.0000      Z:     0.0000
+
+  Dipole Moment: [e a0]
+     X:    -0.0000      Y:     0.0000      Z:     0.0000     Total:     0.0000
+
+  Dipole Moment: [D]
+     X:    -0.0000      Y:     0.0000      Z:     0.0000     Total:     0.0000
+
+
+*** tstop() called on PartitionStation at Tue Oct 13 18:13:30 2020
+Module time:
+	user time   =       0.61 seconds =       0.01 minutes
+	system time =       0.01 seconds =       0.00 minutes
+	total time  =          0 seconds =       0.00 minutes
+Total time:
+	user time   =      94.98 seconds =       1.58 minutes
+	system time =       0.13 seconds =       0.00 minutes
+	total time  =        317 seconds =       5.28 minutes
+
+*** tstart() called on PartitionStation
+*** at Tue Oct 13 18:13:30 2020
+
+   => Loading Basis Set <=
+
+    Name: CC-PVDZ
+    Role: ORBITAL
+    Keyword: BASIS
+    atoms 1-2 entry HE         line    32 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
+
+
+         ---------------------------------------------------------
+                                   SCF
+               by Justin Turney, Rob Parrish, Andy Simmonett
+                          and Daniel G. A. Smith
+                              UKS Reference
+                        1 Threads,    500 MiB Core
+         ---------------------------------------------------------
+
+  ==> Geometry <==
+
+    Molecular point group: c1
+    Full point group: C_inf_v
+
+    Geometry (in Bohr), charge = 0, multiplicity = 1:
+
+       Center              X                  Y                   Z               Mass       
+    ------------   -----------------  -----------------  -----------------  -----------------
+         HE          17.500000000000     0.000000000000     0.000000000000     4.002603254130
+      Gh(HE)        -17.500000000000     0.000000000000     0.000000000000     4.002603254130
+
+  Running in c1 symmetry.
+
+  Rotational constants: A = ************  B =      0.02456  C =      0.02456 [cm^-1]
+  Rotational constants: A = ************  B =    736.14997  C =    736.14997 [MHz]
+  Nuclear repulsion =    0.000000000000000
+
+  Charge       = 0
+  Multiplicity = 1
+  Electrons    = 2
+  Nalpha       = 1
+  Nbeta        = 1
+
+  ==> Algorithm <==
+
+  SCF Algorithm Type is DF.
+  DIIS enabled.
+  MOM disabled.
+  Fractional occupation disabled.
+  Guess Type is SAD.
+  Energy threshold   = 1.00e-06
+  Density threshold  = 1.00e-06
+  Integral threshold = 0.00e+00
+
+  ==> Primary Basis <==
+
+  Basis Set: CC-PVDZ
+    Blend: CC-PVDZ
+    Number of shells: 6
+    Number of basis function: 10
+    Number of Cartesian functions: 10
+    Spherical Harmonics?: true
+    Max angular momentum: 1
+
+  ==> DFT Potential <==
+
+   => Composite Functional: PBE <= 
+
+    PBE GGA Exchange-Correlation Functional
+
+    J.P. Perdew et. al., Phys. Rev. Lett., 77(18), 3865-3868, 1996
+
+
+    Deriv               =              1
+    GGA                 =           TRUE
+    Meta                =          FALSE
+
+    Exchange Hybrid     =          FALSE
+    MP2 Hybrid          =          FALSE
+
+   => Exchange Functionals <=
+
+    1.0000     XC_GGA_X_PBE
+
+   => Correlation Functionals <=
+
+    1.0000     XC_GGA_C_PBE
+
+   => Molecular Quadrature <=
+
+    Radial Scheme          =       TREUTLER
+    Pruning Scheme         =           FLAT
+    Nuclear Scheme         =       TREUTLER
+
+    BS radius alpha        =              1
+    Pruning alpha          =              1
+    Radial Points          =             75
+    Spherical Points       =            302
+    Total Points           =          42280
+    Total Blocks           =            424
+    Max Points             =            256
+    Max Functions          =              5
+
+   => Loading Basis Set <=
+
+    Name: (CC-PVDZ AUX)
+    Role: JKFIT
+    Keyword: DF_BASIS_SCF
+    atoms 1-2 entry HE         line    39 file /home/yuming/anaconda3/envs/work/share/psi4/basis/def2-qzvpp-jkfit.gbs 
+
+  ==> Pre-Iterations <==
+
+   -------------------------------------------------------
+    Irrep   Nso     Nmo     Nalpha   Nbeta   Ndocc  Nsocc
+   -------------------------------------------------------
+     A         10      10       0       0       0       0
+   -------------------------------------------------------
+    Total      10      10       1       1       1       0
+   -------------------------------------------------------
+
+  ==> Integral Setup <==
+
+  DFHelper Memory: AOs need 0.000 GiB; user supplied 0.360 GiB. Using in-core AOs.
+
+  ==> MemDFJK: Density-Fitted J/K Matrices <==
+
+    J tasked:                   Yes
+    K tasked:                    No
+    wK tasked:                   No
+    OpenMP threads:               1
+    Memory [MiB]:               368
+    Algorithm:                 Core
+    Schwarz Cutoff:           1E-12
+    Mask sparsity (%):      50.0000
+    Fitting Condition:        1E-10
+
+   => Auxiliary Basis Set <=
+
+  Basis Set: (CC-PVDZ AUX)
+    Blend: DEF2-QZVPP-JKFIT
+    Number of shells: 18
+    Number of basis function: 46
+    Number of Cartesian functions: 50
+    Spherical Harmonics?: true
+    Max angular momentum: 2
+
+  Cached 100.0% of DFT collocation blocks in 0.006 [GiB].
+
+  Minimum eigenvalue in the overlap matrix is 3.6583226831E-01.
+  Using Symmetric Orthogonalization.
+
+  SCF Guess: Superposition of Atomic Densities via on-the-fly atomic UHF.
+
+  ==> Iterations <==
+
+                           Total Energy        Delta E     RMS |[F,P]|
+
+   @DF-UKS iter SAD:    -2.88450598441533   -2.88451e+00   0.00000e+00 
+   @DF-UKS iter   1:    -2.88451663508786   -1.06507e-05   1.86814e-04 DIIS
+   @DF-UKS iter   2:    -2.88451800244147   -1.36735e-06   6.68748e-05 DIIS
+   @DF-UKS iter   3:    -2.88451820342609   -2.00985e-07   3.46954e-09 DIIS
+  Energy and wave function converged.
+
+
+  ==> Post-Iterations <==
+
+   @Spin Contamination Metric:   2.220446049E-16
+   @S^2 Expected:                0.000000000E+00
+   @S^2 Observed:                2.220446049E-16
+   @S   Expected:                0.000000000E+00
+   @S   Observed:                0.000000000E+00
+
+    Orbital Energies [Eh]
+    ---------------------
+
+    Alpha Occupied:                                                       
+
+       1A     -0.565169  
+
+    Alpha Virtual:                                                        
+
+       2A      0.431434     3A      1.073343     4A      2.118740  
+       5A      2.118740     6A      2.118740     7A      3.187503  
+       8A      3.187503     9A      3.187504    10A      4.213604  
+
+    Beta Occupied:                                                        
+
+       1A     -0.565169  
+
+    Beta Virtual:                                                         
+
+       2A      0.431434     3A      1.073343     4A      2.118740  
+       5A      2.118740     6A      2.118740     7A      3.187503  
+       8A      3.187503     9A      3.187504    10A      4.213604  
+
+    Final Occupation by Irrep:
+              A 
+    DOCC [     1 ]
+    SOCC [     0 ]
+
+  @DF-UKS Final Energy:    -2.88451820342609
+
+   => Energetics <=
+
+    Nuclear Repulsion Energy =              0.0000000000000000
+    One-Electron Energy =                  -3.8799184084452558
+    Two-Electron Energy =                   2.0494840469860085
+    DFT Exchange-Correlation Energy =      -1.0540838419668463
+    Empirical Dispersion Energy =           0.0000000000000000
+    VV10 Nonlocal Energy =                  0.0000000000000000
+    Total Energy =                         -2.8845182034260937
+
+  UHF NO Occupations:
+  HONO-0 :    1  A 2.0000000
+  LUNO+0 :    2  A 0.0000000
+  LUNO+1 :    3  A 0.0000000
+  LUNO+2 :    4  A 0.0000000
+  LUNO+3 :    5  A 0.0000000
+
+
+Computation Completed
+
+
+Properties will be evaluated at   0.000000,   0.000000,   0.000000 [a0]
+
+Properties computed using the SCF density matrix
+
+  Nuclear Dipole Moment: [e a0]
+     X:    35.0000      Y:     0.0000      Z:     0.0000
+
+  Electronic Dipole Moment: [e a0]
+     X:   -35.0000      Y:    -0.0000      Z:    -0.0000
+
+  Dipole Moment: [e a0]
+     X:     0.0000      Y:    -0.0000      Z:    -0.0000     Total:     0.0000
+
+  Dipole Moment: [D]
+     X:     0.0000      Y:    -0.0000      Z:    -0.0000     Total:     0.0000
+
+
+*** tstop() called on PartitionStation at Tue Oct 13 18:13:31 2020
+Module time:
+	user time   =       0.58 seconds =       0.01 minutes
+	system time =       0.00 seconds =       0.00 minutes
+	total time  =          1 seconds =       0.02 minutes
+Total time:
+	user time   =      95.56 seconds =       1.59 minutes
+	system time =       0.13 seconds =       0.00 minutes
+	total time  =        318 seconds =       5.30 minutes
+
+*** tstart() called on PartitionStation
+*** at Tue Oct 13 18:16:50 2020
+
+   => Loading Basis Set <=
+
+    Name: CC-PVDZ
+    Role: ORBITAL
+    Keyword: BASIS
+    atoms 1-2 entry HE         line    32 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
+
+
+         ---------------------------------------------------------
+                                   SCF
+               by Justin Turney, Rob Parrish, Andy Simmonett
+                          and Daniel G. A. Smith
+                              RHF Reference
+                        1 Threads,    500 MiB Core
+         ---------------------------------------------------------
+
+  ==> Geometry <==
+
+    Molecular point group: c1
+    Full point group: C_inf_v
+
+    Geometry (in Bohr), charge = 0, multiplicity = 1:
+
+       Center              X                  Y                   Z               Mass       
+    ------------   -----------------  -----------------  -----------------  -----------------
+      Gh(HE)         17.500000000000     0.000000000000     0.000000000000     4.002603254130
+         HE         -17.500000000000     0.000000000000     0.000000000000     4.002603254130
+
+  Running in c1 symmetry.
+
+  Rotational constants: A = ************  B =      0.02456  C =      0.02456 [cm^-1]
+  Rotational constants: A = ************  B =    736.14997  C =    736.14997 [MHz]
+  Nuclear repulsion =    0.000000000000000
+
+  Charge       = 0
+  Multiplicity = 1
+  Electrons    = 2
+  Nalpha       = 1
+  Nbeta        = 1
+
+  ==> Algorithm <==
+
+  SCF Algorithm Type is PK.
+  DIIS enabled.
+  MOM disabled.
+  Fractional occupation disabled.
+  Guess Type is SAD.
+  Energy threshold   = 1.00e-08
+  Density threshold  = 1.00e-08
+  Integral threshold = 0.00e+00
+
+  ==> Primary Basis <==
+
+  Basis Set: CC-PVDZ
+    Blend: CC-PVDZ
+    Number of shells: 6
+    Number of basis function: 10
+    Number of Cartesian functions: 10
+    Spherical Harmonics?: true
+    Max angular momentum: 1
+
+  ==> Pre-Iterations <==
+
+   -------------------------------------------------------
+    Irrep   Nso     Nmo     Nalpha   Nbeta   Ndocc  Nsocc
+   -------------------------------------------------------
+     A         10      10       0       0       0       0
+   -------------------------------------------------------
+    Total      10      10       1       1       1       0
+   -------------------------------------------------------
+
+  ==> Integral Setup <==
+
+  Using in-core PK algorithm.
+   Calculation information:
+      Number of atoms:                   2
+      Number of AO shells:               6
+      Number of primitives:             10
+      Number of atomic orbitals:        10
+      Number of basis functions:        10
+
+      Integral cutoff                 1.00e-12
+      Number of threads:                 1
+
+  Performing in-core PK
+  Using 3080 doubles for integral storage.
+  We computed 78 shell quartets total.
+  Whereas there are 231 unique shell quartets.
+
+  ==> DiskJK: Disk-Based J/K Matrices <==
+
+    J tasked:                  Yes
+    K tasked:                  Yes
+    wK tasked:                  No
+    Memory [MiB]:              375
+    Schwarz Cutoff:          1E-12
+
+    OpenMP threads:              1
+
+  Minimum eigenvalue in the overlap matrix is 3.6583226831E-01.
+  Using Symmetric Orthogonalization.
+
+  SCF Guess: Superposition of Atomic Densities via on-the-fly atomic UHF.
+
+  ==> Iterations <==
+
+                        Total Energy        Delta E     RMS |[F,P]|
+
+   @RHF iter SAD:    -2.85516047724053   -2.85516e+00   0.00000e+00 
+   @RHF iter   1:    -2.85516047724273   -2.20268e-12   1.64779e-08 DIIS
+   @RHF iter   2:    -2.85516047724274   -1.15463e-14   1.24802e-09 DIIS
+  Energy and wave function converged.
+
+
+  ==> Post-Iterations <==
+
+    Orbital Energies [Eh]
+    ---------------------
+
+    Doubly Occupied:                                                      
+
+       1A     -0.914148  
+
+    Virtual:                                                              
+
+       2A      0.431438     3A      1.397442     4A      2.524372  
+       5A      2.524372     6A      2.524372     7A      3.187500  
+       8A      3.187500     9A      3.187500    10A      4.213608  
+
+    Final Occupation by Irrep:
+              A 
+    DOCC [     1 ]
+
+  @RHF Final Energy:    -2.85516047724274
+
+   => Energetics <=
+
+    Nuclear Repulsion Energy =              0.0000000000000000
+    One-Electron Energy =                  -3.8820251078358385
+    Two-Electron Energy =                   1.0268646305930995
+    Total Energy =                         -2.8551604772427392
+
+Computation Completed
+
+
+Properties will be evaluated at   0.000000,   0.000000,   0.000000 [a0]
+
+Properties computed using the SCF density matrix
+
+  Nuclear Dipole Moment: [e a0]
+     X:   -35.0000      Y:     0.0000      Z:     0.0000
+
+  Electronic Dipole Moment: [e a0]
+     X:    35.0000      Y:     0.0000      Z:     0.0000
+
+  Dipole Moment: [e a0]
+     X:    -0.0000      Y:     0.0000      Z:     0.0000     Total:     0.0000
+
+  Dipole Moment: [D]
+     X:    -0.0000      Y:     0.0000      Z:     0.0000     Total:     0.0000
+
+
+*** tstop() called on PartitionStation at Tue Oct 13 18:16:51 2020
+Module time:
+	user time   =       0.32 seconds =       0.01 minutes
+	system time =       0.00 seconds =       0.00 minutes
+	total time  =          1 seconds =       0.02 minutes
+Total time:
+	user time   =     186.26 seconds =       3.10 minutes
+	system time =       0.19 seconds =       0.00 minutes
+	total time  =        518 seconds =       8.63 minutes
+ MINTS: Wrapper to libmints.
+   by Justin Turney
+
+   Calculation information:
+      Number of threads:                 1
+      Number of atoms:                   2
+      Number of AO shells:               6
+      Number of SO shells:               6
+      Number of primitives:             10
+      Number of atomic orbitals:        10
+      Number of basis functions:        10
+
+      Number of irreps:                  1
+      Integral cutoff                 0.00e+00
+      Number of functions per irrep: [  10 ]
+
+ OEINTS: Overlap, kinetic, potential, dipole, and quadrupole integrals
+         stored in file 35.
+
+      Computing two-electron integrals...done
+      Computed 274 non-zero two-electron integrals.
+        Stored in file 33.
+
+
+*** tstart() called on PartitionStation
+*** at Tue Oct 13 18:16:51 2020
+
+
+	Wfn Parameters:
+	--------------------
+	Wavefunction         = CCSD_T
+	Number of irreps     = 1
+	Number of MOs        = 10
+	Number of active MOs = 10
+	AO-Basis             = NONE
+	Semicanonical        = false
+	Reference            = RHF
+	Print Level          = 1
+
+	IRREP	# MOs	# FZDC	# DOCC	# SOCC	# VIRT	# FZVR
+	-----	-----	------	------	------	------	------
+	 A	   10	    0	    1	    0	    9	    0
+	Transforming integrals...
+	IWL integrals will be deleted.
+	(OO|OO)...
+	Presorting SO-basis two-electron integrals.
+	Sorting File: SO Ints (nn|nn) nbuckets = 1
+	Transforming the one-electron integrals and constructing Fock matrices
+	Starting first half-transformation.
+	Sorting half-transformed integrals.
+	First half integral transformation complete.
+	Starting second half-transformation.
+	Two-electron integral transformation complete.
+	(OO|OV)...
+	Starting second half-transformation.
+	Two-electron integral transformation complete.
+	(OO|VV)...
+	Starting second half-transformation.
+	Two-electron integral transformation complete.
+	(OV|OO)...
+	Starting first half-transformation.
+	Sorting half-transformed integrals.
+	First half integral transformation complete.
+	Starting second half-transformation.
+	Two-electron integral transformation complete.
+	(OV|OV)...
+	Starting second half-transformation.
+	Two-electron integral transformation complete.
+	(OV|VV)...
+	Starting second half-transformation.
+	Two-electron integral transformation complete.
+	(VV|OO)...
+	Starting first half-transformation.
+	Sorting half-transformed integrals.
+	First half integral transformation complete.
+	Starting second half-transformation.
+	Two-electron integral transformation complete.
+	(VV|OV)...
+	Starting second half-transformation.
+	Two-electron integral transformation complete.
+	(VV|VV)...
+	Starting second half-transformation.
+	Two-electron integral transformation complete.
+	Frozen core energy     =      0.00000000000000
+
+	Size of irrep 0 of <ab|cd> integrals:      0.007 (MW) /      0.052 (MB)
+	Total:                                     0.007 (MW) /      0.052 (MB)
+
+	Size of irrep 0 of <ia|bc> integrals:      0.001 (MW) /      0.006 (MB)
+	Total:                                     0.001 (MW) /      0.006 (MB)
+
+	Size of irrep 0 of tijab amplitudes:       0.000 (MW) /      0.001 (MB)
+	Total:                                     0.000 (MW) /      0.001 (MB)
+
+	Nuclear Rep. energy          =      0.00000000000000
+	SCF energy                   =     -2.85516047724274
+	One-electron energy          =     -3.88202510260754
+	Two-electron energy          =      1.02686462536480
+	Reference energy             =     -2.85516047724274
+
+*** tstop() called on PartitionStation at Tue Oct 13 18:16:51 2020
+Module time:
+	user time   =       0.02 seconds =       0.00 minutes
+	system time =       0.01 seconds =       0.00 minutes
+	total time  =          0 seconds =       0.00 minutes
+Total time:
+	user time   =     186.30 seconds =       3.10 minutes
+	system time =       0.21 seconds =       0.00 minutes
+	total time  =        518 seconds =       8.63 minutes
+            **************************
+            *                        *
+            *        CCENERGY        *
+            *                        *
+            **************************
+
+    Nuclear Rep. energy (wfn)     =    0.000000000000000
+    SCF energy          (wfn)     =   -2.855160477242739
+    Reference energy    (file100) =   -2.855160477242740
+
+    Input parameters:
+    -----------------
+    Wave function   =     CCSD_T
+    Reference wfn   =     RHF
+    Brueckner       =     No
+    Memory (Mbytes) =     524.3
+    Maxiter         =     50
+    R_Convergence   =     1.0e-07
+    E_Convergence   =     1.0e-06
+    Restart         =     Yes
+    DIIS            =     Yes
+    AO Basis        =     NONE
+    ABCD            =     NEW
+    Cache Level     =     2
+    Cache Type      =     LOW
+    Print Level     =     1
+    Num. of threads =     1
+    # Amps to Print =     10
+    Print MP2 Amps? =     No
+    Analyze T2 Amps =     No
+    Print Pair Ener =     No
+    Local CC        =     No
+    SCS-MP2         =     False
+    SCSN-MP2        =     False
+    SCS-CCSD        =     False
+
+MP2 correlation energy -0.0258283395513772
+                Solving CC Amplitude Equations
+                ------------------------------
+  Iter             Energy              RMS        T1Diag      D1Diag    New D1Diag    D2Diag
+  ----     ---------------------    ---------   ----------  ----------  ----------   --------
+     0        -0.025828339551377    0.000e+00    0.000000    0.000000    0.000000    0.067449
+     1        -0.031083165974847    1.433e-02    0.000302    0.000427    0.000427    0.081634
+     2        -0.032441879318872    3.129e-03    0.000507    0.000717    0.000717    0.085458
+     3        -0.032433702624061    1.431e-04    0.000549    0.000777    0.000777    0.085479
+     4        -0.032434459282494    2.031e-06    0.000551    0.000779    0.000779    0.085481
+     5        -0.032434353745199    2.461e-07    0.000551    0.000779    0.000779    0.085481
+     6        -0.032434353826300    2.483e-10    0.000551    0.000779    0.000779    0.085481
+
+    Iterations converged.
+
+
+    Largest TIA Amplitudes:
+              0   1        -0.0007787958
+
+    Largest TIjAb Amplitudes:
+      0   0   1   1        -0.0647480535
+      0   0   2   2        -0.0322214022
+      0   0   3   3        -0.0322214022
+      0   0   4   4        -0.0322214022
+
+    SCF energy       (wfn)                    =   -2.855160477242739
+    Reference energy (file100)                =   -2.855160477242740
+
+    Opposite-spin MP2 correlation energy      =   -0.025828339551377
+    Same-spin MP2 correlation energy          =    0.000000000000000
+    MP2 correlation energy                    =   -0.025828339551377
+      * MP2 total energy                      =   -2.880988816794117
+
+    Opposite-spin CCSD correlation energy     =   -0.032434353826300
+    Same-spin CCSD correlation energy         =    0.000000000000000
+    CCSD correlation energy                   =   -0.032434353826300
+      * CCSD total energy                     =   -2.887594831069040
+
+            **************************
+            *                        *
+            *        CCTRIPLES       *
+            *                        *
+            **************************
+
+
+    Wave function   =    CCSD_T
+    Reference wfn   =      RHF
+
+    Nuclear Rep. energy (wfn)                =    0.000000000000000
+    SCF energy          (wfn)                =   -2.855160477242739
+    Reference energy    (file100)            =   -2.855160477242740
+    CCSD energy         (file100)            =   -0.032434353826300
+    Total CCSD energy   (file100)            =   -2.887594831069040
+
+    Number of ijk index combinations:                1
+    Memory available in words        :        65536000
+    ~Words needed per explicit thread:            2916
+    Number of threads for explicit ijk threading:    1
+
+    MKL num_threads set to 1 for explicit threading.
+
+    (T) energy                                =   -0.000000000000000
+      * CCSD(T) total energy                  =   -2.887594831069040
+
+
+*** tstart() called on PartitionStation
+*** at Tue Oct 13 18:16:51 2020
+
+   => Loading Basis Set <=
+
+    Name: CC-PVDZ
+    Role: ORBITAL
+    Keyword: BASIS
+    atoms 1-2 entry HE         line    32 file /home/yuming/anaconda3/envs/work/share/psi4/basis/cc-pvdz.gbs 
+
+
+         ---------------------------------------------------------
+                                   SCF
+               by Justin Turney, Rob Parrish, Andy Simmonett
+                          and Daniel G. A. Smith
+                              RHF Reference
+                        1 Threads,    500 MiB Core
+         ---------------------------------------------------------
+
+  ==> Geometry <==
+
+    Molecular point group: c1
+    Full point group: C_inf_v
+
+    Geometry (in Bohr), charge = 0, multiplicity = 1:
+
+       Center              X                  Y                   Z               Mass       
+    ------------   -----------------  -----------------  -----------------  -----------------
+         HE          17.500000000000     0.000000000000     0.000000000000     4.002603254130
+      Gh(HE)        -17.500000000000     0.000000000000     0.000000000000     4.002603254130
+
+  Running in c1 symmetry.
+
+  Rotational constants: A = ************  B =      0.02456  C =      0.02456 [cm^-1]
+  Rotational constants: A = ************  B =    736.14997  C =    736.14997 [MHz]
+  Nuclear repulsion =    0.000000000000000
+
+  Charge       = 0
+  Multiplicity = 1
+  Electrons    = 2
+  Nalpha       = 1
+  Nbeta        = 1
+
+  ==> Algorithm <==
+
+  SCF Algorithm Type is PK.
+  DIIS enabled.
+  MOM disabled.
+  Fractional occupation disabled.
+  Guess Type is SAD.
+  Energy threshold   = 1.00e-08
+  Density threshold  = 1.00e-08
+  Integral threshold = 0.00e+00
+
+  ==> Primary Basis <==
+
+  Basis Set: CC-PVDZ
+    Blend: CC-PVDZ
+    Number of shells: 6
+    Number of basis function: 10
+    Number of Cartesian functions: 10
+    Spherical Harmonics?: true
+    Max angular momentum: 1
+
+  ==> Pre-Iterations <==
+
+   -------------------------------------------------------
+    Irrep   Nso     Nmo     Nalpha   Nbeta   Ndocc  Nsocc
+   -------------------------------------------------------
+     A         10      10       0       0       0       0
+   -------------------------------------------------------
+    Total      10      10       1       1       1       0
+   -------------------------------------------------------
+
+  ==> Integral Setup <==
+
+  Using in-core PK algorithm.
+   Calculation information:
+      Number of atoms:                   2
+      Number of AO shells:               6
+      Number of primitives:             10
+      Number of atomic orbitals:        10
+      Number of basis functions:        10
+
+      Integral cutoff                 1.00e-12
+      Number of threads:                 1
+
+  Performing in-core PK
+  Using 3080 doubles for integral storage.
+  We computed 78 shell quartets total.
+  Whereas there are 231 unique shell quartets.
+
+  ==> DiskJK: Disk-Based J/K Matrices <==
+
+    J tasked:                  Yes
+    K tasked:                  Yes
+    wK tasked:                  No
+    Memory [MiB]:              375
+    Schwarz Cutoff:          1E-12
+
+    OpenMP threads:              1
+
+  Minimum eigenvalue in the overlap matrix is 3.6583226831E-01.
+  Using Symmetric Orthogonalization.
+
+  SCF Guess: Superposition of Atomic Densities via on-the-fly atomic UHF.
+
+  ==> Iterations <==
+
+                        Total Energy        Delta E     RMS |[F,P]|
+
+   @RHF iter SAD:    -2.85516047724053   -2.85516e+00   0.00000e+00 
+   @RHF iter   1:    -2.85516047724273   -2.20224e-12   1.64779e-08 DIIS
+   @RHF iter   2:    -2.85516047724274   -1.24345e-14   1.24802e-09 DIIS
+  Energy and wave function converged.
+
+
+  ==> Post-Iterations <==
+
+    Orbital Energies [Eh]
+    ---------------------
+
+    Doubly Occupied:                                                      
+
+       1A     -0.914148  
+
+    Virtual:                                                              
+
+       2A      0.431438     3A      1.397442     4A      2.524372  
+       5A      2.524372     6A      2.524372     7A      3.187500  
+       8A      3.187500     9A      3.187500    10A      4.213608  
+
+    Final Occupation by Irrep:
+              A 
+    DOCC [     1 ]
+
+  @RHF Final Energy:    -2.85516047724274
+
+   => Energetics <=
+
+    Nuclear Repulsion Energy =              0.0000000000000000
+    One-Electron Energy =                  -3.8820251078358408
+    Two-Electron Energy =                   1.0268646305931004
+    Total Energy =                         -2.8551604772427401
+
+Computation Completed
+
+
+Properties will be evaluated at   0.000000,   0.000000,   0.000000 [a0]
+
+Properties computed using the SCF density matrix
+
+  Nuclear Dipole Moment: [e a0]
+     X:    35.0000      Y:     0.0000      Z:     0.0000
+
+  Electronic Dipole Moment: [e a0]
+     X:   -35.0000      Y:    -0.0000      Z:     0.0000
+
+  Dipole Moment: [e a0]
+     X:     0.0000      Y:    -0.0000      Z:     0.0000     Total:     0.0000
+
+  Dipole Moment: [D]
+     X:     0.0000      Y:    -0.0000      Z:     0.0000     Total:     0.0000
+
+
+*** tstop() called on PartitionStation at Tue Oct 13 18:16:51 2020
+Module time:
+	user time   =       0.30 seconds =       0.01 minutes
+	system time =       0.00 seconds =       0.00 minutes
+	total time  =          0 seconds =       0.00 minutes
+Total time:
+	user time   =     186.64 seconds =       3.11 minutes
+	system time =       0.28 seconds =       0.00 minutes
+	total time  =        518 seconds =       8.63 minutes
+ MINTS: Wrapper to libmints.
+   by Justin Turney
+
+   Calculation information:
+      Number of threads:                 1
+      Number of atoms:                   2
+      Number of AO shells:               6
+      Number of SO shells:               6
+      Number of primitives:             10
+      Number of atomic orbitals:        10
+      Number of basis functions:        10
+
+      Number of irreps:                  1
+      Integral cutoff                 0.00e+00
+      Number of functions per irrep: [  10 ]
+
+ OEINTS: Overlap, kinetic, potential, dipole, and quadrupole integrals
+         stored in file 35.
+
+      Computing two-electron integrals...done
+      Computed 274 non-zero two-electron integrals.
+        Stored in file 33.
+
+
+*** tstart() called on PartitionStation
+*** at Tue Oct 13 18:16:51 2020
+
+
+	Wfn Parameters:
+	--------------------
+	Wavefunction         = CCSD_T
+	Number of irreps     = 1
+	Number of MOs        = 10
+	Number of active MOs = 10
+	AO-Basis             = NONE
+	Semicanonical        = false
+	Reference            = RHF
+	Print Level          = 1
+
+	IRREP	# MOs	# FZDC	# DOCC	# SOCC	# VIRT	# FZVR
+	-----	-----	------	------	------	------	------
+	 A	   10	    0	    1	    0	    9	    0
+	Transforming integrals...
+	IWL integrals will be deleted.
+	(OO|OO)...
+	Presorting SO-basis two-electron integrals.
+	Sorting File: SO Ints (nn|nn) nbuckets = 1
+	Transforming the one-electron integrals and constructing Fock matrices
+	Starting first half-transformation.
+	Sorting half-transformed integrals.
+	First half integral transformation complete.
+	Starting second half-transformation.
+	Two-electron integral transformation complete.
+	(OO|OV)...
+	Starting second half-transformation.
+	Two-electron integral transformation complete.
+	(OO|VV)...
+	Starting second half-transformation.
+	Two-electron integral transformation complete.
+	(OV|OO)...
+	Starting first half-transformation.
+	Sorting half-transformed integrals.
+	First half integral transformation complete.
+	Starting second half-transformation.
+	Two-electron integral transformation complete.
+	(OV|OV)...
+	Starting second half-transformation.
+	Two-electron integral transformation complete.
+	(OV|VV)...
+	Starting second half-transformation.
+	Two-electron integral transformation complete.
+	(VV|OO)...
+	Starting first half-transformation.
+	Sorting half-transformed integrals.
+	First half integral transformation complete.
+	Starting second half-transformation.
+	Two-electron integral transformation complete.
+	(VV|OV)...
+	Starting second half-transformation.
+	Two-electron integral transformation complete.
+	(VV|VV)...
+	Starting second half-transformation.
+	Two-electron integral transformation complete.
+	Frozen core energy     =      0.00000000000000
+
+	Size of irrep 0 of <ab|cd> integrals:      0.007 (MW) /      0.052 (MB)
+	Total:                                     0.007 (MW) /      0.052 (MB)
+
+	Size of irrep 0 of <ia|bc> integrals:      0.001 (MW) /      0.006 (MB)
+	Total:                                     0.001 (MW) /      0.006 (MB)
+
+	Size of irrep 0 of tijab amplitudes:       0.000 (MW) /      0.001 (MB)
+	Total:                                     0.000 (MW) /      0.001 (MB)
+
+	Nuclear Rep. energy          =      0.00000000000000
+	SCF energy                   =     -2.85516047724274
+	One-electron energy          =     -3.88202510260754
+	Two-electron energy          =      1.02686462536480
+	Reference energy             =     -2.85516047724274
+
+*** tstop() called on PartitionStation at Tue Oct 13 18:16:51 2020
+Module time:
+	user time   =       0.02 seconds =       0.00 minutes
+	system time =       0.01 seconds =       0.00 minutes
+	total time  =          0 seconds =       0.00 minutes
+Total time:
+	user time   =     186.68 seconds =       3.11 minutes
+	system time =       0.29 seconds =       0.00 minutes
+	total time  =        518 seconds =       8.63 minutes
+            **************************
+            *                        *
+            *        CCENERGY        *
+            *                        *
+            **************************
+
+    Nuclear Rep. energy (wfn)     =    0.000000000000000
+    SCF energy          (wfn)     =   -2.855160477242740
+    Reference energy    (file100) =   -2.855160477242740
+
+    Input parameters:
+    -----------------
+    Wave function   =     CCSD_T
+    Reference wfn   =     RHF
+    Brueckner       =     No
+    Memory (Mbytes) =     524.3
+    Maxiter         =     50
+    R_Convergence   =     1.0e-07
+    E_Convergence   =     1.0e-06
+    Restart         =     Yes
+    DIIS            =     Yes
+    AO Basis        =     NONE
+    ABCD            =     NEW
+    Cache Level     =     2
+    Cache Type      =     LOW
+    Print Level     =     1
+    Num. of threads =     1
+    # Amps to Print =     10
+    Print MP2 Amps? =     No
+    Analyze T2 Amps =     No
+    Print Pair Ener =     No
+    Local CC        =     No
+    SCS-MP2         =     False
+    SCSN-MP2        =     False
+    SCS-CCSD        =     False
+
+MP2 correlation energy -0.0258283395513771
+                Solving CC Amplitude Equations
+                ------------------------------
+  Iter             Energy              RMS        T1Diag      D1Diag    New D1Diag    D2Diag
+  ----     ---------------------    ---------   ----------  ----------  ----------   --------
+     0        -0.025828339551377    0.000e+00    0.000000    0.000000    0.000000    0.067449
+     1        -0.031083165974847    1.433e-02    0.000302    0.000427    0.000427    0.081634
+     2        -0.032441879318872    3.129e-03    0.000507    0.000717    0.000717    0.085458
+     3        -0.032433702624061    1.431e-04    0.000549    0.000777    0.000777    0.085479
+     4        -0.032434459282493    2.031e-06    0.000551    0.000779    0.000779    0.085481
+     5        -0.032434353745199    2.461e-07    0.000551    0.000779    0.000779    0.085481
+     6        -0.032434353826300    2.483e-10    0.000551    0.000779    0.000779    0.085481
+
+    Iterations converged.
+
+
+    Largest TIA Amplitudes:
+              0   1        -0.0007787958
+
+    Largest TIjAb Amplitudes:
+      0   0   1   1        -0.0647480535
+      0   0   2   2        -0.0322214022
+      0   0   3   3        -0.0322214022
+      0   0   4   4        -0.0322214022
+
+    SCF energy       (wfn)                    =   -2.855160477242740
+    Reference energy (file100)                =   -2.855160477242740
+
+    Opposite-spin MP2 correlation energy      =   -0.025828339551377
+    Same-spin MP2 correlation energy          =    0.000000000000000
+    MP2 correlation energy                    =   -0.025828339551377
+      * MP2 total energy                      =   -2.880988816794117
+
+    Opposite-spin CCSD correlation energy     =   -0.032434353826300
+    Same-spin CCSD correlation energy         =    0.000000000000000
+    CCSD correlation energy                   =   -0.032434353826300
+      * CCSD total energy                     =   -2.887594831069040
+
+            **************************
+            *                        *
+            *        CCTRIPLES       *
+            *                        *
+            **************************
+
+
+    Wave function   =    CCSD_T
+    Reference wfn   =      RHF
+
+    Nuclear Rep. energy (wfn)                =    0.000000000000000
+    SCF energy          (wfn)                =   -2.855160477242740
+    Reference energy    (file100)            =   -2.855160477242740
+    CCSD energy         (file100)            =   -0.032434353826300
+    Total CCSD energy   (file100)            =   -2.887594831069040
+
+    Number of ijk index combinations:                1
+    Memory available in words        :        65536000
+    ~Words needed per explicit thread:            2916
+    Number of threads for explicit ijk threading:    1
+
+    MKL num_threads set to 1 for explicit threading.
+
+    (T) energy                                =    0.000000000000000
+      * CCSD(T) total energy                  =   -2.887594831069040
 

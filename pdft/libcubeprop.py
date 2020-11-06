@@ -569,6 +569,23 @@ def cube_to_array(fname):
     cube.close()
     return data, meta
 
+def get_atoms(wfn, D, O):
+    """
+    To get the position of atoms on the grid.
+    :return: atoms, array atomic# * (x,y,z)
+    """
+    natom = wfn.molecule().natom()
+    geometry = wfn.molecule().full_geometry().np
+
+    atoms = np.zeros((natom, 4))
+
+    for k in range(3):
+        for i in range(natom):
+            atoms[i,0] = wfn.molecule().true_atomic_number(i)
+            atoms[i, 1:] = (geometry[i] - O)/D
+    return atoms
+
+
 def basis_to_cubic_grid(coeff, wfn, L, D, O=None, N=None, write_file=False, title=None):
     """
     Turns a basis represented function to its representation on a cubic grid.

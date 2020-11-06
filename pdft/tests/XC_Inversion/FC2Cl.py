@@ -7,7 +7,7 @@ import numpy as np
 if __name__ == "__main__":
     psi4.set_num_threads(2)
 
-functional = 'svwn'
+functional = 'CCSD'
 basis = 'cc-pCVDZ'
 
 vp_basis = 'cc-pCV5Z'

@@ -9,7 +9,7 @@ if __name__ == "__main__":
     psi4.set_memory('4 GB')
 
 functional = 'svwn'
-basis = "cc-pvdz"
+basis = "cc-pcvdz"
 vxc_basis = "cc-pcvqz"
 
 ortho_basis = False
@@ -28,7 +28,7 @@ psi4.set_output_file("Ne.psi4")
 Full_Molec = psi4.geometry("""
 nocom
 noreorient
-Ne 0 0 0
+Ne
 units bohr
 symmetry c1
 """)
@@ -49,7 +49,7 @@ psi4.set_options({
     'REFERENCE': 'RHF'
 })
 #  Get wfn for target density
-E_input, input_density_wfn = psi4.energy("CCSD(T)"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+E_input, input_density_wfn = psi4.energy("svwn"+"/"+basis, molecule=Full_Molec, return_wfn=True)
 print("Target Density Calculation Finished.")
 
 #Psi4 Options:
@@ -133,15 +133,23 @@ inverser = XC_Inversion.Inverser(mol, input_density_wfn,
 # f.show()
 
 #%%
-# rcond = -1
-# GL_rcond = [rcond, -1, -1]
-# inverser.find_vxc_manualNewton(svd_rcond=rcond, line_search_method="StrongWolfe", find_vxc_grid=False)
+# rcond = 12  # DD
+# rcond = 24  # TT
+# rcond = 46  # CDCQ
+# rcond = 75  # D/AQ
+# GL_rcond = [rcond, 2, 2]
+# # CD/AQ
+# rcond = 28  # D/AT
+# GL_rcond = [rcond, 12, 12]
+#
+# inverser.find_vxc_manualNewton(svd_rcond=rcond*2, line_search_method="StrongWolfe", find_vxc_grid=False)
 # L = [3, 0, 0]
 # D = [0.1, 0.5, 0.2]
 # O = [-2.1, 0, 0]
 # N = [100, 1, 1]
 # inverser.v_output_a = inverser.v_output[:vxc_basis.nbf]
-# vout_cube_a, xyzw = libcubeprop.basis_to_cubic_grid(inverser.v_output_a, inverser.vp_basis.wfn, L, D, O, N)
+# vout_cube_a, xyzw = libcubeprop.basis_to_cubic_grid(inverser.v_output_a,
+#                                                     inverser.vp_basis.wfn, L, D, O, N)
 # vout_cube_a.shape = 100
 # xyzw[0].shape = 100
 # xyzw[1].shape = 100
@@ -167,7 +175,7 @@ inverser = XC_Inversion.Inverser(mol, input_density_wfn,
 #
 # vxc_TSVD = np.copy(inverser.vxc_a_grid)
 #
-# inverser.find_vxc_manualNewton(svd_rcond="GL", line_search_method="StrongWolfe", find_vxc_grid=False, svd_parameter=GL_rcond)
+# inverser.find_vxc_manualNewton(svd_rcond="GL_mod", line_search_method="StrongWolfe", find_vxc_grid=False, svd_parameter=GL_rcond)
 #
 # inverser.v_output_a = inverser.v_output[:vxc_basis.nbf]
 # v0_a = inverser.v0_output[:vxc_basis.nbf]
@@ -196,8 +204,45 @@ inverser = XC_Inversion.Inverser(mol, input_density_wfn,
 #     vbar_b_grid = vbar_cube_b[mark_z & mark_y]
 # XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, xyz=grid, ax=ax, label="TSVD+GL", ls="--")
 # XC_Inversion.pdft.plot1d_x(v0_a_grid, xyz=grid, ax=ax, label="v0", ls=":")
-# XC_Inversion.pdft.plot1d_x(vbar_a_grid, xyz=grid, ax=ax, label="vbara", ls=":")
-# XC_Inversion.pdft.plot1d_x(vbar_b_grid, xyz=grid, ax=ax, label="vbarb", ls=":")
+# XC_Inversion.pdft.plot1d_x(vbar_a_grid+vbar_b_grid, xyz=grid, ax=ax, label="vbara", ls=":")
+# # XC_Inversion.pdft.plot1d_x(vbar_b_grid, xyz=grid, ax=ax, label="vbarb", ls=":")
 # ax.set_xlim(-2.1, 6)
+# ax.set_ylim(-10, 4)
 # ax.legend()
 # f.show()
+
+
+#%% vxc inverpolation
+# Ne_density = np.concatenate((np.flip(Ne[:, 2]), Ne[:, 2]))
+#
+# from scipy import interpolate
+# x,y,z,w = mol.Vpot.get_np_xyzw()
+# R = np.sqrt(x**2 + y**2 + z**2)
+# fn = interpolate.interp1d(Ne_xyz, Ne_vxc, kind="cubic", bounds_error=False)
+# vxc = fn(R)
+#
+# f,ax = plt.subplots(dpi=200)
+# ax.plot(Ne_xyz, Ne_vxc, label="Exact")
+# XC_Inversion.pdft.plot1d_x(vxc, Vpot=mol.Vpot, ax=ax, label="Interpolate")
+# ax.set_xlim(1e-6,3)
+# ax.set_xscale("log")
+# ax.legend()
+# f.savefig("vxc_interpolation")
+#
+# vxc_Fock = mol.grid_to_fock(vxc)
+# inverser.change_v0("Hartree")
+# Vks_a = psi4.core.Matrix.from_array(vxc_Fock + inverser.v0_Fock)
+# mol.scf_inversion(100, [Vks_a, Vks_a], add_vext=True)
+# n_exact = mol.to_grid(mol.Da.np+mol.Db.np)
+# n_input = mol.to_grid(input_density_wfn.Da().np+input_density_wfn.Db().np)
+# print("exact error", np.sum(np.abs(n_exact-n_input)*w))
+#
+# f,ax = plt.subplots(dpi=200)
+# ax.plot(Ne_xyz, Ne_density, label="Exact")
+# XC_Inversion.pdft.plot1d_x(n_exact, Vpot=mol.Vpot, ax=ax, label="n from exact vxc", ls="--")
+# XC_Inversion.pdft.plot1d_x(n_input, Vpot=mol.Vpot, ax=ax, label="n input", ls=":")
+# ax.set_xlim(1e-7,1)
+# ax.set_xscale("log")
+# ax.legend()
+# f.show()
+# f.savefig("compare_density")

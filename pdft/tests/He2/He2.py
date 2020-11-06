@@ -12,8 +12,8 @@ functional = 'svwn'
 # There are two possibilities why a larger basis set is better than a smaller one:
 # 1. It provides a larger space for the inverse of Hessian.
 # 2. Or more likely it provides a more MOs for a better description of Hessian first order approximation.
-basis = '6-31G'
-vp_basis = None
+basis = 'cc-pcvdz'
+vp_basis = 'cc-pcvqz'
 svdc = "input"
 regulc = 1e-4
 Orthogonal_basis = False

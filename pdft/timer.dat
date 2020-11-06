@@ -40,3 +40,31 @@ Module                                       User      System        Wall       
 --------------------------------------------------------------------------------------
 
 **************************************************************************************
+
+Host: PartitionStation
+
+Timers On : Fri Oct  9 15:43:25 2020
+Timers Off: Fri Oct  9 17:31:23 2020
+
+Wall Time:     6478.40 seconds
+
+                                                       Time (seconds)
+Module                                       User      System        Wall        Calls
+V: Grid                             :      0.133u      0.000s      0.087w      6 calls
+Total PK formation time             :      0.067u      0.000s      0.038w      1 calls
+JK: D                               :      0.000u      0.000s      0.000w     19 calls
+JK: USO2AO                          :      0.000u      0.000s      0.000w     19 calls
+JK: JK                              :      0.000u      0.000s      0.001w     19 calls
+PK computes JK                      :      0.000u      0.000s      0.001w     19 calls
+JK: AO2USO                          :      0.000u      0.000s      0.000w     19 calls
+
+--------------------------------------------------------------------------------------
+V: Grid                             :      0.133u      0.000s      0.087w      6 calls
+Total PK formation time             :      0.067u      0.000s      0.038w      1 calls
+JK: D                               :      0.000u      0.000s      0.000w     19 calls
+JK: USO2AO                          :      0.000u      0.000s      0.000w     19 calls
+JK: JK                              :      0.000u      0.000s      0.001w     19 calls
+| PK computes JK                    :      0.000u      0.000s      0.001w     19 calls
+JK: AO2USO                          :      0.000u      0.000s      0.000w     19 calls
+
+**************************************************************************************

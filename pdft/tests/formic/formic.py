@@ -76,12 +76,11 @@ f1  = pdft.U_Molecule(Monomer_2,  basis, functional)
 f2  = pdft.U_Molecule(Monomer_1,  basis, functional)
 mol = pdft.U_Molecule(Full_Molec, basis, functional)
 
-
 #Start a pdft systemm, and perform calculation to find vp
 pdfter = pdft.U_Embedding([f1, f2], mol)
 
 # pdfter.find_vp_response(maxiter=25, beta=0.1, svd_rcond=1e-4)
-pdfter.find_vp_response_1basis(49, svd_rcond=10**svdc, regularization_constant=10**reguc, beta=0.1, a_rho_var=1e-7)
+pdfter.find_vp_response_1basis(49)
 # pdfter.find_vp_scipy_1basis(maxiter=42, regularization_constant=1e-4, opt_method="trust-ncg")
 
 #%% 2 basis 2D plot
