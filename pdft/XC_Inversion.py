@@ -3467,3 +3467,297 @@ class Inverser(pdft.U_Embedding):
         print(np.sum(grad*grad_app)/np.linalg.norm(grad)/np.linalg.norm(grad_app))
         print(np.linalg.norm(grad_app-grad)/np.linalg.norm(grad))
         return grad, grad_app
+
+    def vH_quadrature(self):
+        """
+        Calculating vH using quadrature intrgral to test the ability of it.
+        :return:
+        """
+        vH = np.zeros_like(self.molecule.w)
+        points_func = self.molecule.Vpot.properties()[0]
+
+        w1_old = 0
+        # First loop over the outer set of blocks
+        num_block = self.molecule.Vpot.nblocks()
+        num_block_ten_percent = int(num_block/10)
+        print("vH quadrature integral starts: ", end="")
+        for l_block in range(self.molecule.Vpot.nblocks()):
+            if l_block % num_block_ten_percent == 0:
+                print(".", end="")
+            # Obtain general grid information
+            l_grid = self.molecule.Vpot.get_block(l_block)
+            l_x = np.array(l_grid.x())
+            l_y = np.array(l_grid.y())
+            l_z = np.array(l_grid.z())
+            l_npoints = l_x.shape[0]
+
+            dvp_l = np.zeros_like(l_x)
+            # Loop over the inner set of blocks
+            for r_block in range(self.molecule.Vpot.nblocks()):
+                r_grid = self.molecule.Vpot.get_block(r_block)
+                r_w = np.array(r_grid.w())
+                r_x = np.array(r_grid.x())
+                r_y = np.array(r_grid.y())
+                r_z = np.array(r_grid.z())
+                r_npoints = r_w.shape[0]
+
+                points_func.compute_points(r_grid)
+                r_lpos = np.array(r_grid.functions_local_to_global())
+
+                # Compute phi!
+                r_phi = np.array(points_func.basis_values()["PHI"])[:r_npoints, :r_lpos.shape[0]]
+
+                # Build a local slice of D
+                lD2 = self.input_density_wfn.Da().np[(r_lpos[:, None], r_lpos)] * 2
+                # lD2 += self.molecule.Db.np[(r_lpos[:, None], r_lpos)]
+
+                # Copmute block-rho and block-gamma
+                rho2 = np.einsum('pm,mn,pn->p', r_phi, lD2, r_phi, optimize=True)
+
+                # Build the distnace matrix
+                R2 = (l_x[:, None] - r_x) ** 2
+                R2 += (l_y[:, None] - r_y) ** 2
+                R2 += (l_z[:, None] - r_z) ** 2
+                # R2 += 1e-34
+                if np.any(np.isclose(R2, 0.0)):
+                    # R2[np.isclose(R2, 0.0, atol=1e-6)] = np.min(R2[~np.isclose(R2, 0.0)])
+                    R2[np.isclose(R2, 0.0)] = np.inf
+                Rinv = 1/ np.sqrt(R2)
+
+                dvp_l += np.sum(rho2 * Rinv * r_w, axis=1)
+
+            vH[w1_old:w1_old + l_npoints] += dvp_l
+            w1_old += l_npoints
+        return vH
+
+    def v_xc_hole_quadrature(self):
+        """
+        Calculating v_XC^hole in RKS (15) using quadrature intrgral to test the ability of it.
+        :return:
+        """
+        assert np.allclose(self.v0_wfn.Da(), self.v0_wfn.Db()), "mRKS currently only supports RHF."
+        vxchole = np.zeros_like(self.molecule.w)
+        points_func = self.molecule.Vpot.properties()[0]
+        points_func.set_deriv(2)
+
+        w1_old = 0
+        # First loop over the outer set of blocks
+        num_block = self.molecule.Vpot.nblocks()
+        num_block_ten_percent = int(num_block / 10)
+        print("vxchole quadrature integral starts: ", end="")
+        for l_block in range(self.molecule.Vpot.nblocks()):
+            if l_block % num_block_ten_percent == 0:
+                print(".", end="")
+            # Obtain general grid information
+            l_grid = self.molecule.Vpot.get_block(l_block)
+            l_x = np.array(l_grid.x())
+            l_y = np.array(l_grid.y())
+            l_z = np.array(l_grid.z())
+            l_npoints = l_x.shape[0]
+
+            points_func.compute_points(l_grid)
+            l_lpos = np.array(l_grid.functions_local_to_global())
+            l_phi = np.array(points_func.basis_values()["PHI"])[:l_npoints, :l_lpos.shape[0]]
+            lD1 = self.input_density_wfn.Da().np[(l_lpos[:, None], l_lpos)]
+            # lC1 = self.v0_wfn.Ca[:, :self.v0_wfn.nalpha()]
+            rho1 = np.einsum('pm,mn,pn->p', l_phi, lD1, l_phi, optimize=True)
+            rho1inv = (1/rho1)[:,None]
+
+            dvp_l = np.zeros_like(l_x)
+            # Loop over the inner set of blocks
+            for r_block in range(self.molecule.Vpot.nblocks()):
+                r_grid = self.molecule.Vpot.get_block(r_block)
+                r_w = np.array(r_grid.w())
+                r_x = np.array(r_grid.x())
+                r_y = np.array(r_grid.y())
+                r_z = np.array(r_grid.z())
+                r_npoints = r_w.shape[0]
+
+                points_func.compute_points(r_grid)
+                r_lpos = np.array(r_grid.functions_local_to_global())
+
+                # Compute phi!
+                r_phi = np.array(points_func.basis_values()["PHI"])[:r_npoints, :r_lpos.shape[0]]
+
+                # Build a local slice of D
+                # lC2 = self.v0_wfn.Ca[:, :self.v0_wfn.nalpha()]
+                lD2 = self.input_density_wfn.Da().np[(l_lpos[:, None], r_lpos)]
+
+                # lDM2 = lC1 @ lC2.T
+                # Copmute block-rho and block-gamma
+                n_xc = np.einsum("mu,nv,pm,pn,qu,qv->pq", lD2, lD2, l_phi, l_phi, r_phi, r_phi, optimize=True)
+                n_xc *= rho1inv
+
+                # Build the distnace matrix
+                R2 = (l_x[:, None] - r_x) ** 2
+                R2 += (l_y[:, None] - r_y) ** 2
+                R2 += (l_z[:, None] - r_z) ** 2
+                # R2 += 1e-34
+                if np.any(np.isclose(R2, 0.0)):
+                    # R2[np.isclose(R2, 0.0)] = np.min(R2[~np.isclose(R2, 0.0)])
+                    R2[np.isclose(R2, 0.0)] = np.inf
+                Rinv = 1 / np.sqrt(R2)
+
+                dvp_l += np.sum(n_xc * Rinv * r_w, axis=1)
+
+            vxchole[w1_old:w1_old + l_npoints] += dvp_l
+            w1_old += l_npoints
+        vxchole = -vxchole
+        return vxchole
+
+    def average_local_orbital_energy(self, D, C, eig):
+        """
+        (4)(6) in mRKS.
+        """
+
+        e_bar = np.zeros_like(self.molecule.w)
+        points_func = self.molecule.Vpot.properties()[0]
+        points_func.set_deriv(1)
+        Nhalf = self.molecule.nalpha
+        assert self.molecule.nalpha == self.molecule.nbeta
+
+        iw = 0
+        for l_block in range(self.molecule.Vpot.nblocks()):
+            # Obtain general grid information
+            l_grid = self.molecule.Vpot.get_block(l_block)
+            l_npoints = l_grid.npoints()
+
+            points_func.compute_points(l_grid)
+            l_lpos = np.array(l_grid.functions_local_to_global())
+            l_phi = np.array(points_func.basis_values()["PHI"])[:l_npoints, :l_lpos.shape[0]]
+            lD = D[(l_lpos[:, None], l_lpos)]
+            lC = C[l_lpos, :Nhalf]
+
+            rho = np.einsum('pm,mn,pn->p', l_phi, lD, l_phi, optimize=True)
+
+            e_bar[iw:iw+l_npoints] = np.einsum("pm,mi,ni,i,pn->p", l_phi, lC, lC, eig[:Nhalf], l_phi, optimize=True)
+            e_bar[iw:iw + l_npoints] /= rho
+
+            iw += l_npoints
+        return e_bar
+
+    def Pauli_kinetic_energy_density(self, D, C):
+        """
+        (16)(18) in mRKS. But notice this does not return taup but taup/n
+        :return:
+        """
+
+        taup_rho = np.zeros_like(self.molecule.w)
+        points_func = self.molecule.Vpot.properties()[0]
+        points_func.set_deriv(2)
+
+        Nhalf = self.molecule.nalpha
+        assert self.molecule.nalpha == self.molecule.nbeta
+
+        iw = 0
+        for l_block in range(self.molecule.Vpot.nblocks()):
+            # Obtain general grid information
+            l_grid = self.molecule.Vpot.get_block(l_block)
+            l_npoints = l_grid.npoints()
+
+            points_func.compute_points(l_grid)
+            l_lpos = np.array(l_grid.functions_local_to_global())
+            l_phi = np.array(points_func.basis_values()["PHI"])[:l_npoints, :l_lpos.shape[0]]
+            l_phi_x = np.array(points_func.basis_values()["PHI_X"])[:l_npoints, :l_lpos.shape[0]]
+            l_phi_y = np.array(points_func.basis_values()["PHI_Y"])[:l_npoints, :l_lpos.shape[0]]
+            l_phi_z = np.array(points_func.basis_values()["PHI_Z"])[:l_npoints, :l_lpos.shape[0]]
+
+            lD = D[(l_lpos[:, None], l_lpos)]
+            lC = C[l_lpos, :Nhalf]
+
+            rho = np.einsum('pm,mn,pn->p', l_phi, lD, l_phi, optimize=True)
+
+            part_x = np.einsum('pm,mi,nj,pn->ijp', l_phi, lC, lC, l_phi_x, optimize=True)
+            part_y = np.einsum('pm,mi,nj,pn->ijp', l_phi, lC, lC, l_phi_y, optimize=True)
+            part_z = np.einsum('pm,mi,nj,pn->ijp', l_phi, lC, lC, l_phi_z, optimize=True)
+            part1_x = part_x - np.transpose(part_x, (1,0,2))
+            part1_y = part_y - np.transpose(part_y, (1,0,2))
+            part1_z = part_z - np.transpose(part_z, (1,0,2))
+
+            part1_x = np.triu(part1_x.T, k=1) ** 2
+            part1_y = np.triu(part1_y.T, k=1) ** 2
+            part1_z = np.triu(part1_z.T, k=1) ** 2
+
+            taup = np.sum(part1_x + part1_y + part1_z, axis=(1,2))
+
+            # taup = np.zeros(l_npoints)
+            # for j in range(Nhalf):
+            #     for i in range(j):
+            #         phiigradj_x = np.einsum('pm,m,n,pn->p', l_phi, lC[:, i], lC[:, j], l_phi_x, optimize=True)
+            #         phijgradi_x = np.einsum('pm,m,n,pn->p', l_phi, lC[:, j], lC[:, i], l_phi_x, optimize=True)
+            #
+            #         phiigradj_y = np.einsum('pm,m,n,pn->p', l_phi, lC[:, i], lC[:, j], l_phi_y, optimize=True)
+            #         phijgradi_y = np.einsum('pm,m,n,pn->p', l_phi, lC[:, j], lC[:, i], l_phi_y, optimize=True)
+            #
+            #         phiigradj_z = np.einsum('pm,m,n,pn->p', l_phi, lC[:, i], lC[:, j], l_phi_z, optimize=True)
+            #         phijgradi_z = np.einsum('pm,m,n,pn->p', l_phi, lC[:, j], lC[:, i], l_phi_z, optimize=True)
+            #         taup += (phiigradj_x - phijgradi_x) ** 2 + (phiigradj_y - phijgradi_y) ** 2 + (
+            #                     phiigradj_z - phijgradi_z) ** 2
+
+            taup = np.zeros(l_npoints)
+            for j in range(Nhalf):
+                for i in range(j):
+                    phiigradj = np.einsum('pm,m,n,pn->p', l_phi, lC[:, i], lC[:, j], l_phi_x, optimize=True)
+                    phijgradi = np.einsum('pm,m,n,pn->p', l_phi, lC[:, j], lC[:, i], l_phi_x, optimize=True)
+                    taup += (phiigradj - phijgradi) ** 2
+            taup_rho[iw:iw + l_npoints] = taup / (2 * rho ** 2)
+        return taup_rho
+
+    def mRKS(self, maxiter=100, atol=1e-3):
+        """
+        Get vxc on the grid with mRKS methods. Only works for RHF right now.
+        """
+        if self.v0 != "Hartree":
+            self.change_v0("Hartree")
+
+        vxchold = self.v_xc_hole_quadrature()
+        ebarWF = self.average_local_orbital_energy(self.input_density_wfn.Da().np, self.input_density_wfn.Ca().np, self.input_density_wfn.epsilon_a().np)
+        taup_rho_WF = self.Pauli_kinetic_energy_density(self.input_density_wfn.Da().np, self.input_density_wfn.Ca().np)
+        emax = self.input_density_wfn.epsilon_a().np[self.molecule.nalpha-1]
+
+        # initial calculation:
+        # vxc_Fock = psi4.core.Matrix.from_array(self.v0_Fock)
+        # self.molecule.scf_inversion(200, V=[vxc_Fock, vxc_Fock])
+        self.molecule.scf(200)
+        self.vout_constant = emax - self.molecule.eig_a.np[self.molecule.nalpha-1]
+
+        dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
+        dDb = self.input_density_wfn.Db().np - self.molecule.Db.np
+        dn = self.molecule.to_grid(dDa+dDb)
+        print("|n| before", np.sum(np.abs(dn)*self.molecule.w))
+
+        vxc_old = 0.0
+        Da_old = 0.0
+        eig_old = 0.0
+        for scf_step in range(1, maxiter+1):
+            assert np.allclose(self.molecule.Da, self.molecule.Db), "mRKS currently only supports RHF."
+
+            ebarKS = self.average_local_orbital_energy(self.molecule.Da.np, self.molecule.Ca.np, self.molecule.eig_a.np)
+            taup_rho_KS = self.Pauli_kinetic_energy_density(self.molecule.Da.np, self.molecule.Ca.np)
+
+            vxc = vxchold + ebarKS - ebarWF + taup_rho_WF - taup_rho_KS + self.vout_constant
+
+            # vxc_Fock = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(vxc) + self.v0_Fock)
+            vxc_Fock = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(vxc))
+
+            # self.molecule.scf_inversion(100, V=[vxc_Fock, vxc_Fock])
+            self.molecule.scf(200, vp_matrix=[vxc_Fock, vxc_Fock], vxc_flag=False)
+
+            self.vout_constant = emax - self.molecule.eig_a.np[self.molecule.nalpha - 1]
+
+            dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
+            dDb = self.input_density_wfn.Db().np - self.molecule.Db.np
+            dn = self.molecule.to_grid(dDa + dDb)
+            print("Iter: %i,  |n|: %.4e"%(scf_step, np.sum(np.abs(dn) * self.molecule.w)))
+
+            if np.sum(np.abs(vxc - vxc_old) * self.molecule.w) < atol:
+                print("vxc stops updating.")
+                break
+            elif (np.linalg.norm(self.molecule.Da.np - Da_old) < atol) and (np.linalg.norm(self.molecule.eig_a.np - eig_old) < atol):
+                print("KSDFT stops updating.")
+                break
+            else:
+                vxc_old = vxc
+                Da_old = np.copy(self.molecule.Da)
+                eig_old = np.copy(self.molecule.eig_a)
+        return vxc
