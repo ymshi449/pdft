@@ -231,6 +231,8 @@ class Inverser(pdft.U_Embedding):
         # Fouroverlap of two different basis set (phi_i, phi_j, xi_u, xi_v)
         self.four_overlap_two_basis = None
 
+        self.vxc_hole_WF = None
+
     def get_input_vxc(self):
 
         self.input_vxc_a, self.input_vxc_b = pdft.U_xc(self.input_density_wfn.Da().np, self.input_density_wfn.Db().np,
@@ -3603,6 +3605,8 @@ class Inverser(pdft.U_Embedding):
             vxchole[w1_old:w1_old + l_npoints] += dvp_l
             w1_old += l_npoints
         vxchole = -vxchole
+        self.vxc_hole_WF = vxchole  # store it bc calculation is too slow.
+        assert w1_old == self.molecule.w.shape[0]
         return vxchole
 
     def average_local_orbital_energy(self, D, C, eig):
@@ -3667,6 +3671,7 @@ class Inverser(pdft.U_Embedding):
 
             rho = np.einsum('pm,mn,pn->p', l_phi, lD, l_phi, optimize=True)
 
+            # Matrix Methods
             part_x = np.einsum('pm,mi,nj,pn->ijp', l_phi, lC, lC, l_phi_x, optimize=True)
             part_y = np.einsum('pm,mi,nj,pn->ijp', l_phi, lC, lC, l_phi_y, optimize=True)
             part_z = np.einsum('pm,mi,nj,pn->ijp', l_phi, lC, lC, l_phi_z, optimize=True)
@@ -3680,6 +3685,7 @@ class Inverser(pdft.U_Embedding):
 
             taup = np.sum(part1_x + part1_y + part1_z, axis=(1,2))
 
+            # Loop Methods
             # taup = np.zeros(l_npoints)
             # for j in range(Nhalf):
             #     for i in range(j):
@@ -3694,12 +3700,6 @@ class Inverser(pdft.U_Embedding):
             #         taup += (phiigradj_x - phijgradi_x) ** 2 + (phiigradj_y - phijgradi_y) ** 2 + (
             #                     phiigradj_z - phijgradi_z) ** 2
 
-            taup = np.zeros(l_npoints)
-            for j in range(Nhalf):
-                for i in range(j):
-                    phiigradj = np.einsum('pm,m,n,pn->p', l_phi, lC[:, i], lC[:, j], l_phi_x, optimize=True)
-                    phijgradi = np.einsum('pm,m,n,pn->p', l_phi, lC[:, j], lC[:, i], l_phi_x, optimize=True)
-                    taup += (phiigradj - phijgradi) ** 2
             taup_rho[iw:iw + l_npoints] = taup / (2 * rho ** 2)
         return taup_rho
 
@@ -3707,10 +3707,16 @@ class Inverser(pdft.U_Embedding):
         """
         Get vxc on the grid with mRKS methods. Only works for RHF right now.
         """
+        support_methods = ["RHF", "UHF"]
+        if not self.input_density_wfn.name() in support_methods:
+            raise Exception("%s is not supported. Currently only support:"%self.input_density_wfn.name(), support_methods)
+
         if self.v0 != "Hartree":
             self.change_v0("Hartree")
-
-        vxchold = self.v_xc_hole_quadrature()
+        if self.vxc_hole_WF is None:
+            vxchold = self.v_xc_hole_quadrature()
+        else:
+            vxchold = self.vxc_hole_WF
         ebarWF = self.average_local_orbital_energy(self.input_density_wfn.Da().np, self.input_density_wfn.Ca().np, self.input_density_wfn.epsilon_a().np)
         taup_rho_WF = self.Pauli_kinetic_energy_density(self.input_density_wfn.Da().np, self.input_density_wfn.Ca().np)
         emax = self.input_density_wfn.epsilon_a().np[self.molecule.nalpha-1]
@@ -3724,7 +3730,7 @@ class Inverser(pdft.U_Embedding):
         dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
         dDb = self.input_density_wfn.Db().np - self.molecule.Db.np
         dn = self.molecule.to_grid(dDa+dDb)
-        print("|n| before", np.sum(np.abs(dn)*self.molecule.w))
+        print("\n|n| before", np.sum(np.abs(dn)*self.molecule.w))
 
         vxc_old = 0.0
         Da_old = 0.0
@@ -3732,10 +3738,11 @@ class Inverser(pdft.U_Embedding):
         for scf_step in range(1, maxiter+1):
             assert np.allclose(self.molecule.Da, self.molecule.Db), "mRKS currently only supports RHF."
 
-            ebarKS = self.average_local_orbital_energy(self.molecule.Da.np, self.molecule.Ca.np, self.molecule.eig_a.np)
+            ebarKS = self.average_local_orbital_energy(self.molecule.Da.np, self.molecule.Ca.np, self.molecule.eig_a.np + self.vout_constant)
             taup_rho_KS = self.Pauli_kinetic_energy_density(self.molecule.Da.np, self.molecule.Ca.np)
 
-            vxc = vxchold + ebarKS - ebarWF + taup_rho_WF - taup_rho_KS + self.vout_constant
+            vxc = vxchold + ebarKS - ebarWF + taup_rho_WF - taup_rho_KS #+ self.vout_constant
+            # vxc = 0.5 * (vxchold + ebarKS - ebarWF + taup_rho_WF - taup_rho_KS) + vxc_old # + self.vout_constant
 
             # vxc_Fock = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(vxc) + self.v0_Fock)
             vxc_Fock = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(vxc))
@@ -3753,11 +3760,11 @@ class Inverser(pdft.U_Embedding):
             if np.sum(np.abs(vxc - vxc_old) * self.molecule.w) < atol:
                 print("vxc stops updating.")
                 break
-            elif (np.linalg.norm(self.molecule.Da.np - Da_old) < atol) and (np.linalg.norm(self.molecule.eig_a.np - eig_old) < atol):
+            elif ((np.linalg.norm(self.molecule.Da.np - Da_old) / self.molecule.Da.np.shape[0] ** 2) < atol) and ((np.linalg.norm(self.molecule.eig_a.np - eig_old) / self.molecule.eig_a.np.shape[0]) < atol):
                 print("KSDFT stops updating.")
                 break
             else:
                 vxc_old = vxc
                 Da_old = np.copy(self.molecule.Da)
                 eig_old = np.copy(self.molecule.eig_a)
-        return vxc
+        return vxc, vxchold, ebarKS, ebarWF, taup_rho_WF, taup_rho_KS
