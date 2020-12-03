@@ -37,8 +37,8 @@ Full_Molec.set_name("Ne")
 
 #Psi4 Options:
 psi4.set_options({
-    'DFT_SPHERICAL_POINTS': 302,
-    'DFT_RADIAL_POINTS': 77,
+    # 'DFT_SPHERICAL_POINTS': 302,
+    # 'DFT_RADIAL_POINTS': 77,
     'REFERENCE' : 'UHF'
 })
 E, input_density_wfn = psi4.energy(functional+"/"+basis, molecule=Full_Molec, return_wfn=True)

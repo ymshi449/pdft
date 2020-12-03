@@ -8,7 +8,7 @@ if __name__ == "__main__":
     psi4.set_num_threads(3)
 
 functional = 'svwn'
-basis = 'cc-pvdz'
+basis = 'cc-pcvdz'
 
 vp_basis = 'cc-pcvqz'
 
@@ -42,12 +42,15 @@ Full_Molec.set_name("He")
 
 #Psi4 Options:
 psi4.set_options({
-    'DFT_SPHERICAL_POINTS': 194,
-    'DFT_RADIAL_POINTS': 44,
-    'REFERENCE' : 'UHF'
+    # 'DFT_SPHERICAL_POINTS': 194,
+    # 'DFT_RADIAL_POINTS': 44,
+    'REFERENCE' : 'RHF'
 })
-# E, input_density_wfn = psi4.energy("CCSD"+"/"+basis, molecule=Full_Molec, return_wfn=True)
-E, input_density_wfn = psi4.energy(functional+"/"+basis, molecule=Full_Molec, return_wfn=True)
+E, input_density_wfn1 = psi4.energy("CCSD"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+# E, input_density_wfn = psi4.energy("scf"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+_, input_density_wfn = psi4.properties("CCSD/"+basis, properties=['polarizability'], return_wfn=True)
+E, input_density_wfn2 = psi4.energy("scf"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+E, input_density_wfn3 = psi4.energy("CCSD"+"/"+basis, molecule=Full_Molec, return_wfn=True)
 
 mol = XC_Inversion.Molecule(Full_Molec, basis, functional)
 mol.scf_inversion(100)
@@ -66,13 +69,13 @@ inverser = XC_Inversion.Inverser(mol, input_density_wfn,
                                  v0=v0
                                  )
 
-if method == "WuYangScipy":
-    inverser.find_vxc_scipy_WuYang(opt_method=opt_method)
-elif method == "WuYangMN":
-    # rcondlist, dnlist, Llist = inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="LD")
-    inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="StrongWolfeD")
-elif method == "COScipy":
-    inverser.find_vxc_scipy_constrainedoptimization(opt_method=opt_method)
+# if method == "WuYangScipy":
+#     inverser.find_vxc_scipy_WuYang(opt_method=opt_method)
+# elif method == "WuYangMN":
+#     # rcondlist, dnlist, Llist = inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="LD")
+#     inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="StrongWolfeD")
+# elif method == "COScipy":
+#     inverser.find_vxc_scipy_constrainedoptimization(opt_method=opt_method)
 
 # data_pickle = {}
 

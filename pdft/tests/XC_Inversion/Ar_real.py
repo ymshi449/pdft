@@ -37,21 +37,20 @@ Full_Molec.set_name("Ar")
 
 #Psi4 Options:
 psi4.set_options({
-    'DFT_SPHERICAL_POINTS': 302,
-    'DFT_RADIAL_POINTS': 77,
+    # 'DFT_SPHERICAL_POINTS': 302,
+    # 'DFT_RADIAL_POINTS': 77,
     'MAXITER': 1000,
-    'BASIS': basis,
+    # 'BASIS': basis,
     'REFERENCE': 'RHF'
-})
-#  Get wfn for target density
-E_input, input_density_wfn = psi4.energy("scf"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+})#  Get wfn for target density
+_, input_density_wfn = psi4.gradient("CCSD"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+# _, input_density_wfn = psi4.energy("SCF"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+
 print("Target Density Calculation Finished.")
 
 
 #Psi4 Options:
-psi4.set_options({
-    'REFERENCE' : 'UHF'
-})
+
 mol = XC_Inversion.Molecule(Full_Molec, basis, functional)
 mol.scf_inversion(100)
 if vxc_basis is not None:

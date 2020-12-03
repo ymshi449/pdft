@@ -7,10 +7,10 @@ import numpy as np
 if __name__ == "__main__":
     psi4.set_num_threads(2)
 
-functional = 'CCSD'
+functional = "SVWN"
 basis = 'cc-pCVDZ'
 
-vp_basis = 'cc-pCV5Z'
+vp_basis = 'cc-pCVQZ'
 
 ortho_basis = False
 svd = "segment_cycle_cutoff"
@@ -40,15 +40,13 @@ Full_Molec.set_name("FC2Cl")
 
 #Psi4 Options:
 psi4.set_options({
-    'DFT_SPHERICAL_POINTS': 434,
-    'DFT_RADIAL_POINTS': 21,
-    'REFERENCE' : 'UHF'
+    'DFT_SPHERICAL_POINTS': 770,
+    'DFT_RADIAL_POINTS': 44,
+    'REFERENCE' : 'RHF'
 })
-E, input_density_wfn = psi4.energy(functional+"/"+basis, molecule=Full_Molec, return_wfn=True)
-#Psi4 Options:
-psi4.set_options({
-    'REFERENCE' : 'UHF'
-})
+_, input_density_wfn = psi4.gradient("ccsd"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+# _, input_density_wfn = psi4.energy("SCF"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+
 mol = XC_Inversion.Molecule(Full_Molec, basis, functional)
 mol.scf_inversion(100)
 if vp_basis is not None:
@@ -69,13 +67,13 @@ inverser = XC_Inversion.Inverser(mol, input_density_wfn,
 # grad, grad_app = inverser.check_gradient_constrainedoptimization()
 # hess, hess_app = inverser.check_hess_constrainedoptimization()
 
-if method == "WuYangScipy":
-    inverser.find_vxc_scipy_WuYang(opt_method=opt_method)
-elif method == "WuYangMN":
-    # rcondlist, dnlist, Llist = inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="LD")
-    inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="StrongWolfeD")
-elif method == "COScipy":
-    inverser.find_vxc_scipy_constrainedoptimization(opt_method=opt_method)
+# if method == "WuYangScipy":
+#     inverser.find_vxc_scipy_WuYang(opt_method=opt_method)
+# elif method == "WuYangMN":
+#     # rcondlist, dnlist, Llist = inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="LD")
+#     inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="StrongWolfeD")
+# elif method == "COScipy":
+#     inverser.find_vxc_scipy_constrainedoptimization(opt_method=opt_method)
 #
 # # dDa = input_density_wfn.Da().np - mol.Da.np
 # # dDb = input_density_wfn.Db().np - mol.Db.np

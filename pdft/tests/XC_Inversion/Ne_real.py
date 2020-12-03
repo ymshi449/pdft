@@ -9,8 +9,8 @@ if __name__ == "__main__":
     psi4.set_memory('4 GB')
 
 functional = 'svwn'
-basis = "cc-pcvdz"
-vxc_basis = "cc-pcvqz"
+basis = "cc-pvdz"
+vxc_basis = None
 
 ortho_basis = False
 svd = "input_once"
@@ -39,23 +39,25 @@ Full_Molec.set_name("Ne")
 Ne = np.genfromtxt('/home/yuming/PDFT/pdft/pdft/data/Atom0/ne.new8/Data')
 Ne_xyz = np.concatenate((-np.flip(Ne[:, 1]), Ne[:, 1]))
 Ne_vxc = np.concatenate((np.flip(Ne[:, 3]), Ne[:, 3]))
-
+Ne_n = np.concatenate((np.flip(Ne[:, 2]), Ne[:, 2]))
 #Psi4 Options:
 psi4.set_options({
-    'DFT_SPHERICAL_POINTS': 302,
-    'DFT_RADIAL_POINTS': 77,
-    'MAXITER': 1000,
-    'BASIS': basis,
+    'DFT_SPHERICAL_POINTS': 590,
+    'DFT_RADIAL_POINTS': 44,
+    "opdm": True,
+    "tpdm": True,
     'REFERENCE': 'RHF'
 })
 #  Get wfn for target density
-E_input, input_density_wfn = psi4.energy("svwn"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+# E_HF, wfn_HF = psi4.energy("SCF"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+# E_input, input_density_wfn = psi4.energy("CCSD"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+# _, input_density_wfn = psi4.gradient("CCSD"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+# _,input_density_wfn = psi4.properties("CCSD/"+basis, molecule=Full_Molec, properties=['polarizability'], return_wfn=True)
+_,input_density_wfn = psi4.properties("SCF/"+basis, molecule=Full_Molec,
+                                            return_wfn=True, properties=['DIPOLE'])
+
 print("Target Density Calculation Finished.")
 
-#Psi4 Options:
-psi4.set_options({
-    'REFERENCE' : 'UHF'
-})
 mol = XC_Inversion.Molecule(Full_Molec, basis, functional)
 mol.scf_inversion(100)
 if vxc_basis is not None:
@@ -80,14 +82,7 @@ inverser = XC_Inversion.Inverser(mol, input_density_wfn,
 #     hess, jac = inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="StrongWolfe")
 # elif method == "COScipy":
 #     inverser.find_vxc_scipy_constrainedoptimization(opt_method="L-BFGS-B");
-#
-# if method == "WuYangScipy":
-#     inverser.find_vxc_scipy_WuYang(opt_method=opt_method)
-# elif method == "WuYangMN":
-#     hess, jac = inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="StrongWolfe")
-# elif method == "COScipy":
-#     inverser.find_vxc_scipy_constrainedoptimization(opt_method="L-BFGS-B");
-#
+
 # L = [3, 0, 0]
 # D = [0.1, 0.5, 0.2]
 # O = [-2.1, 0, 0]
@@ -135,12 +130,8 @@ inverser = XC_Inversion.Inverser(mol, input_density_wfn,
 #%%
 # rcond = 12  # DD
 # rcond = 24  # TT
-# rcond = 46  # CDCQ
-# rcond = 75  # D/AQ
-# GL_rcond = [rcond, 2, 2]
-# # CD/AQ
-# rcond = 28  # D/AT
-# GL_rcond = [rcond, 12, 12]
+# rcond = 36  # CDCQ
+# GL_rcond = [rcond, -7, -7]
 #
 # inverser.find_vxc_manualNewton(svd_rcond=rcond*2, line_search_method="StrongWolfe", find_vxc_grid=False)
 # L = [3, 0, 0]
