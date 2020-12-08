@@ -3555,6 +3555,11 @@ class Inverser(pdft.U_Embedding):
         Calculating v_XC^hole in RKS (15) using quadrature intrgral to test the ability of it.
         :return:
         """
+        assert psi4.core.get_global_option("REFERENCE") == "RHF", "Currently only restricted is supported."
+
+        if self.vxc_hole_WF is not None:
+            return self.vxc_hole_WF
+
         support_methods = ["RHF", "UHF", "CIWavefunction"]
         if not self.input_density_wfn.name() in support_methods:
             raise Exception("%s is not supported. Currently only support:"%self.input_density_wfn.name(), support_methods)
@@ -3563,7 +3568,12 @@ class Inverser(pdft.U_Embedding):
             Tau_ijkl = self.input_density_wfn.get_tpdm("SUM", True).np
             # D2 = np.einsum("ijkl,kl->ij", Tau_ijkl, self.input_density_wfn.S().np, optimize=True) / \
             #      (self.input_density_wfn.nalpha() + self.input_density_wfn.nbeta() - 1)
-            D2 = self.input_density_wfn.get_opdm(-1,-1,"SUM",False)
+
+            D2 = self.input_density_wfn.get_opdm(-1, -1, "SUM", True).np
+            C = self.input_density_wfn.Ca()
+            Tau_ijkl = np.einsum("pqrs,ip,jq,ur,vs->ijuv", Tau_ijkl, C, C, C, C, optimize=True)
+            # D2 = np.einsum("pq,ip,jq->ij", D2, C, C, optimize=True)
+            D2 = C.np @ D2 @ C.np.T
         else:
             D2 = self.input_density_wfn.Da().np + self.input_density_wfn.Db().np
         assert np.allclose(self.v0_wfn.Da(), self.v0_wfn.Db()), "mRKS currently only supports RHF."
@@ -3605,7 +3615,7 @@ class Inverser(pdft.U_Embedding):
             lD1 = D2[(l_lpos[:, None], l_lpos)]
             # lC1 = self.v0_wfn.Ca[:, :self.v0_wfn.nalpha()]
             rho1 = np.einsum('pm,mn,pn->p', l_phi, lD1, l_phi, optimize=True)
-            rho1inv = (1/rho1)[:,None]
+            rho1inv = (1/rho1)[:, None]
 
             dvp_l = np.zeros_like(l_x)
             # Loop over the inner set of blocks
@@ -3663,7 +3673,9 @@ class Inverser(pdft.U_Embedding):
             w1_old += l_npoints
 
         print("\n")
-        return vxchole
+
+        self.vxc_hole_WF = vxchole
+        return self.vxc_hole_WF
 
     def average_local_orbital_energy(self, D, C, eig, Db=None, Cb=None, eig_b=None, blocks=None):
         """
@@ -3672,8 +3684,8 @@ class Inverser(pdft.U_Embedding):
         
         points_func = self.molecule.Vpot.properties()[0]
         points_func.set_deriv(1)
-        Nalpha = self.molecule.nalpha
-        Nbeta = self.molecule.nbeta
+        # Nalpha = self.molecule.nalpha
+        # Nbeta = self.molecule.nbeta
 
         if blocks is None:
             e_bar = np.zeros_like(self.molecule.w)
@@ -3697,14 +3709,14 @@ class Inverser(pdft.U_Embedding):
             lD = D[(l_lpos[:, None], l_lpos)]
             if Db is not None:
                 lD += Db[(l_lpos[:, None], l_lpos)]
-            lC = C[l_lpos, :Nalpha]
+            lC = C[l_lpos, :]
 
             rho = np.einsum('pm,mn,pn->p', l_phi, lD, l_phi, optimize=True)
 
-            e_bar[iw:iw+l_npoints] = np.einsum("pm,mi,ni,i,pn->p", l_phi, lC, lC, eig[:Nalpha], l_phi, optimize=True)
+            e_bar[iw:iw+l_npoints] = np.einsum("pm,mi,ni,i,pn->p", l_phi, lC, lC, eig, l_phi, optimize=True)
             if Cb is not None:
-                lC = Cb[l_lpos, :Nbeta]
-                e_bar[iw:iw + l_npoints] += np.einsum("pm,mi,ni,i,pn->p", l_phi, lC, lC, eig[:Nbeta], l_phi,
+                lC = Cb[l_lpos, :]
+                e_bar[iw:iw + l_npoints] += np.einsum("pm,mi,ni,i,pn->p", l_phi, lC, lC, eig_b, l_phi,
                                                       optimize=True)
 
             e_bar[iw:iw + l_npoints] /= rho
@@ -3712,7 +3724,7 @@ class Inverser(pdft.U_Embedding):
             iw += l_npoints
         return e_bar
 
-    def Pauli_kinetic_energy_density(self, D, C, Db=None, Cb=None, blocks=None):
+    def Pauli_kinetic_energy_density(self, D, C, occ=None, Db=None, Cb=None, occb=None, blocks=None):
         """
         (16)(18) in mRKS. But notice this does not return taup but taup/n
         :return:
@@ -3721,8 +3733,8 @@ class Inverser(pdft.U_Embedding):
         points_func = self.molecule.Vpot.properties()[0]
         points_func.set_deriv(2)
 
-        Nalpha = self.molecule.nalpha
-        Nbeta = self.molecule.nbeta
+        if occ is None:
+            occ = np.ones(C.shape[1])
 
         if blocks is None:
             taup_rho = np.zeros_like(self.molecule.w)
@@ -3750,10 +3762,12 @@ class Inverser(pdft.U_Embedding):
             lD = D[(l_lpos[:, None], l_lpos)]
             if Db is not None:
                 lD += Db[(l_lpos[:, None], l_lpos)]
+            else:
+                lD *= 2
 
             rho = np.einsum('pm,mn,pn->p', l_phi, lD, l_phi, optimize=True)
 
-            lC = C[l_lpos, :Nalpha]
+            lC = C[l_lpos, :]
             # Matrix Methods
             part_x = np.einsum('pm,mi,nj,pn->ijp', l_phi, lC, lC, l_phi_x, optimize=True)
             part_y = np.einsum('pm,mi,nj,pn->ijp', l_phi, lC, lC, l_phi_y, optimize=True)
@@ -3762,14 +3776,17 @@ class Inverser(pdft.U_Embedding):
             part1_y = part_y - np.transpose(part_y, (1,0,2))
             part1_z = part_z - np.transpose(part_z, (1,0,2))
 
+
             part1_x = np.triu(part1_x.T, k=1) ** 2
             part1_y = np.triu(part1_y.T, k=1) ** 2
             part1_z = np.triu(part1_z.T, k=1) ** 2
 
-            taup = np.sum(part1_x + part1_y + part1_z, axis=(1,2))
+            occ_matrix = occ[:,None] @ occ[:,None].T
+
+            taup = np.sum((part1_x + part1_y + part1_z) * occ_matrix, axis=(1,2))
 
             if Cb is not None:
-                lC = Cb[l_lpos, :Nbeta]
+                lC = Cb[l_lpos, :]
                 part_x = np.einsum('pm,mi,nj,pn->ijp', l_phi, lC, lC, l_phi_x, optimize=True)
                 part_y = np.einsum('pm,mi,nj,pn->ijp', l_phi, lC, lC, l_phi_y, optimize=True)
                 part_z = np.einsum('pm,mi,nj,pn->ijp', l_phi, lC, lC, l_phi_z, optimize=True)
@@ -3781,9 +3798,13 @@ class Inverser(pdft.U_Embedding):
                 part1_y = np.triu(part1_y.T, k=1) ** 2
                 part1_z = np.triu(part1_z.T, k=1) ** 2
 
-                taup += np.sum(part1_x + part1_y + part1_z, axis=(1, 2))
+                occb_matrix = occb[:, None] @ occb[:, None].T
 
-            # Loop Methods
+                taup += np.sum((part1_x + part1_y + part1_z) * occb_matrix, axis=(1, 2))
+            else:
+                taup *= 2
+
+            # Loop Methods, slow but memory friendly
             # taup = np.zeros(l_npoints)
             # for j in range(Nalpha):
             #     for i in range(j):
@@ -3809,17 +3830,83 @@ class Inverser(pdft.U_Embedding):
         if not self.input_density_wfn.name() in support_methods:
             raise Exception("%s is not supported. Currently only support:"%self.input_density_wfn.name(), support_methods)
 
+        Nalpha = self.molecule.nalpha
+        Nbeta = self.molecule.nbeta
+
+
         if self.v0 != "Hartree":
             self.change_v0("Hartree")
-        if self.vxc_hole_WF is None:
-            vxchole = self.v_xc_hole_quadrature()
-            self.vxc_hole_WF = vxchole  # store it bc calculation is too slow.
-        else:
-            vxchole = self.vxc_hole_WF
 
-        ebarWF = self.average_local_orbital_energy(self.input_density_wfn.Da().np, self.input_density_wfn.Ca().np, self.input_density_wfn.epsilon_a().np)
-        taup_rho_WF = self.Pauli_kinetic_energy_density(self.input_density_wfn.Da().np, self.input_density_wfn.Ca().np)
+        # Preparing for WF
+        if self.input_density_wfn.name() == "CIWavefunction":
+            # Solving for Generalized Fock (GFM)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+            opdm = self.input_density_wfn.get_opdm(-1,-1,"SUM",False).np
+            T = self.input_density_wfn.get_tpdm("SUM", True).np
+            Ca = self.input_density_wfn.Ca().np
+
+            # ERI Memory check
+            nbf = self.molecule.S.shape[0]
+            I_size = (nbf ** 4) * 8.e-9
+            numpy_memory = 2
+            print('Size of the ERI tensor will be %4.2f GB.' % (I_size))
+            memory_footprint = I_size * 1.5
+            if I_size > numpy_memory:
+                psi4.core.clean()
+                raise Exception("Estimated memory utilization (%4.2f GB) exceeds allotted memory \
+                                 limit of %4.2f GB." % (memory_footprint, numpy_memory))
+            else:
+                print("Memory taken by ERI integral matrix and 2pdm is: %.3f" %memory_footprint)
+            # Compute AO-basis ERIs
+            I = self.molecule.mints.ao_eri()
+            # Transfer the AO ERI into MO ERI
+            I = np.einsum("ijkl,ip,jq,kr,ls", I, Ca, Ca, Ca, Ca, optimize=True)
+            I = 0.5 * I + 0.25 * np.transpose(I, [0, 1, 3, 2]) + 0.25 * np.transpose(I, [1, 0, 2, 3])
+            # Transfer the AO H into MO h
+            h = Ca.T @ self.molecule.H.np @ Ca
+
+            # F is contructed on the basis of MOs, which are orthonormal
+            F_GFM = opdm @ h + np.einsum("aqrs,pqrs->ap", I, T, optimize=True)
+            # F_GFM = opdm @ h + np.einsum("vqrs,nqrs->nv", I, T, optimize=True)
+            F_GFM = 0.5 * (F_GFM + F_GFM.T)
+
+            # C_a, Cocc_a, D_a, eigs_a = pdft.build_orbitals(psi4.core.Matrix.from_array(F), self.molecule.A,
+            #                                                             self.molecule.nalpha)
+            nbf = self.molecule.nbf
+            C_a_GFM = psi4.core.Matrix(nbf, nbf)
+            eigs_a_GFM = psi4.core.Vector(nbf)
+            psi4.core.Matrix.from_array(F_GFM).diagonalize(C_a_GFM, eigs_a_GFM, psi4.core.DiagonalizeOrder.Descending)
+
+            eigs_a_GFM = eigs_a_GFM.np / 2.0  # RHF
+            C_a_GFM = C_a_GFM.np
+            # Transfer to AOs
+            C_a_GFM = Ca @ C_a_GFM
+            del T, I
+            # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+            # ============================================================================================
+            # Solving for Natural Orbitals (NO)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+            C_a_NO = psi4.core.Matrix(nbf, nbf)
+            eigs_a_NO = psi4.core.Vector(nbf)
+            psi4.core.Matrix.from_array(opdm).diagonalize(C_a_NO, eigs_a_NO, psi4.core.DiagonalizeOrder.Descending)
+
+            eigs_a_NO = eigs_a_NO.np / 2
+            C_a_NO = C_a_NO.np
+            C_a_NO_AO = Ca @ C_a_NO
+
+            # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+            ebarWF = self.average_local_orbital_energy(self.input_density_wfn.Da().np, C_a_GFM, eigs_a_GFM)
+            taup_rho_WF = self.Pauli_kinetic_energy_density(self.input_density_wfn.Da().np, C_a_NO_AO, eigs_a_NO)
+            # emax = eigs_a_GFM[self.molecule.nalpha-1]
+            # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        elif self.input_density_wfn.name() == "RHF":
+            ebarWF = self.average_local_orbital_energy(self.input_density_wfn.Da().np,
+                                                       self.input_density_wfn.Ca().np[:,:Nalpha], self.input_density_wfn.epsilon_a().np[:Nalpha])
+            taup_rho_WF = self.Pauli_kinetic_energy_density(self.input_density_wfn.Da().np, self.input_density_wfn.Ca().np[:,:Nalpha])
+
+        # I am not sure about this one.
         emax = self.input_density_wfn.epsilon_a().np[self.molecule.nalpha-1]
+        # emax = np.max(ebarWF)
+
+        vxchole = self.v_xc_hole_quadrature()
 
         # initial calculation:
         # vxc_Fock = psi4.core.Matrix.from_array(self.v0_Fock)
@@ -3838,9 +3925,9 @@ class Inverser(pdft.U_Embedding):
         for scf_step in range(1, maxiter+1):
             assert np.allclose(self.molecule.Da, self.molecule.Db), "mRKS currently only supports RHF."
 
-            ebarKS = self.average_local_orbital_energy(self.molecule.Da.np, self.molecule.Ca.np, self.molecule.eig_a.np + self.vout_constant)
+            ebarKS = self.average_local_orbital_energy(self.molecule.Da.np, self.molecule.Ca.np[:,:Nalpha], self.molecule.eig_a.np[:Nalpha] + self.vout_constant)
             # ebarKS = self.average_local_orbital_energy(self.molecule.Da.np, self.molecule.Ca.np, self.molecule.eig_a.np)
-            taup_rho_KS = self.Pauli_kinetic_energy_density(self.molecule.Da.np, self.molecule.Ca.np)
+            taup_rho_KS = self.Pauli_kinetic_energy_density(self.molecule.Da.np, self.molecule.Ca.np[:,:Nalpha])
 
             vxc = vxchole + ebarKS - ebarWF + taup_rho_WF - taup_rho_KS #+ self.vout_constant
             # vxc = 0.5 * (vxchole + ebarKS - ebarWF + taup_rho_WF - taup_rho_KS) + vxc_old # + self.vout_constant
@@ -3861,7 +3948,7 @@ class Inverser(pdft.U_Embedding):
             # Add mixing to help convergence HOPEFULLY
             if (np.sum(np.abs(vxc - vxc_old) * self.molecule.w) < atol * 100) or (np.sum(np.abs(vxc - vxc_old) * self.molecule.w) < atol * 100):
                 vxc = (vxc + vxc_old) * 0.5
-
+                # None
             elif np.sum(np.abs(vxc - vxc_old) * self.molecule.w) < atol:
                 print("vxc stops updating.")
                 break
