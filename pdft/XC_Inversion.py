@@ -3550,7 +3550,7 @@ class Inverser(pdft.U_Embedding):
         print("\n")
         return vH
 
-    def v_xc_hole_quadrature(self, blocks=None):
+    def vxc_hole_quadrature(self, blocks=None):
         """
         Calculating v_XC^hole in RKS (15) using quadrature intrgral to test the ability of it.
         :return:
@@ -3635,6 +3635,7 @@ class Inverser(pdft.U_Embedding):
 
                 # Build a local slice of D
                 if self.input_density_wfn.name() == "CIWavefunction":
+                # if False:
                     # lD2 = self.input_density_wfn.Da().np[(r_lpos[:, None], r_lpos)] \
                     #       + self.input_density_wfn.Db().np[(r_lpos[:, None], r_lpos)]
                     lD2 = D2[(r_lpos[:, None], r_lpos)]
@@ -3647,6 +3648,7 @@ class Inverser(pdft.U_Embedding):
                     n_xc *= rho1inv
                     n_xc -= rho2
                 elif self.input_density_wfn.name() == "RHF":
+                # elif self.input_density_wfn.name() == "RHF" or (self.input_density_wfn.name() == "CIWavefunction"):
                     lD2 = self.input_density_wfn.Da().np[(l_lpos[:, None], r_lpos)]
                     n_xc = - 2 * np.einsum("mu,nv,pm,pn,qu,qv->pq", lD2, lD2, l_phi, l_phi, r_phi, r_phi, optimize=True)
                     n_xc *= rho1inv
@@ -3673,8 +3675,8 @@ class Inverser(pdft.U_Embedding):
             w1_old += l_npoints
 
         print("\n")
-
         self.vxc_hole_WF = vxchole
+        assert w1_old == self.vxc_hole_WF.shape[0], "Somehow the whole space is not fully integrated."
         return self.vxc_hole_WF
 
     def average_local_orbital_energy(self, D, C, eig, Db=None, Cb=None, eig_b=None, blocks=None):
@@ -3722,6 +3724,7 @@ class Inverser(pdft.U_Embedding):
             e_bar[iw:iw + l_npoints] /= rho
 
             iw += l_npoints
+        assert iw == e_bar.shape[0], "Somehow the whole space is not fully integrated."
         return e_bar
 
     def Pauli_kinetic_energy_density(self, D, C, occ=None, Db=None, Cb=None, occb=None, blocks=None):
@@ -3820,6 +3823,8 @@ class Inverser(pdft.U_Embedding):
             #                     phiigradj_z - phijgradi_z) ** 2
 
             taup_rho[iw:iw + l_npoints] = taup / rho ** 2
+            iw += l_npoints
+        assert iw == taup_rho.shape[0], "Somehow the whole space is not fully integrated."
         return taup_rho
 
     def mRKS(self, maxiter=100, vxc_grid=None,scf_maxiter=300, atol=1e-3):
@@ -3846,7 +3851,7 @@ class Inverser(pdft.U_Embedding):
 
             # ERI Memory check
             nbf = self.molecule.S.shape[0]
-            I_size = (nbf ** 4) * 8.e-9
+            I_size = (nbf ** 4) * 8.e-9 * 2
             numpy_memory = 2
             print('Size of the ERI tensor will be %4.2f GB.' % (I_size))
             memory_footprint = I_size * 1.5
@@ -3866,20 +3871,19 @@ class Inverser(pdft.U_Embedding):
 
             # F is contructed on the basis of MOs, which are orthonormal
             F_GFM = opdm @ h + np.einsum("aqrs,pqrs->ap", I, T, optimize=True)
-            # F_GFM = opdm @ h + np.einsum("vqrs,nqrs->nv", I, T, optimize=True)
             F_GFM = 0.5 * (F_GFM + F_GFM.T)
 
-            # C_a, Cocc_a, D_a, eigs_a = pdft.build_orbitals(psi4.core.Matrix.from_array(F), self.molecule.A,
-            #                                                             self.molecule.nalpha)
             nbf = self.molecule.nbf
             C_a_GFM = psi4.core.Matrix(nbf, nbf)
             eigs_a_GFM = psi4.core.Vector(nbf)
-            psi4.core.Matrix.from_array(F_GFM).diagonalize(C_a_GFM, eigs_a_GFM, psi4.core.DiagonalizeOrder.Descending)
+            psi4.core.Matrix.from_array(F_GFM).diagonalize(C_a_GFM, eigs_a_GFM, psi4.core.DiagonalizeOrder.Ascending)
 
             eigs_a_GFM = eigs_a_GFM.np / 2.0  # RHF
             C_a_GFM = C_a_GFM.np
             # Transfer to AOs
             C_a_GFM = Ca @ C_a_GFM
+            print("CIWavefunction GFM eigenvalues:", eigs_a_GFM)
+
             del T, I
             # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
             # ============================================================================================
@@ -3891,9 +3895,12 @@ class Inverser(pdft.U_Embedding):
             eigs_a_NO = eigs_a_NO.np / 2
             C_a_NO = C_a_NO.np
             C_a_NO_AO = Ca @ C_a_NO
+            print("CIWavefunction Occupation Number:", eigs_a_NO)
 
             # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
             ebarWF = self.average_local_orbital_energy(self.input_density_wfn.Da().np, C_a_GFM, eigs_a_GFM)
+            # ebarWF = self.average_local_orbital_energy(self.input_density_wfn.Da().np,
+            #                                            self.input_density_wfn.Ca().np[:,:Nalpha], self.input_density_wfn.epsilon_a().np[:Nalpha])
             taup_rho_WF = self.Pauli_kinetic_energy_density(self.input_density_wfn.Da().np, C_a_NO_AO, eigs_a_NO)
             # emax = eigs_a_GFM[self.molecule.nalpha-1]
             # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -3903,16 +3910,15 @@ class Inverser(pdft.U_Embedding):
             taup_rho_WF = self.Pauli_kinetic_energy_density(self.input_density_wfn.Da().np, self.input_density_wfn.Ca().np[:,:Nalpha])
 
         # I am not sure about this one.
-        emax = self.input_density_wfn.epsilon_a().np[self.molecule.nalpha-1]
-        # emax = np.max(ebarWF)
+        # emax = self.input_density_wfn.epsilon_a().np[self.molecule.nalpha-1]
+        emax = np.max(ebarWF)
 
-        vxchole = self.v_xc_hole_quadrature()
+        vxchole = self.vxc_hole_quadrature()
 
         # initial calculation:
         # vxc_Fock = psi4.core.Matrix.from_array(self.v0_Fock)
         # self.molecule.scf_inversion(scf_maxiter, V=[vxc_Fock, vxc_Fock])
         self.molecule.scf(scf_maxiter)
-        self.vout_constant = emax - self.molecule.eig_a.np[self.molecule.nalpha-1]
 
         dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
         dDb = self.input_density_wfn.Db().np - self.molecule.Db.np
@@ -3925,20 +3931,20 @@ class Inverser(pdft.U_Embedding):
         for scf_step in range(1, maxiter+1):
             assert np.allclose(self.molecule.Da, self.molecule.Db), "mRKS currently only supports RHF."
 
-            ebarKS = self.average_local_orbital_energy(self.molecule.Da.np, self.molecule.Ca.np[:,:Nalpha], self.molecule.eig_a.np[:Nalpha] + self.vout_constant)
-            # ebarKS = self.average_local_orbital_energy(self.molecule.Da.np, self.molecule.Ca.np, self.molecule.eig_a.np)
+            # ebarKS = self.average_local_orbital_energy(self.molecule.Da.np, self.molecule.Ca.np[:,:Nalpha], self.molecule.eig_a.np[:Nalpha] + self.vout_constant)
+            ebarKS = self.average_local_orbital_energy(self.molecule.Da.np, self.molecule.Ca.np[:,:Nalpha], self.molecule.eig_a.np[:Nalpha])
             taup_rho_KS = self.Pauli_kinetic_energy_density(self.molecule.Da.np, self.molecule.Ca.np[:,:Nalpha])
 
-            vxc = vxchole + ebarKS - ebarWF + taup_rho_WF - taup_rho_KS #+ self.vout_constant
-            # vxc = 0.5 * (vxchole + ebarKS - ebarWF + taup_rho_WF - taup_rho_KS) + vxc_old # + self.vout_constant
+            self.vout_constant = emax - self.molecule.eig_a.np[self.molecule.nalpha - 1]
+            self.vout_constant = emax - np.max(ebarKS)
+
+            vxc = vxchole + ebarKS - ebarWF + taup_rho_WF - taup_rho_KS + self.vout_constant
 
             # vxc_Fock = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(vxc) + self.v0_Fock)
             vxc_Fock = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(vxc))
 
             # self.molecule.scf_inversion(100, V=[vxc_Fock, vxc_Fock])
             self.molecule.scf(scf_maxiter, vp_matrix=[vxc_Fock, vxc_Fock], vxc_flag=False)
-
-            self.vout_constant = emax - self.molecule.eig_a.np[self.molecule.nalpha - 1]
 
             dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
             dDb = self.input_density_wfn.Db().np - self.molecule.Db.np
@@ -3962,7 +3968,7 @@ class Inverser(pdft.U_Embedding):
 
         if vxc_grid is not None:
             blocks_vxc = self.get_blocks_from_grid(vxc_grid)
-            vxchole = self.v_xc_hole_quadrature(blocks=blocks_vxc)
+            vxchole = self.vxc_hole_quadrature(blocks=blocks_vxc)
             ebarWF = self.average_local_orbital_energy(self.input_density_wfn.Da().np,
                                                        self.input_density_wfn.Ca().np,
                                                        self.input_density_wfn.epsilon_a().np, blocks=blocks_vxc)
