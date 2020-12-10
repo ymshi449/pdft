@@ -827,13 +827,15 @@ class U_Molecule():
         Da = 0.5 * (Da + Da.T)
         return Da
 
-    def scf(self, maxiter, vp_matrix=None, print_energies=False):
+    def scf(self, maxiter, vp_matrix=None, vxc_flag=True, print_energies=False):
         """
         Performs scf calculation to find energy and density
         Parameters
         ----------
         vp: Bool
             Introduces a non-zero vp matrix
+
+        vxc_flag: whether to used a svwn vxc. Sometimes we don't use svwn but a given vxc in vp_matrix.
 
         vp_matrix: psi4.core.Matrix
             Vp_matrix to be added to KS matrix
@@ -905,21 +907,24 @@ class U_Molecule():
             F_a.axpy(1.0, self.jk.J()[1])
             F_b.axpy(1.0, self.jk.J()[0])
             F_b.axpy(1.0, self.jk.J()[1])
-            F_a.axpy(1.0, Vxc_a)
-            F_b.axpy(1.0, Vxc_b)
+            if vxc_flag:
+                F_a.axpy(1.0, Vxc_a)
+                F_b.axpy(1.0, Vxc_b)
             F_a.axpy(1.0, vp_a)
             F_b.axpy(1.0, vp_b)
 
             Vks_a = self.mints.ao_potential()
             Vks_a.axpy(0.5, self.jk.J()[0])  # why there is a 0.5
             Vks_a.axpy(0.5, self.jk.J()[1])  # why there is a 0.5
-            Vks_a.axpy(1.0, Vxc_a)
+            if vxc_flag:
+                Vks_a.axpy(1.0, Vxc_a)
             Vks_a.axpy(1.0, vp_a)
 
             Vks_b = self.mints.ao_potential()
             Vks_b.axpy(0.5, self.jk.J()[0])  # why there is a 0.5
             Vks_b.axpy(0.5, self.jk.J()[1])  # why there is a 0.5
-            Vks_b.axpy(1.0, Vxc_b)
+            if vxc_flag:
+                Vks_b.axpy(1.0, Vxc_b)
             Vks_b.axpy(1.0, vp_b)
 
             #DIIS
@@ -945,14 +950,16 @@ class U_Molecule():
             SCF_E = Core
             SCF_E += (Hartree_a + Hartree_b) * 0.5
             SCF_E += Partition
-            SCF_E += Exchange_Correlation
+            if vxc_flag:
+                SCF_E += Exchange_Correlation
             SCF_E += self.Enuc
 
             #print('SCF Iter%3d: % 18.14f   % 11.7f   % 1.5E   %1.5E'
             #       % (SCF_ITER, SCF_E, ks_e, (SCF_E - Eold), dRMS))
 
             dRMS = 0.5 * (np.mean(diisa_e.np**2)**0.5 + np.mean(diisb_e.np**2)**0.5)
-            print(F'SCF Convergence: NUM_ITER = {SCF_ITER} E = {SCF_E} dE = {abs(SCF_E - Eold)} dDIIS = {dRMS}')
+            if print_energies:
+                print(F'SCF Convergence: NUM_ITER = {SCF_ITER} E = {SCF_E} dE = {abs(SCF_E - Eold)} dDIIS = {dRMS}')
             if (abs(SCF_E - Eold) < E_conv) and (dRMS < D_conv):
                 if print_energies is True:
                     print(F'SCF Convergence: NUM_ITER = {SCF_ITER} dE = {abs(SCF_E - Eold)} dDIIS = {dRMS}')
@@ -3616,3 +3623,4 @@ def modified_cholesky(A, delta, beta):
     L[n-1, n-1] = 1.0
     D = np.diag(d)
     return np.tril(L), D
+
