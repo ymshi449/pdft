@@ -42,19 +42,21 @@ Ne_vxc = np.concatenate((np.flip(Ne[:, 3]), Ne[:, 3]))
 Ne_n = np.concatenate((np.flip(Ne[:, 2]), Ne[:, 2]))
 #Psi4 Options:
 psi4.set_options({
-    'DFT_SPHERICAL_POINTS': 590,
+    'DFT_SPHERICAL_POINTS': 194,
     'DFT_RADIAL_POINTS': 44,
     "opdm": True,
     "tpdm": True,
     'REFERENCE': 'RHF'
 })
 #  Get wfn for target density
-# E_HF, wfn_HF = psi4.energy("SCF"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+# E_HF, input_density_wfn = psi4.energy("SCF"+"/"+basis, molecule=Full_Molec, return_wfn=True)
 # E_input, input_density_wfn = psi4.energy("CCSD"+"/"+basis, molecule=Full_Molec, return_wfn=True)
 # _, input_density_wfn = psi4.gradient("CCSD"+"/"+basis, molecule=Full_Molec, return_wfn=True)
 # _,input_density_wfn = psi4.properties("CCSD/"+basis, molecule=Full_Molec, properties=['polarizability'], return_wfn=True)
-_,input_density_wfn = psi4.properties("SCF/"+basis, molecule=Full_Molec,
+_,input_density_wfn = psi4.properties("FCI/"+basis, molecule=Full_Molec,
                                             return_wfn=True, properties=['DIPOLE'])
+# _,input_density_wfn = psi4.energy("FCI/"+basis, molecule=Full_Molec,
+#                                   return_wfn=True)
 
 print("Target Density Calculation Finished.")
 

@@ -9,7 +9,7 @@ if __name__ == "__main__":
     psi4.set_memory('4 GB')
 
 functional = 'svwn'
-basis = "cc-pcvtz"
+basis = "cc-pvdz"
 vxc_basis = None
 
 ortho_basis = False
@@ -45,18 +45,20 @@ psi4.set_options({
     'DFT_SPHERICAL_POINTS': 302,
     'DFT_RADIAL_POINTS': 77,
     'MAXITER': 1000,
-    'BASIS': basis,
+    "opdm": True,
+    "tpdm": True,
     'REFERENCE': 'RHF'
 })
 #  Get wfn for target density
-E_input, input_density_wfn = psi4.energy("scf"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+_, input_density_wfn = psi4.properties("CISD"+"/"+basis, molecule=Full_Molec,
+                                       return_wfn=True, properties=["dipole"])
 print("Target Density Calculation Finished.")
 
 
 #Psi4 Options:
-psi4.set_options({
-    'REFERENCE' : 'UHF'
-})
+# psi4.set_options({
+#     'REFERENCE' : 'UHF'
+# })
 mol = XC_Inversion.Molecule(Full_Molec, basis, functional)
 mol.scf_inversion(100)
 if vxc_basis is not None:

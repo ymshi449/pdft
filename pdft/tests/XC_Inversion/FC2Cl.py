@@ -8,9 +8,9 @@ if __name__ == "__main__":
     psi4.set_num_threads(2)
 
 functional = "SVWN"
-basis = 'cc-pCVDZ'
+basis = 'cc-pVDZ'
 
-vp_basis = 'cc-pCVQZ'
+vp_basis = None
 
 ortho_basis = False
 svd = "segment_cycle_cutoff"
@@ -40,11 +40,13 @@ Full_Molec.set_name("FC2Cl")
 
 #Psi4 Options:
 psi4.set_options({
-    'DFT_SPHERICAL_POINTS': 770,
-    'DFT_RADIAL_POINTS': 44,
+    'DFT_SPHERICAL_POINTS': 434,
+    'DFT_RADIAL_POINTS': 35,
+    "opdm": True,
+    "tpdm": True,
     'REFERENCE' : 'RHF'
 })
-_, input_density_wfn = psi4.gradient("ccsd"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+_, input_density_wfn = psi4.properties("CISD"+"/"+basis, molecule=Full_Molec, return_wfn=True, properties=["dipole"])
 # _, input_density_wfn = psi4.energy("SCF"+"/"+basis, molecule=Full_Molec, return_wfn=True)
 
 mol = XC_Inversion.Molecule(Full_Molec, basis, functional)
@@ -63,7 +65,7 @@ inverser = XC_Inversion.Inverser(mol, input_density_wfn,
                                  vxc_basis=vp_basis,
                                  v0=v0
                                  )
-
+v = inverser.mRKS()
 # grad, grad_app = inverser.check_gradient_constrainedoptimization()
 # hess, hess_app = inverser.check_hess_constrainedoptimization()
 
