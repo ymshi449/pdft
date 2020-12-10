@@ -9,8 +9,8 @@ import pdft
 import scipy.optimize as optimizer
 import scipy.stats as stats
 from lbfgs import fmin_lbfgs
-from scipy.linalg import eig as scipy_eig
-
+# from scipy.linalg import eig as scipy_eig
+import time
 
 if __name__ == "__main__":
     psi4.set_num_threads(2)
@@ -3591,6 +3591,7 @@ class Inverser(pdft.U_Embedding):
         num_block_ten_percent = int(nblocks / 10)
         w1_old = 0
         print("vxchole quadrature integral starts: ", end="")
+        start_time = time.time()
         for l_block in range(nblocks):
             # Print out progress
             if num_block_ten_percent != 0 and l_block % num_block_ten_percent == 0:
@@ -3675,6 +3676,8 @@ class Inverser(pdft.U_Embedding):
             w1_old += l_npoints
 
         print("\n")
+        print("Totally %i grid points takes %.2fs with max %i points in a block."
+              % (vxchole.shape[0], time.time() - start_time, psi4.core.get_global_option("DFT_BLOCK_MAX_POINTS")))
         self.vxc_hole_WF = vxchole
         assert w1_old == self.vxc_hole_WF.shape[0], "Somehow the whole space is not fully integrated."
         return self.vxc_hole_WF
@@ -3809,7 +3812,7 @@ class Inverser(pdft.U_Embedding):
 
             # Loop Methods, slow but memory friendly
             # taup = np.zeros(l_npoints)
-            # for j in range(Nalpha):
+            # for j in range(lC.shape[1]):
             #     for i in range(j):
             #         phiigradj_x = np.einsum('pm,m,n,pn->p', l_phi, lC[:, i], lC[:, j], l_phi_x, optimize=True)
             #         phijgradi_x = np.einsum('pm,m,n,pn->p', l_phi, lC[:, j], lC[:, i], l_phi_x, optimize=True)
@@ -3827,7 +3830,7 @@ class Inverser(pdft.U_Embedding):
         assert iw == taup_rho.shape[0], "Somehow the whole space is not fully integrated."
         return taup_rho
 
-    def mRKS(self, maxiter=100, vxc_grid=None,scf_maxiter=300, atol=1e-3):
+    def mRKS(self, maxiter=100, vxc_grid=None, scf_maxiter=300, v_tol=1e-3, D_tol=1e-7, eig_tol=1e-7, frac_old=0):
         """
         Get vxc on the grid with mRKS methods. Only works for RHF right now.
         """
@@ -3853,7 +3856,7 @@ class Inverser(pdft.U_Embedding):
             nbf = self.molecule.S.shape[0]
             I_size = (nbf ** 4) * 8.e-9 * 2
             numpy_memory = 2
-            print('Size of the ERI tensor will be %4.2f GB.' % (I_size))
+            print('Size of the ERI tensor and 2-particle DM will be %4.2f GB.' % (I_size))
             memory_footprint = I_size * 1.5
             if I_size > numpy_memory:
                 psi4.core.clean()
@@ -3870,7 +3873,8 @@ class Inverser(pdft.U_Embedding):
             h = Ca.T @ self.molecule.H.np @ Ca
 
             # F is contructed on the basis of MOs, which are orthonormal
-            F_GFM = opdm @ h + np.einsum("aqrs,pqrs->ap", I, T, optimize=True)
+            # F_GFM = opdm @ h + np.einsum("aqrs,pqrs->ap", I, T, optimize=True)
+            F_GFM = opdm @ h + np.einsum("rsnq,rsmq->mn", I, T, optimize=True)
             F_GFM = 0.5 * (F_GFM + F_GFM.T)
 
             nbf = self.molecule.nbf
@@ -3928,7 +3932,7 @@ class Inverser(pdft.U_Embedding):
         vxc_old = 0.0
         Da_old = 0.0
         eig_old = 0.0
-        for scf_step in range(1, maxiter+1):
+        for mRKS_step in range(1, maxiter+1):
             assert np.allclose(self.molecule.Da, self.molecule.Db), "mRKS currently only supports RHF."
 
             # ebarKS = self.average_local_orbital_energy(self.molecule.Da.np, self.molecule.Ca.np[:,:Nalpha], self.molecule.eig_a.np[:Nalpha] + self.vout_constant)
@@ -3940,25 +3944,31 @@ class Inverser(pdft.U_Embedding):
 
             vxc = vxchole + ebarKS - ebarWF + taup_rho_WF - taup_rho_KS + self.vout_constant
 
+            # Add compulsory mixing parameter close to the convergence to help convergence HOPEFULLY
+            # Check vp convergence
+            if (np.sum(np.abs(vxc - vxc_old) * self.molecule.w) < v_tol * 100) or \
+                    (np.sum(np.abs(vxc - vxc_old) * self.molecule.w) < v_tol * 100) and mRKS_step != 1:
+                vxc = (vxc + vxc_old) * 0.5
+                print("mixing")
+            elif np.sum(np.abs(vxc - vxc_old) * self.molecule.w) < v_tol:
+                print("vxc stops updating.")
+                break
+            elif mRKS_step != 1:
+                vxc = vxc * (1 - frac_old) + vxc_old * frac_old
+
             # vxc_Fock = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(vxc) + self.v0_Fock)
             vxc_Fock = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(vxc))
-
             # self.molecule.scf_inversion(100, V=[vxc_Fock, vxc_Fock])
             self.molecule.scf(scf_maxiter, vp_matrix=[vxc_Fock, vxc_Fock], vxc_flag=False)
 
             dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
             dDb = self.input_density_wfn.Db().np - self.molecule.Db.np
             dn = self.molecule.to_grid(dDa + dDb)
-            print("Iter: %i,  |n|: %.4e"%(scf_step, np.sum(np.abs(dn) * self.molecule.w)))
+            print("Iter: %i,  |n|: %.4e"%(mRKS_step, np.sum(np.abs(dn) * self.molecule.w)))
 
-            # Add mixing to help convergence HOPEFULLY
-            if (np.sum(np.abs(vxc - vxc_old) * self.molecule.w) < atol * 100) or (np.sum(np.abs(vxc - vxc_old) * self.molecule.w) < atol * 100):
-                vxc = (vxc + vxc_old) * 0.5
-                # None
-            elif np.sum(np.abs(vxc - vxc_old) * self.molecule.w) < atol:
-                print("vxc stops updating.")
-                break
-            elif ((np.linalg.norm(self.molecule.Da.np - Da_old) / self.molecule.Da.np.shape[0] ** 2) < atol) and ((np.linalg.norm(self.molecule.eig_a.np - eig_old) / self.molecule.eig_a.np.shape[0]) < atol):
+            # Another convergence criteria, DM
+            if ((np.linalg.norm(self.molecule.Da.np - Da_old) / self.molecule.Da.np.shape[0] ** 2) < D_tol) and \
+                    ((np.linalg.norm(self.molecule.eig_a.np - eig_old) / self.molecule.eig_a.np.shape[0]) < eig_tol):
                 print("KSDFT stops updating.")
                 break
 
