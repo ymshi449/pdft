@@ -11,7 +11,7 @@ import scipy.stats as stats
 from lbfgs import fmin_lbfgs
 # from scipy.linalg import eig as scipy_eig
 import time
-
+from opt_einsum import contract
 if __name__ == "__main__":
     psi4.set_num_threads(2)
 
@@ -3555,28 +3555,29 @@ class Inverser(pdft.U_Embedding):
         Calculating v_XC^hole in RKS (15) using quadrature intrgral to test the ability of it.
         :return:
         """
-        assert psi4.core.get_global_option("REFERENCE") == "RHF", "Currently only restricted is supported."
+        assert psi4.core.get_global_option(
+            "REFERENCE") == "RHF", "Currently only restricted is supported."
 
         if self.vxc_hole_WF is not None:
             return self.vxc_hole_WF
 
         support_methods = ["RHF", "UHF", "CIWavefunction"]
         if not self.input_density_wfn.name() in support_methods:
-            raise Exception("%s is not supported. Currently only support:"%self.input_density_wfn.name(), support_methods)
+            raise Exception("%s is not supported. Currently only support:"% self.input_density_wfn.name(), support_methods)
         elif self.input_density_wfn.name() == "CIWavefunction":
-            # Tau_ijkl = self.input_density_wfn.get_tpdm("SUM", False).np
+
             Tau_ijkl = self.input_density_wfn.get_tpdm("SUM", True).np
-            # D2 = np.einsum("ijkl,kl->ij", Tau_ijkl, self.input_density_wfn.S().np, optimize=True) / \
-            #      (self.input_density_wfn.nalpha() + self.input_density_wfn.nbeta() - 1)
 
             D2 = self.input_density_wfn.get_opdm(-1, -1, "SUM", True).np
             C = self.input_density_wfn.Ca()
-            Tau_ijkl = np.einsum("pqrs,ip,jq,ur,vs->ijuv", Tau_ijkl, C, C, C, C, optimize=True)
-            # D2 = np.einsum("pq,ip,jq->ij", D2, C, C, optimize=True)
+            Tau_ijkl = contract("pqrs,ip,jq,ur,vs->ijuv", Tau_ijkl, C, C, C, C)
+
             D2 = C.np @ D2 @ C.np.T
+
         else:
             D2 = self.input_density_wfn.Da().np + self.input_density_wfn.Db().np
-        assert np.allclose(self.v0_wfn.Da(), self.v0_wfn.Db()), "mRKS currently only supports RHF."
+
+        # assert np.allclose(self.v0_wfn.Da(), self.v0_wfn.Db()), "mRKS currently only supports RHF."
         points_func = self.molecule.Vpot.properties()[0]
         points_func.set_deriv(2)
 
@@ -3587,10 +3588,12 @@ class Inverser(pdft.U_Embedding):
             blocks, npoints = blocks
             vxchole = np.zeros(npoints)
             nblocks = len(blocks)
+
+        points_func_time = 0.0
         # First loop over the outer set of blocks
         num_block_ten_percent = int(nblocks / 10)
         w1_old = 0
-        print("vxchole quadrature integral starts: ", end="")
+        print("vxchole quadrature with %s integral starts: " % (self.input_density_wfn.name()), end="")
         start_time = time.time()
         for l_block in range(nblocks):
             # Print out progress
@@ -3608,14 +3611,16 @@ class Inverser(pdft.U_Embedding):
             l_z = np.array(l_grid.z())
             l_npoints = l_x.shape[0]
 
+            points_func_time_start = time.time()
             points_func.compute_points(l_grid)
+            points_func_time += time.time() - points_func_time_start
             l_lpos = np.array(l_grid.functions_local_to_global())
             l_phi = np.array(points_func.basis_values()["PHI"])[:l_npoints, :l_lpos.shape[0]]
             # lD1 = self.input_density_wfn.Da().np[(l_lpos[:, None], l_lpos)] + \
             #       self.input_density_wfn.Db().np[(l_lpos[:, None], l_lpos)]
             lD1 = D2[(l_lpos[:, None], l_lpos)]
             # lC1 = self.v0_wfn.Ca[:, :self.v0_wfn.nalpha()]
-            rho1 = np.einsum('pm,mn,pn->p', l_phi, lD1, l_phi, optimize=True)
+            rho1 = contract('pm,mn,pn->p', l_phi, lD1, l_phi)
             rho1inv = (1/rho1)[:, None]
 
             dvp_l = np.zeros_like(l_x)
@@ -3628,7 +3633,10 @@ class Inverser(pdft.U_Embedding):
                 r_z = np.array(r_grid.z())
                 r_npoints = r_w.shape[0]
 
+                points_func_time_start = time.time()
                 points_func.compute_points(r_grid)
+                points_func_time += time.time() - points_func_time_start
+
                 r_lpos = np.array(r_grid.functions_local_to_global())
 
                 # Compute phi!
@@ -3641,23 +3649,21 @@ class Inverser(pdft.U_Embedding):
                     #       + self.input_density_wfn.Db().np[(r_lpos[:, None], r_lpos)]
                     lD2 = D2[(r_lpos[:, None], r_lpos)]
 
-                    rho2 = np.einsum('pm,mn,pn->p', r_phi, lD2, r_phi, optimize=True)
+                    rho2 = contract('pm,mn,pn->p', r_phi, lD2, r_phi)
 
                     p,q,r,s = np.meshgrid(l_lpos, l_lpos, r_lpos, r_lpos, indexing="ij")
                     Tap_temp = Tau_ijkl[p,q,r,s]
-                    n_xc = np.einsum("mnuv,pm,pn,qu,qv->pq", Tap_temp, l_phi, l_phi, r_phi, r_phi, optimize=True)
+                    n_xc = contract("mnuv,pm,pn,qu,qv->pq", Tap_temp, l_phi, l_phi, r_phi, r_phi)
                     n_xc *= rho1inv
                     n_xc -= rho2
                 elif self.input_density_wfn.name() == "RHF":
                 # elif self.input_density_wfn.name() == "RHF" or (self.input_density_wfn.name() == "CIWavefunction"):
                     lD2 = self.input_density_wfn.Da().np[(l_lpos[:, None], r_lpos)]
-                    n_xc = - 2 * np.einsum("mu,nv,pm,pn,qu,qv->pq", lD2, lD2, l_phi, l_phi, r_phi, r_phi, optimize=True)
+                    n_xc = - 2 * contract("mu,nv,pm,pn,qu,qv->pq", lD2, lD2, l_phi, l_phi, r_phi, r_phi)
                     n_xc *= rho1inv
                 elif self.input_density_wfn.name() == "UHF":
-                    lD2 = self.input_density_wfn.Da().np[(l_lpos[:, None], r_lpos)]
-                    n_xc = - np.einsum("mu,nv,pm,pn,qu,qv->pq", lD2, lD2, l_phi, l_phi, r_phi, r_phi, optimize=True)
-                    lD2 = self.input_density_wfn.Db().np[(l_lpos[:, None], r_lpos)]
-                    n_xc += - np.einsum("mu,nv,pm,pn,qu,qv->pq", lD2, lD2, l_phi, l_phi, r_phi, r_phi, optimize=True)
+                    lD2 = self.input_density_wfn.Da().np[(l_lpos[:, None], r_lpos)] + self.input_density_wfn.Db().np[(l_lpos[:, None], r_lpos)]
+                    n_xc = - contract("mu,nv,pm,pn,qu,qv->pq", lD2, lD2, l_phi, l_phi, r_phi, r_phi)
                     n_xc *= rho1inv
 
                 # Build the distnace matrix
@@ -3678,6 +3684,7 @@ class Inverser(pdft.U_Embedding):
         print("\n")
         print("Totally %i grid points takes %.2fs with max %i points in a block."
               % (vxchole.shape[0], time.time() - start_time, psi4.core.get_global_option("DFT_BLOCK_MAX_POINTS")))
+        print("Points_function_time: %.2f"%points_func_time)
         self.vxc_hole_WF = vxchole
         assert w1_old == self.vxc_hole_WF.shape[0], "Somehow the whole space is not fully integrated."
         return self.vxc_hole_WF
@@ -3822,8 +3829,8 @@ class Inverser(pdft.U_Embedding):
             #
             #         phiigradj_z = np.einsum('pm,m,n,pn->p', l_phi, lC[:, i], lC[:, j], l_phi_z, optimize=True)
             #         phijgradi_z = np.einsum('pm,m,n,pn->p', l_phi, lC[:, j], lC[:, i], l_phi_z, optimize=True)
-            #         taup += (phiigradj_x - phijgradi_x) ** 2 + (phiigradj_y - phijgradi_y) ** 2 + (
-            #                     phiigradj_z - phijgradi_z) ** 2
+            #         taup += ((phiigradj_x - phijgradi_x) ** 2 + (phiigradj_y - phijgradi_y) ** 2 + (
+            #                 phiigradj_z - phijgradi_z) ** 2) * occ[i] * occ[j]
 
             taup_rho[iw:iw + l_npoints] = taup / rho ** 2
             iw += l_npoints
@@ -3946,10 +3953,8 @@ class Inverser(pdft.U_Embedding):
 
             # Add compulsory mixing parameter close to the convergence to help convergence HOPEFULLY
             # Check vp convergence
-            if (np.sum(np.abs(vxc - vxc_old) * self.molecule.w) < v_tol * 100) or \
-                    (np.sum(np.abs(vxc - vxc_old) * self.molecule.w) < v_tol * 100) and mRKS_step != 1:
+            if (np.sum(np.abs(vxc - vxc_old) * self.molecule.w) < v_tol * 100)  and mRKS_step != 1:
                 vxc = (vxc + vxc_old) * 0.5
-                print("mixing")
             elif np.sum(np.abs(vxc - vxc_old) * self.molecule.w) < v_tol:
                 print("vxc stops updating.")
                 break

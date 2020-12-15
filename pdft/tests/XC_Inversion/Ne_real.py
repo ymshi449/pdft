@@ -5,11 +5,15 @@ import libcubeprop
 import numpy as np
 
 if __name__ == "__main__":
-    psi4.set_num_threads(3)
-    psi4.set_memory('4 GB')
+    psi4.set_num_threads(2)
+    psi4.set_memory('3 GB')
+spherical_points = 974
+radial_points = 140
+
+input_density_wfn_method = "DETCI"
 
 functional = 'svwn'
-basis = "cc-pvdz"
+basis = "cc-pcvdz"
 vxc_basis = None
 
 ortho_basis = False
@@ -18,9 +22,12 @@ opt_method="trust-krylov"
 method = "WuYangScipy"
 v0 = "FermiAmaldi"
 
-title = method +"_"+ opt_method +"_"+v0+ "_" + basis+"_"+ \
-        str(vxc_basis) + "_"\
-        + str(ortho_basis) + "_" + str(svd)
+title = method +"\n"+ \
+        basis + "/" + str(vxc_basis) + str(ortho_basis) + "\n" + \
+        input_density_wfn_method + "\n" +\
+        "grid"+str(radial_points)+"/"+str(spherical_points)+"\n"+\
+        v0 + "\n"\
+        + opt_method + "_" + str(svd)
 print(title)
 
 psi4.set_output_file("Ne.psi4")
@@ -42,21 +49,24 @@ Ne_vxc = np.concatenate((np.flip(Ne[:, 3]), Ne[:, 3]))
 Ne_n = np.concatenate((np.flip(Ne[:, 2]), Ne[:, 2]))
 #Psi4 Options:
 psi4.set_options({
-    'DFT_SPHERICAL_POINTS': 194,
-    'DFT_RADIAL_POINTS': 44,
+    'DFT_SPHERICAL_POINTS': spherical_points,
+    'DFT_RADIAL_POINTS': radial_points,
     "opdm": True,
     "tpdm": True,
     'REFERENCE': 'RHF'
 })
+
+print("Target Density Calculation Started.")
 #  Get wfn for target density
 # E_HF, input_density_wfn = psi4.energy("SCF"+"/"+basis, molecule=Full_Molec, return_wfn=True)
 # E_input, input_density_wfn = psi4.energy("CCSD"+"/"+basis, molecule=Full_Molec, return_wfn=True)
 # _, input_density_wfn = psi4.gradient("CCSD"+"/"+basis, molecule=Full_Molec, return_wfn=True)
 # _,input_density_wfn = psi4.properties("CCSD/"+basis, molecule=Full_Molec, properties=['polarizability'], return_wfn=True)
-_,input_density_wfn = psi4.properties("FCI/"+basis, molecule=Full_Molec,
-                                            return_wfn=True, properties=['DIPOLE'])
-# _,input_density_wfn = psi4.energy("FCI/"+basis, molecule=Full_Molec,
-#                                   return_wfn=True)
+# _,input_density_wfn = psi4.properties("CISD/"+basis, molecule=Full_Molec,
+#                                             return_wfn=True, properties=['DIPOLE'])
+if input_density_wfn_method == "DETCI":
+    E_input,input_density_wfn = psi4.energy("DETCI/"+basis, molecule=Full_Molec,
+                                            return_wfn=True)
 
 print("Target Density Calculation Finished.")
 
