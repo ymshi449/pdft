@@ -7,10 +7,11 @@ import numpy as np
 if __name__ == "__main__":
     psi4.set_num_threads(2)
     psi4.set_memory('3 GB')
-spherical_points = 974
+spherical_points = 350
 radial_points = 140
 
-input_density_wfn_method = "DETCI"
+input_density_wfn_method = "SCF"
+reference = "UHF"
 
 functional = 'svwn'
 basis = "cc-pcvdz"
@@ -25,6 +26,7 @@ v0 = "FermiAmaldi"
 title = method +"\n"+ \
         basis + "/" + str(vxc_basis) + str(ortho_basis) + "\n" + \
         input_density_wfn_method + "\n" +\
+        reference + "\n" + \
         "grid"+str(radial_points)+"/"+str(spherical_points)+"\n"+\
         v0 + "\n"\
         + opt_method + "_" + str(svd)
@@ -53,20 +55,25 @@ psi4.set_options({
     'DFT_RADIAL_POINTS': radial_points,
     "opdm": True,
     "tpdm": True,
-    'REFERENCE': 'RHF'
+    'REFERENCE': reference
 })
 
 print("Target Density Calculation Started.")
 #  Get wfn for target density
-# E_HF, input_density_wfn = psi4.energy("SCF"+"/"+basis, molecule=Full_Molec, return_wfn=True)
 # E_input, input_density_wfn = psi4.energy("CCSD"+"/"+basis, molecule=Full_Molec, return_wfn=True)
 # _, input_density_wfn = psi4.gradient("CCSD"+"/"+basis, molecule=Full_Molec, return_wfn=True)
 # _,input_density_wfn = psi4.properties("CCSD/"+basis, molecule=Full_Molec, properties=['polarizability'], return_wfn=True)
 # _,input_density_wfn = psi4.properties("CISD/"+basis, molecule=Full_Molec,
 #                                             return_wfn=True, properties=['DIPOLE'])
-if input_density_wfn_method == "DETCI":
+if input_density_wfn_method.upper() == "DETCI":
     E_input,input_density_wfn = psi4.energy("DETCI/"+basis, molecule=Full_Molec,
                                             return_wfn=True)
+elif input_density_wfn_method.upper() == "SVWN":
+    E_input,input_density_wfn = psi4.energy("SVWN/"+basis, molecule=Full_Molec,
+                                            return_wfn=True)
+elif input_density_wfn_method.upper() == "SCF":
+    E_HF, input_density_wfn = psi4.energy("SCF"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+
 
 print("Target Density Calculation Finished.")
 
