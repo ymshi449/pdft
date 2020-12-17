@@ -3594,7 +3594,7 @@ class Inverser(pdft.U_Embedding):
         # First loop over the outer set of blocks
         num_block_ten_percent = int(nblocks / 10)
         w1_old = 0
-        print("vxchole quadrature with %s integral starts: " % (self.input_density_wfn.name()), end="")
+        print("vxchole quadrature with %s integral starts (%i points): " % (self.input_density_wfn.name(), self.molecule.w.shape[0]), end="")
         start_time = time.time()
         for l_block in range(nblocks):
             # Print out progress
@@ -3768,8 +3768,8 @@ class Inverser(pdft.U_Embedding):
 
         if occ is None:
             occ = np.ones(C.shape[1])
-        if occb is None:
-            occb = np.ones(C.shape[1])
+        if occb is None and (Db is not None):
+            occb = np.ones(Cb.shape[1])
 
         if blocks is None:
             taup_rho = np.zeros_like(self.molecule.w)
@@ -3952,7 +3952,7 @@ class Inverser(pdft.U_Embedding):
         dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
         dDb = self.input_density_wfn.Db().np - self.molecule.Db.np
         dn = self.molecule.to_grid(dDa+dDb)
-        print("\n|n| before", np.sum(np.abs(dn)*self.molecule.w))
+        print("\n|n| LDA", np.sum(np.abs(dn)*self.molecule.w))
 
         vxc_old = 0.0
         Da_old = 0.0
