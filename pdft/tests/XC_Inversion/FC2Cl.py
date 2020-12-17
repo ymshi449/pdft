@@ -7,20 +7,29 @@ import numpy as np
 if __name__ == "__main__":
     psi4.set_num_threads(2)
 
-functional = "SVWN"
-basis = 'cc-pVDZ'
+spherical_points = 350
+radial_points = 140
 
-vp_basis = None
+input_density_wfn_method = "SCF"
+reference = "UHF"
+
+functional = 'svwn'
+basis = "cc-pvqz"
+vxc_basis = None
 
 ortho_basis = False
-svd = "segment_cycle_cutoff"
+svd = "input_once"
 opt_method="trust-krylov"
 method = "WuYangScipy"
 v0 = "FermiAmaldi"
 
-title = method +"_"+ opt_method +"_"+v0+ "_" + basis+"_"+ \
-        str(vp_basis) + "_"\
-        + str(ortho_basis) + "_" + str(svd)
+title = method +"\n"+ \
+        basis + "/" + str(vxc_basis) + str(ortho_basis) + "\n" + \
+        input_density_wfn_method + "\n" +\
+        reference + "\n" + \
+        "grid"+str(radial_points)+"/"+str(spherical_points)+"\n"+\
+        v0 + "\n"\
+        + opt_method + "_" + str(svd)
 print(title)
 
 psi4.set_output_file("FC2Cl.psi4")
@@ -51,18 +60,18 @@ _, input_density_wfn = psi4.properties("CISD"+"/"+basis, molecule=Full_Molec, re
 
 mol = XC_Inversion.Molecule(Full_Molec, basis, functional)
 mol.scf_inversion(100)
-if vp_basis is not None:
-    vp_basis = XC_Inversion.Molecule(Full_Molec, vp_basis, functional, jk="No Need for JK")
-    print("Number of Basis: ", mol.nbf, vp_basis.nbf)
-    # assert vp_basis.nbf < 230
-    vp_basis.scf_inversion(10)
+if vxc_basis is not None:
+    vxc_basis = XC_Inversion.Molecule(Full_Molec, vxc_basis, functional, jk="No Need for JK")
+    print("Number of Basis: ", mol.nbf, vxc_basis.nbf)
+    # assert vxc_basis.nbf < 230
+    vxc_basis.scf_inversion(10)
 else:
-    vp_basis = mol
-    print("Number of Basis: ", mol.nbf, vp_basis.nbf)
+    vxc_basis = mol
+    print("Number of Basis: ", mol.nbf, vxc_basis.nbf)
 
 inverser = XC_Inversion.Inverser(mol, input_density_wfn,
                                  ortho_basis=ortho_basis,
-                                 vxc_basis=vp_basis,
+                                 vxc_basis=vxc_basis,
                                  v0=v0
                                  )
 v = inverser.mRKS()
@@ -83,7 +92,7 @@ v = inverser.mRKS()
 
 # f,ax = plt.subplots(1,1,dpi=200)
 # XC_Inversion.pdft.plot1d_x(inverser.input_vxc_a, input_density_wfn.V_potential(), ax=ax, label="LDA")
-# XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vp_basis.Vpot, ax=ax, label="WuYang", ls='--')
+# XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, vxc_basis.Vpot, ax=ax, label="WuYang", ls='--')
 # ax.legend()
 # ax.set_xlim(-7.5,5.5)
 # f.show()

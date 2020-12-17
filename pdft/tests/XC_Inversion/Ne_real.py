@@ -14,7 +14,7 @@ input_density_wfn_method = "SCF"
 reference = "UHF"
 
 functional = 'svwn'
-basis = "cc-pcvdz"
+basis = "cc-pvqz"
 vxc_basis = None
 
 ortho_basis = False
@@ -37,7 +37,7 @@ psi4.set_output_file("Ne.psi4")
 Full_Molec = psi4.geometry("""
 nocom
 noreorient
-Ne
+Sc
 units bohr
 symmetry c1
 """)
@@ -55,6 +55,7 @@ psi4.set_options({
     'DFT_RADIAL_POINTS': radial_points,
     "opdm": True,
     "tpdm": True,
+    "maxiter": 1000,
     'REFERENCE': reference
 })
 
@@ -73,8 +74,6 @@ elif input_density_wfn_method.upper() == "SVWN":
                                             return_wfn=True)
 elif input_density_wfn_method.upper() == "SCF":
     E_HF, input_density_wfn = psi4.energy("SCF"+"/"+basis, molecule=Full_Molec, return_wfn=True)
-
-
 print("Target Density Calculation Finished.")
 
 mol = XC_Inversion.Molecule(Full_Molec, basis, functional)

@@ -7,10 +7,15 @@ import numpy as np
 if __name__ == "__main__":
     psi4.set_num_threads(2)
 
-functional = 'svwn'
-basis = 'cc-pCVDZ'
+spherical_points = 350
+radial_points = 140
 
-vp_basis = 'cc-pCVTZ'
+input_density_wfn_method = "SCF"
+reference = "RHF"
+
+functional = 'svwn'
+basis = "cc-pvdz"
+vxc_basis = None
 
 ortho_basis = False
 svd = "input_once"
@@ -18,9 +23,13 @@ opt_method="trust-krylov"
 method = "WuYangScipy"
 v0 = "FermiAmaldi"
 
-title = method +"_"+ opt_method +"_"+v0+ "_" + basis+"_"+ \
-        str(vp_basis) + "_"\
-        + str(ortho_basis) + "_" + str(svd)
+title = method +"\n"+ \
+        basis + "/" + str(vxc_basis) + str(ortho_basis) + "\n" + \
+        input_density_wfn_method + "\n" +\
+        reference + "\n" + \
+        "grid"+str(radial_points)+"/"+str(spherical_points)+"\n"+\
+        v0 + "\n"\
+        + opt_method + "_" + str(svd)
 print(title)
 
 psi4.set_output_file("formic_lda.psi4")
@@ -46,49 +55,57 @@ Full_Molec.set_name("formic")
 
 #Psi4 Options:
 psi4.set_options({
-    'DFT_SPHERICAL_POINTS': 194,
-    'DFT_RADIAL_POINTS': 44,
-    'REFERENCE' : 'UHF'
+    'DFT_SPHERICAL_POINTS': spherical_points,
+    'DFT_RADIAL_POINTS': radial_points,
+    "opdm": True,
+    "tpdm": True,
+    "maxiter": 1000,
+    'REFERENCE': reference
 })
-E, input_density_wfn = psi4.energy(functional+"/"+basis, molecule=Full_Molec, return_wfn=True)
-#Psi4 Options:
-psi4.set_options({
-    'REFERENCE' : 'UHF'
-})
+
+print("Target Density Calculation Started.")
+if input_density_wfn_method.upper() == "DETCI":
+    E_input,input_density_wfn = psi4.energy("DETCI/"+basis, molecule=Full_Molec,
+                                            return_wfn=True)
+elif input_density_wfn_method.upper() == "SVWN":
+    E_input,input_density_wfn = psi4.energy("SVWN/"+basis, molecule=Full_Molec,
+                                            return_wfn=True)
+elif input_density_wfn_method.upper() == "SCF":
+    E_HF, input_density_wfn = psi4.energy("SCF"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+print("Target Density Calculation Finished.")
+
 mol = XC_Inversion.Molecule(Full_Molec, basis, functional)
 mol.scf_inversion(100)
-if vp_basis is not None:
-    vp_basis = XC_Inversion.Molecule(Full_Molec, vp_basis, functional, jk="No Need for JK")
-    print("Number of Basis: ", mol.nbf, vp_basis.nbf)
-    # assert vp_basis.nbf < 230
-    vp_basis.scf_inversion(10)
+if vxc_basis is not None:
+    vxc_basis = XC_Inversion.Molecule(Full_Molec, vxc_basis, functional, jk="No Need for JK")
+    print("Number of Basis: ", mol.nbf, vxc_basis.nbf)
+    # assert vxc_basis.nbf < 230
+    vxc_basis.scf_inversion(10)
 else:
-    vp_basis = mol
-    print("Number of Basis: ", mol.nbf, vp_basis.nbf)
+    vxc_basis = mol
+    print("Number of Basis: ", mol.nbf, vxc_basis.nbf)
 
 inverser = XC_Inversion.Inverser(mol, input_density_wfn,
                                  ortho_basis=ortho_basis,
-                                 vxc_basis=vp_basis,
+                                 vxc_basis=vxc_basis,
                                  v0=v0
                                  )
-
+#%%
 # grad, grad_app = inverser.check_gradient_constrainedoptimization()
 # hess, hess_app = inverser.check_hess_constrainedoptimization()
 
-if method == "WuYangScipy":
-    inverser.find_vxc_scipy_WuYang(opt_method=opt_method)
-elif method == "WuYangMN":
-    # rcondlist, dnlist, Llist = inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="LD")
-    inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="StrongWolfeD")
-elif method == "COScipy":
-    inverser.find_vxc_scipy_constrainedoptimization(opt_method=opt_method)
+# if method == "WuYangScipy":
+#     inverser.find_vxc_scipy_WuYang(opt_method=opt_method)
+# elif method == "WuYangMN":
+#     rcondlist, dnlist, Llist = inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="LD")
+    # inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="StrongWolfeD")
+# elif method == "COScipy":
+#     inverser.find_vxc_scipy_constrainedoptimization(opt_method=opt_method)
 
-
-
-L = [7, 0.2, 0.2]
-D = [0.1, 0.5, 0.2]
-inverser.v_output_a = inverser.v_output[:vp_basis.nbf]
-vout_cube_a, xyzw = libcubeprop.basis_to_cubic_grid(inverser.v_output_a, inverser.vp_basis.wfn,L,D)
+# L = [7, 0.2, 0.2]
+# D = [0.1, 0.5, 0.2]
+# inverser.v_output_a = inverser.v_output[:vxc_basis.nbf]
+# vout_cube_a, xyzw = libcubeprop.basis_to_cubic_grid(inverser.v_output_a, inverser.vxc_basis.wfn,L,D)
 # vout_cube_a.shape = 201*6*2
 # xyzw[0].shape = 201*6*2
 # xyzw[1].shape = 201*6*2
@@ -137,8 +154,8 @@ vout_cube_a, xyzw = libcubeprop.basis_to_cubic_grid(inverser.v_output_a, inverse
 # # inverser.find_vxc_scipy_WuYang(opt_method=opt_method)
 # inverser.find_vxc_manualNewton(svd_rcond=svd, line_search_method="StrongWolfeD")
 #
-# inverser.v_output_a = inverser.v_output[:vp_basis.nbf]
-# vout_cube_a, _ = libcubeprop.basis_to_cubic_grid(inverser.v_output_a, inverser.vp_basis.wfn, L,D)
+# inverser.v_output_a = inverser.v_output[:vxc_basis.nbf]
+# vout_cube_a, _ = libcubeprop.basis_to_cubic_grid(inverser.v_output_a, inverser.vxc_basis.wfn, L,D)
 # vout_cube_a.shape = 201*6*2
 # nocc = mol.ndocc
 # if v0 == "FermiAmaldi":
