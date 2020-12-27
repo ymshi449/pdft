@@ -20,7 +20,7 @@ class Molecule(pdft.U_Molecule):
     def __init__(self, geometry, basis, method, omega=1, mints=None, jk=None):
         super().__init__(geometry, basis, method, omega=omega, mints=mints, jk=jk)
 
-    def scf_inversion(self, maxiter, V=None, print_energies=False, vp_matrix=None, add_vext=True):
+    def KS_solver(self, maxiter, V=None, print_energies=False, vp_matrix=None, add_vext=True):
         """
         Performs scf calculation to find energy and density with a given V
         Parameters
@@ -587,7 +587,7 @@ class Inverser(pdft.U_Embedding):
 
             Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
             Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
-            self.molecule.scf_inversion(1000, [Vks_a, Vks_b], add_vext=fit4vxc)
+            self.molecule.KS_solver(1000, [Vks_a, Vks_b], add_vext=fit4vxc)
             self.update_vout_constant()
             # update self.vout_constant
 
@@ -626,7 +626,7 @@ class Inverser(pdft.U_Embedding):
             Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b)
                                                 + self.vout_constant * self.molecule.S.np + self.v0_Fock)
 
-            self.molecule.scf_inversion(100, [Vks_a, Vks_b], add_vext=fit4vxc)
+            self.molecule.KS_solver(100, [Vks_a, Vks_b], add_vext=fit4vxc)
             self.update_vout_constant()
 
         dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
@@ -662,7 +662,7 @@ class Inverser(pdft.U_Embedding):
             Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
             Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
 
-            self.molecule.scf_inversion(100, [Vks_a, Vks_b], add_vext=fit4vxc)
+            self.molecule.KS_solver(100, [Vks_a, Vks_b], add_vext=fit4vxc)
             self.update_vout_constant()
 
         epsilon_occ_a = self.molecule.eig_a.np[:self.molecule.nalpha, None]
@@ -725,7 +725,7 @@ class Inverser(pdft.U_Embedding):
             self.regularization_constant = regularization_constant
             Vks_a = psi4.core.Matrix.from_array(self.v0_Fock)
             Vks_b = psi4.core.Matrix.from_array(self.v0_Fock)
-            self.molecule.scf_inversion(100, [Vks_a, Vks_b])
+            self.molecule.KS_solver(100, [Vks_a, Vks_b])
             self.update_vout_constant()
 
             opt = {
@@ -748,7 +748,7 @@ class Inverser(pdft.U_Embedding):
             v_output_b = v[nbf:]
             Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
             Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
-            self.molecule.scf_inversion(1000, [Vks_a, Vks_b])
+            self.molecule.KS_solver(1000, [Vks_a, Vks_b])
             self.update_vout_constant()
 
             E_list.append(self.molecule.energy)
@@ -811,7 +811,7 @@ class Inverser(pdft.U_Embedding):
             self.regularization_constant = regularization_constant
             Vks_a = psi4.core.Matrix.from_array(self.v0_Fock)
             Vks_b = psi4.core.Matrix.from_array(self.v0_Fock)
-            self.molecule.scf_inversion(100, [Vks_a, Vks_b])
+            self.molecule.KS_solver(100, [Vks_a, Vks_b])
             self.update_vout_constant()
 
             opt = {
@@ -826,18 +826,20 @@ class Inverser(pdft.U_Embedding):
                                           options=opt)
 
             v = v_result.x
+            # _ = self.find_vxc_manualNewton(svd_rcond=113*2, line_search_method="StrongWolfe")
+            # v = self.v_output
             nbf = int(v.shape[0]/2)
             v_output_a = v[:nbf]
             v_output_b = v[nbf:]
             Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
             Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
-            self.molecule.scf_inversion(1000, [Vks_a, Vks_b])
+            self.molecule.KS_solver(1000, [Vks_a, Vks_b])
             self.update_vout_constant()
 
             n_result = self.molecule.to_grid(self.molecule.Da.np + self.molecule.Db.np)
             P = np.linalg.norm(v_output_a) * np.sum(np.abs(n_result - n_input) * self.molecule.w)
             P_list.append(P)
-            L_list.append(v_result.fun - self.regul_norm * self.regularization_constant)
+            # L_list.append(v_result.fun - self.regul_norm * self.regularization_constant)
             dT_list.append(self.molecule.T.vector_dot(self.molecule.Da)
                            + self.molecule.T.vector_dot(self.molecule.Db))
             print(regularization_constant, "P", P, "T", dT_list[-1])
@@ -914,7 +916,7 @@ class Inverser(pdft.U_Embedding):
         Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b)
                                             + self.vout_constant * self.molecule.S.np + self.v0_Fock)
 
-        self.molecule.scf_inversion(100, [Vks_a, Vks_b])
+        self.molecule.KS_solver(100, [Vks_a, Vks_b])
         self.update_vout_constant()
 
         L = self.Lagrangian_WuYang()
@@ -953,7 +955,7 @@ class Inverser(pdft.U_Embedding):
 
         Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
         Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
-        self.molecule.scf_inversion(100, [Vks_a, Vks_b])
+        self.molecule.KS_solver(100, [Vks_a, Vks_b])
         self.update_vout_constant()
 
         hess = self.hess_WuYang()
@@ -994,7 +996,7 @@ class Inverser(pdft.U_Embedding):
 
             Vks_a = psi4.core.Matrix.from_array(self.v0_Fock)
             Vks_b = psi4.core.Matrix.from_array(self.v0_Fock)
-            self.molecule.scf_inversion(100, [Vks_a, Vks_b])
+            self.molecule.KS_solver(100, [Vks_a, Vks_b])
             self.update_vout_constant()
 
         print("<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion %s<<<<<<<<<<<<<<<<<<<"%opt_method)
@@ -1006,11 +1008,11 @@ class Inverser(pdft.U_Embedding):
         if opt is None:
             opt = {
                 "disp": False,
-                "maxiter": maxiter,
                 # "eps": 1e-7
                 # "norm": 2,
                 "gtol": 1e-2
             }
+        opt["maxiter"] = maxiter
 
         vp_array = optimizer.minimize(self.Lagrangian_WuYang, self.v_output,
                                       jac=self.grad_WuYang,
@@ -1026,7 +1028,7 @@ class Inverser(pdft.U_Embedding):
             np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
         Vks_b = psi4.core.Matrix.from_array(
             np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
-        self.molecule.scf_inversion(100, [Vks_a, Vks_b])
+        self.molecule.KS_solver(100, [Vks_a, Vks_b])
         self.update_vout_constant()
 
         dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
@@ -1574,7 +1576,8 @@ class Inverser(pdft.U_Embedding):
     def find_vxc_manualNewton(self, maxiter=49, svd_rcond=None, c1=1e-4, c2=0.99, c3=1e-2,
                               svd_parameter=None, line_search_method="StrongWolfe",
                               BT_beta_threshold=1e-7, rho_conv_threshold=1e-3,
-                              countinue_opt=False, find_vxc_grid=True):
+                              countinue_opt=False, find_vxc_grid=True,
+                              grad_norm=1e-2):
         if self.three_overlap is None:
             self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
                                                                              self.molecule.wfn.basisset(),
@@ -1591,7 +1594,7 @@ class Inverser(pdft.U_Embedding):
 
             Vks_a = psi4.core.Matrix.from_array(self.v0_Fock)
             Vks_b = psi4.core.Matrix.from_array(self.v0_Fock)
-            self.molecule.scf_inversion(100, [Vks_a, Vks_b])
+            self.molecule.KS_solver(100, [Vks_a, Vks_b])
             self.update_vout_constant()
 
         ## Tracking rho and changing beta
@@ -1628,6 +1631,8 @@ class Inverser(pdft.U_Embedding):
             hess = self.hess_WuYang(v=self.v_output)
             jac = self.grad_WuYang(v=self.v_output)
 
+            if np.linalg.norm(jac) <= grad_norm:
+                break
 
             if svd_rcond is None:
                 dv = -np.linalg.solve(hess, jac)
@@ -2233,7 +2238,7 @@ class Inverser(pdft.U_Embedding):
 
             Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
             Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
-            self.molecule.scf_inversion(1000, [Vks_a, Vks_b])
+            self.molecule.KS_solver(1000, [Vks_a, Vks_b])
             self.update_vout_constant()
 
         dDa = self.molecule.Da.np - self.input_density_wfn.Da().np
@@ -2276,7 +2281,7 @@ class Inverser(pdft.U_Embedding):
             Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
             Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
 
-            self.molecule.scf_inversion(100, [Vks_a, Vks_b])
+            self.molecule.KS_solver(100, [Vks_a, Vks_b])
             self.update_vout_constant()
 
         # gradient on grad
@@ -2359,7 +2364,7 @@ class Inverser(pdft.U_Embedding):
             Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
             Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
 
-            self.molecule.scf_inversion(100, [Vks_a, Vks_b])
+            self.molecule.KS_solver(100, [Vks_a, Vks_b])
             self.update_vout_constant()
 
         hess = np.zeros((self.vp_basis.nbf*2, self.vp_basis.nbf*2))
@@ -2498,7 +2503,7 @@ class Inverser(pdft.U_Embedding):
             Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
             Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
 
-            self.molecule.scf_inversion(100, [Vks_a, Vks_b])
+            self.molecule.KS_solver(100, [Vks_a, Vks_b])
             self.update_vout_constant()
 
         p_up = np.zeros((self.molecule.nbf, self.molecule.nalpha))
@@ -2568,7 +2573,7 @@ class Inverser(pdft.U_Embedding):
 
         Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
         Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
-        self.molecule.scf_inversion(100, [Vks_a, Vks_b])
+        self.molecule.KS_solver(100, [Vks_a, Vks_b])
         self.update_vout_constant()
 
         L = self.Lagrangian_constrainedoptimization()
@@ -2609,7 +2614,7 @@ class Inverser(pdft.U_Embedding):
 
         Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
         Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
-        self.molecule.scf_inversion(100, [Vks_a, Vks_b])
+        self.molecule.KS_solver(100, [Vks_a, Vks_b])
         self.update_vout_constant()
 
         hess = self.hess_constrainedoptimization()
@@ -2635,7 +2640,7 @@ class Inverser(pdft.U_Embedding):
         return hess, hess_app
 
     def find_vxc_scipy_constrainedoptimization(self, maxiter=1400, opt_method="BFGS",
-                                               countinue_opt=False, find_vxc_grid=False):
+                                               countinue_opt=False, find_vxc_grid=False, opt=None):
 
         if self.three_overlap is None:
             self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
@@ -2651,7 +2656,7 @@ class Inverser(pdft.U_Embedding):
 
             Vks_a = psi4.core.Matrix.from_array(self.v0_Fock)
             Vks_b = psi4.core.Matrix.from_array(self.v0_Fock)
-            self.molecule.scf_inversion(100, [Vks_a, Vks_b])
+            self.molecule.KS_solver(100, [Vks_a, Vks_b])
             self.update_vout_constant()
 
         print("<<<<<<<<<<<<<<<<<<<<<<Constrained Optimization vxc Inversion<<<<<<<<<<<<<<<<<<<")
@@ -2660,13 +2665,12 @@ class Inverser(pdft.U_Embedding):
         dDb = self.input_density_wfn.Db().np - self.molecule.Db.np
         dn = self.molecule.to_grid(dDa+dDb)
         print("|n| before", np.sum(np.abs(dn)*self.molecule.w))
-        opt = {
-            "disp": False,
-            "maxiter": maxiter,
-            # "eps": 1e-7
-            # "norm": 2,
-            "gtol": 1e-7
-        }
+        if opt is None:
+            opt = {
+                "disp": False,
+                'maxls': 2000,
+            }
+        opt["maxiter"] = maxiter
 
         vp_array = optimizer.minimize(self.Lagrangian_constrainedoptimization,
                                       self.v_output,
@@ -2683,7 +2687,7 @@ class Inverser(pdft.U_Embedding):
         Vks_b = psi4.core.Matrix.from_array(
             np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
 
-        self.molecule.scf_inversion(100, [Vks_a, Vks_b])
+        self.molecule.KS_solver(100, [Vks_a, Vks_b])
         self.update_vout_constant()
 
         dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
@@ -2734,7 +2738,7 @@ class Inverser(pdft.U_Embedding):
             self.regularization_constant = regularization_constant
             Vks_a = psi4.core.Matrix.from_array(self.v0_Fock)
             Vks_b = psi4.core.Matrix.from_array(self.v0_Fock)
-            self.molecule.scf_inversion(100, [Vks_a, Vks_b])
+            self.molecule.KS_solver(100, [Vks_a, Vks_b])
             self.update_vout_constant()
 
             opt = {
@@ -2753,7 +2757,7 @@ class Inverser(pdft.U_Embedding):
             v_output_b = v[nbf:]
             Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
             Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
-            self.molecule.scf_inversion(1000, [Vks_a, Vks_b])
+            self.molecule.KS_solver(1000, [Vks_a, Vks_b])
             self.update_vout_constant()
 
             n_result = self.molecule.to_grid(self.molecule.Da.np + self.molecule.Db.np)
@@ -2833,7 +2837,7 @@ class Inverser(pdft.U_Embedding):
 
             Vks_a = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(v_output_a) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
             Vks_b = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(v_output_b) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
-            self.molecule.scf_inversion(1000, [Vks_a, Vks_b])
+            self.molecule.KS_solver(1000, [Vks_a, Vks_b])
             self.update_vout_constant()
 
         L = - self.molecule.T.vector_dot(self.molecule.Da) - self.molecule.T.vector_dot(self.molecule.Db)
@@ -2856,7 +2860,7 @@ class Inverser(pdft.U_Embedding):
 
             Vks_a = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(v_output_a) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
             Vks_b = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(v_output_b) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
-            self.molecule.scf_inversion(1000, [Vks_a, Vks_b])
+            self.molecule.KS_solver(1000, [Vks_a, Vks_b])
             self.update_vout_constant()
 
         dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
@@ -2875,7 +2879,7 @@ class Inverser(pdft.U_Embedding):
 
         Vks_a = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(v_output_a) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
         Vks_b = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(v_output_b) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
-        self.molecule.scf_inversion(100, [Vks_a, Vks_b])
+        self.molecule.KS_solver(100, [Vks_a, Vks_b])
         self.update_vout_constant()
 
         L = self.Lagrangian_WuYang_grid()
@@ -2923,7 +2927,7 @@ class Inverser(pdft.U_Embedding):
             self.v_output_grid = np.zeros_like(self.v_output_grid)
             Vks_a = psi4.core.Matrix.from_array(self.v0_Fock)
             Vks_b = psi4.core.Matrix.from_array(self.v0_Fock)
-            self.molecule.scf_inversion(100, [Vks_a, Vks_b])
+            self.molecule.KS_solver(100, [Vks_a, Vks_b])
             self.update_vout_constant()
 
         print("<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<")
@@ -2947,7 +2951,7 @@ class Inverser(pdft.U_Embedding):
             self.molecule.grid_to_fock(v_output_a) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
         Vks_b = psi4.core.Matrix.from_array(
             self.molecule.grid_to_fock(v_output_b) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
-        self.molecule.scf_inversion(1000, [Vks_a, Vks_b])
+        self.molecule.KS_solver(1000, [Vks_a, Vks_b])
         self.update_vout_constant()
 
         dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
@@ -2979,7 +2983,7 @@ class Inverser(pdft.U_Embedding):
             self.v_output_grid = np.zeros_like(self.v_output_grid)
             Vks_a = psi4.core.Matrix.from_array(self.v0_Fock)
             Vks_b = psi4.core.Matrix.from_array(self.v0_Fock)
-            self.molecule.scf_inversion(100, [Vks_a, Vks_b])
+            self.molecule.KS_solver(100, [Vks_a, Vks_b])
             self.update_vout_constant()
 
         print("<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<")
@@ -3008,7 +3012,7 @@ class Inverser(pdft.U_Embedding):
 
         Vks_a = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(v_output_a) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
         Vks_b = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(v_output_b) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
-        self.molecule.scf_inversion(1000, [Vks_a, Vks_b])
+        self.molecule.KS_solver(1000, [Vks_a, Vks_b])
         self.update_vout_constant()
 
         dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
@@ -3057,7 +3061,7 @@ class Inverser(pdft.U_Embedding):
                                                 self.vout_constant * self.molecule.S.np + self.v0_Fock)
             Vks_b = psi4.core.Matrix.from_array(np.einsum("ijkl,kl->ij", self.four_overlap, v_output_b) +
                                                 self.vout_constant * self.molecule.S.np + self.v0_Fock)
-            self.molecule.scf_inversion(1000, [Vks_a, Vks_b])
+            self.molecule.KS_solver(1000, [Vks_a, Vks_b])
             self.update_vout_constant()
 
         L = - self.molecule.T.vector_dot(self.molecule.Da) - self.molecule.T.vector_dot(self.molecule.Db)
@@ -3088,7 +3092,7 @@ class Inverser(pdft.U_Embedding):
                                                 self.vout_constant * self.molecule.S.np + self.v0_Fock)
             Vks_b = psi4.core.Matrix.from_array(np.einsum("ijkl,kl->ij", self.four_overlap, v_output_b) +
                                                 self.vout_constant * self.molecule.S.np + self.v0_Fock)
-            self.molecule.scf_inversion(1000, [Vks_a, Vks_b])
+            self.molecule.KS_solver(1000, [Vks_a, Vks_b])
             self.update_vout_constant()
 
         dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
@@ -3122,7 +3126,7 @@ class Inverser(pdft.U_Embedding):
         Vks_b = psi4.core.Matrix.from_array(np.einsum("ijkl,kl->ij", self.four_overlap,
                                                       np.reshape(v_output_b, (self.molecule.nbf, self.molecule.nbf)))
                                             + self.vout_constant * self.molecule.S.np + self.v0_Fock)
-        self.molecule.scf_inversion(1000, [Vks_a, Vks_b])
+        self.molecule.KS_solver(1000, [Vks_a, Vks_b])
         self.update_vout_constant()
 
         L = self.Lagrangian_WuYang_grid1()
@@ -3169,7 +3173,7 @@ class Inverser(pdft.U_Embedding):
             self.vext_app = np.zeros_like(self.vext_app)
             Vks_a = psi4.core.Matrix.from_array(self.v0_Fock)
             Vks_b = psi4.core.Matrix.from_array(self.v0_Fock)
-            self.molecule.scf_inversion(100, [Vks_a, Vks_b], add_vext=False)
+            self.molecule.KS_solver(100, [Vks_a, Vks_b], add_vext=False)
             self.update_vout_constant()
 
         print("<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion<<<<<<<<<<<<<<<<<<<")
@@ -3198,7 +3202,7 @@ class Inverser(pdft.U_Embedding):
 
         Vks_a = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(v_output_a) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
         Vks_b = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(v_output_b) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
-        self.molecule.scf_inversion(1000, [Vks_a, Vks_b], add_vext=False)
+        self.molecule.KS_solver(1000, [Vks_a, Vks_b], add_vext=False)
         self.update_vout_constant()
 
         dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
@@ -3242,7 +3246,7 @@ class Inverser(pdft.U_Embedding):
                                                 self.vout_constant * self.molecule.S.np + self.v0_Fock)
             Vks_b = psi4.core.Matrix.from_array(np.einsum("ijkl,kl->ij", self.four_overlap, reshaped_vext_app) +
                                                 self.vout_constant * self.molecule.S.np + self.v0_Fock)
-            self.molecule.scf_inversion(1000, [Vks_a, Vks_b], add_vext=False)
+            self.molecule.KS_solver(1000, [Vks_a, Vks_b], add_vext=False)
             self.update_vout_constant()
 
         L = - self.molecule.T.vector_dot(self.molecule.Da) - self.molecule.T.vector_dot(self.molecule.Db)
@@ -3268,7 +3272,7 @@ class Inverser(pdft.U_Embedding):
                                                 self.vout_constant * self.molecule.S.np + self.v0_Fock)
             Vks_b = psi4.core.Matrix.from_array(np.einsum("ijkl,kl->ij", self.four_overlap, reshaped_vext_app) +
                                                 self.vout_constant * self.molecule.S.np + self.v0_Fock)
-            self.molecule.scf_inversion(1000, [Vks_a, Vks_b], add_vext=False)
+            self.molecule.KS_solver(1000, [Vks_a, Vks_b], add_vext=False)
             self.update_vout_constant()
 
         dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
@@ -3300,7 +3304,7 @@ class Inverser(pdft.U_Embedding):
         Vks_b = psi4.core.Matrix.from_array(np.einsum("ijkl,kl->ij", self.four_overlap,
                                                       np.reshape(self.vext_app, (self.molecule.nbf, self.molecule.nbf)))
                                             + self.vout_constant * self.molecule.S.np + self.v0_Fock)
-        self.molecule.scf_inversion(1000, [Vks_a, Vks_b], add_vext=False)
+        self.molecule.KS_solver(1000, [Vks_a, Vks_b], add_vext=False)
         self.update_vout_constant()
 
         L = self.Lagrangian_vext_WuYang_grid()
@@ -3347,7 +3351,7 @@ class Inverser(pdft.U_Embedding):
 
             Vks_a = psi4.core.Matrix.from_array(self.v0_Fock)
             Vks_b = psi4.core.Matrix.from_array(self.v0_Fock)
-            self.molecule.scf_inversion(100, [Vks_a, Vks_b], add_vext=False)
+            self.molecule.KS_solver(100, [Vks_a, Vks_b], add_vext=False)
             self.update_vout_constant()
 
         print("<<<<<<<<<<<<<<<<<<<<<<WuYang vxc Inversion %s<<<<<<<<<<<<<<<<<<<" % opt_method)
@@ -3381,7 +3385,7 @@ class Inverser(pdft.U_Embedding):
         Vks_b = psi4.core.Matrix.from_array(
             np.einsum("ijk,k->ij", self.three_overlap,
                       v_output_b) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
-        self.molecule.scf_inversion(100, [Vks_a, Vks_b], add_vext=False)
+        self.molecule.KS_solver(100, [Vks_a, Vks_b], add_vext=False)
         self.update_vout_constant()
 
         dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
@@ -3452,7 +3456,7 @@ class Inverser(pdft.U_Embedding):
         Vks_a = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
         Vks_b = psi4.core.Matrix.from_array(np.einsum("ijk,k->ij", self.three_overlap, v_output_b) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
 
-        self.molecule.scf_inversion(100, [Vks_a, Vks_b], add_vext=False)
+        self.molecule.KS_solver(100, [Vks_a, Vks_b], add_vext=False)
         self.update_vout_constant()
 
         L = self.Lagrangian_WuYang(fit4vxc=False)
@@ -3556,7 +3560,7 @@ class Inverser(pdft.U_Embedding):
         Calculating v_XC^hole in RKS (15) using quadrature intrgral to test the ability of it.
         :return:
         """
-        if self.vxc_hole_WF is not None:
+        if self.vxc_hole_WF is not None and blocks is None:
             return self.vxc_hole_WF
 
         restricted = psi4.core.get_global_option("REFERENCE") == "RHF"
@@ -3564,7 +3568,7 @@ class Inverser(pdft.U_Embedding):
         if not self.input_density_wfn.name() in support_methods:
             raise Exception("%s is not supported. Currently only support:"% self.input_density_wfn.name(), support_methods)
         elif self.input_density_wfn.name() == "CIWavefunction" and (not restricted):
-            raise Exception("Unrestricted %s is not supported."% self.input_density_wfn.name())
+            raise Exception("Unrestricted %s is not supported." % self.input_density_wfn.name())
         elif self.input_density_wfn.name() == "CIWavefunction":
             Tau_ijkl = self.input_density_wfn.get_tpdm("SUM", True).np
             D2 = self.input_density_wfn.get_opdm(-1, -1, "SUM", True).np
@@ -3701,11 +3705,17 @@ class Inverser(pdft.U_Embedding):
         print("Totally %i grid points takes %.2fs with max %i points in a block."
               % (vxchole.shape[0], time.time() - start_time, psi4.core.get_global_option("DFT_BLOCK_MAX_POINTS")))
         assert w1_old == vxchole.shape[0], "Somehow the whole space is not fully integrated."
-        if restricted:
-            self.vxc_hole_WF = vxchole
+        if blocks is None:
+            if restricted:
+                self.vxc_hole_WF = vxchole
+            else:
+                self.vxc_hole_WF = (vxchole, vxchole_b)
+            return self.vxc_hole_WF
         else:
-            self.vxc_hole_WF = (vxchole, vxchole_b)
-        return self.vxc_hole_WF
+            if restricted:
+               return vxchole
+            else:
+                return (vxchole, vxchole_b)
 
     def _average_local_orbital_energy(self, D, C, eig, Db=None, Cb=None, eig_b=None, blocks=None):
         """
@@ -3946,7 +3956,7 @@ class Inverser(pdft.U_Embedding):
 
         # initial calculation:
         # vxc_Fock = psi4.core.Matrix.from_array(self.v0_Fock)
-        # self.molecule.scf_inversion(scf_maxiter, V=[vxc_Fock, vxc_Fock])
+        # self.molecule.KS_solver(scf_maxiter, V=[vxc_Fock, vxc_Fock])
         self.molecule.scf(scf_maxiter)
 
         dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
@@ -3978,10 +3988,10 @@ class Inverser(pdft.U_Embedding):
             elif mRKS_step != 1:
                 vxc = vxc * (1 - frac_old) + vxc_old * frac_old
 
-            # vxc_Fock = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(vxc) + self.v0_Fock)
-            vxc_Fock = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(vxc))
-            # self.molecule.scf_inversion(100, V=[vxc_Fock, vxc_Fock])
-            self.molecule.scf(scf_maxiter, vp_matrix=[vxc_Fock, vxc_Fock], vxc_flag=False)
+            vxc_Fock = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(vxc) + self.v0_Fock)
+            # vxc_Fock = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(vxc))
+            self.molecule.KS_solver(100, V=[vxc_Fock, vxc_Fock])
+            # self.molecule.scf(scf_maxiter, vp_matrix=[vxc_Fock, vxc_Fock], vxc_flag=False)
 
             dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
             dDb = self.input_density_wfn.Db().np - self.molecule.Db.np
@@ -4001,19 +4011,41 @@ class Inverser(pdft.U_Embedding):
         if vxc_grid is not None:
             blocks_vxc = self.get_blocks_from_grid(vxc_grid)
             vxchole = self._vxc_hole_quadrature(blocks=blocks_vxc)
-            ebarWF = self._average_local_orbital_energy(self.input_density_wfn.Da().np,
-                                                       self.input_density_wfn.Ca().np,
-                                                       self.input_density_wfn.epsilon_a().np, blocks=blocks_vxc)
-            taup_rho_WF = self._pauli_kinetic_energy_density(self.input_density_wfn.Da().np,
-                                                            self.input_density_wfn.Ca().np, blocks=blocks_vxc)
-            ebarKS = self._average_local_orbital_energy(self.molecule.Da.np, self.molecule.Ca.np,
-                                                       self.molecule.eig_a.np + self.vout_constant, blocks=blocks_vxc)
-            taup_rho_KS = self._pauli_kinetic_energy_density(self.molecule.Da.np, self.molecule.Ca.np, blocks=blocks_vxc)
+            if WF_method == "CIWavefunction":
+                ebarWF = self._average_local_orbital_energy(self.input_density_wfn.Da().np, C_a_GFM, eigs_a_GFM, blocks=blocks_vxc)
+                taup_rho_WF = self._pauli_kinetic_energy_density(self.input_density_wfn.Da().np, C_a_NO_AO, eigs_a_NO, blocks=blocks_vxc)
+            elif WF_method == "RHF":
+                ebarWF = self._average_local_orbital_energy(self.input_density_wfn.Da().np,
+                                                            self.input_density_wfn.Ca().np[:, :Nalpha],
+                                                            self.input_density_wfn.epsilon_a().np[:Nalpha], blocks=blocks_vxc)
+                taup_rho_WF = self._pauli_kinetic_energy_density(self.input_density_wfn.Da().np,
+                                                                 self.input_density_wfn.Ca().np[:, :Nalpha], blocks=blocks_vxc)
+            ebarKS = self._average_local_orbital_energy(self.molecule.Da.np, self.molecule.Ca.np[:,:Nalpha],
+                                                        self.molecule.eig_a.np[:Nalpha], blocks=blocks_vxc)
+            taup_rho_KS = self._pauli_kinetic_energy_density(self.molecule.Da.np, self.molecule.Ca.np[:,:Nalpha],
+                                                             blocks=blocks_vxc)
+
+            potential_shift = np.max(ebarWF) - np.max(ebarKS)
+            self.vout_constant = potential_shift
+
             vxc = vxchole + ebarKS - ebarWF + taup_rho_WF - taup_rho_KS + potential_shift
 
         return vxc, vxchole, ebarKS, ebarWF, taup_rho_WF, taup_rho_KS
 
-    def _unrestricted_mRKS(self, maxiter, vxc_grid, scf_maxiter, v_tol, D_tol, eig_tol, frac_old, WF_method):
+    def _unrestricted_mRKS(self, maxiter, vxc_grid, scf_maxiter, v_tol, D_tol, eig_tol, frac_old, WF_method, _no_tau_apprx=False):
+        """
+
+        :param maxiter:
+        :param vxc_grid:
+        :param scf_maxiter:
+        :param v_tol:
+        :param D_tol:
+        :param eig_tol:
+        :param frac_old:
+        :param WF_method:
+        :param _no_tau_apprx: For Unrestricted cases, sometimes tau WF is bad. dtau is usually small so ignoring it is one approximation.
+        :return:
+        """
         assert WF_method=="UHF", "HF is the only WF method that currently supports unrestricted mRKS."
         Nalpha = self.molecule.nalpha
         Nbeta = self.molecule.nbeta
@@ -4028,6 +4060,7 @@ class Inverser(pdft.U_Embedding):
                                                              Db=self.input_density_wfn.Db().np,
                                                              Cb=self.input_density_wfn.Cb().np[:,:Nbeta],
                                                              eig_b=self.input_density_wfn.epsilon_b().np[:Nbeta])
+
         taup_rho_WF_a, taup_rho_WF_b = self._pauli_kinetic_energy_density(self.input_density_wfn.Da().np,
                                                                           self.input_density_wfn.Ca().np[:,:Nalpha],
                                                                           Db=self.input_density_wfn.Db().np,
@@ -4061,6 +4094,7 @@ class Inverser(pdft.U_Embedding):
                                                                  Cb=self.molecule.Cb.np[:, :Nbeta],
                                                                  eig_b=self.molecule.eig_b.np[:Nbeta]
                                                                  )
+
             taup_rho_KS_a, taup_rho_KS_b = self._pauli_kinetic_energy_density(self.molecule.Da.np,
                                                                            self.molecule.Ca.np[:,:Nalpha],
                                                                            Db=self.molecule.Db.np,
@@ -4069,8 +4103,18 @@ class Inverser(pdft.U_Embedding):
             potential_shift_a = emax_a - np.max(ebarKS_a)
             potential_shift_b = emax_b - np.max(ebarKS_b)
             self.vout_constant = (potential_shift_a, potential_shift_b)
+            # if mRKS_step == 1:
+            #     vxc_a = vxchole_a + potential_shift_a
+            #     vxc_b = vxchole_b + potential_shift_b
+            # elif mRKS_step == 2:
+            #     vxc_a = vxchole_a + ebarKS_a - ebarWF_a + potential_shift_a
+            #     vxc_b = vxchole_b + ebarKS_b - ebarWF_b + potential_shift_b
+            # else:
             vxc_a = vxchole_a + ebarKS_a - ebarWF_a + taup_rho_WF_a - taup_rho_KS_a + potential_shift_a
             vxc_b = vxchole_b + ebarKS_b - ebarWF_b + taup_rho_WF_b - taup_rho_KS_b + potential_shift_b
+            if _no_tau_apprx:
+                vxc_a -= taup_rho_WF_a - taup_rho_KS_a
+                vxc_b -= taup_rho_WF_b - taup_rho_KS_b
 
             # Add compulsory mixing parameter close to the convergence to help convergence HOPEFULLY
             # Check vp convergence
@@ -4081,13 +4125,19 @@ class Inverser(pdft.U_Embedding):
                 vxc_a = vxc_a * (1 - frac_old) + vxc_old_a * frac_old
                 vxc_b = vxc_b * (1 - frac_old) + vxc_old_b * frac_old
 
-            # vxc_Fock = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(vxc) + self.v0_Fock)
+            # vxc_Fock = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(vxc) + self.v0_Fock)mol.nal
             vxc_Fock_a = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(vxc_a))
             vxc_Fock_b = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(vxc_b))
+
             if Nbeta==0:  # For systems w/ 1 electron.
                 vxc_Fock_b.np[:] = 0
-            # self.molecule.scf_inversion(100, V=[vxc_Fock, vxc_Fock])
-            self.molecule.scf(scf_maxiter, vp_matrix=[vxc_Fock_a, vxc_Fock_b], vxc_flag=False)
+
+            if mRKS_step < 5:
+                vxc_Fock_a.np[:] += self.v0_Fock
+                vxc_Fock_b.np[:] += self.v0_Fock
+                self.molecule.KS_solver(100, V=[vxc_Fock_a, vxc_Fock_b])
+            else:
+                self.molecule.scf(scf_maxiter, vp_matrix=[vxc_Fock_a, vxc_Fock_b], vxc_flag=False)
 
             dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
             dDb = self.input_density_wfn.Db().np - self.molecule.Db.np
@@ -4135,9 +4185,14 @@ class Inverser(pdft.U_Embedding):
                                                                            Db=self.molecule.Db.np,
                                                                            Cb=self.molecule.Cb.np[:, :Nbeta],
                                                                            blocks=blocks_vxc)
+            potential_shift_a = np.max(ebarWF_a) - np.max(ebarKS_a)
+            potential_shift_b = np.max(ebarWF_b) - np.max(ebarKS_b)
+            self.vout_constant = (potential_shift_a, potential_shift_b)
             vxc_a = vxchole_a + ebarKS_a - ebarWF_a + taup_rho_WF_a - taup_rho_KS_a + potential_shift_a
             vxc_b = vxchole_b + ebarKS_b - ebarWF_b + taup_rho_WF_b - taup_rho_KS_b + potential_shift_b
-
+            if _no_tau_apprx:
+                vxc_a -= taup_rho_WF_a - taup_rho_KS_a
+                vxc_b -= taup_rho_WF_b - taup_rho_KS_b
         return (vxc_a, vxc_b), (vxchole_a, vxchole_b), (ebarKS_a, ebarKS_b), (ebarWF_a, ebarWF_b), \
                (taup_rho_WF_a, taup_rho_WF_b), (taup_rho_KS_a, taup_rho_KS_b)
 
@@ -4170,7 +4225,8 @@ class Inverser(pdft.U_Embedding):
 
         epsilon = psi4.core.get_global_option("CUBIC_BASIS_TOLERANCE")
         extens = psi4.core.BasisExtents(self.molecule.wfn.basisset(), epsilon)
-        max_points = psi4.core.get_global_option("DFT_BLOCK_MAX_POINTS") - 1
+        # max_points = psi4.core.get_global_option("DFT_BLOCK_MAX_POINTS") - 1
+        max_points = self.molecule.Vpot.properties()[0].max_points()
 
         if_w = (grid.shape[0] == 4)
 
