@@ -3,18 +3,20 @@ import XC_Inversion
 import matplotlib.pyplot as plt
 import libcubeprop
 import numpy as np
+import pickle
+
 
 if __name__ == "__main__":
-    psi4.set_num_threads(2)
+    psi4.set_num_threads(1)
     psi4.set_memory('3 GB')
 spherical_points = 350
-radial_points = 140
+radial_points = 35
 
 input_density_wfn_method = "SCF"
-reference = "UHF"
+reference = "RHF"
 
 functional = 'svwn'
-basis = "cc-pvqz"
+basis = "cc-pcvdz"
 vxc_basis = None
 
 ortho_basis = False
@@ -37,7 +39,7 @@ psi4.set_output_file("Ne.psi4")
 Full_Molec = psi4.geometry("""
 nocom
 noreorient
-Sc
+Ne
 units bohr
 symmetry c1
 """)
@@ -63,7 +65,6 @@ print("Target Density Calculation Started.")
 #  Get wfn for target density
 # E_input, input_density_wfn = psi4.energy("CCSD"+"/"+basis, molecule=Full_Molec, return_wfn=True)
 # _, input_density_wfn = psi4.gradient("CCSD"+"/"+basis, molecule=Full_Molec, return_wfn=True)
-# _,input_density_wfn = psi4.properties("CCSD/"+basis, molecule=Full_Molec, properties=['polarizability'], return_wfn=True)
 # _,input_density_wfn = psi4.properties("CISD/"+basis, molecule=Full_Molec,
 #                                             return_wfn=True, properties=['DIPOLE'])
 if input_density_wfn_method.upper() == "DETCI":
@@ -74,13 +75,17 @@ elif input_density_wfn_method.upper() == "SVWN":
                                             return_wfn=True)
 elif input_density_wfn_method.upper() == "SCF":
     E_HF, input_density_wfn = psi4.energy("SCF"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+elif input_density_wfn_method.upper() == "CCSD":
+    _,input_density_wfn = psi4.properties("CCSD/"+basis, molecule=Full_Molec, properties=['dipole'], return_wfn=True)
+
+
 print("Target Density Calculation Finished.")
 
 mol = XC_Inversion.Molecule(Full_Molec, basis, functional)
-mol.scf_inversion(100)
+mol.scf(100)
 if vxc_basis is not None:
     vxc_basis = XC_Inversion.Molecule(Full_Molec, vxc_basis, functional, jk=None)
-    vxc_basis.scf_inversion(100)
+    vxc_basis.scf(100)
 else:
     vxc_basis = mol
 
@@ -148,22 +153,22 @@ inverser = XC_Inversion.Inverser(mol, input_density_wfn,
 #%%
 # rcond = 12  # DD
 # rcond = 24  # TT
-# rcond = 36  # CDCQ
-# GL_rcond = [rcond, -7, -7]
+# GL_rcond = [36, -3, -3] # CDCT
+# GL_rcond = [36, -7, -7] # CDCQ
 #
-# inverser.find_vxc_manualNewton(svd_rcond=rcond*2, line_search_method="StrongWolfe", find_vxc_grid=False)
+# inverser.find_vxc_manualNewton(svd_rcond=GL_rcond[0]*2, line_search_method="StrongWolfe", find_vxc_grid=False)
 # L = [3, 0, 0]
-# D = [0.1, 0.5, 0.2]
-# O = [-2.1, 0, 0]
-# N = [100, 1, 1]
+# D = [0.01, 0.5, 0.2]
+# O = [-3, 0, 0]
+# N = [1001, 1, 1]
 # inverser.v_output_a = inverser.v_output[:vxc_basis.nbf]
 # vout_cube_a, xyzw = libcubeprop.basis_to_cubic_grid(inverser.v_output_a,
 #                                                     inverser.vp_basis.wfn, L, D, O, N)
-# vout_cube_a.shape = 100
-# xyzw[0].shape = 100
-# xyzw[1].shape = 100
-# xyzw[2].shape = 100
-# xyzw[3].shape = 100
+# vout_cube_a.shape = 1001
+# xyzw[0].shape = 1001
+# xyzw[1].shape = 1001
+# xyzw[2].shape = 1001
+# xyzw[3].shape = 1001
 # mark_y = np.isclose(xyzw[1], 0)
 # mark_z = np.isclose(xyzw[2], 0)
 # grid = np.array([xyzw[0][mark_y&mark_z], xyzw[1][mark_y&mark_z], xyzw[2][mark_y&mark_z]])
@@ -183,6 +188,7 @@ inverser = XC_Inversion.Inverser(mol, input_density_wfn,
 # ax.set_xlim(-2.1, 8.1)
 #
 # vxc_TSVD = np.copy(inverser.vxc_a_grid)
+# vout_TSVD = np.copy(inverser.v_output_a)
 #
 # inverser.find_vxc_manualNewton(svd_rcond="GL_mod", line_search_method="StrongWolfe", find_vxc_grid=False, svd_parameter=GL_rcond)
 #
@@ -195,10 +201,10 @@ inverser = XC_Inversion.Inverser(mol, input_density_wfn,
 # v0_cube_a, _ = libcubeprop.basis_to_cubic_grid(v0_a, inverser.vp_basis.wfn, L, D, O, N)
 # vbar_cube_a, _ = libcubeprop.basis_to_cubic_grid(vbar_a, inverser.vp_basis.wfn, L, D, O, N)
 # vbar_cube_b, _ = libcubeprop.basis_to_cubic_grid(vbar_b, inverser.vp_basis.wfn, L, D, O, N)
-# vout_cube_a.shape = 100
-# v0_cube_a.shape = 100
-# vbar_cube_a.shape = 100
-# vbar_cube_b.shape = 100
+# vout_cube_a.shape = 1001
+# v0_cube_a.shape = 1001
+# vbar_cube_a.shape = 1001
+# vbar_cube_b.shape = 1001
 #
 # nocc = mol.ndocc
 # if v0 == "FermiAmaldi":
@@ -215,11 +221,9 @@ inverser = XC_Inversion.Inverser(mol, input_density_wfn,
 # XC_Inversion.pdft.plot1d_x(v0_a_grid, xyz=grid, ax=ax, label="v0", ls=":")
 # XC_Inversion.pdft.plot1d_x(vbar_a_grid+vbar_b_grid, xyz=grid, ax=ax, label="vbara", ls=":")
 # # XC_Inversion.pdft.plot1d_x(vbar_b_grid, xyz=grid, ax=ax, label="vbarb", ls=":")
-# ax.set_xlim(-2.1, 6)
+# ax.set_xlim(-1, 2)
 # ax.set_ylim(-10, 4)
 # ax.legend()
-# f.show()
-
 
 #%% vxc inverpolation
 # Ne_density = np.concatenate((np.flip(Ne[:, 2]), Ne[:, 2]))
@@ -241,7 +245,7 @@ inverser = XC_Inversion.Inverser(mol, input_density_wfn,
 # vxc_Fock = mol.grid_to_fock(vxc)
 # inverser.change_v0("Hartree")
 # Vks_a = psi4.core.Matrix.from_array(vxc_Fock + inverser.v0_Fock)
-# mol.scf_inversion(100, [Vks_a, Vks_a], add_vext=True)
+# mol.KS_solver(100, [Vks_a, Vks_a], add_vext=True)
 # n_exact = mol.to_grid(mol.Da.np+mol.Db.np)
 # n_input = mol.to_grid(input_density_wfn.Da().np+input_density_wfn.Db().np)
 # print("exact error", np.sum(np.abs(n_exact-n_input)*w))
