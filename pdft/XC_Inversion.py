@@ -3555,7 +3555,7 @@ class Inverser(pdft.U_Embedding):
         print("\n")
         return vH
 
-    def _vxc_hole_quadrature(self, blocks=None):
+    def _vxc_hole_quadrature(self, blocks=None, atol = 1e-4):
         """
         Calculating v_XC^hole in RKS (15) using quadrature intrgral to test the ability of it.
         :return:
@@ -3683,9 +3683,9 @@ class Inverser(pdft.U_Embedding):
                 R2 += (l_y[:, None] - r_y) ** 2
                 R2 += (l_z[:, None] - r_z) ** 2
                 # R2 += 1e-34
-                if np.any(np.isclose(R2, 0.0)):
+                if np.any(np.isclose(R2, 0.0, atol=atol)):
                     # R2[np.isclose(R2, 0.0)] = np.min(R2[~np.isclose(R2, 0.0)])
-                    R2[np.isclose(R2, 0.0)] = np.inf
+                    R2[np.isclose(R2, 0.0, atol=atol)] = np.inf
                 Rinv = 1 / np.sqrt(R2)
 
                 if restricted:
