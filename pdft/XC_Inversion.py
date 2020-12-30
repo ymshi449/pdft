@@ -981,7 +981,7 @@ class Inverser(pdft.U_Embedding):
         return hess, hess_app
 
     def find_vxc_scipy_WuYang(self, maxiter=14000, opt_method="BFGS", opt=None, tol=None,
-                              countinue_opt=False, find_vxc_grid=True):
+                              continue_opt=False, find_vxc_grid=True):
 
         if self.three_overlap is None:
             self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
@@ -990,7 +990,7 @@ class Inverser(pdft.U_Embedding):
             if self.ortho_basis:
 
                 self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.vp_basis.A.np)
-        if not countinue_opt:
+        if not continue_opt:
             print("Zero the old result for a new calculation..")
             self.v_output = np.zeros_like(self.v_output)
 
@@ -1014,15 +1014,15 @@ class Inverser(pdft.U_Embedding):
             }
         opt["maxiter"] = maxiter
 
-        vp_array = optimizer.minimize(self.Lagrangian_WuYang, self.v_output,
+        result_x = optimizer.minimize(self.Lagrangian_WuYang, self.v_output,
                                       jac=self.grad_WuYang,
                                       hess=self.hess_WuYang,
                                       method=opt_method,
                                       options=opt,
                                       tol=tol)
-        nbf = int(vp_array.x.shape[0] / 2)
-        v_output_a = vp_array.x[:nbf]
-        v_output_b = vp_array.x[nbf:]
+        nbf = int(result_x.x.shape[0] / 2)
+        v_output_a = result_x.x[:nbf]
+        v_output_b = result_x.x[nbf:]
 
         Vks_a = psi4.core.Matrix.from_array(
             np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
@@ -1034,8 +1034,9 @@ class Inverser(pdft.U_Embedding):
         dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
         dDb = self.input_density_wfn.Db().np - self.molecule.Db.np
         dn = self.molecule.to_grid(dDa+dDb)
-        print("Evaluation: ", vp_array.nfev)
-        print("|jac|", np.linalg.norm(vp_array.jac), "|n|", np.sum(np.abs(dn)*self.molecule.w), "L after", vp_array.fun)
+        print(result_x.message)
+        print("Evaluation: ", result_x.nfev)
+        print("|jac|", np.linalg.norm(result_x.jac), "|n|", np.sum(np.abs(dn)*self.molecule.w), "L after", result_x.fun)
         print("Ts", self.molecule.Da.vector_dot(self.molecule.T)+self.molecule.Db.vector_dot(self.molecule.T))
         print("dTs", np.trace(np.dot(self.input_density_wfn.Da().np+self.input_density_wfn.Db().np-
                                      self.molecule.Da.np-self.molecule.Db.np, self.molecule.T.np)))
@@ -1047,7 +1048,7 @@ class Inverser(pdft.U_Embedding):
         print("Constant potential: ", self.vout_constant)
 
         # Update info
-        self.v_output = vp_array.x
+        self.v_output = result_x.x
 
         # if find_vxc_grid:
         #     self.get_vxc()
@@ -1576,7 +1577,7 @@ class Inverser(pdft.U_Embedding):
     def find_vxc_manualNewton(self, maxiter=49, svd_rcond=None, c1=1e-4, c2=0.99, c3=1e-2,
                               svd_parameter=None, line_search_method="StrongWolfe",
                               BT_beta_threshold=1e-7, rho_conv_threshold=1e-3,
-                              countinue_opt=False, find_vxc_grid=True,
+                              continue_opt=False, find_vxc_grid=True,
                               grad_norm=1e-2):
         if self.three_overlap is None:
             self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
@@ -1585,7 +1586,7 @@ class Inverser(pdft.U_Embedding):
             if self.ortho_basis:
                 self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.vp_basis.A.np)
 
-        if not countinue_opt:
+        if not continue_opt:
             print("Zero the old result for a new calculation..")
             self.v_output = np.zeros_like(self.v_output)
             self.v0_output = np.zeros_like(self.v_output)
@@ -2640,7 +2641,7 @@ class Inverser(pdft.U_Embedding):
         return hess, hess_app
 
     def find_vxc_scipy_constrainedoptimization(self, maxiter=1400, opt_method="BFGS",
-                                               countinue_opt=False, find_vxc_grid=False, opt=None):
+                                               continue_opt=False, find_vxc_grid=False, opt=None):
 
         if self.three_overlap is None:
             self.three_overlap = np.squeeze(self.molecule.mints.ao_3coverlap(self.molecule.wfn.basisset(),
@@ -2650,7 +2651,7 @@ class Inverser(pdft.U_Embedding):
 
                 self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.vp_basis.A.np)
 
-        if not countinue_opt:
+        if not continue_opt:
             print("Zero the old result for a new calculation..")
             self.v_output = np.zeros_like(self.v_output)
 
@@ -2672,15 +2673,15 @@ class Inverser(pdft.U_Embedding):
             }
         opt["maxiter"] = maxiter
 
-        vp_array = optimizer.minimize(self.Lagrangian_constrainedoptimization,
+        result_x = optimizer.minimize(self.Lagrangian_constrainedoptimization,
                                       self.v_output,
                                       jac=self.grad_constrainedoptimization,
                                       method=opt_method,
                                       options=opt)
 
-        nbf = int(vp_array.x.shape[0] / 2)
-        v_output_a = vp_array.x[:nbf]
-        v_output_b = vp_array.x[nbf:]
+        nbf = int(result_x.x.shape[0] / 2)
+        v_output_a = result_x.x[:nbf]
+        v_output_b = result_x.x[nbf:]
 
         Vks_a = psi4.core.Matrix.from_array(
             np.einsum("ijk,k->ij", self.three_overlap, v_output_a) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
@@ -2693,8 +2694,8 @@ class Inverser(pdft.U_Embedding):
         dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
         dDb = self.input_density_wfn.Db().np - self.molecule.Db.np
         dn = self.molecule.to_grid(dDa+dDb)
-        print("Evaluation", vp_array.nfev)
-        print("|jac|", np.linalg.norm(vp_array.jac), "|n|", np.sum(np.abs(dn)*self.molecule.w), "L after", vp_array.fun)
+        print("Evaluation", result_x.nfev)
+        print("|jac|", np.linalg.norm(result_x.jac), "|n|", np.sum(np.abs(dn)*self.molecule.w), "L after", result_x.fun)
         print("Ts", self.molecule.Da.vector_dot(self.molecule.T)+self.molecule.Db.vector_dot(self.molecule.T))
         print("dTs", np.trace(np.dot(self.input_density_wfn.Da().np+self.input_density_wfn.Db().np-
                                      self.molecule.Da.np-self.molecule.Db.np, self.molecule.T.np)))
@@ -2705,11 +2706,11 @@ class Inverser(pdft.U_Embedding):
               /np.linalg.norm(self.input_density_wfn.Ca().np)/np.linalg.norm(self.molecule.Ca.np))
         print("Constant potential: ", self.vout_constant)
         # Update info
-        self.v_output = vp_array.x
+        self.v_output = result_x.x
 
         if find_vxc_grid:
             self.get_vxc()
-        return vp_array
+        return result_x
 
     def my_L_curve_regularization4CO(self, rgl_bs=np.e, rgl_epn=15, starting_epn=1,
                                   searching_method="close_to_platform",
@@ -2919,10 +2920,10 @@ class Inverser(pdft.U_Embedding):
         return L
 
     def find_vxc_pylbfgs_WuYang_grid(self, maxiter=14000, line_search='strongwolfe', ftol=1e-4,
-                                   countinue_opt=False,
+                                   continue_opt=False,
                                    max_linesearch=100,
                                    find_vxc_grid=True):
-        if not countinue_opt:
+        if not continue_opt:
             print("Zero the old result for a new calculation..")
             self.v_output_grid = np.zeros_like(self.v_output_grid)
             Vks_a = psi4.core.Matrix.from_array(self.v0_Fock)
@@ -2977,8 +2978,8 @@ class Inverser(pdft.U_Embedding):
         return
 
     def find_vxc_scipy_WuYang_grid(self, maxiter=14000, opt_method="L-BFGS-B", opt=None,
-                              countinue_opt=False, find_vxc_grid=True):
-        if not countinue_opt:
+                              continue_opt=False, find_vxc_grid=True):
+        if not continue_opt:
             print("Zero the old result for a new calculation..")
             self.v_output_grid = np.zeros_like(self.v_output_grid)
             Vks_a = psi4.core.Matrix.from_array(self.v0_Fock)
@@ -3002,13 +3003,13 @@ class Inverser(pdft.U_Embedding):
                 # "gtol": 1e-7
             }
 
-        vp_array = optimizer.minimize(self.Lagrangian_WuYang_grid, self.v_output_grid,
+        result_x = optimizer.minimize(self.Lagrangian_WuYang_grid, self.v_output_grid,
                                       jac=self.grad_WuYang_grid,
                                       method=opt_method,
                                       options=opt)
-        nbf = int(vp_array.x.shape[0] / 2)
-        v_output_a = vp_array.x[:nbf]
-        v_output_b = vp_array.x[nbf:]
+        nbf = int(result_x.x.shape[0] / 2)
+        v_output_a = result_x.x[:nbf]
+        v_output_b = result_x.x[nbf:]
 
         Vks_a = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(v_output_a) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
         Vks_b = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(v_output_b) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
@@ -3018,7 +3019,7 @@ class Inverser(pdft.U_Embedding):
         dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
         dDb = self.input_density_wfn.Db().np - self.molecule.Db.np
         dn = self.molecule.to_grid(dDa+dDb)
-        print("|jac|", np.linalg.norm(vp_array.jac), "|n|", np.sum(np.abs(dn)*self.molecule.w), "L after", vp_array.fun)
+        print("|jac|", np.linalg.norm(result_x.jac), "|n|", np.sum(np.abs(dn)*self.molecule.w), "L after", result_x.fun)
         print("Ts", self.molecule.Da.vector_dot(self.molecule.T)+self.molecule.Db.vector_dot(self.molecule.T))
         print("dTs", np.trace(np.dot(self.input_density_wfn.Da().np+self.input_density_wfn.Db().np-
                                      self.molecule.Da.np-self.molecule.Db.np, self.molecule.T.np)))
@@ -3030,7 +3031,7 @@ class Inverser(pdft.U_Embedding):
         print("Constant potential: ", self.vout_constant)
 
         # Update info
-        self.v_output = vp_array.x
+        self.v_output = result_x.x
 
         if find_vxc_grid:
             self.get_vxc_grid()
@@ -3156,7 +3157,7 @@ class Inverser(pdft.U_Embedding):
 
 #%% Section for finding vext_approximate on grid in order to avoid the singularity in real vext. DOES NOT WORK NOW.
     def find_vext_scipy_WuYang_grid(self, maxiter=14000, opt_method="L-BFGS-B", opt=None,
-                              countinue_opt=False, find_vxc_grid=True):
+                              continue_opt=False, find_vxc_grid=True):
 
         if self.v0 != "HartreeLDAappext":
             print("Changing v0 to Hartree + LDA. Only works for LDA")
@@ -3166,7 +3167,7 @@ class Inverser(pdft.U_Embedding):
             self.four_overlap, _, _, _ = pdft.fouroverlap(self.molecule.wfn, self.molecule.geometry,
                                                           self.molecule.basis, self.molecule.mints)
 
-        if not countinue_opt:
+        if not continue_opt:
             print("Zero the old result for a new calculation..")
             if self.vext_app is None:
                 self.vext_app = np.zeros(self.molecule.nbf**2)
@@ -3192,13 +3193,13 @@ class Inverser(pdft.U_Embedding):
                 # "gtol": 1e-7
             }
 
-        vp_array = optimizer.minimize(self.Lagrangian_vext_WuYang_grid, self.vext_app,
+        result_x = optimizer.minimize(self.Lagrangian_vext_WuYang_grid, self.vext_app,
                                       jac=self.grad_vext_WuYang_grid,
                                       method=opt_method,
                                       options=opt)
-        nbf = int(vp_array.x.shape[0] / 2)
-        v_output_a = vp_array.x[:nbf]
-        v_output_b = vp_array.x[nbf:]
+        nbf = int(result_x.x.shape[0] / 2)
+        v_output_a = result_x.x[:nbf]
+        v_output_b = result_x.x[nbf:]
 
         Vks_a = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(v_output_a) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
         Vks_b = psi4.core.Matrix.from_array(self.molecule.grid_to_fock(v_output_b) + self.vout_constant * self.molecule.S.np + self.v0_Fock)
@@ -3208,7 +3209,7 @@ class Inverser(pdft.U_Embedding):
         dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
         dDb = self.input_density_wfn.Db().np - self.molecule.Db.np
         dn = self.molecule.to_grid(dDa+dDb)
-        print("|jac|", np.linalg.norm(vp_array.jac), "|n|", np.sum(np.abs(dn)*self.molecule.w), "L after", vp_array.fun)
+        print("|jac|", np.linalg.norm(result_x.jac), "|n|", np.sum(np.abs(dn)*self.molecule.w), "L after", result_x.fun)
         print("Ts", self.molecule.Da.vector_dot(self.molecule.T)+self.molecule.Db.vector_dot(self.molecule.T))
         print("dTs", np.trace(np.dot(self.input_density_wfn.Da().np+self.input_density_wfn.Db().np-
                                      self.molecule.Da.np-self.molecule.Db.np, self.molecule.T.np)))
@@ -3220,7 +3221,7 @@ class Inverser(pdft.U_Embedding):
         print("Constant potential: ", self.vout_constant)
 
         # Update info
-        self.v_output = vp_array.x
+        self.v_output = result_x.x
 
         if find_vxc_grid:
             self.get_vxc_grid()
@@ -3333,7 +3334,7 @@ class Inverser(pdft.U_Embedding):
 
 #%% Section for finding vext_approximate on basis in order to avoid the singularity in real vext. DOES NOT WORK NOW.
     def find_vext_scipy_WuYang(self, maxiter=14000, opt_method="trust-krylov", opt=None,
-                              countinue_opt=False, find_vxc_grid=True):
+                              continue_opt=False, find_vxc_grid=True):
 
         if self.v0 != "HartreeLDAappext":
             print("Changing v0 to Hartree + LDA. Only works for LDA")
@@ -3345,7 +3346,7 @@ class Inverser(pdft.U_Embedding):
                                                                              self.vp_basis.wfn.basisset()))
             if self.ortho_basis:
                 self.three_overlap = np.einsum("ijk,kl->ijl", self.three_overlap, self.vp_basis.A.np)
-        if not countinue_opt:
+        if not continue_opt:
             print("Zero the old result for a new calculation..")
             self.v_output = np.zeros_like(self.v_output)
 
@@ -3369,15 +3370,15 @@ class Inverser(pdft.U_Embedding):
                 # "gtol": 1e-7
             }
 
-        vp_array = optimizer.minimize(self.Lagrangian_WuYang, self.v_output,
+        result_x = optimizer.minimize(self.Lagrangian_WuYang, self.v_output,
                                       jac=self.grad_WuYang,
                                       hess=self.hess_WuYang,
                                       args=(False),
                                       method=opt_method,
                                       options=opt)
-        nbf = int(vp_array.x.shape[0] / 2)
-        v_output_a = vp_array.x[:nbf]
-        v_output_b = vp_array.x[nbf:]
+        nbf = int(result_x.x.shape[0] / 2)
+        v_output_a = result_x.x[:nbf]
+        v_output_b = result_x.x[nbf:]
 
         Vks_a = psi4.core.Matrix.from_array(
             np.einsum("ijk,k->ij", self.three_overlap,
@@ -3391,8 +3392,8 @@ class Inverser(pdft.U_Embedding):
         dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
         dDb = self.input_density_wfn.Db().np - self.molecule.Db.np
         dn = self.molecule.to_grid(dDa + dDb)
-        print("|jac|", np.linalg.norm(vp_array.jac), "|n|", np.sum(np.abs(dn) * self.molecule.w), "L after",
-              vp_array.fun)
+        print("|jac|", np.linalg.norm(result_x.jac), "|n|", np.sum(np.abs(dn) * self.molecule.w), "L after",
+              result_x.fun)
         print("Ts", self.molecule.Da.vector_dot(self.molecule.T) + self.molecule.Db.vector_dot(self.molecule.T))
         print("dTs", np.trace(np.dot(self.input_density_wfn.Da().np + self.input_density_wfn.Db().np -
                                      self.molecule.Da.np - self.molecule.Db.np, self.molecule.T.np)))
@@ -3410,9 +3411,9 @@ class Inverser(pdft.U_Embedding):
             # # Get vH_mol
             # self.get_mol_vH()
             #
-            # nbf = int(vp_array.x.shape[0] / 2)
-            # v_output_a = vp_array.x[:nbf]
-            # v_output_b = vp_array.x[nbf:]
+            # nbf = int(result_x.x.shape[0] / 2)
+            # v_output_a = result_x.x[:nbf]
+            # v_output_b = result_x.x[nbf:]
             #
             # print("Start to get vxc_mol.")
             # self.vp_basis.Vpot.set_D([self.molecule.Da, self.molecule.Db])
@@ -3481,18 +3482,19 @@ class Inverser(pdft.U_Embedding):
         print(np.linalg.norm(grad_app-grad)/np.linalg.norm(grad))
         return grad, grad_app
 
-    def vH_quadrature(self, blocks=None):
+    def vH_quadrature(self, grid_info=None):
         """
         Calculating vH using quadrature integral.
         :return:
         """
-        points_func = self.molecule.Vpot.properties()[0]
 
-        if blocks is None:
+        if grid_info is None:
             vH = np.zeros_like(self.molecule.w)
             nblocks = self.molecule.Vpot.nblocks()
+            points_func = self.molecule.Vpot.properties()[0]
+            blocks = None
         else:
-            blocks, npoints = blocks
+            blocks, npoints, points_func = grid_info
             vH = np.zeros(npoints)
             nblocks = len(blocks)
         # First loop over the outer set of blocks
@@ -3507,6 +3509,7 @@ class Inverser(pdft.U_Embedding):
             # Obtain general grid information
             if blocks is None:
                 l_grid = self.molecule.Vpot.get_block(l_block)
+                blocks = None
             else:
                 l_grid = blocks[l_block]
             l_x = np.array(l_grid.x())
@@ -3555,12 +3558,12 @@ class Inverser(pdft.U_Embedding):
         print("\n")
         return vH
 
-    def _vxc_hole_quadrature(self, blocks=None, atol = 1e-4):
+    def _vxc_hole_quadrature(self, grid_info=None, atol = 1e-4):
         """
         Calculating v_XC^hole in RKS (15) using quadrature intrgral to test the ability of it.
         :return:
         """
-        if self.vxc_hole_WF is not None and blocks is None:
+        if self.vxc_hole_WF is not None and grid_info is None:
             return self.vxc_hole_WF
 
         restricted = psi4.core.get_global_option("REFERENCE") == "RHF"
@@ -3581,16 +3584,20 @@ class Inverser(pdft.U_Embedding):
             D2 = D2a + D2b
 
         # assert np.allclose(self.v0_wfn.Da(), self.v0_wfn.Db()), "mRKS currently only supports RHF."
-        points_func = self.molecule.Vpot.properties()[0]
-        points_func.set_deriv(2)
 
-        if blocks is None:
+        if grid_info is None:
             vxchole = np.zeros_like(self.molecule.w)
             nblocks = self.molecule.Vpot.nblocks()
+
+            points_func = self.molecule.Vpot.properties()[0]
+            points_func.set_deriv(0)
+
+            blocks = None
         else:
-            blocks, npoints = blocks
+            blocks, npoints, points_func = grid_info
             vxchole = np.zeros(npoints)
             nblocks = len(blocks)
+            points_func.set_deriv(0)
 
         if not restricted:
             vxchole_b = np.zeros_like(vxchole)
@@ -3717,23 +3724,29 @@ class Inverser(pdft.U_Embedding):
             else:
                 return (vxchole, vxchole_b)
 
-    def _average_local_orbital_energy(self, D, C, eig, Db=None, Cb=None, eig_b=None, blocks=None):
+    def _average_local_orbital_energy(self, D, C, eig, Db=None, Cb=None, eig_b=None, grid_info=None):
         """
         (4)(6) in mRKS.
         """
         
-        points_func = self.molecule.Vpot.properties()[0]
-        points_func.set_deriv(1)
+
         # Nalpha = self.molecule.nalpha
         # Nbeta = self.molecule.nbeta
 
-        if blocks is None:
+        if grid_info is None:
             e_bar = np.zeros_like(self.molecule.w)
             nblocks = self.molecule.Vpot.nblocks()
+
+            points_func = self.molecule.Vpot.properties()[0]
+            points_func.set_deriv(0)
+            blocks = None
         else:
-            blocks, npoints = blocks
+            blocks, npoints, points_func = grid_info
             e_bar = np.zeros(npoints)
             nblocks = len(blocks)
+
+            points_func.set_deriv(0)
+
         # For unrestricted
         if Db is not None:
             e_bar_beta = np.zeros_like(e_bar)
@@ -3767,27 +3780,31 @@ class Inverser(pdft.U_Embedding):
         else:
             return (e_bar, e_bar_beta)
 
-    def _pauli_kinetic_energy_density(self, D, C, occ=None, Db=None, Cb=None, occb=None, blocks=None):
+    def _pauli_kinetic_energy_density(self, D, C, occ=None, Db=None, Cb=None, occb=None, grid_info=None):
         """
         (16)(18) in mRKS. But notice this does not return taup but taup/n
         :return:
         """
-
-        points_func = self.molecule.Vpot.properties()[0]
-        points_func.set_deriv(2)
 
         if occ is None:
             occ = np.ones(C.shape[1])
         if occb is None and (Db is not None):
             occb = np.ones(Cb.shape[1])
 
-        if blocks is None:
+        if grid_info is None:
             taup_rho = np.zeros_like(self.molecule.w)
             nblocks = self.molecule.Vpot.nblocks()
+
+            points_func = self.molecule.Vpot.properties()[0]
+            points_func.set_deriv(1)
+            blocks = None
+
         else:
-            blocks, npoints = blocks
+            blocks, npoints, points_func = grid_info
             taup_rho = np.zeros(npoints)
             nblocks = len(blocks)
+
+            points_func.set_deriv(1)
 
         if Db is not None:
             taup_rho_beta = np.zeros_like(taup_rho)
@@ -3816,18 +3833,18 @@ class Inverser(pdft.U_Embedding):
             part_x = np.einsum('pm,mi,nj,pn->ijp', l_phi, lC, lC, l_phi_x, optimize=True)
             part_y = np.einsum('pm,mi,nj,pn->ijp', l_phi, lC, lC, l_phi_y, optimize=True)
             part_z = np.einsum('pm,mi,nj,pn->ijp', l_phi, lC, lC, l_phi_z, optimize=True)
-            part1_x = part_x - np.transpose(part_x, (1,0,2))
-            part1_y = part_y - np.transpose(part_y, (1,0,2))
-            part1_z = part_z - np.transpose(part_z, (1,0,2))
+            part1_x = (part_x - np.transpose(part_x, (1, 0, 2))) ** 2
+            part1_y = (part_y - np.transpose(part_y, (1, 0, 2))) ** 2
+            part1_z = (part_z - np.transpose(part_z, (1, 0, 2))) ** 2
 
 
-            part1_x = np.triu(part1_x.T, k=1) ** 2
-            part1_y = np.triu(part1_y.T, k=1) ** 2
-            part1_z = np.triu(part1_z.T, k=1) ** 2
+            # part1_x = np.triu(part1_x.T, k=1) ** 2
+            # part1_y = np.triu(part1_y.T, k=1) ** 2
+            # part1_z = np.triu(part1_z.T, k=1) ** 2
 
-            occ_matrix = occ[:,None] @ occ[:,None].T
+            occ_matrix = np.expand_dims(occ, axis=1) @ np.expand_dims(occ, axis=0)
 
-            taup = np.sum((part1_x + part1_y + part1_z) * occ_matrix, axis=(1,2))
+            taup = np.sum((part1_x + part1_y + part1_z).T * occ_matrix, axis=(1,2)) * 0.5
 
             # Loop Methods, slow but memory friendly
             # taup = np.zeros(l_npoints)
@@ -3853,17 +3870,17 @@ class Inverser(pdft.U_Embedding):
                 part_x = np.einsum('pm,mi,nj,pn->ijp', l_phi, lC, lC, l_phi_x, optimize=True)
                 part_y = np.einsum('pm,mi,nj,pn->ijp', l_phi, lC, lC, l_phi_y, optimize=True)
                 part_z = np.einsum('pm,mi,nj,pn->ijp', l_phi, lC, lC, l_phi_z, optimize=True)
-                part1_x = part_x - np.transpose(part_x, (1, 0, 2))
-                part1_y = part_y - np.transpose(part_y, (1, 0, 2))
-                part1_z = part_z - np.transpose(part_z, (1, 0, 2))
+                part1_x = (part_x - np.transpose(part_x, (1, 0, 2))) ** 2
+                part1_y = (part_y - np.transpose(part_y, (1, 0, 2))) ** 2
+                part1_z = (part_z - np.transpose(part_z, (1, 0, 2))) ** 2
 
-                part1_x = np.triu(part1_x.T, k=1) ** 2
-                part1_y = np.triu(part1_y.T, k=1) ** 2
-                part1_z = np.triu(part1_z.T, k=1) ** 2
+                # part1_x = np.triu(part1_x.T, k=1) ** 2
+                # part1_y = np.triu(part1_y.T, k=1) ** 2
+                # part1_z = np.triu(part1_z.T, k=1) ** 2
 
-                occb_matrix = occb[:, None] @ occb[:, None].T
+                occb_matrix = np.expand_dims(occb, axis=1) @ np.expand_dims(occb, axis=0)
 
-                taup_beta = np.sum((part1_x + part1_y + part1_z) * occb_matrix, axis=(1, 2))
+                taup_beta = np.sum((part1_x + part1_y + part1_z).T * occb_matrix, axis=(1, 2)) * 0.5
 
                 taup_rho_beta[iw:iw + l_npoints] = taup_beta / rho ** 2 * 0.5
 
@@ -3874,7 +3891,76 @@ class Inverser(pdft.U_Embedding):
         else:
             return (taup_rho, taup_rho_beta)
 
-    def _restricted_mRKS(self, maxiter, vxc_grid, scf_maxiter, v_tol, D_tol, eig_tol, frac_old, WF_method):
+    def _modified_pauli_kinetic_energy_density(self, D, C, occ=None, Db=None, Cb=None, occb=None, grid_info=None):
+        """
+        (16)(18) in mRKS. But notice this does not return taup but taup/n
+        :return:
+        """
+
+        if occ is None:
+            occ = np.ones(C.shape[1])
+        if occb is None and (Db is not None):
+            occb = np.ones(Cb.shape[1])
+        if grid_info is None:
+            taup_rho = np.zeros_like(self.molecule.w)
+            nblocks = self.molecule.Vpot.nblocks()
+
+            points_func = self.molecule.Vpot.properties()[0]
+            points_func.set_deriv(1)
+            blocks = None
+        else:
+            blocks, npoints, points_func = grid_info
+            taup_rho = np.zeros(npoints)
+            nblocks = len(blocks)
+
+            points_func.set_deriv(1)
+        if Db is not None:
+            taup_rho_beta = np.zeros_like(taup_rho)
+        iw = 0
+        for l_block in range(nblocks):
+            # Obtain general grid information
+            if blocks is None:
+                l_grid = self.molecule.Vpot.get_block(l_block)
+            else:
+                l_grid = blocks[l_block]
+            l_npoints = l_grid.npoints()
+            points_func.compute_points(l_grid)
+            l_lpos = np.array(l_grid.functions_local_to_global())
+            l_phi = np.array(points_func.basis_values()["PHI"])[:l_npoints, :l_lpos.shape[0]]
+            l_phi_x = np.array(points_func.basis_values()["PHI_X"])[:l_npoints, :l_lpos.shape[0]]
+            l_phi_y = np.array(points_func.basis_values()["PHI_Y"])[:l_npoints, :l_lpos.shape[0]]
+            l_phi_z = np.array(points_func.basis_values()["PHI_Z"])[:l_npoints, :l_lpos.shape[0]]
+            lD = D[(l_lpos[:, None], l_lpos)]
+            rho = np.einsum('pm,mn,pn->p', l_phi, lD, l_phi, optimize=True)
+            lC = C[l_lpos, :]
+            # Matrix Methods
+            part_x = np.einsum('pm,mi,nj,pn->ijp', l_phi_x, lC, lC, l_phi_x, optimize=True)
+            part_y = np.einsum('pm,mi,nj,pn->ijp', l_phi_y, lC, lC, l_phi_y, optimize=True)
+            part_z = np.einsum('pm,mi,nj,pn->ijp', l_phi_z, lC, lC, l_phi_z, optimize=True)
+            phi_iphi_j = np.einsum('pm,mi,nj,pn->ijp', l_phi, lC, lC, l_phi, optimize=True) * (part_x + part_y + part_z)
+
+            occ_matrix = np.expand_dims(occ, axis=1) @ np.expand_dims(occ, axis=0)
+            taup = -np.sum(phi_iphi_j.T * occ_matrix, axis=(1, 2))
+            taup_rho[iw:iw + l_npoints] = taup / rho ** 2
+            if Db is not None:
+                lD = Db[(l_lpos[:, None], l_lpos)]
+                rho = np.einsum('pm,mn,pn->p', l_phi, lD, l_phi, optimize=True)
+                lC = Cb[l_lpos, :]
+                part_x = np.einsum('pm,mi,nj,pn->ijp', l_phi_x, lC, lC, l_phi_x, optimize=True)
+                part_y = np.einsum('pm,mi,nj,pn->ijp', l_phi_y, lC, lC, l_phi_y, optimize=True)
+                part_z = np.einsum('pm,mi,nj,pn->ijp', l_phi_z, lC, lC, l_phi_z, optimize=True)
+                phi_iphi_j = np.einsum('pm,mi,nj,pn->ijp', l_phi, lC, lC, l_phi, optimize=True) * (part_x + part_y + part_z)
+                occb_matrix = np.expand_dims(occb, axis=1) @ np.expand_dims(occb, axis=0)
+                taup_beta = -np.sum(phi_iphi_j.T * occb_matrix, axis=(1, 2))
+                taup_rho_beta[iw:iw + l_npoints] = taup_beta / rho ** 2
+            iw += l_npoints
+        assert iw == taup_rho.shape[0], "Somehow the whole space is not fully integrated."
+        if Db is None:
+            return taup_rho
+        else:
+            return (taup_rho, taup_rho_beta)
+
+    def _restricted_mRKS(self, maxiter, vxc_grid, scf_maxiter, v_tol, D_tol, eig_tol, frac_old, WF_method, init):
         Nalpha = self.molecule.nalpha
 
         if self.v0 != "Hartree":
@@ -3955,14 +4041,17 @@ class Inverser(pdft.U_Embedding):
         vxchole = self._vxc_hole_quadrature()
 
         # initial calculation:
-        # vxc_Fock = psi4.core.Matrix.from_array(self.v0_Fock)
-        # self.molecule.KS_solver(scf_maxiter, V=[vxc_Fock, vxc_Fock])
-        self.molecule.scf(scf_maxiter)
+        if init is None:
+            self.molecule.KS_solver(scf_maxiter, V=None)
+        elif init == "continue":
+            assert self.molecule.Da is not None
+        elif init == "LDA":
+            self.molecule.scf(scf_maxiter)
 
         dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
         dDb = self.input_density_wfn.Db().np - self.molecule.Db.np
         dn = self.molecule.to_grid(dDa+dDb)
-        print("\n|n| LDA", np.sum(np.abs(dn)*self.molecule.w))
+        print("\n|n| init:", np.sum(np.abs(dn)*self.molecule.w) / (2 * Nalpha))
 
         vxc_old = 0.0
         Da_old = 0.0
@@ -3996,7 +4085,7 @@ class Inverser(pdft.U_Embedding):
             dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
             dDb = self.input_density_wfn.Db().np - self.molecule.Db.np
             dn = self.molecule.to_grid(dDa + dDb)
-            print("Iter: %i,  |n|: %.4e"%(mRKS_step, np.sum(np.abs(dn) * self.molecule.w)))
+            print("Iter: %i,  |n|: %.4e"%(mRKS_step, np.sum(np.abs(dn) * self.molecule.w) / (2 * Nalpha)))
 
             # Another convergence criteria, DM
             if ((np.linalg.norm(self.molecule.Da.np - Da_old) / self.molecule.Da.np.shape[0] ** 2) < D_tol) and \
@@ -4009,21 +4098,21 @@ class Inverser(pdft.U_Embedding):
             eig_old = np.copy(self.molecule.eig_a)
 
         if vxc_grid is not None:
-            blocks_vxc = self.get_blocks_from_grid(vxc_grid)
-            vxchole = self._vxc_hole_quadrature(blocks=blocks_vxc)
+            grid_info = self.get_blocks_from_grid(vxc_grid)
+            vxchole = self._vxc_hole_quadrature(blocks=grid_info)
             if WF_method == "CIWavefunction":
-                ebarWF = self._average_local_orbital_energy(self.input_density_wfn.Da().np, C_a_GFM, eigs_a_GFM, blocks=blocks_vxc)
-                taup_rho_WF = self._pauli_kinetic_energy_density(self.input_density_wfn.Da().np, C_a_NO_AO, eigs_a_NO, blocks=blocks_vxc)
+                ebarWF = self._average_local_orbital_energy(self.input_density_wfn.Da().np, C_a_GFM, eigs_a_GFM, blocks=grid_info)
+                taup_rho_WF = self._pauli_kinetic_energy_density(self.input_density_wfn.Da().np, C_a_NO_AO, eigs_a_NO, blocks=grid_info)
             elif WF_method == "RHF":
                 ebarWF = self._average_local_orbital_energy(self.input_density_wfn.Da().np,
                                                             self.input_density_wfn.Ca().np[:, :Nalpha],
-                                                            self.input_density_wfn.epsilon_a().np[:Nalpha], blocks=blocks_vxc)
+                                                            self.input_density_wfn.epsilon_a().np[:Nalpha], blocks=grid_info)
                 taup_rho_WF = self._pauli_kinetic_energy_density(self.input_density_wfn.Da().np,
-                                                                 self.input_density_wfn.Ca().np[:, :Nalpha], blocks=blocks_vxc)
+                                                                 self.input_density_wfn.Ca().np[:, :Nalpha], blocks=grid_info)
             ebarKS = self._average_local_orbital_energy(self.molecule.Da.np, self.molecule.Ca.np[:,:Nalpha],
-                                                        self.molecule.eig_a.np[:Nalpha], blocks=blocks_vxc)
+                                                        self.molecule.eig_a.np[:Nalpha], blocks=grid_info)
             taup_rho_KS = self._pauli_kinetic_energy_density(self.molecule.Da.np, self.molecule.Ca.np[:,:Nalpha],
-                                                             blocks=blocks_vxc)
+                                                             blocks=grid_info)
 
             potential_shift = np.max(ebarWF) - np.max(ebarKS)
             self.vout_constant = potential_shift
@@ -4032,7 +4121,7 @@ class Inverser(pdft.U_Embedding):
 
         return vxc, vxchole, ebarKS, ebarWF, taup_rho_WF, taup_rho_KS
 
-    def _unrestricted_mRKS(self, maxiter, vxc_grid, scf_maxiter, v_tol, D_tol, eig_tol, frac_old, WF_method, _no_tau_apprx=False):
+    def _unrestricted_mRKS(self, maxiter, vxc_grid, scf_maxiter, v_tol, D_tol, eig_tol, frac_old, WF_method, init, _no_tau_apprx=False):
         """
 
         :param maxiter:
@@ -4075,12 +4164,19 @@ class Inverser(pdft.U_Embedding):
         vxchole_a, vxchole_b = self._vxc_hole_quadrature()
 
         # initial calculation:
-        self.molecule.scf(scf_maxiter)  # this is SVWN
+        # initial calculation:
+        if init is None:
+            self.molecule.KS_solver(scf_maxiter, V=None)
+        elif init == "continue":
+            assert self.molecule.Da is not None
+        elif init == "LDA":
+            self.molecule.scf(scf_maxiter)
 
         dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
         dDb = self.input_density_wfn.Db().np - self.molecule.Db.np
-        dn = self.molecule.to_grid(dDa+dDb)
-        print("\n|n| LDA", np.sum(np.abs(dn)*self.molecule.w))
+        dna = self.molecule.to_grid(dDa)
+        dnb = self.molecule.to_grid(dDb)
+        print("\n|n| init", np.sum(np.abs(dna)*self.molecule.w) / Nalpha, np.sum(np.abs(dnb)*self.molecule.w) / Nbeta)
 
         vxc_old_a = 0.0
         vxc_old_b = 0.0
@@ -4118,7 +4214,8 @@ class Inverser(pdft.U_Embedding):
 
             # Add compulsory mixing parameter close to the convergence to help convergence HOPEFULLY
             # Check vp convergence
-            if np.sum(np.abs(vxc_a - vxc_old_a) * self.molecule.w) < v_tol and np.sum(np.abs(vxc_b - vxc_old_b) * self.molecule.w) < v_tol:
+            if np.sum(np.abs(vxc_a - vxc_old_a) * self.molecule.w) < v_tol and np.sum(
+                    np.abs(vxc_b - vxc_old_b) * self.molecule.w) < v_tol:
                 print("vxc stops updating.")
                 break
             elif mRKS_step != 1:
@@ -4132,17 +4229,24 @@ class Inverser(pdft.U_Embedding):
             if Nbeta==0:  # For systems w/ 1 electron.
                 vxc_Fock_b.np[:] = 0
 
-            if mRKS_step < 5:
-                vxc_Fock_a.np[:] += self.v0_Fock
-                vxc_Fock_b.np[:] += self.v0_Fock
-                self.molecule.KS_solver(100, V=[vxc_Fock_a, vxc_Fock_b])
-            else:
-                self.molecule.scf(scf_maxiter, vp_matrix=[vxc_Fock_a, vxc_Fock_b], vxc_flag=False)
+            # The idea is (though not sure if it helps.), for steps smaller than 5, use input density vH to guide.
+            # After that, use its's self vH.
+            # if mRKS_step < 5:
+            #     vxc_Fock_a.np[:] += self.v0_Fock
+            #     vxc_Fock_b.np[:] += self.v0_Fock
+            #     self.molecule.KS_solver(100, V=[vxc_Fock_a, vxc_Fock_b])
+            # else:
+            #     self.molecule.scf(scf_maxiter, vp_matrix=[vxc_Fock_a, vxc_Fock_b], vxc_flag=False)
+            vxc_Fock_a.np[:] += self.v0_Fock
+            vxc_Fock_b.np[:] += self.v0_Fock
+            self.molecule.KS_solver(100, V=[vxc_Fock_a, vxc_Fock_b])
 
             dDa = self.input_density_wfn.Da().np - self.molecule.Da.np
             dDb = self.input_density_wfn.Db().np - self.molecule.Db.np
-            dn = self.molecule.to_grid(dDa + dDb)
-            print("Iter: %i,  |n|: %.4e"%(mRKS_step, np.sum(np.abs(dn) * self.molecule.w)))
+            dna = self.molecule.to_grid(dDa)
+            dnb = self.molecule.to_grid(dDb)
+            print("Iter: %i,  |n|: %.4e %.4e" % (
+            mRKS_step, np.sum(np.abs(dna) * self.molecule.w) / Nalpha, np.sum(np.abs(dnb) * self.molecule.w) / Nbeta))
 
             # Another convergence criteria, DM
             if ((np.linalg.norm(self.molecule.Da.np - Da_old) / self.molecule.Da.np.shape[0] ** 2) < D_tol) and \
@@ -4156,8 +4260,8 @@ class Inverser(pdft.U_Embedding):
             eig_old = np.copy(self.molecule.eig_a)
 
         if vxc_grid is not None:
-            blocks_vxc = self.get_blocks_from_grid(vxc_grid)
-            vxchole_a, vxchole_b = self._vxc_hole_quadrature(blocks=blocks_vxc)
+            grid_info = self.get_blocks_from_grid(vxc_grid)
+            vxchole_a, vxchole_b = self._vxc_hole_quadrature(blocks=grid_info)
 
             ebarWF_a, ebarWF_b = self._average_local_orbital_energy(self.input_density_wfn.Da().np,
                                                                     self.input_density_wfn.Ca().np[:, :Nalpha],
@@ -4165,26 +4269,26 @@ class Inverser(pdft.U_Embedding):
                                                                     Db=self.input_density_wfn.Db().np,
                                                                     Cb=self.input_density_wfn.Cb().np[:, :Nbeta],
                                                                     eig_b=self.input_density_wfn.epsilon_b().np[:Nbeta],
-                                                                    blocks=blocks_vxc)
+                                                                    blocks=grid_info)
             taup_rho_WF_a, taup_rho_WF_b = self._pauli_kinetic_energy_density(self.input_density_wfn.Da().np,
                                                                               self.input_density_wfn.Ca().np[:,
                                                                               :Nalpha],
                                                                               Db=self.input_density_wfn.Db().np,
                                                                               Cb=self.input_density_wfn.Cb().np[:,
                                                                                  :Nbeta],
-                                                                              blocks=blocks_vxc)
+                                                                              blocks=grid_info)
             ebarKS_a, ebarKS_b = self._average_local_orbital_energy(self.molecule.Da.np,
                                                                  self.molecule.Ca.np[:,:Nalpha],
                                                                  self.molecule.eig_a.np[:Nalpha],
                                                                  Db=self.molecule.Db.np,
                                                                  Cb=self.molecule.Cb.np[:, :Nbeta],
                                                                  eig_b=self.molecule.eig_b.np[:Nbeta],
-                                                                 blocks=blocks_vxc)
+                                                                 blocks=grid_info)
             taup_rho_KS_a, taup_rho_KS_b = self._pauli_kinetic_energy_density(self.molecule.Da.np,
                                                                            self.molecule.Ca.np[:,:Nalpha],
                                                                            Db=self.molecule.Db.np,
                                                                            Cb=self.molecule.Cb.np[:, :Nbeta],
-                                                                           blocks=blocks_vxc)
+                                                                           blocks=grid_info)
             potential_shift_a = np.max(ebarWF_a) - np.max(ebarKS_a)
             potential_shift_b = np.max(ebarWF_b) - np.max(ebarKS_b)
             self.vout_constant = (potential_shift_a, potential_shift_b)
@@ -4196,9 +4300,12 @@ class Inverser(pdft.U_Embedding):
         return (vxc_a, vxc_b), (vxchole_a, vxchole_b), (ebarKS_a, ebarKS_b), (ebarWF_a, ebarWF_b), \
                (taup_rho_WF_a, taup_rho_WF_b), (taup_rho_KS_a, taup_rho_KS_b)
 
-    def mRKS(self, maxiter=100, vxc_grid=None, scf_maxiter=300, v_tol=1e-3, D_tol=1e-7, eig_tol=1e-7, frac_old=0):
+    def mRKS(self, maxiter=21, vxc_grid=None, scf_maxiter=300,
+             v_tol=1e-3, D_tol=1e-7, eig_tol=1e-7, frac_old=0, init="LDA"):
         """
         Get vxc on the grid with mRKS methods. Only works for RHF right now.
+        
+        init: {"LDA", None, "continue"}. Initial guess as the starting point.
         """
         support_methods = ["RHF", "UHF", "CIWavefunction"]
         restricted = psi4.core.get_global_option("REFERENCE") == "RHF"
@@ -4209,11 +4316,15 @@ class Inverser(pdft.U_Embedding):
             raise Exception("Unrestricted %s is not supported."% self.input_density_wfn.name())
 
         if restricted:
-            vxc, vxchole, ebarKS, ebarWF, taup_rho_WF, taup_rho_KS = self._restricted_mRKS(maxiter, vxc_grid, scf_maxiter,
-                                                                                           v_tol, D_tol, eig_tol, frac_old, self.input_density_wfn.name())
+            vxc, vxchole, ebarKS, ebarWF, \
+            taup_rho_WF, taup_rho_KS = self._restricted_mRKS(maxiter, vxc_grid, scf_maxiter,
+                                                                                           v_tol, D_tol, eig_tol, frac_old,
+                                                                                           self.input_density_wfn.name(), init)
         else:
-            vxc, vxchole, ebarKS, ebarWF, taup_rho_WF, taup_rho_KS = self._unrestricted_mRKS(maxiter, vxc_grid, scf_maxiter,
-                                                                                             v_tol, D_tol, eig_tol, frac_old, self.input_density_wfn.name())
+            vxc, vxchole, ebarKS, ebarWF, \
+            taup_rho_WF, taup_rho_KS = self._unrestricted_mRKS(maxiter, vxc_grid, scf_maxiter,
+                                                               v_tol, D_tol, eig_tol, frac_old,
+                                                               self.input_density_wfn.name(), init)
 
         return vxc, vxchole, ebarKS, ebarWF, taup_rho_WF, taup_rho_KS
 
@@ -4223,11 +4334,12 @@ class Inverser(pdft.U_Embedding):
         """
         assert (grid.shape[0] == 3) or (grid.shape[0] == 4)
 
-        epsilon = psi4.core.get_global_option("CUBIC_BASIS_TOLERANCE")
+        epsilon = psi4.core.get_global_option("CUBIC_BASIS_TOLERANCE") * 1e-5
         extens = psi4.core.BasisExtents(self.molecule.wfn.basisset(), epsilon)
-        # max_points = psi4.core.get_global_option("DFT_BLOCK_MAX_POINTS") - 1
-        max_points = self.molecule.Vpot.properties()[0].max_points()
-
+        max_points = psi4.core.get_global_option("DFT_BLOCK_MAX_POINTS") - 1
+        # max_points = self.molecule.Vpot.properties()[0].max_points()
+        
+        
         if_w = (grid.shape[0] == 4)
 
         npoints = grid.shape[1]
@@ -4235,7 +4347,8 @@ class Inverser(pdft.U_Embedding):
         nblocks = int(np.floor(npoints/max_points))
 
         blocks = []
-
+        
+        max_functions = 0
         idx = 0
         for nb in range(nblocks):
             x = psi4.core.Vector.from_array(grid[0][idx:idx+max_points])
@@ -4247,11 +4360,14 @@ class Inverser(pdft.U_Embedding):
                 w = psi4.core.Vector.from_array(np.zeros_like(grid[2][idx:idx+max_points]))  # When w is not necessary and not given
 
             blocks.append(psi4.core.BlockOPoints(x, y, z, w, extens))
-
+            max_functions = max_functions if max_functions > len(blocks[-1].functions_local_to_global()) else len(
+                blocks[-1].functions_local_to_global())
+            
             idx += max_points
-
+            max_functions = max_functions if max_functions > len(blocks[-1].functions_local_to_global()) else len(
+                blocks[-1].functions_local_to_global())
+        # One more un-full block
         if idx < npoints:
-            # One more un-full block
             x = psi4.core.Vector.from_array(grid[0][idx:])
             y = psi4.core.Vector.from_array(grid[1][idx:])
             z = psi4.core.Vector.from_array(grid[2][idx:])
@@ -4260,5 +4376,9 @@ class Inverser(pdft.U_Embedding):
             else:
                 w = psi4.core.Vector.from_array(np.zeros_like(grid[2][idx:]))  # When w is not necessary and not given
             blocks.append(psi4.core.BlockOPoints(x, y, z, w, extens))
+            max_functions = max_functions if max_functions > len(blocks[-1].functions_local_to_global()) else len(
+                blocks[-1].functions_local_to_global())
 
-        return blocks, npoints
+        point_func = psi4.core.RKSFunctions(self.input_density_wfn.basisset(), max_points, max_functions)
+        point_func.set_pointers(self.input_density_wfn.Da())
+        return blocks, npoints, point_func
