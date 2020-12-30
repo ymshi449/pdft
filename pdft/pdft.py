@@ -555,10 +555,13 @@ class U_Molecule():
         Constructs a psi4 JK object from input basis
         """
         jk = psi4.core.JK.build(self.wfn.basisset())
-        jk.set_memory(int(4*1.25e8)) #1GB
+        if int(jk.memory_estimate() * 1.5) > 3e9:
+            raise Exception("JK required memory (%i) too large"%(int(jk.memory_estimate() * 1.5)))
+        jk.set_memory(int(jk.memory_estimate() * 1.5)) # 1GB
         jk.set_do_K(K)
         jk.initialize()
         jk.print_header()
+        print("The JK functional formed.")
         return jk
 
     def form_A(self):
@@ -898,6 +901,7 @@ class U_Molecule():
             #Exchange correlation energy/matrix
             self.Vpot.set_D([D_a,D_b])
             self.Vpot.properties()[0].set_pointers(D_a, D_b)
+            self.Vpot.properties()[1].set_pointers(D_a, D_b)
 
             ks_e ,Vxc_a, Vxc_b, self.vxc, _ = U_xc(D_a, D_b, self.Vpot)
             Vxc_a = psi4.core.Matrix.from_array(Vxc_a)
@@ -959,7 +963,7 @@ class U_Molecule():
 
             dRMS = 0.5 * (np.mean(diisa_e.np**2)**0.5 + np.mean(diisb_e.np**2)**0.5)
             if print_energies:
-                print(F'SCF Convergence: NUM_ITER = {SCF_ITER} E = {SCF_E} dE = {abs(SCF_E - Eold)} dDIIS = {dRMS}')
+                print(F'SCF Convergence: NUM_ITER = {SCF_ITER} E = {SCF_E} dE = {abs(SCF_E - Eold)} dDIIS = {dRMSa, dRMSb}')
             if (abs(SCF_E - Eold) < E_conv) and (dRMS < D_conv):
                 if print_energies is True:
                     print(F'SCF Convergence: NUM_ITER = {SCF_ITER} dE = {abs(SCF_E - Eold)} dDIIS = {dRMS}')
@@ -3568,14 +3572,14 @@ def plot1d_x(data, Vpot=None, xyz=None, dimmer_length=None, title=None,
     if ax is None:
         f1 = plt.figure(figsize=(16, 12), dpi=160)
         # f1 = plt.figure()
-        plt.plot(x[mask & mask2][order], data[mask & mask2][order],
+        ln = plt.plot(x[mask & mask2][order], data[mask & mask2][order],
                  label=label, color=color, ls=ls, lw=lw)
     else:
-        ax.plot(x[mask & mask2][order], data[mask & mask2][order],
-                label=label, color=color, ls=ls, lw=lw)
+        ln = ax.plot(x[mask & mask2][order], data[mask & mask2][order],
+                     label=label, color=color, ls=ls, lw=lw)
     if dimmer_length is not None:
-        plt.axvline(x=dimmer_length/2.0, ls="--", lw=0.7, color='r')
-        plt.axvline(x=-dimmer_length/2.0, ls="--", lw=0.7, color='r')
+        ln = plt.axvline(x=dimmer_length/2.0, ls="--", lw=0.7, color='r')
+        ln = plt.axvline(x=-dimmer_length/2.0, ls="--", lw=0.7, color='r')
     if title is not None:
         if ax is None:
             plt.title(title)
@@ -3584,6 +3588,7 @@ def plot1d_x(data, Vpot=None, xyz=None, dimmer_length=None, title=None,
             ax.set_title(title)
     if ax is None:
         plt.show()
+    return ln
 
 def inv_pinv(a, start, end):
     u, s, vt = np.linalg.svd(a, full_matrices=False, hermitian=False)
