@@ -4099,20 +4099,24 @@ class Inverser(pdft.U_Embedding):
 
         if vxc_grid is not None:
             grid_info = self.get_blocks_from_grid(vxc_grid)
-            vxchole = self._vxc_hole_quadrature(blocks=grid_info)
+            vxchole = self._vxc_hole_quadrature(grid_info=grid_info)
             if WF_method == "CIWavefunction":
-                ebarWF = self._average_local_orbital_energy(self.input_density_wfn.Da().np, C_a_GFM, eigs_a_GFM, blocks=grid_info)
-                taup_rho_WF = self._pauli_kinetic_energy_density(self.input_density_wfn.Da().np, C_a_NO_AO, eigs_a_NO, blocks=grid_info)
+                ebarWF = self._average_local_orbital_energy(self.input_density_wfn.Da().np,
+                                                            C_a_GFM, eigs_a_GFM, grid_info=grid_info)
+                taup_rho_WF = self._pauli_kinetic_energy_density(self.input_density_wfn.Da().np,
+                                                                 C_a_NO_AO, eigs_a_NO, grid_info=grid_info)
             elif WF_method == "RHF":
                 ebarWF = self._average_local_orbital_energy(self.input_density_wfn.Da().np,
                                                             self.input_density_wfn.Ca().np[:, :Nalpha],
-                                                            self.input_density_wfn.epsilon_a().np[:Nalpha], blocks=grid_info)
+                                                            self.input_density_wfn.epsilon_a().np[:Nalpha],
+                                                            grid_info=grid_info)
                 taup_rho_WF = self._pauli_kinetic_energy_density(self.input_density_wfn.Da().np,
-                                                                 self.input_density_wfn.Ca().np[:, :Nalpha], blocks=grid_info)
+                                                                 self.input_density_wfn.Ca().np[:, :Nalpha],
+                                                                 grid_info=grid_info)
             ebarKS = self._average_local_orbital_energy(self.molecule.Da.np, self.molecule.Ca.np[:,:Nalpha],
-                                                        self.molecule.eig_a.np[:Nalpha], blocks=grid_info)
+                                                        self.molecule.eig_a.np[:Nalpha], grid_info=grid_info)
             taup_rho_KS = self._pauli_kinetic_energy_density(self.molecule.Da.np, self.molecule.Ca.np[:,:Nalpha],
-                                                             blocks=grid_info)
+                                                             grid_info=grid_info)
 
             potential_shift = np.max(ebarWF) - np.max(ebarKS)
             self.vout_constant = potential_shift
@@ -4261,7 +4265,7 @@ class Inverser(pdft.U_Embedding):
 
         if vxc_grid is not None:
             grid_info = self.get_blocks_from_grid(vxc_grid)
-            vxchole_a, vxchole_b = self._vxc_hole_quadrature(blocks=grid_info)
+            vxchole_a, vxchole_b = self._vxc_hole_quadrature(grid_info=grid_info)
 
             ebarWF_a, ebarWF_b = self._average_local_orbital_energy(self.input_density_wfn.Da().np,
                                                                     self.input_density_wfn.Ca().np[:, :Nalpha],
@@ -4269,26 +4273,26 @@ class Inverser(pdft.U_Embedding):
                                                                     Db=self.input_density_wfn.Db().np,
                                                                     Cb=self.input_density_wfn.Cb().np[:, :Nbeta],
                                                                     eig_b=self.input_density_wfn.epsilon_b().np[:Nbeta],
-                                                                    blocks=grid_info)
+                                                                    grid_info=grid_info)
             taup_rho_WF_a, taup_rho_WF_b = self._pauli_kinetic_energy_density(self.input_density_wfn.Da().np,
                                                                               self.input_density_wfn.Ca().np[:,
                                                                               :Nalpha],
                                                                               Db=self.input_density_wfn.Db().np,
                                                                               Cb=self.input_density_wfn.Cb().np[:,
                                                                                  :Nbeta],
-                                                                              blocks=grid_info)
+                                                                              grid_info=grid_info)
             ebarKS_a, ebarKS_b = self._average_local_orbital_energy(self.molecule.Da.np,
                                                                  self.molecule.Ca.np[:,:Nalpha],
                                                                  self.molecule.eig_a.np[:Nalpha],
                                                                  Db=self.molecule.Db.np,
                                                                  Cb=self.molecule.Cb.np[:, :Nbeta],
                                                                  eig_b=self.molecule.eig_b.np[:Nbeta],
-                                                                 blocks=grid_info)
+                                                                 grid_info=grid_info)
             taup_rho_KS_a, taup_rho_KS_b = self._pauli_kinetic_energy_density(self.molecule.Da.np,
                                                                            self.molecule.Ca.np[:,:Nalpha],
                                                                            Db=self.molecule.Db.np,
                                                                            Cb=self.molecule.Cb.np[:, :Nbeta],
-                                                                           blocks=grid_info)
+                                                                           grid_info=grid_info)
             potential_shift_a = np.max(ebarWF_a) - np.max(ebarKS_a)
             potential_shift_b = np.max(ebarWF_b) - np.max(ebarKS_b)
             self.vout_constant = (potential_shift_a, potential_shift_b)
@@ -4336,7 +4340,7 @@ class Inverser(pdft.U_Embedding):
 
         epsilon = psi4.core.get_global_option("CUBIC_BASIS_TOLERANCE") * 1e-5
         extens = psi4.core.BasisExtents(self.molecule.wfn.basisset(), epsilon)
-        max_points = psi4.core.get_global_option("DFT_BLOCK_MAX_POINTS") - 1
+        max_points = psi4.core.get_global_option("DFT_BLOCK_MAX_POINTS")
         # max_points = self.molecule.Vpot.properties()[0].max_points()
         
         
