@@ -7,12 +7,12 @@ import pickle
 
 
 if __name__ == "__main__":
-    psi4.set_num_threads(1)
-    psi4.set_memory('3 GB')
-spherical_points = 350
-radial_points = 35
+    psi4.set_num_threads(4)
+    psi4.set_memory('2 GB')
+spherical_points = 110
+radial_points = 210
 
-input_density_wfn_method = "SCF"
+input_density_wfn_method = "DETCI"
 reference = "RHF"
 
 functional = 'svwn'
@@ -24,15 +24,6 @@ svd = "input_once"
 opt_method="trust-krylov"
 method = "WuYangScipy"
 v0 = "FermiAmaldi"
-
-title = method +"\n"+ \
-        basis + "/" + str(vxc_basis) + str(ortho_basis) + "\n" + \
-        input_density_wfn_method + "\n" +\
-        reference + "\n" + \
-        "grid"+str(radial_points)+"/"+str(spherical_points)+"\n"+\
-        v0 + "\n"\
-        + opt_method + "_" + str(svd)
-print(title)
 
 psi4.set_output_file("Ne.psi4")
 
@@ -46,6 +37,16 @@ symmetry c1
 
 Full_Molec.set_name("Ne")
 
+title = method +"\n"+ \
+        basis + "/" + str(vxc_basis) + str(ortho_basis) + "\n" + \
+        input_density_wfn_method + "\n" +\
+        reference + "\n" + \
+        "grid"+str(radial_points)+"/"+str(spherical_points)+"\n"+\
+        v0 + "\n"\
+        + opt_method + "_" + str(svd) + '\n'\
+        + "Z: " + str(Full_Molec.Z(0))
+print(title)
+
 # Exact
 Ne = np.genfromtxt('/home/yuming/PDFT/pdft/pdft/data/Atom0/ne.new8/Data')
 Ne_xyz = np.concatenate((-np.flip(Ne[:, 1]), Ne[:, 1]))
@@ -57,7 +58,8 @@ psi4.set_options({
     'DFT_RADIAL_POINTS': radial_points,
     "opdm": True,
     "tpdm": True,
-    "maxiter": 1000,
+    "maxiter": 3000,
+    "D_CONVERGENCE": 1e-3,
     'REFERENCE': reference
 })
 
@@ -77,8 +79,9 @@ elif input_density_wfn_method.upper() == "SCF":
     E_HF, input_density_wfn = psi4.energy("SCF"+"/"+basis, molecule=Full_Molec, return_wfn=True)
 elif input_density_wfn_method.upper() == "CCSD":
     _,input_density_wfn = psi4.properties("CCSD/"+basis, molecule=Full_Molec, properties=['dipole'], return_wfn=True)
-
-
+elif input_density_wfn_method.upper() == "FCI":
+    E_input,input_density_wfn = psi4.energy("FCI/"+basis, molecule=Full_Molec,
+                                            return_wfn=True)
 print("Target Density Calculation Finished.")
 
 mol = XC_Inversion.Molecule(Full_Molec, basis, functional)
@@ -106,49 +109,41 @@ inverser = XC_Inversion.Inverser(mol, input_density_wfn,
 # elif method == "COScipy":
 #     inverser.find_vxc_scipy_constrainedoptimization(opt_method="L-BFGS-B");
 
-# L = [3, 0, 0]
-# D = [0.1, 0.5, 0.2]
-# O = [-2.1, 0, 0]
-# N = [100, 1, 1]
+# L = None
+# D = [0.02, 0.02, 0.02]
+# O = [-4, 0, 0]
+# N = [801, 1, 1]
 # inverser.v_output_a = inverser.v_output[:vxc_basis.nbf]
-# vout_cube_a, xyzw = libcubeprop.basis_to_cubic_grid(inverser.v_output_a, inverser.vp_basis.wfn, L, D, O, N)
-# vout_cube_a.shape = 100
-# xyzw[0].shape = 100
-# xyzw[1].shape = 100
-# xyzw[2].shape = 100
-# xyzw[3].shape = 100
-# mark_y = np.isclose(xyzw[1], 0)
-# mark_z = np.isclose(xyzw[2], 0)
-# grid = np.array([xyzw[0][mark_y&mark_z], xyzw[1][mark_y&mark_z], xyzw[2][mark_y&mark_z]])
-# grid = grid.T
-# inverser.get_esp4v0(grid=grid)
-# inverser.get_vH_vext(grid)
-# nocc = mol.ndocc
+# vout_cube_a, xyzw = libcubeprop.basis_to_cubic_grid(inverser.v_output_a,
+#                                                     inverser.vp_basis.wfn, L, D, O, N)
+# vout_cube_a = np.squeeze(vout_cube_a)
+# xyzw[0].shape = xyzw[0].shape[0] * xyzw[0].shape[1] * xyzw[0].shape[2]
+# xyzw[1].shape = xyzw[0].shape
+# xyzw[2].shape = xyzw[0].shape
+# xyzw[3].shape = xyzw[0].shape
+# grid = np.array([xyzw[0][:], xyzw[1][:], xyzw[2][:]])
 # if v0 == "FermiAmaldi":
-#     inverser.vxc_a_grid = vout_cube_a[mark_z&mark_y] -1 / nocc * inverser.vH4v0
+#     if (inverser.vH4v0 is None) or  (inverser.vH4v0.shape != vout_cube_a.shape):
+#         grid = grid.T
+#         inverser.get_esp4v0(grid=grid)
+#         inverser.get_vH_vext(grid)
+#         inverser.vH4v0.shape = vout_cube_a.shape
+#         grid = grid.T
+#     nocc = mol.ndocc
+#     inverser.vxc_a_grid = vout_cube_a - 1 / nocc * inverser.vH4v0
 # elif v0 == "Hartree":
-#     inverser.vxc_a_grid = vout_cube_a[mark_z&mark_y]
-# grid = grid.T
+#     inverser.vxc_a_grid = vout_cube_a
 #
-# f,ax = plt.subplots(1,1,dpi=200)
-# ax.plot(Ne_xyz, Ne_vxc, label="Exact")
-# XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, xyz=grid, ax=ax, label="$\lambda=0$", ls="--")
+# vxc_temp = np.copy(inverser.vxc_a_grid)
+# vout_temp = np.copy(inverser.v_output_a)
 #
-# rgl_list, L_list, dT_list, P_list = inverser.my_L_curve_regularization4WuYang();
-# inverser.find_vxc_scipy_WuYang(opt_method=opt_method)
-# inverser.v_output_a = inverser.v_output[:vxc_basis.nbf]
-# vout_cube_a, _ = libcubeprop.basis_to_cubic_grid(inverser.v_output_a, inverser.vp_basis.wfn, L, D, O, N)
-# vout_cube_a.shape = 100
-# nocc = mol.ndocc
-# if v0 == "FermiAmaldi":
-#     inverser.vxc_a_grid = vout_cube_a[mark_z&mark_y] -1 / nocc * inverser.vH4v0
-# elif v0 == "Hartree":
-#     inverser.vxc_a_grid = vout_cube_a[mark_z&mark_y]
-# XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, xyz=grid, ax=ax, label="$\lambda=%.2e$"%inverser.regularization_constant, ls="--")
+# fig,ax = plt.subplots(1,1,dpi=200)
+# # ax.plot(Ne_xyz, Ne_vxc, label="Exact")
+# XC_Inversion.pdft.plot1d_x(inverser.vxc_a_grid, xyz=grid, ax=ax, ls="--")
 #
-# ax.set_xlim(-2.1, 8.1)
-# ax.legend()
-# f.show()
+# ax.set_xlim(-2, 8)
+# # ax.legend()
+# fig.show()
 
 #%%
 # rcond = 12  # DD

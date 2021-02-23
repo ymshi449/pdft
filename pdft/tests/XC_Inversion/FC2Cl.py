@@ -8,13 +8,13 @@ if __name__ == "__main__":
     psi4.set_num_threads(2)
 
 spherical_points = 350
-radial_points = 140
+radial_points = 35
 
 input_density_wfn_method = "SCF"
-reference = "UHF"
+reference = "RHF"
 
 functional = 'svwn'
-basis = "cc-pvqz"
+basis = "cc-pcvqz"
 vxc_basis = None
 
 ortho_basis = False
@@ -49,22 +49,33 @@ Full_Molec.set_name("FC2Cl")
 
 #Psi4 Options:
 psi4.set_options({
-    'DFT_SPHERICAL_POINTS': 434,
-    'DFT_RADIAL_POINTS': 35,
+    'DFT_SPHERICAL_POINTS': spherical_points,
+    'DFT_RADIAL_POINTS': radial_points,
     "opdm": True,
     "tpdm": True,
-    'REFERENCE' : 'RHF'
+    "maxiter": 1000,
+    'REFERENCE': reference,
+    "SAVE_JK": True
 })
-_, input_density_wfn = psi4.properties("CISD"+"/"+basis, molecule=Full_Molec, return_wfn=True, properties=["dipole"])
-# _, input_density_wfn = psi4.energy("SCF"+"/"+basis, molecule=Full_Molec, return_wfn=True)
 
-mol = XC_Inversion.Molecule(Full_Molec, basis, functional)
-mol.scf_inversion(100)
+if input_density_wfn_method.upper() == "DETCI":
+    E_input,input_density_wfn = psi4.energy("DETCI/"+basis, molecule=Full_Molec,
+                                            return_wfn=True)
+elif input_density_wfn_method.upper() == "SVWN":
+    E_input,input_density_wfn = psi4.energy("SVWN/"+basis, molecule=Full_Molec,
+                                            return_wfn=True)
+elif input_density_wfn_method.upper() == "SCF":
+    E_HF, input_density_wfn = psi4.energy("SCF"+"/"+basis, molecule=Full_Molec, return_wfn=True)
+elif input_density_wfn_method.upper() == "CCSD":
+    _,input_density_wfn = psi4.properties("CCSD/"+basis, molecule=Full_Molec, properties=['dipole'], return_wfn=True)
+
+mol = XC_Inversion.Molecule(Full_Molec, basis, functional, jk=input_density_wfn.jk())
+mol.scf(100)
 if vxc_basis is not None:
     vxc_basis = XC_Inversion.Molecule(Full_Molec, vxc_basis, functional, jk="No Need for JK")
     print("Number of Basis: ", mol.nbf, vxc_basis.nbf)
     # assert vxc_basis.nbf < 230
-    vxc_basis.scf_inversion(10)
+    vxc_basis.scf(10)
 else:
     vxc_basis = mol
     print("Number of Basis: ", mol.nbf, vxc_basis.nbf)
@@ -74,7 +85,7 @@ inverser = XC_Inversion.Inverser(mol, input_density_wfn,
                                  vxc_basis=vxc_basis,
                                  v0=v0
                                  )
-v = inverser.mRKS()
+
 # grad, grad_app = inverser.check_gradient_constrainedoptimization()
 # hess, hess_app = inverser.check_hess_constrainedoptimization()
 

@@ -2826,7 +2826,7 @@ class Inverser(pdft.U_Embedding):
 # %% Get vxc on the grid. DOES NOT WORK NOW.
     def Lagrangian_WuYang_grid(self, v=None):
         """
-        L = - <T> - \int (vks_a*(n_a-n_a_input)+vks_b*(n_b-n_b_input))
+        L = - <T> - \int (vks_a * (n_a-n_a_input) + vks_b * (n_b-n_b_input))
         :return: L
         """
         self.L_counter += 1
@@ -3558,7 +3558,7 @@ class Inverser(pdft.U_Embedding):
         print("\n")
         return vH
 
-    def _vxc_hole_quadrature(self, grid_info=None, atol = 1e-4):
+    def _vxc_hole_quadrature(self, grid_info=None, atol=1e-6):
         """
         Calculating v_XC^hole in RKS (15) using quadrature intrgral to test the ability of it.
         :return:
@@ -3572,7 +3572,7 @@ class Inverser(pdft.U_Embedding):
             raise Exception("%s is not supported. Currently only support:"% self.input_density_wfn.name(), support_methods)
         elif self.input_density_wfn.name() == "CIWavefunction" and (not restricted):
             raise Exception("Unrestricted %s is not supported." % self.input_density_wfn.name())
-        elif self.input_density_wfn.name() == "CIWavefunction":
+        if self.input_density_wfn.name() == "CIWavefunction":
             Tau_ijkl = self.input_density_wfn.get_tpdm("SUM", True).np
             D2 = self.input_density_wfn.get_opdm(-1, -1, "SUM", True).np
             C = self.input_density_wfn.Ca()
@@ -4033,7 +4033,6 @@ class Inverser(pdft.U_Embedding):
             ebarWF = self._average_local_orbital_energy(self.input_density_wfn.Da().np,
                                                        self.input_density_wfn.Ca().np[:,:Nalpha], self.input_density_wfn.epsilon_a().np[:Nalpha])
             taup_rho_WF = self._pauli_kinetic_energy_density(self.input_density_wfn.Da().np, self.input_density_wfn.Ca().np[:,:Nalpha])
-
         # I am not sure about this one.
         # emax = self.input_density_wfn.epsilon_a().np[self.molecule.nalpha-1]
         emax = np.max(ebarWF)
@@ -4042,7 +4041,8 @@ class Inverser(pdft.U_Embedding):
 
         # initial calculation:
         if init is None:
-            self.molecule.KS_solver(scf_maxiter, V=None)
+            v0_Fock_psi4 = psi4.core.Matrix.from_array(self.v0_Fock)
+            self.molecule.KS_solver(scf_maxiter, V=[v0_Fock_psi4, v0_Fock_psi4])
         elif init == "continue":
             assert self.molecule.Da is not None
         elif init == "LDA":
@@ -4196,10 +4196,10 @@ class Inverser(pdft.U_Embedding):
                                                                  )
 
             taup_rho_KS_a, taup_rho_KS_b = self._pauli_kinetic_energy_density(self.molecule.Da.np,
-                                                                           self.molecule.Ca.np[:,:Nalpha],
-                                                                           Db=self.molecule.Db.np,
-                                                                           Cb=self.molecule.Cb.np[:, :Nbeta],
-                                                                           )
+                                                                              self.molecule.Ca.np[:,:Nalpha],
+                                                                              Db=self.molecule.Db.np,
+                                                                              Cb=self.molecule.Cb.np[:, :Nbeta],
+                                                                              )
             potential_shift_a = emax_a - np.max(ebarKS_a)
             potential_shift_b = emax_b - np.max(ebarKS_b)
             self.vout_constant = (potential_shift_a, potential_shift_b)

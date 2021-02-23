@@ -43,10 +43,10 @@ psi4.set_options({
     'REFERENCE' : 'UHF'
 })
 mol = XC_Inversion.Molecule(Full_Molec, basis, functional)
-mol.scf_inversion(100)
+mol.scf(100)
 if vp_basis is not None:
     vp_basis = XC_Inversion.Molecule(Full_Molec, vp_basis, functional)
-    vp_basis.scf_inversion(100)
+    vp_basis.scf(100)
 else:
     vp_basis = mol
 

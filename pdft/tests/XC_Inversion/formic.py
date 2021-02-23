@@ -11,10 +11,10 @@ spherical_points = 350
 radial_points = 140
 
 input_density_wfn_method = "SCF"
-reference = "RHF"
+reference = "UHF"
 
 functional = 'svwn'
-basis = "cc-pvdz"
+basis = "cc-pvtz"
 vxc_basis = None
 
 ortho_basis = False
@@ -35,6 +35,7 @@ print(title)
 psi4.set_output_file("formic_lda.psi4")
 
 Full_Molec = psi4.geometry("""
+1 2
 nocom
 noreorient
 C     1.91331873  0.          0.        
@@ -75,12 +76,12 @@ elif input_density_wfn_method.upper() == "SCF":
 print("Target Density Calculation Finished.")
 
 mol = XC_Inversion.Molecule(Full_Molec, basis, functional)
-mol.scf_inversion(100)
+mol.scf(100)
 if vxc_basis is not None:
     vxc_basis = XC_Inversion.Molecule(Full_Molec, vxc_basis, functional, jk="No Need for JK")
     print("Number of Basis: ", mol.nbf, vxc_basis.nbf)
     # assert vxc_basis.nbf < 230
-    vxc_basis.scf_inversion(10)
+    vxc_basis.scf(10)
 else:
     vxc_basis = mol
     print("Number of Basis: ", mol.nbf, vxc_basis.nbf)
